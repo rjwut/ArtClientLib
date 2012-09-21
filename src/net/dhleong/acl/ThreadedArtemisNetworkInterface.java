@@ -97,11 +97,13 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         private final BufferedInputStream mInput;
         private final PacketParser mParser;
         private final ThreadedArtemisNetworkInterface mInterface;
+        private final Socket mSocket;
         
         public ReceiverThread(ThreadedArtemisNetworkInterface net, Socket skt) throws IOException {
             mInterface = net;
             mInput = new BufferedInputStream(skt.getInputStream());
             mParser = new PacketParser();
+            mSocket = skt;
         }
 
         @Override
@@ -137,6 +139,11 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                     break;
                 }
             }
+            
+            // close the socket here;
+            try {
+                mSocket.close();
+            } catch (IOException e) {}
             
             mInterface.stop();
         }

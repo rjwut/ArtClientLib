@@ -35,6 +35,10 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
             // hacks? meh
             return ordinal() == 0;
         }
+
+        public static BoolState from(boolean isTrue) {
+            return isTrue ? TRUE : FALSE;
+        }
     }
     private static final long RED_ALERT     = 0x0000000000020000L;
     private static final long NO_ENERGY     = 0x0000000000000010L;

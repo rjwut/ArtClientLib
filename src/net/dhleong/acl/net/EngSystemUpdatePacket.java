@@ -8,6 +8,7 @@ import java.util.List;
 
 import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
+import net.dhleong.acl.world.ArtemisObject;
 
 public class EngSystemUpdatePacket implements ArtemisPacket {
     
@@ -25,18 +26,24 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
         }
     }
     
-    private static final int TYPE_0 = 0x00008000;
-    private static final int TYPE_1 = 0x00108000;
+    public enum BoolState {
+        TRUE, FALSE,
+        /** Not specified in packet */
+        UNKNOWN
+    }
+    private static final long RED_ALERT     = 0x0000000000020000L;
+    private static final long NO_ENERGY     = 0x0000000000000010L;
     
-    private static final int STATION_BEAMS = 0x00000200;
-    private static final int STATION_TORPS = 0x00000400;
-    private static final int STATION_SENSR = 0x00000800;
-    private static final int STATION_MANEU = 0x00001000;
-    private static final int STATION_IMPLS = 0x00002000;
-    private static final int STATION_JUMPS = 0x00004000;
-    private static final int STATION_SREAR = 0x00008000;
-    private static final int STATION_SFRNT = 0x00010000;
-    private static final int[] SYSTEMS = {
+    private static final long STATION_BEAMS = 0x0000000002000000L;
+    private static final long STATION_TORPS = 0x0000000004000000L;
+    private static final long STATION_SENSR = 0x0000000008000000L;
+    private static final long STATION_MANEU = 0x0000000010000000L;
+    private static final long STATION_IMPLS = 0x0000000020000000L;
+    private static final long STATION_JUMPS = 0x0000000040000000L;
+    private static final long STATION_SREAR = 0x0000000080000000L;
+    private static final long STATION_SFRNT = 0x0000000100000000L;
+
+    private static final long[] SYSTEMS = {
         STATION_BEAMS, STATION_TORPS, STATION_SENSR,
         STATION_MANEU, STATION_IMPLS, STATION_JUMPS,
         STATION_SREAR, STATION_SFRNT
@@ -45,7 +52,8 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
     
     private final byte[] mData;
     
-    public final float mShipEnergy;
+    private final float mShipEnergy;
+    private final BoolState mRedAlert;
     public final List<HeatInfo> mHeatInfo = new ArrayList<HeatInfo>();
 
     public EngSystemUpdatePacket(final SystemInfoPacket pkt) {
@@ -55,16 +63,18 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
 //        System.arraycopy(pkt.mData, 0, mData, 0, 32);
         mData = pkt.mData;
         
-        int stations = PacketParser.getLendInt(pkt.mData, 8);
+        long args = PacketParser.getLendLong(pkt.mData, 6);
+//        System.out.println("!! Args: " + Long.toHexString(args));
         
-        mShipEnergy = PacketParser.getLendFloat(pkt.mData, 16);
-//        mSystemDamage = PacketParser.getLendFloat(pkt.mData, 20);
-        
-        int offset = 20;
-        if (pkt.getAction() == TYPE_1) {
-            // read whatever the heck that value is, eventually
-            offset += 4;
+        int offset;
+        if ((args & NO_ENERGY) == 0) {
+            mShipEnergy = PacketParser.getLendFloat(pkt.mData, 16);
+            offset = 20;
+        } else {
+            mShipEnergy = -1; // not provided
+            offset = 16;
         }
+
         
         final int end = mData.length-4;
         int systemIndex = 0;
@@ -72,7 +82,7 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
 //            System.out.println("Systems: " + Integer.toHexString(stations));
 //            System.out.println("  Check: " + Integer.toHexString(SYSTEMS[systemIndex]));
             while (systemIndex < SYSTEMS.length && 
-                    (stations & SYSTEMS[systemIndex]) == 0)
+                    (args & SYSTEMS[systemIndex]) == 0)
                 systemIndex++;
             if (systemIndex >= SYSTEMS.length) {
 //                System.err.println("Couldn't get system...@"+offset);
@@ -85,11 +95,25 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
             offset += 4;
             systemIndex++;
         }
+        
+        if ((args & RED_ALERT) != 0) {
+            mRedAlert = (pkt.mData[offset] != 0) ? BoolState.TRUE : BoolState.FALSE;
+        } else {
+            mRedAlert = BoolState.UNKNOWN;
+        }
     }
 
     @Override
     public long getMode() {
         return 0x01;
+    }
+    
+    /**
+     * 
+     * @return The new energy amount, or -1 if unspecified in packet
+     */
+    public float getShipEnergy() {
+        return mShipEnergy;
     }
 
     @Override
@@ -97,11 +121,14 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
         return true;
     }
 
+    public BoolState getRedAlert() {
+        return mRedAlert;
+    }
+
     @Override
     public int getType() {
         return SystemInfoPacket.TYPE;
     }
-
 
     @Override
     public String toString() {
@@ -109,13 +136,16 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
     }
     
     public void debugPrint() {
-        System.out.println("** Energy:" + mShipEnergy);
+        System.out.println("**   Energy:" + mShipEnergy);
+        System.out.println("** RedAlert:" + mRedAlert);
         for (HeatInfo info : mHeatInfo)
             System.out.println(info.station + " = " + info.heat);
         System.out.println("** --> " + toString());
     }
     
     public static boolean isExtensionOf(SystemInfoPacket pkt) {
-        return pkt.getAction() == TYPE_0 || pkt.getAction() == TYPE_1;
+        return pkt.getTargetType() == ArtemisObject.TYPE_PLAYER && 
+                (pkt.getAction() == SystemInfoPacket.ACTION_UPDATE_SYSTEMS
+                    || pkt.getAction() == SystemInfoPacket.ACTION_UPDATE_SYSTEMS_2);
     }
 }

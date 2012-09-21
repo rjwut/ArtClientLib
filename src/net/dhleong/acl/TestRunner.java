@@ -7,6 +7,7 @@ import java.net.UnknownHostException;
 
 import net.dhleong.acl.net.CommsIncomingPacket;
 import net.dhleong.acl.net.DestroyObjectPacket;
+import net.dhleong.acl.net.EngSystemUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.net.SetStationPacket;
 import net.dhleong.acl.net.SetStationPacket.StationType;
@@ -70,8 +71,12 @@ public class TestRunner {
                 if (pkt instanceof SystemInfoPacket) {
                     SystemInfoPacket sys = (SystemInfoPacket) pkt;
                     if (SysCreatePacket.isExtensionOf(sys)) {
-//                        SysCreatePacket create = new SysCreatePacket(sys);
-//                        create.debugPrint();
+                        SysCreatePacket create = new SysCreatePacket(sys);
+                        create.debugPrint();
+                        return;
+                    } else if (EngSystemUpdatePacket.isExtensionOf(sys)) {
+//                        EngSystemUpdatePacket eng = new EngSystemUpdatePacket(sys);
+//                        eng.debugPrint();
                         return;
                     }
                 } else if (pkt instanceof CommsIncomingPacket) {
@@ -85,17 +90,9 @@ public class TestRunner {
                             mgr.getObject(destroy.getTarget()));
                     return;
                 }
-//                        EngSystemUpdatePacket.isExtensionOf((SystemInfoPacket)pkt))  {
-//                    EngSystemUpdatePacket eng = new EngSystemUpdatePacket(
-//                            (SystemInfoPacket)pkt);
-////                    System.out.println("** Energy:" + eng.mShipEnergy + 
-//////                            "; SysDamg:" + eng.mSystemDamage +
-////                            "; SysHeat:" + eng.mSystemHeat);
-////                    System.out.println("** --> " + eng);
-//                    eng.debugPrint();
-                
+
                  // default
-                System.out.println("<< " + pkt);
+//                System.out.println("<< " + pkt);
             }
         });
         

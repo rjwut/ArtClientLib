@@ -4,6 +4,9 @@ package net.dhleong.acl.net;
 public class SystemInfoPacket extends BaseArtemisPacket {
     
     public static final byte ACTION_CREATE = (byte) 0xff;
+    public static final byte ACTION_UPDATE_SYSTEMS = (byte) 0x80;
+    /** I dunno, this happens too */
+    public static final byte ACTION_UPDATE_SYSTEMS_2 = (byte) 0x00;
 
     public static final int TYPE = 0x80803df9;
     

@@ -6,6 +6,7 @@ import java.io.PipedOutputStream;
 import java.net.UnknownHostException;
 
 import net.dhleong.acl.net.CommsIncomingPacket;
+import net.dhleong.acl.net.DestroyObjectPacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.net.SetStationPacket;
 import net.dhleong.acl.net.SetStationPacket.StationType;
@@ -15,6 +16,11 @@ import net.dhleong.acl.net.SystemInfoPacket;
 public class TestRunner {
 
     public static void main(String[] args) throws Exception {
+        
+        // configs
+//        final String tgtIp = "localhost";
+        String tgtIp = "10.211.55.3";
+        final int tgtPort = 2010;
         
         // quick test
         int value = 1424;
@@ -34,8 +40,6 @@ public class TestRunner {
         if (destPkt.getType() != SetStationPacket.TYPE)
             throw new Exception("Wrong type: " + Integer.toHexString(destPkt.getType()));
          
-        String tgtIp = "localhost";
-        int tgtPort = 2010;
         final ArtemisNetworkInterface net; 
         try {
             net = new ThreadedArtemisNetworkInterface(tgtIp, tgtPort);
@@ -48,6 +52,9 @@ public class TestRunner {
             e.printStackTrace();
             return;
         }
+        
+
+        final SystemManager mgr = new SystemManager();
         
         net.addOnPacketListener(new OnPacketListener() {
             
@@ -63,7 +70,7 @@ public class TestRunner {
                 if (pkt instanceof SystemInfoPacket) {
                     SystemInfoPacket sys = (SystemInfoPacket) pkt;
                     if (SysCreatePacket.isExtensionOf(sys)) {
-                        SysCreatePacket create = new SysCreatePacket(sys);
+//                        SysCreatePacket create = new SysCreatePacket(sys);
 //                        create.debugPrint();
                         return;
                     }
@@ -71,6 +78,11 @@ public class TestRunner {
                     CommsIncomingPacket comms = (CommsIncomingPacket) pkt;
                     System.out.println("** From ``"+comms.getFrom()+"'': " + 
                             comms.getMessage());
+                    return;
+                } else if (pkt instanceof DestroyObjectPacket) {
+                    DestroyObjectPacket destroy = (DestroyObjectPacket) pkt;
+                    System.out.println("** DESTROYED: " + 
+                            mgr.getObject(destroy.getTarget()));
                     return;
                 }
 //                        EngSystemUpdatePacket.isExtensionOf((SystemInfoPacket)pkt))  {
@@ -83,13 +95,11 @@ public class TestRunner {
 //                    eng.debugPrint();
                 
                  // default
-//                System.out.println("<< " + pkt);
+                System.out.println("<< " + pkt);
             }
         });
         
-        SystemManager mgr = new SystemManager();
         net.addOnPacketListener(mgr);
-        
         net.start();
         
         /* ENG test 

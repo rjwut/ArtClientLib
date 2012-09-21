@@ -16,7 +16,8 @@ public class SystemInfoPacket extends BaseArtemisPacket {
     public SystemInfoPacket(int flags, byte[] bucket) {
         super(0x01, flags, TYPE, bucket); // TODO don't save the byte[]?
         
-        // I'm pretty sure this is right
+        // only gets the first one, but
+        //  they seem to be grouped
         mTargetType = bucket[0];
 
         isEmpty = mTargetType == 0;

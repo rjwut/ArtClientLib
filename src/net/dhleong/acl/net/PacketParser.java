@@ -61,11 +61,14 @@ public class PacketParser {
         case SystemInfoPacket.TYPE:
             return new SystemInfoPacket(flags, bucket);
             
-        case ShipDamagePacket.TYPE:
-            return new ShipDamagePacket(flags);
+//        case ShipDamagePacket.TYPE:
+//            return new ShipDamagePacket(flags);
             
         case CommsIncomingPacket.TYPE:
             return new CommsIncomingPacket(flags, bucket);
+            
+        case DestroyObjectPacket.TYPE:
+            return new DestroyObjectPacket(flags, bucket);
         
         default:
             return new BaseArtemisPacket(mode, flags, packetType, bucket);

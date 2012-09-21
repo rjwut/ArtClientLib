@@ -1,8 +1,9 @@
 package net.dhleong.acl;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 
+import net.dhleong.acl.net.DestroyObjectPacket;
 import net.dhleong.acl.net.SysCreatePacket;
 import net.dhleong.acl.net.SystemInfoPacket;
 import net.dhleong.acl.world.ArtemisObject;
@@ -14,10 +15,18 @@ import net.dhleong.acl.world.ArtemisObject;
  */
 public class SystemManager implements OnPacketListener {
     
-    private final HashSet<ArtemisObject> mObjects = new HashSet<ArtemisObject>();
+    private final HashMap<Integer, ArtemisObject> mObjects = 
+            new HashMap<Integer, ArtemisObject>();
 
     @Override
     public void onPacket(ArtemisPacket pkt) {
+        if (pkt instanceof DestroyObjectPacket) {
+            mObjects.remove(((DestroyObjectPacket)pkt).getTarget());
+            // TODO signal change?
+            return;
+        }
+        
+        // from here, we only care about this kind
         if (!(pkt instanceof SystemInfoPacket))
             return;
         
@@ -28,7 +37,7 @@ public class SystemManager implements OnPacketListener {
             
             List<ArtemisObject> newObjs = create.getCreatedObjects();
             for (ArtemisObject obj : newObjs)
-                mObjects.add(obj);
+                mObjects.put(obj.getId(), obj);
             
             if (newObjs.size() > 0) {
                 // TODO signal change?
@@ -45,12 +54,16 @@ public class SystemManager implements OnPacketListener {
      */
     public int getObjects(List<ArtemisObject> dest, int type) {
         int count = 0;
-        for (ArtemisObject obj : mObjects) {
+        for (ArtemisObject obj : mObjects.values()) {
             if (obj.getType() == type) {
                 dest.add(obj);
                 count++;
             }
         }
         return count;
+    }
+
+    public ArtemisObject getObject(int objId) {
+        return mObjects.get(objId);
     }
 }

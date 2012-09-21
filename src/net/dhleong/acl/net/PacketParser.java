@@ -59,6 +59,7 @@ public class PacketParser {
         
         switch (packetType) {
         case SystemInfoPacket.TYPE:
+            // TODO we could directly return subtypes
             return new SystemInfoPacket(flags, bucket);
             
 //        case ShipDamagePacket.TYPE:
@@ -93,12 +94,37 @@ public class PacketParser {
                 );
     }
     
+    public static int getLendLong(byte[] bytes, int offset) {
+        return (
+                (0xff & bytes[offset+7]) << 56  |
+                (0xff & bytes[offset+6]) << 48  |
+                (0xff & bytes[offset+5]) << 40  |
+                (0xff & bytes[offset+4]) << 32  |
+                (0xff & bytes[offset+3]) << 24  |
+                (0xff & bytes[offset+2]) << 16  |
+                (0xff & bytes[offset+1]) << 8   |
+                (0xff & bytes[offset]) << 0
+                );
+    }
+    
+    public static int getLendShort(byte[] bytes, int offset) {
+        return ( 
+                (0xff & bytes[1]) << 8   |
+                (0xff & bytes[0]) << 0
+                );
+    }
+
+    public static float getLendFloat(byte[] bytes, int offset) {
+        int bits = getLendInt(bytes, offset);
+        return Float.intBitsToFloat(bits);
+    }
+
     public static void putLendInt(int value, byte[] bytes) {
         putLendInt(value, bytes, 0);
     }
 
     public static void putLendInt(int value, byte[] bytes, int offset) {
-
+    
         bytes[offset+3] = (byte) (0xff & (value >> 24));
         bytes[offset+2] = (byte) (0xff & (value >> 16));
         bytes[offset+1] = (byte) (0xff & (value >> 8));
@@ -113,18 +139,6 @@ public class PacketParser {
         bytes[offset+2] = (byte) (0xff & (intValue >> 16));
         bytes[offset+1] = (byte) (0xff & (intValue >> 8));
         bytes[offset] = (byte) (0xff & (intValue >> 0));         
-
-    }
-
-    public static int getLendShort(byte[] bytes, int offset) {
-        return ( 
-                (0xff & bytes[1]) << 8   |
-                (0xff & bytes[0]) << 0
-                );
-    }
-
-    public static float getLendFloat(byte[] bytes, int offset) {
-        int bits = getLendInt(bytes, offset);
-        return Float.intBitsToFloat(bits);
+    
     }
 }

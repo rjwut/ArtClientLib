@@ -8,7 +8,7 @@ public class ToggleRedAlertPacket extends BaseArtemisPacket {
     public ToggleRedAlertPacket() {
         super(0x2, FLAGS, TYPE, new byte[8]);
         
-        PacketParser.putLendInt(0x08000000, mData);
+        PacketParser.putLendInt(0x00000008, mData);
         PacketParser.putLendInt(0x0, mData, 4);
     }
 }

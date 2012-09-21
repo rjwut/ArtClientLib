@@ -9,6 +9,7 @@ import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.world.ArtemisEnemy;
 import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisOtherShip;
+import net.dhleong.acl.world.ArtemisPlayer;
 import net.dhleong.acl.world.ArtemisStation;
 
 public class SysCreatePacket implements ArtemisPacket {
@@ -21,6 +22,12 @@ public class SysCreatePacket implements ArtemisPacket {
         mData = pkt.mData;
         
         switch (pkt.getTargetType()) {
+        case ArtemisObject.TYPE_PLAYER: {
+            int objId = PacketParser.getLendInt(mData, 1);
+            boolean redAlert = (mData.length >= 122 && mData[122] != 0);
+            // TODO everything
+            mCreatedObjs.add(new ArtemisPlayer(objId, "Artemis", redAlert));
+            break; }
         case ArtemisObject.TYPE_ENEMY: {
             // the length of the name in 2-byte chars WITH trailing null
             int objId = PacketParser.getLendInt(mData, 1);

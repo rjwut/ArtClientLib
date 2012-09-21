@@ -62,7 +62,10 @@ public class SysCreatePacket implements ArtemisPacket {
             int offset = 0;
             while (mData[offset] != 0x00) {
                 // this length does NOT include the obj TYPE and ID
-                int lenSubPacket = (0xff & mData[offset+6])+5;
+                int lenSubPacket = (0xff & mData[offset+6]);
+                if (lenSubPacket == 0x1f)
+                    lenSubPacket = 62; // seems to be the case...
+                
                 int objId = PacketParser.getLendInt(mData, offset+1);
                 int nameLen = PacketParser.getNameLengthBytes(mData, offset+7);
                 try {
@@ -75,6 +78,7 @@ public class SysCreatePacket implements ArtemisPacket {
                     System.out.println("DEBUG: nameLen = " + nameLen);
                     System.out.println("DEBUG: offset = " + offset);
                     System.out.println("DEBUG: Packet = " + this);
+                    throw e;
                 }
                 offset += lenSubPacket;
             }

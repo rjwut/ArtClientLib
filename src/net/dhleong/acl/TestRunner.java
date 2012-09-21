@@ -15,6 +15,7 @@ import net.dhleong.acl.net.SetStationPacket;
 import net.dhleong.acl.net.SetStationPacket.StationType;
 import net.dhleong.acl.net.SysCreatePacket;
 import net.dhleong.acl.net.SystemInfoPacket;
+import net.dhleong.acl.world.ArtemisObject;
 
 public class TestRunner {
 
@@ -80,6 +81,8 @@ public class TestRunner {
                         EngSystemUpdatePacket eng = new EngSystemUpdatePacket(sys);
                         eng.debugPrint();
                         return;
+                    } else if (sys.getTargetType() == ArtemisObject.TYPE_PLAYER){
+                        System.out.println("INFO << " + sys);
                     }
                 } else if (pkt instanceof CommsIncomingPacket) {
                     CommsIncomingPacket comms = (CommsIncomingPacket) pkt;

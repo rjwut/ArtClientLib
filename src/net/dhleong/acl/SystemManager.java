@@ -18,14 +18,26 @@ import net.dhleong.acl.world.ArtemisPlayer;
  */
 public class SystemManager implements OnPacketListener {
     
+    public interface OnObjectCountChangeListener {
+        void onObjectCountChanged(int count);
+    }
+    
+    private static final OnObjectCountChangeListener sDummyListener = 
+            new OnObjectCountChangeListener() {
+        @Override
+        public void onObjectCountChanged(int count) {/* nop */}
+    };
+    
     private final HashMap<Integer, ArtemisObject> mObjects = 
             new HashMap<Integer, ArtemisObject>();
+    private OnObjectCountChangeListener mListener = sDummyListener;
 
     @Override
     public void onPacket(ArtemisPacket pkt) {
         if (pkt instanceof DestroyObjectPacket) {
             mObjects.remove(((DestroyObjectPacket)pkt).getTarget());
-            // TODO signal change?
+            // signal change
+            mListener.onObjectCountChanged(mObjects.size());
             return;
         }
         
@@ -43,7 +55,8 @@ public class SystemManager implements OnPacketListener {
                 mObjects.put(obj.getId(), obj);
             
             if (newObjs.size() > 0) {
-                // TODO signal change?
+                // signal change
+                mListener.onObjectCountChanged(mObjects.size());
             }
         } else if (EngSystemUpdatePacket.isExtensionOf(info)) {
             EngSystemUpdatePacket eng = new EngSystemUpdatePacket(info);
@@ -90,5 +103,9 @@ public class SystemManager implements OnPacketListener {
         }
         
         return null;
+    }
+    
+    public void setOnObjectCountChangedListener(OnObjectCountChangeListener listener) {
+        mListener = (listener == null) ? sDummyListener : listener;
     }
 }

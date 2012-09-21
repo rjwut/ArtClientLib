@@ -77,4 +77,18 @@ public class SystemManager implements OnPacketListener {
     public ArtemisObject getObject(int objId) {
         return mObjects.get(objId);
     }
+    
+    /**
+     * Get the first object with the given name
+     * @param type
+     * @return
+     */
+    public ArtemisObject getObjectByName(String name) {
+        for (ArtemisObject obj : mObjects.values()) {
+            if (obj.getName().equals(name))
+                return obj;
+        }
+        
+        return null;
+    }
 }

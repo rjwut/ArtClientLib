@@ -36,7 +36,19 @@ public class SystemManager implements OnPacketListener {
     public void onPacket(ArtemisPacket pkt) {
         if (pkt instanceof DestroyObjectPacket) {
             mObjects.remove(((DestroyObjectPacket)pkt).getTarget());
+            
             // signal change
+            if (mObjects.size() == 1) {
+                ArtemisObject last = mObjects.values().iterator().next();
+                if ("Artemis".equals(last.getName())) {
+                    // special (hack?) case;
+                    //  this is actually the end of the game
+                    mObjects.clear();
+                    mListener.onObjectCountChanged(0);
+                    return;
+                }
+            } 
+
             mListener.onObjectCountChanged(mObjects.size());
             return;
         }

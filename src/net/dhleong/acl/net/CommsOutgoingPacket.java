@@ -14,6 +14,15 @@ public class CommsOutgoingPacket extends BaseArtemisPacket {
         Mode(byte objType) {
             this.objType = objType;
         }
+        
+        public static Mode fromObjType(int type) {
+            for (Mode m : values()) {
+                if (m.objType == type)
+                    return m;
+            }
+                
+            return null;
+        }
     }
     
     public enum Message {

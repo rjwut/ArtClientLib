@@ -7,6 +7,8 @@ import java.net.UnknownHostException;
 
 import net.dhleong.acl.net.CommsIncomingPacket;
 import net.dhleong.acl.net.DestroyObjectPacket;
+import net.dhleong.acl.net.EngSetEnergyPacket;
+import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.EngSystemUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.net.SetStationPacket;
@@ -75,8 +77,8 @@ public class TestRunner {
 //                        create.debugPrint();
                         return;
                     } else if (EngSystemUpdatePacket.isExtensionOf(sys)) {
-//                        EngSystemUpdatePacket eng = new EngSystemUpdatePacket(sys);
-//                        eng.debugPrint();
+                        EngSystemUpdatePacket eng = new EngSystemUpdatePacket(sys);
+                        eng.debugPrint();
                         return;
                     }
                 } else if (pkt instanceof CommsIncomingPacket) {
@@ -99,8 +101,8 @@ public class TestRunner {
         net.addOnPacketListener(mgr);
         net.start();
         
-        /* ENG test 
-        net.send(new SetStationPacket(StationType.ENGINEER, true));
+        // ENG test 
+        net.send(new SetStationPacket(StationType.ENGINEERING, true));
 //        net.send(new EngSetEnergyPacket(SystemType.IMPULSE, 1f));
 //        net.send(new EngSetCoolantPacket(SystemType.IMPULSE, 0));
 //        
@@ -108,12 +110,10 @@ public class TestRunner {
 //        net.send(new EngSetCoolantPacket(SystemType.JUMP, 0));
         
         for (SystemType type : SystemType.values()) {
-            net.send(new EngSetEnergyPacket(type, 0f));
+            net.send(new EngSetEnergyPacket(type, 1f));
             net.send(new EngSetCoolantPacket(type, 0));
         }
-        */
         
-        net.send(new SetStationPacket(StationType.COMMS, true));
         
 
 //        net.stop();

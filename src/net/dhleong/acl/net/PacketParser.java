@@ -94,16 +94,16 @@ public class PacketParser {
                 );
     }
     
-    public static int getLendLong(byte[] bytes, int offset) {
+    public static long getLendLong(byte[] bytes, int offset) {
         return (
-                (0xff & bytes[offset+7]) << 56  |
-                (0xff & bytes[offset+6]) << 48  |
-                (0xff & bytes[offset+5]) << 40  |
-                (0xff & bytes[offset+4]) << 32  |
-                (0xff & bytes[offset+3]) << 24  |
-                (0xff & bytes[offset+2]) << 16  |
-                (0xff & bytes[offset+1]) << 8   |
-                (0xff & bytes[offset]) << 0
+                (0xffL & bytes[offset+7]) << 56  |
+                (0xffL & bytes[offset+6]) << 48  |
+                (0xffL & bytes[offset+5]) << 40  |
+                (0xffL & bytes[offset+4]) << 32  |
+                (0xffL & bytes[offset+3]) << 24  |
+                (0xffL & bytes[offset+2]) << 16  |
+                (0xffL & bytes[offset+1]) << 8   |
+                (0xffL & bytes[offset]) << 0
                 );
     }
     

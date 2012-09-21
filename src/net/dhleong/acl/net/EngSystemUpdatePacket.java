@@ -26,6 +26,20 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
         }
     }
     
+    public static final class DamageInfo implements Serializable {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 4484891520400874942L;
+        public final SystemType station;
+        public final float damage;
+        
+        private DamageInfo(SystemType systemType, float d) {
+            station = systemType;
+            damage = d;
+        }
+    }
+    
     public enum BoolState {
         TRUE, FALSE,
         /** Not specified in packet */
@@ -43,27 +57,42 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
     private static final long RED_ALERT     = 0x0000000000020000L;
     private static final long NO_ENERGY     = 0x0000000000000010L;
     
-    private static final long STATION_BEAMS = 0x0000000002000000L;
-    private static final long STATION_TORPS = 0x0000000004000000L;
-    private static final long STATION_SENSR = 0x0000000008000000L;
-    private static final long STATION_MANEU = 0x0000000010000000L;
-    private static final long STATION_IMPLS = 0x0000000020000000L;
-    private static final long STATION_JUMPS = 0x0000000040000000L;
-    private static final long STATION_SREAR = 0x0000000080000000L;
-    private static final long STATION_SFRNT = 0x0000000100000000L;
+    private static final long HEAT_BEAMS = 0x0000000002000000L;
+    private static final long HEAT_TORPS = 0x0000000004000000L;
+    private static final long HEAT_SENSR = 0x0000000008000000L;
+    private static final long HEAT_MANEU = 0x0000000010000000L;
+    private static final long HEAT_IMPLS = 0x0000000020000000L;
+    private static final long HEAT_JUMPS = 0x0000000040000000L;
+    private static final long HEAT_SREAR = 0x0000000080000000L;
+    private static final long HEAT_SFRNT = 0x0000000100000000L;
+    
+    private static final long DAMG_BEAMS = 0x0000000200000000L;
+    private static final long DAMG_TORPS = 0x0000000400000000L;
+    private static final long DAMG_SENSR = 0x0000000800000000L;
+    private static final long DAMG_MANEU = 0x0000001000000000L;
+    private static final long DAMG_IMPLS = 0x0000002000000000L;
+    private static final long DAMG_JUMPS = 0x0000004000000000L;
+    private static final long DAMG_SREAR = 0x0000008000000000L;
+    private static final long DAMG_SFRNT = 0x0000010000000000L;
 
-    private static final long[] SYSTEMS = {
-        STATION_BEAMS, STATION_TORPS, STATION_SENSR,
-        STATION_MANEU, STATION_IMPLS, STATION_JUMPS,
-        STATION_SREAR, STATION_SFRNT
+    private static final long[] SYSTEMS_HEAT = {
+        HEAT_BEAMS, HEAT_TORPS, HEAT_SENSR,
+        HEAT_MANEU, HEAT_IMPLS, HEAT_JUMPS,
+        HEAT_SREAR, HEAT_SFRNT
     };
     
+    private static final long[] SYSTEMS_DAMG = {
+        DAMG_BEAMS, DAMG_TORPS, DAMG_SENSR,
+        DAMG_MANEU, DAMG_IMPLS, DAMG_JUMPS,
+        DAMG_SREAR, DAMG_SFRNT
+    };
     
     private final byte[] mData;
     
     private final float mShipEnergy;
     private final BoolState mRedAlert;
     public final List<HeatInfo> mHeatInfo = new ArrayList<HeatInfo>();
+    public final List<DamageInfo> mDamageInfo = new ArrayList<DamageInfo>();
 
     public EngSystemUpdatePacket(final SystemInfoPacket pkt) {
 //        mData = new byte[32];
@@ -74,9 +103,9 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
         
         long args = PacketParser.getLendLong(pkt.mData, 6);
 //        System.out.println("!! Args: " + Long.toHexString(args));
-        
+//        System.out.println("!! Args: " + Long.toHexString(args & NO_ENERGY));
         int offset;
-        if ((args & NO_ENERGY) == 0) {
+        if (pkt.getAction() != 0x0 && (args & NO_ENERGY) == 0) {
             mShipEnergy = PacketParser.getLendFloat(pkt.mData, 16);
             offset = 20;
         } else {
@@ -90,10 +119,10 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
         while (offset < end) {
 //            System.out.println("Systems: " + Integer.toHexString(stations));
 //            System.out.println("  Check: " + Integer.toHexString(SYSTEMS[systemIndex]));
-            while (systemIndex < SYSTEMS.length && 
-                    (args & SYSTEMS[systemIndex]) == 0)
+            while (systemIndex < SYSTEMS_HEAT.length && 
+                    (args & SYSTEMS_HEAT[systemIndex]) == 0)
                 systemIndex++;
-            if (systemIndex >= SYSTEMS.length) {
+            if (systemIndex >= SYSTEMS_HEAT.length) {
 //                System.err.println("Couldn't get system...@"+offset);
 //                debugPrint();
                 break;
@@ -101,6 +130,26 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
             
             float heat = PacketParser.getLendFloat(pkt.mData, offset);
             mHeatInfo.add(new HeatInfo(SystemType.values()[systemIndex], heat));
+            offset += 4;
+            systemIndex++;
+        }
+        
+        // look for system damage
+        systemIndex = 0;
+        while (offset < end) {
+//            System.out.println("Systems: " + Integer.toHexString(stations));
+//            System.out.println("  Check: " + Integer.toHexString(SYSTEMS[systemIndex]));
+            while (systemIndex < SYSTEMS_DAMG.length && 
+                    (args & SYSTEMS_DAMG[systemIndex]) == 0)
+                systemIndex++;
+            if (systemIndex >= SYSTEMS_DAMG.length) {
+//                System.err.println("Couldn't get system...@"+offset);
+//                debugPrint();
+                break;
+            }
+            
+            float heat = PacketParser.getLendFloat(pkt.mData, offset);
+            mDamageInfo.add(new DamageInfo(SystemType.values()[systemIndex], heat));
             offset += 4;
             systemIndex++;
         }
@@ -148,7 +197,9 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
         System.out.println("**   Energy:" + mShipEnergy);
         System.out.println("** RedAlert:" + mRedAlert);
         for (HeatInfo info : mHeatInfo)
-            System.out.println(info.station + " = " + info.heat);
+            System.out.println("HEAT) " + info.station + " = " + info.heat);
+        for (DamageInfo info : mDamageInfo)
+            System.out.println("DAMG) " + info.station + " = " + info.damage);
         System.out.println("** --> " + toString());
     }
     

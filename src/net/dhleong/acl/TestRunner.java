@@ -71,8 +71,8 @@ public class TestRunner {
                 if (pkt instanceof SystemInfoPacket) {
                     SystemInfoPacket sys = (SystemInfoPacket) pkt;
                     if (SysCreatePacket.isExtensionOf(sys)) {
-                        SysCreatePacket create = new SysCreatePacket(sys);
-                        create.debugPrint();
+//                        SysCreatePacket create = new SysCreatePacket(sys);
+//                        create.debugPrint();
                         return;
                     } else if (EngSystemUpdatePacket.isExtensionOf(sys)) {
 //                        EngSystemUpdatePacket eng = new EngSystemUpdatePacket(sys);

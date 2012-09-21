@@ -87,8 +87,11 @@ public class SysCreatePacket implements ArtemisPacket {
                     System.out.println("DEBUG: Packet = " + this);
                     throw e;
                 }
-                offset += lenSubPacket;
+                offset += lenSubPacket + 5; // +5 for the TYPE and ID
             }
+            
+//            debugPrint();
+//            System.out.println("DEBUG: Packet = " + this);
             break; }
         }
     }

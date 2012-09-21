@@ -4,9 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.dhleong.acl.net.DestroyObjectPacket;
+import net.dhleong.acl.net.EngSystemUpdatePacket;
+import net.dhleong.acl.net.EngSystemUpdatePacket.BoolState;
 import net.dhleong.acl.net.SysCreatePacket;
 import net.dhleong.acl.net.SystemInfoPacket;
 import net.dhleong.acl.world.ArtemisObject;
+import net.dhleong.acl.world.ArtemisPlayer;
 
 /**
  * 
@@ -41,6 +44,14 @@ public class SystemManager implements OnPacketListener {
             
             if (newObjs.size() > 0) {
                 // TODO signal change?
+            }
+        } else if (EngSystemUpdatePacket.isExtensionOf(info)) {
+            EngSystemUpdatePacket eng = new EngSystemUpdatePacket(info);
+            
+            if (eng.getRedAlert() != BoolState.UNKNOWN) {
+                ArtemisPlayer p = (ArtemisPlayer) mObjects.get(info.getTarget());
+                if (p != null)
+                    p.setRedAlert(eng.getRedAlert().getBooleanValue());
             }
         }
     }

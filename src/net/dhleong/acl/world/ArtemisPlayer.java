@@ -3,7 +3,7 @@ package net.dhleong.acl.world;
 
 public class ArtemisPlayer extends BaseArtemisObject {
 
-    private final boolean mRedAlert;
+    private boolean mRedAlert;
 
     public ArtemisPlayer(int objId, String name, boolean redAlert) {
         super(objId, name);
@@ -23,5 +23,9 @@ public class ArtemisPlayer extends BaseArtemisObject {
     @Override
     public String toString() {
         return String.format("[PLAYER:%s:%b]", mName, mRedAlert);
+    }
+
+    public void setRedAlert(boolean newState) {
+        mRedAlert = newState;
     }
 }

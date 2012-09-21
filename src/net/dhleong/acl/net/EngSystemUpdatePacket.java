@@ -29,7 +29,12 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
     public enum BoolState {
         TRUE, FALSE,
         /** Not specified in packet */
-        UNKNOWN
+        UNKNOWN;
+
+        public boolean getBooleanValue() {
+            // hacks? meh
+            return ordinal() == 0;
+        }
     }
     private static final long RED_ALERT     = 0x0000000000020000L;
     private static final long NO_ENERGY     = 0x0000000000000010L;

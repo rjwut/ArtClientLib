@@ -98,7 +98,7 @@ public class TestRunner {
                 }
 
                  // default
-//                System.out.println("<< " + pkt);
+                System.out.println("<< " + pkt);
             }
         });
         

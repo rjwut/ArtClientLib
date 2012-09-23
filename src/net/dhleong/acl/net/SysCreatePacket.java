@@ -33,7 +33,12 @@ public class SysCreatePacket implements ArtemisPacket {
             int objId = PacketParser.getLendInt(mData, 1);
             int nameLen = PacketParser.getNameLengthBytes(mData, 10);
             String name = PacketParser.getNameString(mData, 14, nameLen);
-            mCreatedObjs.add(new ArtemisEnemy(objId, name));
+            int offset = 14 + nameLen + 2; // (for the null bytes)
+            offset += 2; // padding?
+            offset += 14; // ?
+            offset += 4; // ?
+            final int hullId = PacketParser.getLendInt(mData, offset);
+            mCreatedObjs.add(new ArtemisEnemy(objId, name, hullId));
             break; }
         case ArtemisObject.TYPE_OTHER: {
             int offset = 0;
@@ -135,6 +140,8 @@ public class SysCreatePacket implements ArtemisPacket {
     }
     
     public static boolean isExtensionOf(SystemInfoPacket pkt) {
-        return pkt.getAction() == SystemInfoPacket.ACTION_CREATE;
+        return pkt.getAction() == SystemInfoPacket.ACTION_CREATE;// || 
+//                (pkt.getTargetType() == ArtemisObject.TYPE_ENEMY &&
+//                pkt.getAction() != SystemInfoPacket.ACTION_UPDATE_SYSTEMS);
     }
 }

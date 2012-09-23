@@ -32,7 +32,7 @@ public class SysCreatePacket implements ArtemisPacket {
             // the length of the name in 2-byte chars WITH trailing null
             int objId = PacketParser.getLendInt(mData, 1);
             int nameLen = PacketParser.getNameLengthBytes(mData, 10);
-            String name = new String(mData, 14, nameLen);
+            String name = PacketParser.getNameString(mData, 14, nameLen);
             mCreatedObjs.add(new ArtemisEnemy(objId, name));
             break; }
         case ArtemisObject.TYPE_OTHER: {
@@ -42,7 +42,7 @@ public class SysCreatePacket implements ArtemisPacket {
                 try {
                     int objId = PacketParser.getLendInt(mData, offset+1);
                     nameLen = PacketParser.getNameLengthBytes(mData, offset+10);
-                    String name = new String(mData, offset+14, nameLen);
+                    String name = PacketParser.getNameString(mData, offset+14, nameLen);
                     mCreatedObjs.add(new ArtemisOtherShip(objId, name));
                     offset += 148 + 5; // fixed length + TYPE and ID
                 } catch (StringIndexOutOfBoundsException e) {
@@ -69,14 +69,16 @@ public class SysCreatePacket implements ArtemisPacket {
             int offset = 0;
             while (mData[offset] != 0x00) {
                 // this length does NOT include the obj TYPE and ID
+//                byte action = mData[offset+5];
                 int lenSubPacket = (0xff & mData[offset+6]);
-                if (lenSubPacket == 0x1f)
+//                if (lenSubPacket == 0x1f)
+                if (lenSubPacket != 0x3f)
                     lenSubPacket = 62; // seems to be the case...
                 
                 int objId = PacketParser.getLendInt(mData, offset+1);
                 int nameLen = PacketParser.getNameLengthBytes(mData, offset+7);
                 try {
-                    String name = new String(mData, offset+11, nameLen);
+                    String name = PacketParser.getNameString(mData, offset+11, nameLen);
                     mCreatedObjs.add(new ArtemisStation(objId, name));
                 } catch (StringIndexOutOfBoundsException e) {
                     debugPrint();

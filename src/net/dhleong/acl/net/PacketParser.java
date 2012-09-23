@@ -76,11 +76,6 @@ public class PacketParser {
         }        
     }
     
-    protected static int getNameLengthBytes(byte[] mData, int offset) {
-        final int nameLen = getLendInt(mData, offset);
-        return (nameLen-1) * 2;
-    }
-
     public static int getLendInt(byte[] bytes) {
         return getLendInt(bytes, 0);
     }
@@ -109,14 +104,44 @@ public class PacketParser {
     
     public static int getLendShort(byte[] bytes, int offset) {
         return ( 
-                (0xff & bytes[1]) << 8   |
-                (0xff & bytes[0]) << 0
+                (0xff & bytes[offset+1]) << 8   |
+                (0xff & bytes[offset]) << 0
                 );
     }
 
     public static float getLendFloat(byte[] bytes, int offset) {
         int bits = getLendInt(bytes, offset);
         return Float.intBitsToFloat(bits);
+    }
+
+    protected static int getNameLengthBytes(byte[] mData, int offset) {
+        // nameLen includes the "null" bytes, and is 
+        //  measured in 2-byte CHARs
+        final int nameLen = getLendInt(mData, offset);
+        return (nameLen-1) * 2;
+    }
+
+    /**
+     * Sometimes the nameLen in bytes includes some garbage text 
+     *  (probably a pre-allocated buffer on the server) and we don't
+     *  want that; this will look for a null byte and ensure that
+     *  we don't include anything after it (apparently Java doesn't
+     *  stop text at a null byte like C does)
+     *  
+     * @param bytes
+     * @param offset
+     * @param nameLenBytes
+     * @return
+     */
+    public static String getNameString(byte[] bytes, int offset, int nameLenBytes) {
+        int realNameLen = nameLenBytes;
+        for (int i=offset+nameLenBytes-2; i >= offset; i-=2) {
+            if (getLendShort(bytes, i) == 0) {
+                realNameLen = i-offset;
+                break;
+            }
+        }
+        return new String(bytes, offset, realNameLen);
     }
 
     public static void putLendInt(int value, byte[] bytes) {

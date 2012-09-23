@@ -165,6 +165,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
     public ThreadedArtemisNetworkInterface(final String tgtIp, final int tgtPort) 
             throws UnknownHostException, IOException {
         Socket skt = new Socket(tgtIp, tgtPort);
+        skt.setKeepAlive(true);
         
         mSendThread = new SenderThread(this, skt);
         mReceiveThread = new ReceiverThread(this, skt);

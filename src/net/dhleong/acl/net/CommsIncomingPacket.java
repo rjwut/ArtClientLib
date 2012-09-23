@@ -14,10 +14,11 @@ public class CommsIncomingPacket extends BaseArtemisPacket {
         
         mPriority = PacketParser.getLendInt(bucket);
         int nameLen = PacketParser.getNameLengthBytes(bucket, 4);
-        mFrom = new String(bucket, 8, nameLen);
+        mFrom = PacketParser.getNameString(bucket, 8, nameLen);
         // the extra +2 is for the 2-byte null char
         int msgLen = PacketParser.getNameLengthBytes(bucket, nameLen + 10);
-        mMessage = new String(bucket, nameLen + 14, msgLen).replace('^', '\n');
+        mMessage = PacketParser.getNameString(bucket, nameLen + 14, msgLen)
+                .replace('^', '\n');
     }
     
     public int getPriority() {

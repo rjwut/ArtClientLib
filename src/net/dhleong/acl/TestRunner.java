@@ -7,8 +7,6 @@ import java.net.UnknownHostException;
 
 import net.dhleong.acl.net.CommsIncomingPacket;
 import net.dhleong.acl.net.DestroyObjectPacket;
-import net.dhleong.acl.net.EngSetEnergyPacket;
-import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.EngSystemUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.net.SetStationPacket;
@@ -74,20 +72,23 @@ public class TestRunner {
                 if (pkt instanceof SystemInfoPacket) {
                     SystemInfoPacket sys = (SystemInfoPacket) pkt;
                     if (SysCreatePacket.isExtensionOf(sys)) {
-//                        SysCreatePacket create = new SysCreatePacket(sys);
-//                        create.debugPrint();
+                        SysCreatePacket create = new SysCreatePacket(sys);
+                        create.debugPrint();
+                        System.out.println("--> " + create);
                         return;
                     } else if (EngSystemUpdatePacket.isExtensionOf(sys)) {
-                        EngSystemUpdatePacket eng = new EngSystemUpdatePacket(sys);
-                        eng.debugPrint();
+//                        EngSystemUpdatePacket eng = new EngSystemUpdatePacket(sys);
+//                        eng.debugPrint();
                         return;
                     } else if (sys.getTargetType() == ArtemisObject.TYPE_PLAYER){
                         System.out.println("INFO << " + sys);
+                        return;
                     }
                 } else if (pkt instanceof CommsIncomingPacket) {
                     CommsIncomingPacket comms = (CommsIncomingPacket) pkt;
                     System.out.println("** From ``"+comms.getFrom()+"'': " + 
                             comms.getMessage());
+                    System.out.println("--> " + comms);
                     return;
                 } else if (pkt instanceof DestroyObjectPacket) {
                     DestroyObjectPacket destroy = (DestroyObjectPacket) pkt;
@@ -104,19 +105,23 @@ public class TestRunner {
         net.addOnPacketListener(mgr);
         net.start();
         
-        // ENG test 
+        /*
+//        // ENG test 
         net.send(new SetStationPacket(StationType.ENGINEERING, true));
 //        net.send(new EngSetEnergyPacket(SystemType.IMPULSE, 1f));
 //        net.send(new EngSetCoolantPacket(SystemType.IMPULSE, 0));
+        net.send(new EngSetEnergyPacket(SystemType.SENSORS, 1f));
+        net.send(new EngSetCoolantPacket(SystemType.SENSORS, 0));
+////        
+////        net.send(new EngSetEnergyPacket(SystemType.JUMP, 100));
+////        net.send(new EngSetCoolantPacket(SystemType.JUMP, 0));
 //        
-//        net.send(new EngSetEnergyPacket(SystemType.JUMP, 100));
-//        net.send(new EngSetCoolantPacket(SystemType.JUMP, 0));
-        
-        for (SystemType type : SystemType.values()) {
-            net.send(new EngSetEnergyPacket(type, 1f));
-            net.send(new EngSetCoolantPacket(type, 0));
-        }
-        
+//        for (SystemType type : SystemType.values()) {
+//            net.send(new EngSetEnergyPacket(type, 1f));
+//            net.send(new EngSetCoolantPacket(type, 0));
+//        }
+        */
+        net.send(new SetStationPacket(StationType.COMMS, true));
         
 
 //        net.stop();

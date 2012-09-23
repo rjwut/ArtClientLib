@@ -90,6 +90,12 @@ public class SysCreatePacket implements ArtemisPacket {
                     throw e;
                 }
                 offset += lenSubPacket + 5; // +5 for the TYPE and ID
+                
+                // for some reason, station packets are sometimes retarded
+                //  and have lots of 0 padding at the end.
+                while (offset+1 < mData.length && 
+                        mData[offset] != ArtemisObject.TYPE_STATION)
+                    offset++;
             }
             
 //            debugPrint();

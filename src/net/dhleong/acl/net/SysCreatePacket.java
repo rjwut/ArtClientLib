@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.dhleong.acl.ArtemisPacket;
+import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.world.ArtemisEnemy;
 import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisOtherShip;
@@ -26,7 +27,17 @@ public class SysCreatePacket implements ArtemisPacket {
             int objId = PacketParser.getLendInt(mData, 1);
             boolean redAlert = (mData.length >= 122 && mData[122] != 0);
             // TODO everything
-            mCreatedObjs.add(new ArtemisPlayer(objId, "Artemis", redAlert));
+            ArtemisPlayer player = new ArtemisPlayer(objId, "Artemis", redAlert);
+            int offset = 171; // begins system settings
+            for (SystemType sys : SystemType.values()) {
+                player.setSystemEnergy(sys, PacketParser.getLendFloat(mData, offset));
+                offset += 4;
+            }
+            for (SystemType sys : SystemType.values()) {
+                player.setSystemCoolant(sys, mData[offset++]);
+            }
+            
+            mCreatedObjs.add(player);
             break; }
         case ArtemisObject.TYPE_ENEMY: {
             // the length of the name in 2-byte chars WITH trailing null

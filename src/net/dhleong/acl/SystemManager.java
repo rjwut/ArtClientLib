@@ -1,5 +1,6 @@
 package net.dhleong.acl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -97,6 +98,20 @@ public class SystemManager implements OnPacketListener {
             }
         }
         return count;
+    }
+
+    /**
+     * If you don't want/need to reuse a List, this
+     *  will create a list for you
+     *  
+     * @param type
+     * @return
+     * @see #getObjects(List, int)
+     */
+    public List<ArtemisObject> getObjects(int type) {
+        List<ArtemisObject> objs = new ArrayList<ArtemisObject>();
+        getObjects(objs, type);
+        return objs;
     }
 
     public ArtemisObject getObject(int objId) {

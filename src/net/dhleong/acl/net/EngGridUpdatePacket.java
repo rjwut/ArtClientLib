@@ -50,4 +50,8 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
             System.out.println("--> @ " + d.coord + ": " + d.damage);
         }
     }
+
+    public List<GridDamage> getDamage() {
+        return mDamage;
+    }
 }

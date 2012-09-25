@@ -3,7 +3,12 @@ package net.dhleong.acl.util;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.PacketParser;
@@ -40,7 +45,7 @@ public class ShipSystemGrid {
         while (bis.read(row) > -1) {
             float newX = PacketParser.getLendFloat(row, 0);
             float newY = PacketParser.getLendFloat(row, 4);
-            
+
             // update coords
             if (newX != xVal) {
                 x++;
@@ -52,6 +57,10 @@ public class ShipSystemGrid {
             } else {
                 z++;
             }
+
+            // flip over
+            xVal = newX;
+            yVal = newY;
             
             int system = PacketParser.getLendInt(row, 12);
             if (system >= 0) {
@@ -75,5 +84,22 @@ public class ShipSystemGrid {
     
     public SystemType getSystemTypeAt(GridCoord coord) {
         return mSystems.get(coord);
+    }
+
+    /**
+     * Get the set of GridCoords contained on this grid
+     * @return
+     */
+    public Set<GridCoord> getCoords() {
+        return mSystems.keySet();
+    }
+    
+    public Collection<GridCoord> getCoordsFor(SystemType sys) {
+        List<GridCoord> coords = new ArrayList<GridCoord>(); 
+        for (Entry<GridCoord, SystemType> e : mSystems.entrySet()) {
+            if (e.getValue() == sys)
+                coords.add(e.getKey());
+        }
+        return coords;
     }
 }

@@ -5,10 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.dhleong.acl.net.DestroyObjectPacket;
+import net.dhleong.acl.net.EngGridUpdatePacket;
+import net.dhleong.acl.net.EngGridUpdatePacket.GridDamage;
+import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.EngSystemUpdatePacket;
 import net.dhleong.acl.net.EngSystemUpdatePacket.BoolState;
 import net.dhleong.acl.net.SysCreatePacket;
 import net.dhleong.acl.net.SystemInfoPacket;
+import net.dhleong.acl.util.GridCoord;
+import net.dhleong.acl.util.ShipSystemGrid;
 import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisPlayer;
 
@@ -33,6 +38,9 @@ public class SystemManager implements OnPacketListener {
             new HashMap<Integer, ArtemisObject>();
     private OnObjectCountChangeListener mListener = sDummyListener;
 
+    private HashMap<GridCoord, Float> mGridDamage;
+    private ShipSystemGrid mGrid;
+
     @Override
     public void onPacket(ArtemisPacket pkt) {
         if (pkt instanceof DestroyObjectPacket) {
@@ -52,6 +60,14 @@ public class SystemManager implements OnPacketListener {
 
             mListener.onObjectCountChanged(mObjects.size());
             return;
+        } else if (pkt instanceof EngGridUpdatePacket) {
+            EngGridUpdatePacket gridUp = (EngGridUpdatePacket) pkt;
+            List<GridDamage> damages = gridUp.getDamage();
+            if (damages.size() > 0) {
+                for (GridDamage d : damages) {
+                    mGridDamage.put(d.coord, d.damage);
+                }
+            }
         }
         
         // from here, we only care about this kind
@@ -119,6 +135,23 @@ public class SystemManager implements OnPacketListener {
     }
     
     /**
+     * Get the overall health of the given system
+     * @param sys
+     * @return A float [0, 1] indicating percentage health
+     */
+    public float getHealthOfSystem(SystemType sys) {
+        if (mGrid == null)
+            throw new IllegalStateException("SystemManager must have a ShipSystemGrid");
+        
+        final float total = mGrid.getSystemCount(sys);
+        float current = total;
+        for (GridCoord c : mGrid.getCoordsFor(sys))
+            current -= mGridDamage.get(c);
+        
+        return current / total;
+    }
+    
+    /**
      * Get the first object with the given name
      * @param type
      * @return
@@ -134,5 +167,20 @@ public class SystemManager implements OnPacketListener {
     
     public void setOnObjectCountChangedListener(OnObjectCountChangeListener listener) {
         mListener = (listener == null) ? sDummyListener : listener;
+    }
+
+    /**
+     * Set the current ship's (fully loaded) grid
+     * 
+     * @param grid
+     */
+    public void setSystemGrid(ShipSystemGrid grid) {
+        mGridDamage = new HashMap<GridCoord, Float>();
+        mGrid = grid;
+        
+        // fill some default values
+        for (GridCoord c : grid.getCoords()) {
+            mGridDamage.put(c, 0f); // default
+        }
     }
 }

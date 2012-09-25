@@ -1,6 +1,8 @@
 package net.dhleong.acl;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.net.UnknownHostException;
@@ -15,6 +17,8 @@ import net.dhleong.acl.net.SetStationPacket;
 import net.dhleong.acl.net.SetStationPacket.StationType;
 import net.dhleong.acl.net.SysCreatePacket;
 import net.dhleong.acl.net.SystemInfoPacket;
+import net.dhleong.acl.util.GridCoord;
+import net.dhleong.acl.util.ShipSystemGrid;
 import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisPlayer;
 
@@ -33,6 +37,19 @@ public class TestRunner {
         PacketParser.putLendInt(value, bytes);
         if (value != PacketParser.getLendInt(bytes))
             throw new Exception("putLendInt fails; got" + PacketParser.getLendInt(bytes));
+        
+        // test grid; also used with testing system damage later
+        String sntFile = "/Users/dhleong/Documents/workspace/" +
+                "ArtemisClient/res/raw/artemis";
+        System.out.println("- Reading grid: " + sntFile);
+        InputStream is = new FileInputStream(sntFile);
+        final ShipSystemGrid grid = new ShipSystemGrid(is);
+        for (SystemType type : SystemType.values()) {
+            System.out.println("--+ " + type +": " + grid.getSystemCount(type));
+            for (GridCoord c : grid.getCoordsFor(type))
+                System.out.println("--+--+" + c);
+        }
+        
         
         PipedInputStream in = new PipedInputStream(100);
         PipedOutputStream out = new PipedOutputStream(in);
@@ -57,9 +74,11 @@ public class TestRunner {
             e.printStackTrace();
             return;
         }
-        
 
         final SystemManager mgr = new SystemManager();
+        mgr.setSystemGrid(grid);
+        
+        net.addOnPacketListener(mgr);
         
         net.addOnPacketListener(new OnPacketListener() {
             
@@ -112,6 +131,11 @@ public class TestRunner {
                     EngGridUpdatePacket dmg = (EngGridUpdatePacket) pkt;
                     System.out.println("** GRID UPDATE: ");
                     dmg.debugPrint();
+                    System.out.println("Overall healths: ");
+                    for (SystemType sys : SystemType.values()) {
+                        System.out.println("- " + sys + ": " + 
+                                mgr.getHealthOfSystem(sys));
+                    }
                     return;
                 }
 
@@ -120,7 +144,6 @@ public class TestRunner {
             }
         });
         
-        net.addOnPacketListener(mgr);
         net.start();
         
         

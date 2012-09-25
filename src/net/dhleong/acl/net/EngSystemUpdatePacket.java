@@ -55,7 +55,8 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
         }
     }
     private static final long RED_ALERT     = 0x0000000000020000L;
-    private static final long NO_ENERGY     = 0x0000000000000010L;
+//    private static final long NO_ENERGY     = 0x0000000000000010L;
+    private static final long NO_ENERGY     = 0x0000000000000001L;
     
     private static final long HEAT_BEAMS = 0x0000000002000000L;
     private static final long HEAT_TORPS = 0x0000000004000000L;
@@ -63,8 +64,8 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
     private static final long HEAT_MANEU = 0x0000000010000000L;
     private static final long HEAT_IMPLS = 0x0000000020000000L;
     private static final long HEAT_JUMPS = 0x0000000040000000L;
-    private static final long HEAT_SREAR = 0x0000000080000000L;
-    private static final long HEAT_SFRNT = 0x0000000100000000L;
+    private static final long HEAT_SFRNT = 0x0000000080000000L;
+    private static final long HEAT_SREAR = 0x0000000100000000L;
     
     private static final long DAMG_BEAMS = 0x0000000200000000L;
     private static final long DAMG_TORPS = 0x0000000400000000L;
@@ -72,19 +73,19 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
     private static final long DAMG_MANEU = 0x0000001000000000L;
     private static final long DAMG_IMPLS = 0x0000002000000000L;
     private static final long DAMG_JUMPS = 0x0000004000000000L;
-    private static final long DAMG_SREAR = 0x0000008000000000L;
-    private static final long DAMG_SFRNT = 0x0000010000000000L;
+    private static final long DAMG_SFRNT = 0x0000008000000000L;
+    private static final long DAMG_SREAR = 0x0000010000000000L;
 
     private static final long[] SYSTEMS_HEAT = {
         HEAT_BEAMS, HEAT_TORPS, HEAT_SENSR,
         HEAT_MANEU, HEAT_IMPLS, HEAT_JUMPS,
-        HEAT_SREAR, HEAT_SFRNT
+        HEAT_SFRNT, HEAT_SREAR
     };
     
     private static final long[] SYSTEMS_DAMG = {
         DAMG_BEAMS, DAMG_TORPS, DAMG_SENSR,
         DAMG_MANEU, DAMG_IMPLS, DAMG_JUMPS,
-        DAMG_SREAR, DAMG_SFRNT
+        DAMG_SFRNT, DAMG_SREAR
     };
     
     private final byte[] mData;

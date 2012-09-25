@@ -9,11 +9,10 @@ import java.net.UnknownHostException;
 
 import net.dhleong.acl.net.CommsIncomingPacket;
 import net.dhleong.acl.net.DestroyObjectPacket;
-import net.dhleong.acl.net.EndGamePacket;
 import net.dhleong.acl.net.EngGridUpdatePacket;
-import net.dhleong.acl.net.EngSetEnergyPacket;
 import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.EngSystemUpdatePacket;
+import net.dhleong.acl.net.GameMessagePacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.net.SetStationPacket;
 import net.dhleong.acl.net.SetStationPacket.StationType;
@@ -114,8 +113,8 @@ public class TestRunner {
                         System.out.println("--> " + create);
                         return;
                     } else if (EngSystemUpdatePacket.isExtensionOf(sys)) {
-                        EngSystemUpdatePacket eng = new EngSystemUpdatePacket(sys);
-                        eng.debugPrint();
+//                        EngSystemUpdatePacket eng = new EngSystemUpdatePacket(sys);
+//                        eng.debugPrint();
                         return;
                     } else if (sys.getTargetType() == ArtemisObject.TYPE_PLAYER){
                         System.out.println("INFO << " + sys);
@@ -142,13 +141,23 @@ public class TestRunner {
                                 mgr.getHealthOfSystem(sys));
                     }
                     return;
-                } else if (pkt instanceof EndGamePacket) {
-                    System.out.println("*** GAME OVER!!! ***");
+                } else if (pkt instanceof GameMessagePacket) {
+                    GameMessagePacket msg = (GameMessagePacket) pkt;
+                    if (msg.isGameOver())
+                        System.out.println("*** GAME OVER!!! ***");
+                    else if (msg.hasMessage()){
+                        System.out.println("\nvvv MESSAGE vvv");
+                        System.out.println(msg.getMessage());
+                        System.out.println("^^^ MESSAGE ^^^\n");
+                    } else {
+                        System.out.println("!!! Unknown msg type...");
+                    }
+                    System.out.println("--> " + pkt);
                     return;
                 }
 
                  // default
-//                System.out.println("<< " + pkt);
+                System.out.println("<< " + pkt);
             }
         });
         
@@ -158,8 +167,8 @@ public class TestRunner {
 //        // ENG test 
         net.send(new SetStationPacket(StationType.ENGINEERING, true));
         
-        net.send(new EngSetEnergyPacket(SystemType.IMPULSE, .5f));
-        net.send(new EngSetCoolantPacket(SystemType.IMPULSE, 0));
+//        net.send(new EngSetEnergyPacket(SystemType.IMPULSE, .5f));
+//        net.send(new EngSetCoolantPacket(SystemType.IMPULSE, 0));
         /*
         net.send(new EngSetEnergyPacket(SystemType.SENSORS, 0f));
         net.send(new EngSetCoolantPacket(SystemType.SENSORS, 1));

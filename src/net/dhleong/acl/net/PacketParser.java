@@ -71,8 +71,8 @@ public class PacketParser {
         case DestroyObjectPacket.TYPE:
             return new DestroyObjectPacket(flags, bucket);
             
-        case EndGamePacket.TYPE:
-            return new EndGamePacket(flags, bucket);
+        case GameMessagePacket.TYPE:
+            return new GameMessagePacket(flags, bucket);
         
         default:
             return new BaseArtemisPacket(mode, flags, packetType, bucket);

@@ -62,9 +62,6 @@ public class PacketParser {
             // TODO we could directly return subtypes
             return new SystemInfoPacket(flags, bucket);
             
-//        case ShipDamagePacket.TYPE:
-//            return new ShipDamagePacket(flags);
-            
         case EngGridUpdatePacket.TYPE:
             return new EngGridUpdatePacket(flags, bucket);
             
@@ -73,6 +70,9 @@ public class PacketParser {
             
         case DestroyObjectPacket.TYPE:
             return new DestroyObjectPacket(flags, bucket);
+            
+        case EndGamePacket.TYPE:
+            return new EndGamePacket(flags, bucket);
         
         default:
             return new BaseArtemisPacket(mode, flags, packetType, bucket);

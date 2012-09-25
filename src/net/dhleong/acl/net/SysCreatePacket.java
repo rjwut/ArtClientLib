@@ -40,6 +40,11 @@ public class SysCreatePacket implements ArtemisPacket {
             ArtemisPlayer player = new ArtemisPlayer(objId, name, hullId, redAlert);
             
             // extract more info
+            player.setFrontShields(PacketParser.getLendFloat(mData, nameEnd));
+            player.setFrontShieldsMax(PacketParser.getLendFloat(mData, nameEnd+4));
+            player.setRearShields(PacketParser.getLendFloat(mData, nameEnd+8));
+            player.setRearShieldsMax(PacketParser.getLendFloat(mData, nameEnd+16));
+            
             offset = nameEnd + 69; // begins system settings
             for (SystemType sys : SystemType.values()) {
                 player.setSystemEnergy(sys, PacketParser.getLendFloat(mData, offset));

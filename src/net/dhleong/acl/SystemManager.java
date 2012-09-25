@@ -95,6 +95,18 @@ public class SystemManager implements OnPacketListener {
                 if (p != null)
                     p.setRedAlert(eng.getRedAlert().getBooleanValue());
             }
+            
+            if (eng.hasShields() && info.getTargetType() == ArtemisObject.TYPE_PLAYER) {
+                ArtemisPlayer p = (ArtemisPlayer) mObjects.get(info.getTarget());
+                if (eng.mShieldsFront > -1)
+                    p.setFrontShields(eng.mShieldsFront);
+                if (eng.mShieldsMaxFront > -1)
+                    p.setFrontShieldsMax(eng.mShieldsMaxFront);
+                if (eng.mShieldsRear > -1)
+                    p.setRearShields(eng.mShieldsRear);
+                if (eng.mShieldsMaxRear > -1)
+                    p.setRearShieldsMax(eng.mShieldsMaxRear);
+            }
         }
     }
 

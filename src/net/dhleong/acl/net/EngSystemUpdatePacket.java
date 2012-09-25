@@ -103,6 +103,8 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
     
     public final float mShieldsFront, mShieldsMaxFront;
     public final float mShieldsRear, mShieldsMaxRear;
+    
+    private boolean mHasShields = false;
 
     public EngSystemUpdatePacket(final SystemInfoPacket pkt) {
 //        mData = new byte[32];
@@ -131,24 +133,28 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
         if ((args & SHIELD_STATE_FRONT) != 0) {
             mShieldsFront = PacketParser.getLendFloat(pkt.mData, offset);
             offset += 4;
+            mHasShields = true;
         } else {
             mShieldsFront = -1;
         }
         if ((args & SHIELD_MAX_FRONT) != 0) {
             mShieldsMaxFront = PacketParser.getLendFloat(pkt.mData, offset);
             offset += 4;
+            mHasShields = true;
         } else {
             mShieldsMaxFront = -1;
         }
         if ((args & SHIELD_STATE_REAR) != 0) {
             mShieldsRear = PacketParser.getLendFloat(pkt.mData, offset);
             offset += 4;
+            mHasShields = true;
         } else {
             mShieldsRear = -1;
         }
         if ((args & SHIELD_MAX_REAR) != 0) {
             mShieldsMaxRear = PacketParser.getLendFloat(pkt.mData, offset);
             offset += 4;
+            mHasShields = true;
         } else {
             mShieldsMaxRear = -1;
         }
@@ -255,5 +261,9 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
         return pkt.getTargetType() == ArtemisObject.TYPE_PLAYER && 
                 (pkt.getAction() == SystemInfoPacket.ACTION_UPDATE_SYSTEMS
                     || pkt.getAction() == SystemInfoPacket.ACTION_UPDATE_SYSTEMS_2);
+    }
+
+    public boolean hasShields() {
+        return mHasShields;
     }
 }

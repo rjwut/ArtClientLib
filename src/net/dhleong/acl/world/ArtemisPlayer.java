@@ -11,6 +11,9 @@ public class ArtemisPlayer extends BaseArtemisObject {
     private final HashMap<SystemType, Float> mSystems = new HashMap<SystemType, Float>();
     private final HashMap<SystemType, Integer> mCoolant = new HashMap<SystemType, Integer>();
     private final int mHullId;
+    
+    public float mShieldsFront, mShieldsMaxFront;
+    public float mShieldsRear, mShieldsMaxRear;
 
     public ArtemisPlayer(int objId, String name, int hullId, boolean redAlert) {
         super(objId, name);
@@ -21,6 +24,19 @@ public class ArtemisPlayer extends BaseArtemisObject {
     
     public int getHullId() {
         return mHullId;
+    }
+    
+    public float getFrontShields() {
+        return mShieldsFront;
+    }
+    public float getFrontShieldsMax() {
+        return mShieldsMaxFront;
+    }
+    public float getRearShields() {
+        return mShieldsRear;
+    }
+    public float getRearShieldsMax() {
+        return mShieldsMaxRear;
     }
     
     /**
@@ -73,5 +89,18 @@ public class ArtemisPlayer extends BaseArtemisObject {
 
     public void setSystemEnergy(SystemType sys, float energy) {
         mSystems.put(sys, energy);
+    }
+
+    public void setFrontShields(float value) {
+        mShieldsFront = value;
+    }
+    public void setFrontShieldsMax(float value) {
+        mShieldsMaxFront = value;
+    }
+    public void setRearShields(float value) {
+        mShieldsRear = value;
+    }
+    public void setRearShieldsMax(float value) {
+        mShieldsMaxRear = value;
     }
 }

@@ -55,8 +55,8 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
         }
     }
     private static final long RED_ALERT     = 0x0000000000020000L;
-//    private static final long NO_ENERGY     = 0x0000000000000010L;
     private static final long NO_ENERGY     = 0x0000000000000001L;
+    private static final long DUNNO_SKIP    = 0x0000000000000010L;
     
     private static final long HEAT_BEAMS = 0x0000000002000000L;
     private static final long HEAT_TORPS = 0x0000000004000000L;
@@ -113,6 +113,10 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
             mShipEnergy = -1; // not provided
             offset = 16;
         }
+        
+        // dunno...
+        if ((args & DUNNO_SKIP) != 0)
+            offset += 4;
 
         
         final int end = mData.length-4;

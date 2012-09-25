@@ -63,7 +63,7 @@ public class SystemManager implements OnPacketListener {
         } else if (pkt instanceof EngGridUpdatePacket) {
             EngGridUpdatePacket gridUp = (EngGridUpdatePacket) pkt;
             List<GridDamage> damages = gridUp.getDamage();
-            if (damages.size() > 0) {
+            if (damages.size() > 0 && mGridDamage != null) {
                 for (GridDamage d : damages) {
                     mGridDamage.put(d.coord, d.damage);
                 }
@@ -182,5 +182,9 @@ public class SystemManager implements OnPacketListener {
         for (GridCoord c : grid.getCoords()) {
             mGridDamage.put(c, 0f); // default
         }
+    }
+
+    public void clear() {
+        mObjects.clear();
     }
 }

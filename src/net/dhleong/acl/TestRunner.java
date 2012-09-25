@@ -18,7 +18,6 @@ import net.dhleong.acl.net.SetStationPacket;
 import net.dhleong.acl.net.SetStationPacket.StationType;
 import net.dhleong.acl.net.SysCreatePacket;
 import net.dhleong.acl.net.SystemInfoPacket;
-import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ShipSystemGrid;
 import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisPlayer;
@@ -45,11 +44,11 @@ public class TestRunner {
         System.out.println("- Reading grid: " + sntFile);
         InputStream is = new FileInputStream(sntFile);
         final ShipSystemGrid grid = new ShipSystemGrid(is);
-        for (SystemType type : SystemType.values()) {
-            System.out.println("--+ " + type +": " + grid.getSystemCount(type));
-            for (GridCoord c : grid.getCoordsFor(type))
-                System.out.println("--+--+" + c);
-        }
+//        for (SystemType type : SystemType.values()) {
+//            System.out.println("--+ " + type +": " + grid.getSystemCount(type));
+//            for (GridCoord c : grid.getCoordsFor(type))
+//                System.out.println("--+--+" + c);
+//        }
         
 //        // testing LRU
 //        GridCoord.getInstance(3, 2, 7);

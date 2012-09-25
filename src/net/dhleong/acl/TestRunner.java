@@ -11,6 +11,7 @@ import net.dhleong.acl.net.CommsIncomingPacket;
 import net.dhleong.acl.net.DestroyObjectPacket;
 import net.dhleong.acl.net.EndGamePacket;
 import net.dhleong.acl.net.EngGridUpdatePacket;
+import net.dhleong.acl.net.EngSetEnergyPacket;
 import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.EngSystemUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
@@ -147,7 +148,7 @@ public class TestRunner {
                 }
 
                  // default
-                System.out.println("<< " + pkt);
+//                System.out.println("<< " + pkt);
             }
         });
         
@@ -157,8 +158,8 @@ public class TestRunner {
 //        // ENG test 
         net.send(new SetStationPacket(StationType.ENGINEERING, true));
         
-//        net.send(new EngSetEnergyPacket(SystemType.IMPULSE, 1f));
-//        net.send(new EngSetCoolantPacket(SystemType.IMPULSE, 0));
+        net.send(new EngSetEnergyPacket(SystemType.IMPULSE, .5f));
+        net.send(new EngSetCoolantPacket(SystemType.IMPULSE, 0));
         /*
         net.send(new EngSetEnergyPacket(SystemType.SENSORS, 0f));
         net.send(new EngSetCoolantPacket(SystemType.SENSORS, 1));

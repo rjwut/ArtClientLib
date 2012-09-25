@@ -56,7 +56,10 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
     }
     private static final long RED_ALERT     = 0x0000000000020000L;
     private static final long NO_ENERGY     = 0x0000000000000001L;
-    private static final long DUNNO_SKIP    = 0x0000000000000010L;
+    private static final long DUNNO_SKIP_1  = 0x0000000000000002L;
+    private static final long DUNNO_SKIP_2  = 0x0000000000000004L;
+    private static final long DUNNO_SKIP_3  = 0x0000000000000008L;
+    private static final long DUNNO_SKIP_4  = 0x0000000000000010L;
     
     private static final long SHIELD_STATE_FRONT= 0x0000000000001000;
     private static final long SHIELD_MAX_FRONT  = 0x0000000000002000;
@@ -126,7 +129,13 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
         }
         
         // dunno...
-        if ((args & DUNNO_SKIP) != 0)
+        if ((args & DUNNO_SKIP_1) != 0)
+            offset += 4;
+        if ((args & DUNNO_SKIP_2) != 0)
+            offset += 4;
+        if ((args & DUNNO_SKIP_3) != 0)
+            offset += 4;
+        if ((args & DUNNO_SKIP_4) != 0)
             offset += 4;
 
         // shields

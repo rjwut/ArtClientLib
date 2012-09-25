@@ -43,7 +43,7 @@ public class SysCreatePacket implements ArtemisPacket {
             player.setFrontShields(PacketParser.getLendFloat(mData, nameEnd));
             player.setFrontShieldsMax(PacketParser.getLendFloat(mData, nameEnd+4));
             player.setRearShields(PacketParser.getLendFloat(mData, nameEnd+8));
-            player.setRearShieldsMax(PacketParser.getLendFloat(mData, nameEnd+16));
+            player.setRearShieldsMax(PacketParser.getLendFloat(mData, nameEnd+12));
             
             offset = nameEnd + 69; // begins system settings
             for (SystemType sys : SystemType.values()) {

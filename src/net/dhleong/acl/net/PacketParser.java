@@ -65,6 +65,9 @@ public class PacketParser {
 //        case ShipDamagePacket.TYPE:
 //            return new ShipDamagePacket(flags);
             
+        case EngGridUpdatePacket.TYPE:
+            return new EngGridUpdatePacket(flags, bucket);
+            
         case CommsIncomingPacket.TYPE:
             return new CommsIncomingPacket(flags, bucket);
             

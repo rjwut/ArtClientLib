@@ -18,8 +18,7 @@ public final class GridCoord {
     }
     
     @Override
-    public boolean equals(Object other)
-    {
+    public boolean equals(Object other) {
         if (this == other) 
             return true;
         if (other == null || !(other instanceof GridCoord)) 
@@ -33,11 +32,15 @@ public final class GridCoord {
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int result = (x ^ (x >>> 32));
         result = 31 * result + (y ^ (y >>> 32));
         result = 31 * result + (z ^ (z >>> 32));
         return result;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("[%d,%d,%d]", x, y, z);
     }
 }

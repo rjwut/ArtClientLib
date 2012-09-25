@@ -7,6 +7,7 @@ import java.net.UnknownHostException;
 
 import net.dhleong.acl.net.CommsIncomingPacket;
 import net.dhleong.acl.net.DestroyObjectPacket;
+import net.dhleong.acl.net.EngGridUpdatePacket;
 import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.EngSystemUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
@@ -89,8 +90,8 @@ public class TestRunner {
                         System.out.println("--> " + create);
                         return;
                     } else if (EngSystemUpdatePacket.isExtensionOf(sys)) {
-                        EngSystemUpdatePacket eng = new EngSystemUpdatePacket(sys);
-                        eng.debugPrint();
+//                        EngSystemUpdatePacket eng = new EngSystemUpdatePacket(sys);
+//                        eng.debugPrint();
                         return;
                     } else if (sys.getTargetType() == ArtemisObject.TYPE_PLAYER){
                         System.out.println("INFO << " + sys);
@@ -106,6 +107,11 @@ public class TestRunner {
                     DestroyObjectPacket destroy = (DestroyObjectPacket) pkt;
                     System.out.println("** DESTROYED: " + 
                             mgr.getObject(destroy.getTarget()));
+                    return;
+                } else if (pkt instanceof EngGridUpdatePacket) {
+                    EngGridUpdatePacket dmg = (EngGridUpdatePacket) pkt;
+                    System.out.println("** GRID UPDATE: ");
+                    dmg.debugPrint();
                     return;
                 }
 

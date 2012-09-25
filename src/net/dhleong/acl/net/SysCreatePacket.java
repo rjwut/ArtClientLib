@@ -28,6 +28,11 @@ public class SysCreatePacket implements ArtemisPacket {
             final int hullId = PacketParser.getLendInt(mData, 48);
             int offset = 82;
             int nameLen = PacketParser.getNameLengthBytes(mData, offset);
+            if (nameLen > 1000) {
+                debugPrint();
+                System.out.println("DEBUG: Packet = " + this);
+                throw new IllegalStateException("Parsed a name of " + nameLen + " bytes");
+            }
             String name = PacketParser.getNameString(mData, offset+4, nameLen);
             offset += 6 + nameLen; // extra +2 for the null bytes
             final int nameEnd = offset;

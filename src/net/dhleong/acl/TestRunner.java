@@ -51,6 +51,10 @@ public class TestRunner {
                 System.out.println("--+--+" + c);
         }
         
+//        // testing LRU
+//        GridCoord.getInstance(3, 2, 7);
+//        GridCoord.getInstance(99, 99, 99);
+        
         
         PipedInputStream in = new PipedInputStream(100);
         PipedOutputStream out = new PipedOutputStream(in);

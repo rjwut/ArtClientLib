@@ -1,5 +1,9 @@
 package net.dhleong.acl.util;
 
+import java.util.ArrayDeque;
+import java.util.Iterator;
+import java.util.Queue;
+
 /**
  * A 3d grid coordinate, for referencing
  *  internal systems on the Player's ship
@@ -9,16 +13,22 @@ package net.dhleong.acl.util;
  */
 public final class GridCoord {
     
+    private static final int CACHE_SIZE = 50;
+    
+    private static final boolean DEBUG = false;
+    
+    private static final Queue<GridCoord> sCache = new ArrayDeque<GridCoord>(CACHE_SIZE);
+    
     public final int x, y, z;
 
-    public GridCoord(int x, int y, int z) {
+    private GridCoord(int x, int y, int z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
     
     @Override
-    public boolean equals(Object other) {
+    public final boolean equals(Object other) {
         if (this == other) 
             return true;
         if (other == null || !(other instanceof GridCoord)) 
@@ -26,9 +36,13 @@ public final class GridCoord {
 
         GridCoord cast = (GridCoord) other;
 
-        return (x == cast.x 
-                && y == cast.y 
-                && z == cast.z);
+        return equals(cast.x, cast.y, cast.z);
+    }
+    
+    public final boolean equals(int x, int y, int z) {
+        return (x == this.x 
+                && y == this.y 
+                && z == this.z);
     }
 
     @Override
@@ -42,5 +56,44 @@ public final class GridCoord {
     @Override
     public String toString() {
         return String.format("[%d,%d,%d]", x, y, z);
+    }
+    
+    /**
+     * This factory method uses a very simple LRU queue
+     *  to maintain a cache of GridCoords, since we will
+     *  probably reuse just a handful but fairly often.
+     *  This should keep our memory footprint to a minimum.
+     * 
+     * @param x
+     * @param y
+     * @param z
+     * @return
+     */
+    public static final GridCoord getInstance(int x, int y, int z) {
+        Iterator<GridCoord> iter = sCache.iterator();
+        while (iter.hasNext()) {
+            GridCoord c = iter.next();
+            if (c.equals(x, y, z)) {
+                synchronized(sCache) {
+                    iter.remove(); // pop out so we can move it to the head
+                    sCache.offer(c);
+                }
+                if (DEBUG) System.out.println("~~ Move to head: " + c);
+                return c;
+            }
+        }
+        
+        GridCoord c = new GridCoord(x, y, z);
+        
+        // put it in the queue, if there's room. 
+        int size = sCache.size();
+        if (size >= CACHE_SIZE) {
+            GridCoord old = sCache.poll(); // free up space
+            if (DEBUG) System.out.println("~~ Removed: " + old + " for " + c);
+        }
+        
+        sCache.offer(c);
+        
+        return c;
     }
 }

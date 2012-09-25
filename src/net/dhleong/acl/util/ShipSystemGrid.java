@@ -64,7 +64,8 @@ public class ShipSystemGrid {
             
             int system = PacketParser.getLendInt(row, 12);
             if (system >= 0) {
-                mSystems.put(new GridCoord(x, y, z), SystemType.values()[system]);
+                mSystems.put(GridCoord.getInstance(x, y, z), 
+                        SystemType.values()[system]);
                 mSystemCounts[system]++;
             }
         }

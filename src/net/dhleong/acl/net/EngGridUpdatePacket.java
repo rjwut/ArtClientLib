@@ -27,7 +27,7 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
         int offset = 1;
         while (offset < bucket.length && bucket[offset] >= 0) {
                 try {
-                GridCoord coord = new GridCoord(
+                GridCoord coord = GridCoord.getInstance(
                         bucket[offset], 
                         bucket[offset+1], 
                         bucket[offset+2]);

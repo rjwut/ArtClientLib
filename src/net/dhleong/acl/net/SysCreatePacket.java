@@ -25,13 +25,14 @@ public class SysCreatePacket implements ArtemisPacket {
         switch (pkt.getTargetType()) {
         case ArtemisObject.TYPE_PLAYER: {
             int objId = PacketParser.getLendInt(mData, 1);
+            final int hullId = PacketParser.getLendInt(mData, 48);
             int offset = 82;
             int nameLen = PacketParser.getNameLengthBytes(mData, offset);
             String name = PacketParser.getNameString(mData, offset+4, nameLen);
             offset += 6 + nameLen; // extra +2 for the null bytes
             final int nameEnd = offset;
             boolean redAlert = (mData[nameEnd + 20] != 0);
-            ArtemisPlayer player = new ArtemisPlayer(objId, name, redAlert);
+            ArtemisPlayer player = new ArtemisPlayer(objId, name, hullId, redAlert);
             
             // extract more info
             offset = nameEnd + 69; // begins system settings

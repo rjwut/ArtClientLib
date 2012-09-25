@@ -117,9 +117,10 @@ public class TestRunner {
         net.addOnPacketListener(mgr);
         net.start();
         
-        /*
+        
 //        // ENG test 
         net.send(new SetStationPacket(StationType.ENGINEERING, true));
+        /*
         net.send(new EngSetEnergyPacket(SystemType.IMPULSE, 0f));
         net.send(new EngSetCoolantPacket(SystemType.IMPULSE, 2));
         net.send(new EngSetEnergyPacket(SystemType.SENSORS, 0f));
@@ -135,7 +136,7 @@ public class TestRunner {
 //        }
         */
         
-        net.send(new SetStationPacket(StationType.SCIENCE, true));
+//        net.send(new SetStationPacket(StationType.SCIENCE, true));
         
 
 //        net.stop();

@@ -10,11 +10,17 @@ public class ArtemisPlayer extends BaseArtemisObject {
     private boolean mRedAlert;
     private final HashMap<SystemType, Float> mSystems = new HashMap<SystemType, Float>();
     private final HashMap<SystemType, Integer> mCoolant = new HashMap<SystemType, Integer>();
+    private final int mHullId;
 
-    public ArtemisPlayer(int objId, String name, boolean redAlert) {
+    public ArtemisPlayer(int objId, String name, int hullId, boolean redAlert) {
         super(objId, name);
         
+        mHullId = hullId;
         mRedAlert = redAlert;
+    }
+    
+    public int getHullId() {
+        return mHullId;
     }
     
     /**
@@ -51,7 +57,10 @@ public class ArtemisPlayer extends BaseArtemisObject {
 
     @Override
     public String toString() {
-        return String.format("[PLAYER:%s:%b]", mName, mRedAlert);
+        return String.format("[PLAYER:%s:%d:%c]", 
+                mName,
+                mHullId,
+                mRedAlert ? 'R' : '_');
     }
 
     public void setRedAlert(boolean newState) {

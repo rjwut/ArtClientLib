@@ -2,6 +2,7 @@ package net.dhleong.acl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import net.dhleong.acl.net.DestroyObjectPacket;
@@ -10,19 +11,21 @@ import net.dhleong.acl.net.EngGridUpdatePacket.GridDamage;
 import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.EngSystemUpdatePacket;
 import net.dhleong.acl.net.EngSystemUpdatePacket.BoolState;
+import net.dhleong.acl.net.ObjUpdatePacket;
 import net.dhleong.acl.net.SysCreatePacket;
 import net.dhleong.acl.net.SystemInfoPacket;
 import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ShipSystemGrid;
 import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisPlayer;
+import net.dhleong.acl.world.BaseArtemisShip;
 
 /**
  * 
  * @author dhleong
  *
  */
-public class SystemManager implements OnPacketListener {
+public class SystemManager implements OnPacketListener, Iterable<ArtemisObject> {
     
     public interface OnObjectCountChangeListener {
         void onObjectCountChanged(int count);
@@ -97,15 +100,15 @@ public class SystemManager implements OnPacketListener {
         } else if (EngSystemUpdatePacket.isExtensionOf(info)) {
             EngSystemUpdatePacket eng = new EngSystemUpdatePacket(info);
             
-            if (eng.getRedAlert() != BoolState.UNKNOWN) {
-                ArtemisPlayer p = (ArtemisPlayer) mObjects.get(info.getTarget());
-                if (p != null)
+            ArtemisPlayer p = (ArtemisPlayer) mObjects.get(info.getTarget());
+            if (p != null) {
+                
+                if (eng.getRedAlert() != BoolState.UNKNOWN) {
                     p.setRedAlert(eng.getRedAlert().getBooleanValue());
-            }
-            
-            if (eng.hasShields() && info.getTargetType() == ArtemisObject.TYPE_PLAYER) {
-                ArtemisPlayer p = (ArtemisPlayer) mObjects.get(info.getTarget());
-                if (p != null) {
+                }
+                
+                if (eng.hasShields()) {
+                    
                     if (eng.mShieldsFront > -1)
                         p.setFrontShields(eng.mShieldsFront);
                     if (eng.mShieldsMaxFront > -1)
@@ -114,8 +117,22 @@ public class SystemManager implements OnPacketListener {
                         p.setRearShields(eng.mShieldsRear);
                     if (eng.mShieldsMaxRear > -1)
                         p.setRearShieldsMax(eng.mShieldsMaxRear);
+                    
                 }
+            
+                if (eng.x != -1) p.setX(eng.x);
+                if (eng.y != -1) p.setY(eng.y);
+                if (eng.z != -1) p.setZ(eng.z);
+                if (eng.bearing != -1) p.setBearing(eng.bearing);
             }
+        } else if (ObjUpdatePacket.isExtensionOf(info)) {
+            ObjUpdatePacket eng = new ObjUpdatePacket(info);
+            BaseArtemisShip p = (BaseArtemisShip) mObjects.get(info.getTarget());
+            
+            if (eng.x != -1) p.setX(eng.x);
+            if (eng.y != -1) p.setY(eng.y);
+            if (eng.z != -1) p.setZ(eng.z);
+            if (eng.bearing != -1) p.setBearing(eng.bearing);
         }
     }
 
@@ -207,5 +224,10 @@ public class SystemManager implements OnPacketListener {
 
     public void clear() {
         mObjects.clear();
+    }
+
+    @Override
+    public Iterator<ArtemisObject> iterator() {
+        return mObjects.values().iterator();
     }
 }

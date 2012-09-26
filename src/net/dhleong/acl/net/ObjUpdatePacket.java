@@ -16,10 +16,10 @@ public class ObjUpdatePacket implements ArtemisPacket {
     
     private final byte[] mData;
     
-    private final float x, y, z;
+    public final float x, y, z;
 
     /** in radians, where 0 is straight down? */
-    private final float bearing;
+    public final float bearing;
 
     public ObjUpdatePacket(final SystemInfoPacket pkt) {
         mData = pkt.mData;

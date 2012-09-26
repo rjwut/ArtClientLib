@@ -1,19 +1,12 @@
 package net.dhleong.acl.world;
 
-public class ArtemisEnemy extends BaseArtemisObject implements ArtemisObject {
+public class ArtemisEnemy extends BaseArtemisShip {
     
-    private final int mHullId;
-
     public ArtemisEnemy(int objId, String name, int hullId) {
-        super(objId, name);
+        super(objId, name, hullId);
         
-        mHullId = hullId;
     }
     
-    public int getHullId() {
-        return mHullId;
-    }
-
     @Override
     public int getType() {
         return TYPE_ENEMY;

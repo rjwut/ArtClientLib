@@ -5,25 +5,18 @@ import java.util.HashMap;
 import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
 
 
-public class ArtemisPlayer extends BaseArtemisObject {
+public class ArtemisPlayer extends BaseArtemisShip {
 
     private boolean mRedAlert;
     private final HashMap<SystemType, Float> mSystems = new HashMap<SystemType, Float>();
     private final HashMap<SystemType, Integer> mCoolant = new HashMap<SystemType, Integer>();
-    private final int mHullId;
-    
     public float mShieldsFront, mShieldsMaxFront;
     public float mShieldsRear, mShieldsMaxRear;
 
     public ArtemisPlayer(int objId, String name, int hullId, boolean redAlert) {
-        super(objId, name);
+        super(objId, name, hullId);
         
-        mHullId = hullId;
         mRedAlert = redAlert;
-    }
-    
-    public int getHullId() {
-        return mHullId;
     }
     
     public float getFrontShields() {

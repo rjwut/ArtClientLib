@@ -58,13 +58,17 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
     private static final long NO_ENERGY     = 0x0000000000000001L;
     private static final long DUNNO_SKIP_1  = 0x0000000000000002L;
     private static final long DUNNO_SKIP_2  = 0x0000000000000004L;
-    private static final long DUNNO_SKIP_3  = 0x0000000000000008L;
-    private static final long DUNNO_SKIP_4  = 0x0000000000000010L;
+    private static final long POS_X         = 0x0000000000000008L;
+    private static final long POS_Y         = 0x0000000000000010L;
+    private static final long POS_Z         = 0x0000000000000020L;
+    private static final long DUNNO_SKIP_3  = 0x0000000000000040L;
+    private static final long DUNNO_SKIP_4  = 0x0000000000000080L;
+    private static final long BEARING       = 0x0000000000000100L;
     
-    private static final long SHIELD_STATE_FRONT= 0x0000000000001000;
-    private static final long SHIELD_MAX_FRONT  = 0x0000000000002000;
-    private static final long SHIELD_STATE_REAR = 0x0000000000004000;
-    private static final long SHIELD_MAX_REAR   = 0x0000000000008000;
+    private static final long SHIELD_STATE_FRONT= 0x0000000000001000L;
+    private static final long SHIELD_MAX_FRONT  = 0x0000000000002000L;
+    private static final long SHIELD_STATE_REAR = 0x0000000000004000L;
+    private static final long SHIELD_MAX_REAR   = 0x0000000000008000L;
 
     
     private static final long HEAT_BEAMS = 0x0000000002000000L;
@@ -107,6 +111,8 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
     public final float mShieldsFront, mShieldsMaxFront;
     public final float mShieldsRear, mShieldsMaxRear;
     
+    public final float x, y, z, bearing;
+    
     private boolean mHasShields = false;
 
     public EngSystemUpdatePacket(final SystemInfoPacket pkt) {
@@ -133,10 +139,37 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
             offset += 4;
         if ((args & DUNNO_SKIP_2) != 0)
             offset += 4;
+        
+        if ((args & POS_X) != 0) {
+            x = PacketParser.getLendFloat(mData, offset);
+            offset += 4;
+        } else {
+            x = -1;
+        }
+        if ((args & POS_Y) != 0) {
+            y = PacketParser.getLendFloat(mData, offset);
+            offset += 4;
+        } else {
+            y = -1;
+        }
+        if ((args & POS_Z) != 0) {
+            z = PacketParser.getLendFloat(mData, offset);
+            offset += 4;
+        } else {
+            z = -1;
+        }
+        
         if ((args & DUNNO_SKIP_3) != 0)
             offset += 4;
         if ((args & DUNNO_SKIP_4) != 0)
             offset += 4;
+        
+        if ((args & BEARING) != 0) {
+            bearing = PacketParser.getLendFloat(mData, offset);
+            offset += 4;
+        } else {
+            bearing = -1;
+        }
 
         // shields
         if ((args & SHIELD_STATE_FRONT) != 0) {
@@ -250,6 +283,8 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
     public void debugPrint() {
         System.out.println("**   Energy:" + mShipEnergy);
         System.out.println("** RedAlert:" + mRedAlert);
+        System.out.println(String.format("** Position: %.2f, %.2f, %.2f", x, y, z));
+        System.out.println("**  Bearing:" + bearing);
         if (mShieldsFront > -1)
             System.out.println("** ShieldsFront:" + mShieldsFront);
         if (mShieldsMaxFront > -1)

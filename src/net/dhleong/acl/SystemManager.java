@@ -45,6 +45,12 @@ public class SystemManager implements OnPacketListener, Iterable<ArtemisObject> 
 
     private HashMap<GridCoord, Float> mGridDamage;
     private ShipSystemGrid mGrid;
+    
+    /** Manually add an obj to the system */
+    public void addObject(ArtemisObject obj) {
+        mObjects.put(obj.getId(), obj);
+        mListener.onObjectCountChanged(mObjects.size());
+    }
 
     @Override
     public void onPacket(ArtemisPacket pkt) {

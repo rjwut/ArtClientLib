@@ -33,6 +33,8 @@ public class SystemManager implements OnPacketListener {
         @Override
         public void onObjectCountChanged(int count) {/* nop */}
     };
+
+    private static final boolean DEBUG = false;
     
     private final HashMap<Integer, ArtemisObject> mObjects = 
             new HashMap<Integer, ArtemisObject>();
@@ -80,8 +82,13 @@ public class SystemManager implements OnPacketListener {
             SysCreatePacket create = new SysCreatePacket(info);
             
             List<ArtemisObject> newObjs = create.getCreatedObjects();
-            for (ArtemisObject obj : newObjs)
+            for (ArtemisObject obj : newObjs) {
                 mObjects.put(obj.getId(), obj);
+                
+                if (DEBUG) System.out.println("SystemManager#created: " + obj);
+            }
+            
+            if (DEBUG) System.out.println("--> " + create);
             
             if (newObjs.size() > 0) {
                 // signal change

@@ -13,6 +13,7 @@ import net.dhleong.acl.net.EngGridUpdatePacket;
 import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.EngSystemUpdatePacket;
 import net.dhleong.acl.net.GameMessagePacket;
+import net.dhleong.acl.net.ObjUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.net.SetStationPacket;
 import net.dhleong.acl.net.SetStationPacket.StationType;
@@ -116,6 +117,12 @@ public class TestRunner {
 //                        EngSystemUpdatePacket eng = new EngSystemUpdatePacket(sys);
 //                        eng.debugPrint();
                         return;
+                    } else if (ObjUpdatePacket.isExtensionOf(sys)) {
+                        System.out.println("** Update: " + mgr.getObject(sys.getTarget()));
+                        ObjUpdatePacket up = new ObjUpdatePacket(sys);
+                        up.debugPrint();
+                        System.out.println("--> " + up);
+                        return;
                     } else if (sys.getTargetType() == ArtemisObject.TYPE_PLAYER){
                         System.out.println("INFO << " + sys);
                         return;
@@ -165,7 +172,7 @@ public class TestRunner {
         
         
 //        // ENG test 
-        net.send(new SetStationPacket(StationType.ENGINEERING, true));
+//        net.send(new SetStationPacket(StationType.ENGINEERING, true));
         
 //        net.send(new EngSetEnergyPacket(SystemType.IMPULSE, .5f));
 //        net.send(new EngSetCoolantPacket(SystemType.IMPULSE, 0));
@@ -183,7 +190,7 @@ public class TestRunner {
 //        }
         */
         
-//        net.send(new SetStationPacket(StationType.SCIENCE, true));
+        net.send(new SetStationPacket(StationType.SCIENCE, true));
         
 
 //        net.stop();

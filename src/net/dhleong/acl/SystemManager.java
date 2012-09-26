@@ -132,14 +132,22 @@ public class SystemManager implements OnPacketListener, Iterable<ArtemisObject> 
                 if (eng.bearing != -1) p.setBearing(eng.bearing);
             }
         } else if (ObjUpdatePacket.isExtensionOf(info)) {
-            ObjUpdatePacket eng = new ObjUpdatePacket(info);
+            
             BaseArtemisShip p = (BaseArtemisShip) mObjects.get(info.getTarget());
             
-            if (eng.x != -1) p.setX(eng.x);
-            if (eng.y != -1) p.setY(eng.y);
-            if (eng.z != -1) p.setZ(eng.z);
-            if (eng.bearing != -1) p.setBearing(eng.bearing);
+            if (p != null) {
+                ObjUpdatePacket eng = new ObjUpdatePacket(info);
+                
+                if (eng.x != -1) p.setX(eng.x);
+                if (eng.y != -1) p.setY(eng.y);
+                if (eng.z != -1) p.setZ(eng.z);
+                if (eng.bearing != -1) p.setBearing(eng.bearing);
+            }
         }
+    }
+
+    public void getAll(List<ArtemisObject> dest) {
+        dest.addAll(mObjects.values());
     }
 
     /**

@@ -50,22 +50,25 @@ public class SystemManager implements OnPacketListener, Iterable<ArtemisObject> 
     
     /** Manually add an obj to the system */
     public void addObject(ArtemisObject obj) {
-        mObjects.put(obj.getId(), obj);
+        synchronized(this) {
+            mObjects.put(obj.getId(), obj);
+        }
         mListener.onObjectCountChanged(mObjects.size());
     }
 
     @Override
     public void onPacket(ArtemisPacket pkt) {
         if (pkt instanceof DestroyObjectPacket) {
-            mObjects.remove(((DestroyObjectPacket)pkt).getTarget());
-            
+            synchronized(this) {
+                mObjects.remove(((DestroyObjectPacket)pkt).getTarget());
+            }
             // signal change
             if (mObjects.size() == 1) {
                 ArtemisObject last = mObjects.values().iterator().next();
                 if ("Artemis".equals(last.getName())) {
                     // special (hack?) case;
                     //  this is actually the end of the game
-                    mObjects.clear();
+                    clear();
                     mListener.onObjectCountChanged(0);
                     return;
                 }
@@ -94,7 +97,9 @@ public class SystemManager implements OnPacketListener, Iterable<ArtemisObject> 
             
             List<ArtemisObject> newObjs = create.getCreatedObjects();
             for (ArtemisObject obj : newObjs) {
-                mObjects.put(obj.getId(), obj);
+                synchronized(this) {
+                    mObjects.put(obj.getId(), obj);
+                }
                 
                 if (DEBUG) System.out.println("SystemManager#created: " + obj);
             }
@@ -153,7 +158,7 @@ public class SystemManager implements OnPacketListener, Iterable<ArtemisObject> 
         }
     }
 
-    public void getAll(List<ArtemisObject> dest) {
+    public synchronized void getAll(List<ArtemisObject> dest) {
         dest.addAll(mObjects.values());
     }
 
@@ -164,7 +169,7 @@ public class SystemManager implements OnPacketListener, Iterable<ArtemisObject> 
      * @param type One of the ArtemisObject#TYPE_* constants
      * @return The number of objects added to "dest"
      */
-    public int getObjects(List<ArtemisObject> dest, int type) {
+    public synchronized int getObjects(List<ArtemisObject> dest, int type) {
         int count = 0;
         for (ArtemisObject obj : mObjects.values()) {
             if (obj.getType() == type) {
@@ -215,7 +220,7 @@ public class SystemManager implements OnPacketListener, Iterable<ArtemisObject> 
      * @param type
      * @return
      */
-    public ArtemisObject getObjectByName(String name) {
+    public synchronized ArtemisObject getObjectByName(String name) {
         for (ArtemisObject obj : mObjects.values()) {
             if (obj.getName().equals(name))
                 return obj;
@@ -243,7 +248,7 @@ public class SystemManager implements OnPacketListener, Iterable<ArtemisObject> 
         }
     }
 
-    public void clear() {
+    public synchronized void clear() {
         mObjects.clear();
     }
 

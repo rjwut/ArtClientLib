@@ -24,6 +24,10 @@ public class ArtemisEnemy extends BaseArtemisShip {
 
     @Override
     public String toString() {
-        return String.format("[ENEMY:%s:%d]", mName, mHullId);
+        return String.format("[ENEMY:%s:%d:%c]@%s", 
+                mName, 
+                mHullId,
+                mIsScanned ? 'S' : '_',
+                        super.toString());
     }
 }

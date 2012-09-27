@@ -47,11 +47,12 @@ public class ObjUpdatePacket implements ArtemisPacket {
     private static final byte ACTION_SKIP_BYTES_1 = (byte) 0x02;
     private static final byte ACTION_SKIP_BYTES_2 = (byte) 0x04;
 
-    private static final int POS_X_AND_Z = 0x00000002;
+    private static final int POS_X_AND_Z = 0x00000002; // huh?
     private static final int POS_Y       = 0x00000001; // wtf?
     private static final int DUNNO_SKIP  = 0x00000008; 
-    private static final int BEARING     = 0x00000010; // wtf?
+    private static final int BEARING     = 0x00000010; 
     private static final int DUNNO_SKIP_2= 0x00000020; // wtf?
+    private static final int ELITE       = 0x00008000; // just a guess
     
     private static final int SCANNED     = 0x00020000; // I think?
 
@@ -115,6 +116,10 @@ public class ObjUpdatePacket implements ArtemisPacket {
                 }
 
                 if ((args & DUNNO_SKIP_2) != 0)
+                    offset += 4;
+                
+                // don't care right now
+                if ((args & ELITE) != 0)
                     offset += 4;
                 
                 if ((args & SCANNED) != 0) {

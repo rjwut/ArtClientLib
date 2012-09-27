@@ -114,14 +114,14 @@ public class TestRunner {
                         System.out.println("--> " + create);
                         return;
                     } else if (EngSystemUpdatePacket.isExtensionOf(sys)) {
-                        EngSystemUpdatePacket eng = new EngSystemUpdatePacket(sys);
-                        eng.debugPrint();
+//                        EngSystemUpdatePacket eng = new EngSystemUpdatePacket(sys);
+//                        eng.debugPrint();
                         return;
                     } else if (ObjUpdatePacket.isExtensionOf(sys)) {
-//                        System.out.println("** Update: " + mgr.getObject(sys.getTarget()));
-//                        ObjUpdatePacket up = new ObjUpdatePacket(sys);
-//                        up.debugPrint();
-//                        System.out.println("--> " + up);
+                        System.out.println("** Update: " + mgr.getObject(sys.getTarget()));
+                        ObjUpdatePacket up = new ObjUpdatePacket(sys);
+                        up.debugPrint();
+                        System.out.println("--> " + up);
                         return;
                     } else if (sys.getTargetType() == ArtemisObject.TYPE_PLAYER){
                         System.out.println("INFO << " + sys);

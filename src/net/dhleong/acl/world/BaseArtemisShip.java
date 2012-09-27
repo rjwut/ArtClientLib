@@ -23,5 +23,15 @@ public abstract class BaseArtemisShip extends BaseArtemisObject {
     public void setBearing(float bearing) {
         mBearing = bearing;
     }
-
+    
+    @Override
+    public void updateFrom(ArtemisPositionable eng) {
+        super.updateFrom(eng);
+        
+        if (eng instanceof BaseArtemisShip) {
+            BaseArtemisShip ship = (BaseArtemisShip) eng;
+            if (ship.getBearing() != Float.MIN_VALUE) 
+                setBearing(ship.getBearing());
+        }
+    }
 }

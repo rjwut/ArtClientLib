@@ -83,7 +83,7 @@ public class SysCreatePacket implements ArtemisPacket {
                     int objId = PacketParser.getLendInt(mData, offset+1);
                     nameLen = PacketParser.getNameLengthBytes(mData, offset+10);
                     String name = PacketParser.getNameString(mData, offset+14, nameLen);
-                    mCreatedObjs.add(new ArtemisOtherShip(objId, name));
+                    mCreatedObjs.add(new ArtemisOtherShip(objId, name, 1500));
                     offset += 148 + 5; // fixed length + TYPE and ID
                 } catch (StringIndexOutOfBoundsException e) {
                     debugPrint();
@@ -201,7 +201,10 @@ public class SysCreatePacket implements ArtemisPacket {
     
     public static boolean isExtensionOf(SystemInfoPacket pkt) {
 //        return pkt.getAction() == SystemInfoPacket.ACTION_CREATE;
+        // new crazy is temporary as we transition to merged packet
         return (pkt.getAction() & SystemInfoPacket.ACTION_MASK) 
-                == ACTION_CREATE;
+                    == ACTION_CREATE 
+                && (pkt.getTargetType() == ArtemisObject.TYPE_PLAYER 
+                    || pkt.getTargetType() == ArtemisObject.TYPE_STATION);
     }
 }

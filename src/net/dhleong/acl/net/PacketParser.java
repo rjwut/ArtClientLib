@@ -117,7 +117,7 @@ public class PacketParser {
         return Float.intBitsToFloat(bits);
     }
 
-    protected static int getNameLengthBytes(byte[] mData, int offset) {
+    public static int getNameLengthBytes(byte[] mData, int offset) {
         // nameLen includes the "null" bytes, and is 
         //  measured in 2-byte CHARs
         final int nameLen = getLendInt(mData, offset);

@@ -14,4 +14,5 @@ public interface ArtemisPositionable extends ArtemisObject {
 
     public abstract float getX();
 
+    public void updateFrom(ArtemisPositionable other);
 }

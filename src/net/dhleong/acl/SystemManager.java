@@ -12,15 +12,13 @@ import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.EngSystemUpdatePacket;
 import net.dhleong.acl.net.EngSystemUpdatePacket.BoolState;
 import net.dhleong.acl.net.ObjUpdatePacket;
-import net.dhleong.acl.net.ObjUpdatePacket.ObjUpdate;
 import net.dhleong.acl.net.SysCreatePacket;
 import net.dhleong.acl.net.SystemInfoPacket;
 import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ShipSystemGrid;
-import net.dhleong.acl.world.ArtemisEnemy;
 import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisPlayer;
-import net.dhleong.acl.world.BaseArtemisShip;
+import net.dhleong.acl.world.ArtemisPositionable;
 
 /**
  * 
@@ -142,17 +140,12 @@ public class SystemManager implements OnPacketListener, Iterable<ArtemisObject> 
             
             ObjUpdatePacket e = new ObjUpdatePacket(info);
             
-            for (ObjUpdate eng : e.mUpdates) {
-                BaseArtemisShip p = (BaseArtemisShip) mObjects.get(eng.targetId);
+            for (ArtemisPositionable eng : e.mObjects) {
+                ArtemisPositionable p = (ArtemisPositionable) mObjects.get(eng.getId());
                 if (p != null) {
-                    
-                    if (eng.x != -1) p.setX(eng.x);
-                    if (eng.y != -1) p.setY(eng.y);
-                    if (eng.z != -1) p.setZ(eng.z);
-                    if (eng.bearing != Float.MIN_VALUE) p.setBearing(eng.bearing);
-                    
-                    if (p instanceof ArtemisEnemy && eng.scanned)
-                        ((ArtemisEnemy)p).setScanned();
+                    p.updateFrom(eng);
+                } else {
+                    mObjects.put(eng.getId(), eng);
                 }
             }
         }

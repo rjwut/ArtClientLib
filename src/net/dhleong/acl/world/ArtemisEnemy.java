@@ -21,6 +21,15 @@ public class ArtemisEnemy extends BaseArtemisShip {
     public void setScanned() {
         mIsScanned = true;
     }
+    
+    @Override
+    public void updateFrom(ArtemisPositionable eng) {
+        super.updateFrom(eng);
+        
+        // it SHOULD be an ArtemisEnemy
+        if (eng instanceof ArtemisEnemy && ((ArtemisEnemy)eng).isScanned())
+            setScanned();
+    }
 
     @Override
     public String toString() {

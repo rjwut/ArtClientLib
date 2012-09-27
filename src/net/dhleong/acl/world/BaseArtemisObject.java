@@ -71,5 +71,12 @@ public abstract class BaseArtemisObject implements ArtemisPositionable {
     public void setZ(float z) {
         mZ = z;
     }
+    
+    @Override
+    public void updateFrom(ArtemisPositionable eng) {
+        if (eng.getX() != -1) setX(eng.getX());
+        if (eng.getY() != -1) setY(eng.getY());
+        if (eng.getZ() != -1) setZ(eng.getY());
+    }
 
 }

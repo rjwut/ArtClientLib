@@ -1,9 +1,9 @@
 package net.dhleong.acl.world;
 
-public class ArtemisOtherShip extends BaseArtemisObject {
+public class ArtemisOtherShip extends BaseArtemisShip {
 
-    public ArtemisOtherShip(int objId, String name) {
-        super(objId, name);
+    public ArtemisOtherShip(int objId, String name, int hullId) {
+        super(objId, name, hullId);
     }
 
     @Override

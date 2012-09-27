@@ -2,6 +2,8 @@ package net.dhleong.acl.world;
 
 public class ArtemisEnemy extends BaseArtemisShip {
     
+    private boolean mIsScanned = false;
+    
     public ArtemisEnemy(int objId, String name, int hullId) {
         super(objId, name, hullId);
         
@@ -10,6 +12,14 @@ public class ArtemisEnemy extends BaseArtemisShip {
     @Override
     public int getType() {
         return TYPE_ENEMY;
+    }
+    
+    public boolean isScanned() {
+        return mIsScanned;
+    }
+    
+    public void setScanned() {
+        mIsScanned = true;
     }
 
     @Override

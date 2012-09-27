@@ -17,6 +17,7 @@ import net.dhleong.acl.net.SysCreatePacket;
 import net.dhleong.acl.net.SystemInfoPacket;
 import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ShipSystemGrid;
+import net.dhleong.acl.world.ArtemisEnemy;
 import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisPlayer;
 import net.dhleong.acl.world.BaseArtemisShip;
@@ -144,6 +145,9 @@ public class SystemManager implements OnPacketListener, Iterable<ArtemisObject> 
                     if (eng.y != -1) p.setY(eng.y);
                     if (eng.z != -1) p.setZ(eng.z);
                     if (eng.bearing != Float.MIN_VALUE) p.setBearing(eng.bearing);
+                    
+                    if (p instanceof ArtemisEnemy && eng.scanned)
+                        ((ArtemisEnemy)p).setScanned();
                 }
             }
         }

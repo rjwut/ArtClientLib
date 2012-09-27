@@ -20,14 +20,17 @@ public class ObjUpdatePacket implements ArtemisPacket {
         public final int targetId;
         public final byte targetType;
 
+        public final boolean scanned;
+
         private ObjUpdate(byte targetType, int targetId,
-                float x, float y, float z, float bearing) {
+                float x, float y, float z, float bearing, boolean scanned) {
             this.targetType = targetType;
             this.targetId = targetId;
             this.x = x;
             this.y = y;
             this.z = z;
             this.bearing = bearing;
+            this.scanned = scanned;
         }
 
         public void debugPrint() {
@@ -35,6 +38,7 @@ public class ObjUpdatePacket implements ArtemisPacket {
                     targetType, Integer.toHexString(targetId)));
             System.out.println(String.format("* Position: %.2f, %.2f, %.2f", x, y, z));
             System.out.println(String.format("*  Bearing: %.2f", bearing));
+            System.out.println(String.format("*  Scanned: %b", scanned));
         }
     }
 
@@ -48,6 +52,8 @@ public class ObjUpdatePacket implements ArtemisPacket {
     private static final int DUNNO_SKIP  = 0x00000008; 
     private static final int BEARING     = 0x00000010; // wtf?
     private static final int DUNNO_SKIP_2= 0x00000020; // wtf?
+    
+    private static final int SCANNED     = 0x00020000; // I think?
 
 
     private final byte[] mData;
@@ -71,6 +77,7 @@ public class ObjUpdatePacket implements ArtemisPacket {
 
                 byte action = mData[base+5];
                 int args = PacketParser.getLendInt(mData, base+6);
+                boolean scanned = false;
 
                 int offset = base+10;
                 if ((action & ACTION_SKIP_BYTES_1) != 0)
@@ -109,8 +116,13 @@ public class ObjUpdatePacket implements ArtemisPacket {
 
                 if ((args & DUNNO_SKIP_2) != 0)
                     offset += 4;
+                
+                if ((args & SCANNED) != 0) {
+                    scanned = mData[offset] != 0;
+                    offset++;
+                }
 
-                mUpdates.add(new ObjUpdate(targetType, targetId, x, y, z, bearing));
+                mUpdates.add(new ObjUpdate(targetType, targetId, x, y, z, bearing, scanned));
                 base = offset;
             } catch (ArrayIndexOutOfBoundsException e) {
                 debugPrint();

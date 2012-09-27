@@ -29,7 +29,8 @@ public class ObjectParser {
     }
 
     public boolean hasMore() {
-        return offset+10 < mData.length;
+//        return offset+10 < mData.length;
+        return mData[offset] != 0; // maybe?
     }
     
     public int readInt(byte ifActionByte) {

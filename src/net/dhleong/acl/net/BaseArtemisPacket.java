@@ -61,7 +61,7 @@ public class BaseArtemisPacket implements ArtemisPacket {
                 byteArrayToHexString(mData));
     }
     
-    protected static String byteArrayToHexString(byte[] data) {
+    public static String byteArrayToHexString(byte[] data) {
         StringBuilder buf = new StringBuilder();
         for (byte b : data) {
             if (b <= 0x0F && b >= 0){

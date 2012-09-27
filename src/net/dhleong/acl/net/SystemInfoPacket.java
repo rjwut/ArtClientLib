@@ -15,6 +15,7 @@ public class SystemInfoPacket extends BaseArtemisPacket {
     private final byte mTargetType;
     private final int mTarget;
     private final byte mAction;
+    static final byte ACTION_MASK  = (byte) 0xf0;
     
     public SystemInfoPacket(int flags, byte[] bucket) {
         super(0x01, flags, TYPE, bucket); // TODO don't save the byte[]?

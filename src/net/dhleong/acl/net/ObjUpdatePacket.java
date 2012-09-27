@@ -49,6 +49,7 @@ public class ObjUpdatePacket implements ArtemisPacket {
     private static final int BEARING     = 0x00000010; // wtf?
     private static final int DUNNO_SKIP_2= 0x00000020; // wtf?
 
+
     private final byte[] mData;
 
     public final List<ObjUpdate> mUpdates = new ArrayList<ObjUpdate>();
@@ -151,7 +152,7 @@ public class ObjUpdatePacket implements ArtemisPacket {
         return (pkt.getTargetType() == ArtemisObject.TYPE_ENEMY ||
                 pkt.getTargetType() == ArtemisObject.TYPE_OTHER)
                 && 
-                ((pkt.getAction() & ACTION_UPDATE_BYTE) != 0);
+                ((pkt.getAction() & SystemInfoPacket.ACTION_MASK) == ACTION_UPDATE_BYTE);
     }
 
 }

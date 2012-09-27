@@ -14,7 +14,7 @@ public class ArtemisStation extends BaseArtemisObject {
 
     @Override
     public String toString() {
-        return String.format("[STATION:%s]", mName);
+        return String.format("[STATION:%s]@%s", mName, super.toString());
     }
 
 }

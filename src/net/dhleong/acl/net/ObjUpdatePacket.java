@@ -61,11 +61,13 @@ public class ObjUpdatePacket implements ArtemisPacket {
 
     private static final int POS_Z       = 0x00000002; // huh?
     private static final int POS_Y       = 0x00000001; // wtf?
+    private static final int DUNNO_SKIP_0= 0x00000004; 
     private static final int DUNNO_SKIP  = 0x00000008; 
     private static final int BEARING     = 0x00000010; 
     private static final int DUNNO_SKIP_2= 0x00000020; // wtf?
     private static final int DUNNO_SKIP_3= 0x00000040; // wtf?
     private static final int DUNNO_SKIP_4= 0x00000080; // wtf?
+
     private static final int SHLD_FRNT   = 0x00000100; 
     private static final int SHLD_FRNT_MX= 0x00000200; 
     private static final int SHLD_REAR   = 0x00000400; 
@@ -88,11 +90,11 @@ public class ObjUpdatePacket implements ArtemisPacket {
     private static final int UNUSED_7    = 0x01000000;
     private static final int UNUSED_8    = 0x02000000;
     
-    private static final int SHLD_FREQ_A = 0x04000000; // ?
-    private static final int SHLD_FREQ_B = 0x08000000; // ?
-    private static final int SHLD_FREQ_C = 0x10000000; // ?
-    private static final int SHLD_FREQ_D = 0x20000000; // ?
-    private static final int SHLD_FREQ_E = 0x40000000; // ?
+    private static final int SHLD_FREQ_A = 0x04000000; 
+    private static final int SHLD_FREQ_B = 0x08000000;
+    private static final int SHLD_FREQ_C = 0x10000000;
+    private static final int SHLD_FREQ_D = 0x20000000;
+    private static final int SHLD_FREQ_E = 0x40000000;
     private static final int[] SHLD_FREQS = new int[] {
         SHLD_FREQ_A, SHLD_FREQ_B, SHLD_FREQ_C,
         SHLD_FREQ_D, SHLD_FREQ_E
@@ -147,13 +149,16 @@ public class ObjUpdatePacket implements ArtemisPacket {
                 y = p.readFloat(POS_Y, -1);
                 z = p.readFloat(POS_Z, -1);
                 
+                p.readFloat(DUNNO_SKIP_0, -1);
+
                 p.readInt(DUNNO_SKIP);
 
                 bearing = p.readFloat(BEARING, Float.MIN_VALUE);
 
                 p.readFloat(DUNNO_SKIP_2, -1);
 
-                p.readFloat(DUNNO_SKIP_3, -1);
+                //p.readFloat(DUNNO_SKIP_3, -1);
+                //p.readShort(DUNNO_SKIP_3);
                 p.readByte(DUNNO_SKIP_3, (byte)0); // can't be right...
 
                 p.readShort(DUNNO_SKIP_4);

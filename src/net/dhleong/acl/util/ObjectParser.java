@@ -30,7 +30,7 @@ public class ObjectParser {
 
     public boolean hasMore() {
 //        return offset+10 < mData.length;
-        return mData[offset] != 0; // maybe?
+        return offset < mData.length && mData[offset] != 0; // maybe?
     }
     
     public int readInt(byte ifActionByte) {
@@ -111,5 +111,7 @@ public class ObjectParser {
         return targetType;
     }
     
-//    public byte readByte()
+    public void skip(int bytes) {
+        offset += bytes;
+    }
 }

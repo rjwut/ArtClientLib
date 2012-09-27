@@ -194,8 +194,10 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
     
     @Override
     public void start() {
-        mReceiveThread.start();
-        mSendThread.start();
+        if (!mReceiveThread.isAlive())
+            mReceiveThread.start();
+        if (!mSendThread.isAlive())
+            mSendThread.start();
     }
 
     public void setOnConnectedListener(OnConnectedListener listener) {

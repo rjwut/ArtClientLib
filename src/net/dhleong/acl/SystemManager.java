@@ -2,7 +2,6 @@ package net.dhleong.acl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import net.dhleong.acl.net.DestroyObjectPacket;
@@ -25,7 +24,7 @@ import net.dhleong.acl.world.ArtemisPositionable;
  * @author dhleong
  *
  */
-public class SystemManager implements OnPacketListener, Iterable<ArtemisObject> {
+public class SystemManager implements OnPacketListener {
     
     public interface OnObjectCountChangeListener {
         void onObjectCountChanged(int count);
@@ -141,12 +140,18 @@ public class SystemManager implements OnPacketListener, Iterable<ArtemisObject> 
             ObjUpdatePacket e = new ObjUpdatePacket(info);
             
             for (ArtemisPositionable eng : e.mObjects) {
-                ArtemisPositionable p = (ArtemisPositionable) mObjects.get(eng.getId());
-                if (p != null) {
-                    p.updateFrom(eng);
-                } else {
-                    mObjects.put(eng.getId(), eng);
-                }
+                updateOrCreate(eng);
+            }
+        }
+    }
+    
+    public void updateOrCreate(ArtemisPositionable o) {
+        ArtemisPositionable p = (ArtemisPositionable) mObjects.get(o.getId());
+        if (p != null) {
+            p.updateFrom(o);
+        } else {
+            synchronized(this) {
+                mObjects.put(o.getId(), o);
             }
         }
     }
@@ -245,8 +250,8 @@ public class SystemManager implements OnPacketListener, Iterable<ArtemisObject> 
         mObjects.clear();
     }
 
-    @Override
-    public Iterator<ArtemisObject> iterator() {
-        return mObjects.values().iterator();
-    }
+//    @Override
+//    public Iterator<ArtemisObject> iterator() {
+//        return mObjects.values().iterator();
+//    }
 }

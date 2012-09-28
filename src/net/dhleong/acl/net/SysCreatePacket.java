@@ -6,10 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.dhleong.acl.ArtemisPacket;
-import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
-import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.world.ArtemisObject;
-import net.dhleong.acl.world.ArtemisPlayer;
 import net.dhleong.acl.world.ArtemisStation;
 
 public class SysCreatePacket implements ArtemisPacket {
@@ -29,41 +26,6 @@ public class SysCreatePacket implements ArtemisPacket {
         mData = pkt.mData;
         
         switch (pkt.getTargetType()) {
-        case ArtemisObject.TYPE_PLAYER: {
-            int objId = PacketParser.getLendInt(mData, 1);
-            final int hullId = PacketParser.getLendInt(mData, 48);
-            int offset = 82;
-            int nameLen = PacketParser.getNameLengthBytes(mData, offset);
-            if (nameLen > 1000) {
-                debugPrint();
-                System.out.println("DEBUG: Packet = " + this);
-                throw new IllegalStateException("Parsed a name of " + nameLen + " bytes");
-            }
-            String name = PacketParser.getNameString(mData, offset+4, nameLen);
-            offset += 6 + nameLen; // extra +2 for the null bytes
-            final int nameEnd = offset;
-            boolean redAlert = (mData[nameEnd + 20] != 0);
-            ArtemisPlayer player = new ArtemisPlayer(objId, name, hullId, 
-                    BoolState.from(redAlert));
-            
-            // extract more info
-            player.setShieldsFront(PacketParser.getLendFloat(mData, nameEnd));
-            player.setShieldsFrontMax(PacketParser.getLendFloat(mData, nameEnd+4));
-            player.setShieldsRear(PacketParser.getLendFloat(mData, nameEnd+8));
-            player.setShieldsRearMax(PacketParser.getLendFloat(mData, nameEnd+12));
-            
-            offset = nameEnd + 69; // begins system settings
-            for (SystemType sys : SystemType.values()) {
-                player.setSystemEnergy(sys, PacketParser.getLendFloat(mData, offset));
-                offset += 4;
-            }
-            for (SystemType sys : SystemType.values()) {
-                player.setSystemCoolant(sys, mData[offset++]);
-            }
-            
-            mCreatedObjs.add(player);
-            break; }
-        
         case ArtemisObject.TYPE_STATION: {
             
             int offset = 0;

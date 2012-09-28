@@ -13,7 +13,7 @@ public class ArtemisOtherShip extends BaseArtemisShip {
 
     @Override
     public String toString() {
-        return String.format("[OTHER:%s]", mName);
+        return String.format("[OTHER:%s:%d]@%s", mName, mHullId, super.toString());
     }
 
 }

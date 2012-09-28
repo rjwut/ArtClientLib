@@ -8,6 +8,8 @@ public abstract class BaseArtemisShip extends BaseArtemisObject {
 
     private float mShieldsFront, mShieldsFrontMax, mShieldsRear, mShieldsRearMax;
 
+    private final float[] mShieldFreqs = new float[5];
+
     public BaseArtemisShip(int objId, String name, int hullId) {
         super(objId, name);
         
@@ -28,7 +30,9 @@ public abstract class BaseArtemisShip extends BaseArtemisObject {
     
     @Override
     public String toString() {
-        return String.format("%s<%f>;[%.1f/%.1f  %.1f/%.1f]", 
+        return String.format("[%.2f,%.2f,%.2f,%.2f,%.2f]%s<%f>;[%.1f/%.1f  %.1f/%.1f]",
+                mShieldFreqs[0],mShieldFreqs[1],mShieldFreqs[2],
+                mShieldFreqs[3],mShieldFreqs[4],
                 super.toString(), mBearing,
                 getShieldsFront(), getShieldsFrontMax(), getShieldsRear(), getShieldsRearMax());
     }
@@ -50,6 +54,11 @@ public abstract class BaseArtemisShip extends BaseArtemisObject {
                 mShieldsRear = ship.mShieldsRear;
             if (ship.mShieldsRearMax != -1)
                 mShieldsRearMax = ship.mShieldsRearMax;
+            
+            for (int i=0; i<mShieldFreqs.length; i++) {
+                if (ship.mShieldFreqs[i] != -1)
+                    mShieldFreqs[i] = ship.mShieldFreqs[i];
+            }
         }
     }
 
@@ -83,5 +92,13 @@ public abstract class BaseArtemisShip extends BaseArtemisObject {
 
     public void setShieldsRearMax(float shieldsRearMax) {
         this.mShieldsRearMax = shieldsRearMax;
+    }
+    
+    public float getShieldFreq(int freq) {
+        return mShieldFreqs[freq];
+    }
+    
+    public void setShieldFreq(int freq, float value) {
+        mShieldFreqs[freq] = value;
     }
 }

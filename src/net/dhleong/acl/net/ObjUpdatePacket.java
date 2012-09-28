@@ -15,38 +15,6 @@ import net.dhleong.acl.world.BaseArtemisShip;
 
 public class ObjUpdatePacket implements ArtemisPacket {
 
-    public static class ObjUpdate {
-
-        public final float x, y, z;
-
-        /** in radians, where 0 is straight down? */
-        public final float bearing;
-
-        public final int targetId;
-        public final byte targetType;
-
-        public final boolean scanned;
-
-        private ObjUpdate(byte targetType, int targetId,
-                float x, float y, float z, float bearing, boolean scanned) {
-            this.targetType = targetType;
-            this.targetId = targetId;
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.bearing = bearing;
-            this.scanned = scanned;
-        }
-
-        public void debugPrint() {
-            System.out.println(String.format("\nUpdate: [%d]%s", 
-                    targetType, Integer.toHexString(targetId)));
-            System.out.println(String.format("* Position: %.2f, %.2f, %.2f", x, y, z));
-            System.out.println(String.format("*  Bearing: %.2f", bearing));
-            System.out.println(String.format("*  Scanned: %b", scanned));
-        }
-    }
-
     private static final byte ACTION_UPDATE_BYTE  = (byte) 0x80;
     
     private static final byte ACTION_NAME_BYTE    = (byte) 0x01;
@@ -159,7 +127,9 @@ public class ObjUpdatePacket implements ArtemisPacket {
 
                 //p.readFloat(DUNNO_SKIP_3, -1);
                 //p.readShort(DUNNO_SKIP_3);
-                p.readByte(DUNNO_SKIP_3, (byte)0); // can't be right...
+                if (p.getTargetType() == ArtemisObject.TYPE_ENEMY)
+                    p.readByte(DUNNO_SKIP_3, (byte)0); 
+ 
 
                 p.readShort(DUNNO_SKIP_4);
 
@@ -168,7 +138,10 @@ public class ObjUpdatePacket implements ArtemisPacket {
                 shieldsRear = p.readFloat(SHLD_REAR, -1);
                 shieldsRearMax = p.readFloat(SHLD_REAR_MX, -1);
 
-                p.readFloat(DUNNO_NEW_0, 0);
+                if (p.getTargetType() == ArtemisObject.TYPE_ENEMY) {
+                    p.readFloat(DUNNO_NEW_0, 0);
+                    //p.readShort(DUNNO_NEW_0);
+                }
                 
                 // ????
                 //p.readShort(DUNNO_NEW_1);
@@ -176,13 +149,20 @@ public class ObjUpdatePacket implements ArtemisPacket {
 
                 //p.readShort(DUNNO_NEW_2);
                 p.readInt(DUNNO_NEW_2);
+                
+                if (p.getTargetType() == ArtemisObject.TYPE_ENEMY) {
 
-                // don't care right now
-                p.readInt(ELITE);
+                    // don't care right now
+                    p.readInt(ELITE);
+                    //p.readShort(ELITE);
+                }
 
                 p.readShort(DUNNO_NEW_3);
                 
-                scanned = p.readByte(SCANNED, (byte) 0) != 0;
+                if (p.getTargetType() == ArtemisObject.TYPE_ENEMY) {
+                
+                    scanned = p.readByte(SCANNED, (byte) 0) != 0;
+                }
 
                 p.readInt(UNUSED_1);
                 p.readInt(UNUSED_2);
@@ -194,8 +174,15 @@ public class ObjUpdatePacket implements ArtemisPacket {
                 p.readInt(UNUSED_8);
                 
                 // shield frequencies
-                for (int i=0; i<SHLD_FREQS.length; i++) {
-                    freqs[i] = p.readFloat(SHLD_FREQS[i], -1);
+                if (p.getTargetType() == ArtemisObject.TYPE_ENEMY) {
+                    for (int i=0; i<SHLD_FREQS.length; i++) {
+                        freqs[i] = p.readFloat(SHLD_FREQS[i], -1);
+                    }
+                } else {
+                    // hax
+                    for (int i=0; i<SHLD_FREQS.length; i++) {
+                        freqs[i] = p.readFloat(SHLD_FREQS[0], -1);
+                    }
                 }
                 
                 final ArtemisPositionable newObj;
@@ -205,9 +192,6 @@ public class ObjUpdatePacket implements ArtemisPacket {
                     ArtemisEnemy enemy = new ArtemisEnemy(p.getTargetId(), name, hullId);
                     if (scanned)
                         enemy.setScanned();
-
-                    for (int i=0; i<freqs.length; i++)
-                        enemy.setShieldFreq(i, freqs[i]);
 
                     newObj = enemy;
                     break;
@@ -232,6 +216,10 @@ public class ObjUpdatePacket implements ArtemisPacket {
                     ship.setShieldsFrontMax(shieldsFrontMax);
                     ship.setShieldsRear(shieldsRear);
                     ship.setShieldsRearMax(shieldsRearMax);
+                    
+                    for (int i=0; i<freqs.length; i++) {
+                        ship.setShieldFreq(i, freqs[i]);
+                    }
                 }
 
                 mObjects.add(newObj);

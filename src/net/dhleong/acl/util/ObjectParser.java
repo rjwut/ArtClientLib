@@ -9,6 +9,7 @@ public class ObjectParser {
     
     private byte action;
     private int args;
+    private long longArgs;
     
     // per-object stuff
     byte targetType;
@@ -20,16 +21,38 @@ public class ObjectParser {
     }
     
     public void start() {
+        start(false);
+    }
+    
+    public void start(boolean useLong) {
         targetType = mData[offset++];
         targetId = PacketParser.getLendInt(mData, offset);
         
         action = mData[offset+4];
-        args = PacketParser.getLendInt(mData, offset+5);
-        offset += 9;
+        
+        if (useLong) {
+            longArgs = PacketParser.getLendLong(mData, offset+5);
+            offset += 13;
+        } else {
+            args = PacketParser.getLendInt(mData, offset+5);
+            offset += 9;
+        }
     }
     
+    public byte getAction() {
+        return action;
+    }
+    
+    public boolean has(byte ifActionByte) {
+        return (action & ifActionByte) != 0;
+    }
+
     public boolean has(int ifArgsByte) {
-        return (action & ifArgsByte) != 0;
+        return (args & ifArgsByte) != 0;
+    }
+
+    public boolean has(long ifArgsLong) {
+        return (longArgs & ifArgsLong) != 0;
     }
 
     public boolean hasMore() {
@@ -37,11 +60,15 @@ public class ObjectParser {
         return offset < mData.length && mData[offset] != 0; // maybe?
     }
     
+    public int readInt() {
+        int value = PacketParser.getLendInt(mData, offset); 
+        offset += 4; 
+        return value;
+    }
+    
     public int readInt(byte ifActionByte) {
         if ((action & ifActionByte) != 0) {
-            int value = PacketParser.getLendInt(mData, offset); 
-            offset += 4; 
-            return value;
+            return readInt();
         }
         
         return -1;
@@ -49,19 +76,34 @@ public class ObjectParser {
     
     public int readInt(int ifArgsByte) {
         if ((args & ifArgsByte) != 0) {
-            int value = PacketParser.getLendInt(mData, offset); 
-            offset += 4; 
-            return value;
+            return readInt();
         }
         
         return -1;
     }
 
+    public int readInt(long ifArgsLong) {
+        if ((longArgs & ifArgsLong) != 0) {
+            return readInt();
+        }
+        
+        return -1;
+    }
+
+    /**
+     * If you do your own checking, then 
+     *  read a float manually with this
+     * @return
+     */
+    public float readFloat() {
+        float value = PacketParser.getLendFloat(mData, offset); 
+        offset += 4;
+        return value;
+    }
+
     public float readFloat(byte ifActionByte, float defaultValue) {
         if ((action & ifActionByte) != 0) {
-            float value = PacketParser.getLendFloat(mData, offset); 
-            offset += 4;
-            return value;
+            return readFloat();
         } 
 
         return defaultValue;
@@ -69,9 +111,15 @@ public class ObjectParser {
     
     public float readFloat(int ifArgByte, float defaultValue) {
         if ((args & ifArgByte) != 0) {
-            float value = PacketParser.getLendFloat(mData, offset); 
-            offset += 4;
-            return value;
+            return readFloat();
+        } 
+
+        return defaultValue;
+    }
+    
+    public float readFloat(long ifArgLong, float defaultValue) {
+        if ((longArgs & ifArgLong) != 0) {
+            return readFloat();
         } 
 
         return defaultValue;
@@ -87,11 +135,31 @@ public class ObjectParser {
         return -1;
     }
     
+    public int readShort() {
+        int value = PacketParser.getLendShort(mData, offset); 
+        offset += 2; 
+        return value;
+    }
+    
+    public int readShort(byte ifActionByte) {
+        if ((action & ifActionByte) != 0) {
+            return readShort();
+        }
+        
+        return -1;
+    }
+    
     public int readShort(int ifArgsByte) {
         if ((args & ifArgsByte) != 0) {
-            int value = PacketParser.getLendShort(mData, offset); 
-            offset += 2; 
-            return value;
+            return readShort();
+        }
+        
+        return -1;
+    }
+
+    public int readShort(long ifArgsLong) {
+        if ((longArgs & ifArgsLong) != 0) {
+            return readShort();
         }
         
         return -1;
@@ -109,14 +177,26 @@ public class ObjectParser {
         return null;
     }
 
+    public byte readByte() {
+        return mData[offset++];
+    }
+
     public byte readByte(int ifArgsByte, byte defaultValue) {
         if ((args & ifArgsByte) != 0) {
-            return mData[offset++];
+            return readByte();
         }
         
         return defaultValue;
     }
     
+    public int readByte(long ifArgsLong, int defaultValue) {
+        if ((longArgs & ifArgsLong) != 0) {
+            return readByte();
+        }
+        
+        return defaultValue;
+    }
+
     public int getTargetId() {
         return targetId;
     }

@@ -7,9 +7,8 @@ import java.util.List;
 
 import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
-import net.dhleong.acl.world.ArtemisEnemy;
+import net.dhleong.acl.net.EngSystemUpdatePacket.BoolState;
 import net.dhleong.acl.world.ArtemisObject;
-import net.dhleong.acl.world.ArtemisOtherShip;
 import net.dhleong.acl.world.ArtemisPlayer;
 import net.dhleong.acl.world.ArtemisStation;
 
@@ -44,13 +43,14 @@ public class SysCreatePacket implements ArtemisPacket {
             offset += 6 + nameLen; // extra +2 for the null bytes
             final int nameEnd = offset;
             boolean redAlert = (mData[nameEnd + 20] != 0);
-            ArtemisPlayer player = new ArtemisPlayer(objId, name, hullId, redAlert);
+            ArtemisPlayer player = new ArtemisPlayer(objId, name, hullId, 
+                    BoolState.from(redAlert));
             
             // extract more info
-            player.setFrontShields(PacketParser.getLendFloat(mData, nameEnd));
-            player.setFrontShieldsMax(PacketParser.getLendFloat(mData, nameEnd+4));
-            player.setRearShields(PacketParser.getLendFloat(mData, nameEnd+8));
-            player.setRearShieldsMax(PacketParser.getLendFloat(mData, nameEnd+12));
+            player.setShieldsFront(PacketParser.getLendFloat(mData, nameEnd));
+            player.setShieldsFrontMax(PacketParser.getLendFloat(mData, nameEnd+4));
+            player.setShieldsRear(PacketParser.getLendFloat(mData, nameEnd+8));
+            player.setShieldsRearMax(PacketParser.getLendFloat(mData, nameEnd+12));
             
             offset = nameEnd + 69; // begins system settings
             for (SystemType sys : SystemType.values()) {
@@ -63,47 +63,7 @@ public class SysCreatePacket implements ArtemisPacket {
             
             mCreatedObjs.add(player);
             break; }
-        case ArtemisObject.TYPE_ENEMY: {
-            // the length of the name in 2-byte chars WITH trailing null
-            int objId = PacketParser.getLendInt(mData, 1);
-            int nameLen = PacketParser.getNameLengthBytes(mData, 10);
-            String name = PacketParser.getNameString(mData, 14, nameLen);
-            int offset = 14 + nameLen + 2; // (for the null bytes)
-            offset += 2; // padding?
-            offset += 14; // ?
-            offset += 4; // ?
-            final int hullId = PacketParser.getLendInt(mData, offset);
-            mCreatedObjs.add(new ArtemisEnemy(objId, name, hullId));
-            break; }
-        case ArtemisObject.TYPE_OTHER: {
-            int offset = 0;
-            while (mData[offset] != 0x00) {
-                int nameLen = 0;
-                try {
-                    int objId = PacketParser.getLendInt(mData, offset+1);
-                    nameLen = PacketParser.getNameLengthBytes(mData, offset+10);
-                    String name = PacketParser.getNameString(mData, offset+14, nameLen);
-                    mCreatedObjs.add(new ArtemisOtherShip(objId, name, 1500));
-                    offset += 148 + 5; // fixed length + TYPE and ID
-                } catch (StringIndexOutOfBoundsException e) {
-                    debugPrint();
-                    System.out.println("DEBUG: nameLen = " + nameLen);
-                    System.out.println("DEBUG: offset = " + offset);
-                    System.out.println("DEBUG: Packet = " + this);
-                    throw e;
-                }
-                
-                if (offset >= mData.length) {
-                    break; // I guess this is normal and fine?
-//                    debugPrint();
-//                    System.out.println("DEBUG: nameLen = " + nameLen);
-//                    System.out.println("DEBUG: offset = " + offset);
-//                    System.out.println("DEBUG: Packet = " + this);
-//                    byte exception = mData[offset]; // lazy haha
-//                    mData[offset] = exception; // will never get called
-                }
-            }
-            break; }
+        
         case ArtemisObject.TYPE_STATION: {
             
             int offset = 0;

@@ -54,7 +54,6 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
             return isTrue ? TRUE : FALSE;
         }
     }
-    private static final long RED_ALERT     = 0x0000000000020000L;
     private static final long NO_ENERGY     = 0x0000000000000001L;
     private static final long DUNNO_SKIP_1  = 0x0000000000000002L;
     private static final long DUNNO_SKIP_2  = 0x0000000000000004L;
@@ -65,20 +64,21 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
     private static final long DUNNO_SKIP_4  = 0x0000000000000080L;
     private static final long BEARING       = 0x0000000000000100L;
     
-    private static final long SHIELD_STATE_FRONT= 0x0000000000001000L;
-    private static final long SHIELD_MAX_FRONT  = 0x0000000000002000L;
-    private static final long SHIELD_STATE_REAR = 0x0000000000004000L;
-    private static final long SHIELD_MAX_REAR   = 0x0000000000008000L;
+    private static final long SHLD_FRONT    = 0x0000000000001000L;
+    private static final long SHLD_FRONT_MAX= 0x0000000000002000L;
+    private static final long SHLD_REAR     = 0x0000000000004000L;
+    private static final long SHLD_REAR_MAX = 0x0000000000008000L;
 
+    private static final long RED_ALERT     = 0x0000000000020000L;
     
-    private static final long HEAT_BEAMS = 0x0000000002000000L;
-    private static final long HEAT_TORPS = 0x0000000004000000L;
-    private static final long HEAT_SENSR = 0x0000000008000000L;
-    private static final long HEAT_MANEU = 0x0000000010000000L;
-    private static final long HEAT_IMPLS = 0x0000000020000000L;
-    private static final long HEAT_JUMPS = 0x0000000040000000L;
-    private static final long HEAT_SFRNT = 0x0000000080000000L;
-    private static final long HEAT_SREAR = 0x0000000100000000L;
+    private static final long HEAT_BEAMS    = 0x0000000002000000L;
+    private static final long HEAT_TORPS    = 0x0000000004000000L;
+    private static final long HEAT_SENSR    = 0x0000000008000000L;
+    private static final long HEAT_MANEU    = 0x0000000010000000L;
+    private static final long HEAT_IMPLS    = 0x0000000020000000L;
+    private static final long HEAT_JUMPS    = 0x0000000040000000L;
+    private static final long HEAT_SFRNT    = 0x0000000080000000L;
+    private static final long HEAT_SREAR    = 0x0000000100000000L;
     
     private static final long DAMG_BEAMS = 0x0000000200000000L;
     private static final long DAMG_TORPS = 0x0000000400000000L;
@@ -172,28 +172,28 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
         }
 
         // shields
-        if ((args & SHIELD_STATE_FRONT) != 0) {
+        if ((args & SHLD_FRONT) != 0) {
             mShieldsFront = PacketParser.getLendFloat(pkt.mData, offset);
             offset += 4;
             mHasShields = true;
         } else {
             mShieldsFront = -1;
         }
-        if ((args & SHIELD_MAX_FRONT) != 0) {
+        if ((args & SHLD_FRONT_MAX) != 0) {
             mShieldsMaxFront = PacketParser.getLendFloat(pkt.mData, offset);
             offset += 4;
             mHasShields = true;
         } else {
             mShieldsMaxFront = -1;
         }
-        if ((args & SHIELD_STATE_REAR) != 0) {
+        if ((args & SHLD_REAR) != 0) {
             mShieldsRear = PacketParser.getLendFloat(pkt.mData, offset);
             offset += 4;
             mHasShields = true;
         } else {
             mShieldsRear = -1;
         }
-        if ((args & SHIELD_MAX_REAR) != 0) {
+        if ((args & SHLD_REAR_MAX) != 0) {
             mShieldsMaxRear = PacketParser.getLendFloat(pkt.mData, offset);
             offset += 4;
             mHasShields = true;

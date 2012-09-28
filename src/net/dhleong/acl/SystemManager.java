@@ -11,6 +11,7 @@ import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.EngSystemUpdatePacket;
 import net.dhleong.acl.net.EngSystemUpdatePacket.BoolState;
 import net.dhleong.acl.net.ObjUpdatePacket;
+import net.dhleong.acl.net.PlayerUpdatePacket;
 import net.dhleong.acl.net.SysCreatePacket;
 import net.dhleong.acl.net.SystemInfoPacket;
 import net.dhleong.acl.util.GridCoord;
@@ -117,18 +118,19 @@ public class SystemManager implements OnPacketListener {
                     p.setRedAlert(eng.getRedAlert().getBooleanValue());
                 }
                 
-                if (eng.hasShields()) {
-                    
-                    if (eng.mShieldsFront > -1)
-                        p.setFrontShields(eng.mShieldsFront);
-                    if (eng.mShieldsMaxFront > -1)
-                        p.setFrontShieldsMax(eng.mShieldsMaxFront);
-                    if (eng.mShieldsRear > -1)
-                        p.setRearShields(eng.mShieldsRear);
-                    if (eng.mShieldsMaxRear > -1)
-                        p.setRearShieldsMax(eng.mShieldsMaxRear);
-                    
-                }
+                // this packet will be deprecated anyway
+//                if (eng.hasShields()) {
+//                    
+//                    if (eng.mShieldsFront > -1)
+//                        p.setFrontShields(eng.mShieldsFront);
+//                    if (eng.mShieldsMaxFront > -1)
+//                        p.setFrontShieldsMax(eng.mShieldsMaxFront);
+//                    if (eng.mShieldsRear > -1)
+//                        p.setRearShields(eng.mShieldsRear);
+//                    if (eng.mShieldsMaxRear > -1)
+//                        p.setRearShieldsMax(eng.mShieldsMaxRear);
+//                    
+//                }
             
                 if (eng.x != -1) p.setX(eng.x);
                 if (eng.y != -1) p.setY(eng.y);
@@ -142,6 +144,11 @@ public class SystemManager implements OnPacketListener {
             for (ArtemisPositionable eng : e.mObjects) {
                 updateOrCreate(eng);
             }
+        } else if (PlayerUpdatePacket.isExtensionOf(info)) {
+            PlayerUpdatePacket e = new PlayerUpdatePacket(info);
+            
+            updateOrCreate(e.getPlayer());
+            
         }
     }
     

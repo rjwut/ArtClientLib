@@ -1,35 +1,35 @@
 package net.dhleong.acl.world;
 
-import java.util.HashMap;
-
 import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
+import net.dhleong.acl.net.EngSystemUpdatePacket.BoolState;
 
 
 public class ArtemisPlayer extends BaseArtemisShip {
+    
+    private static final int SYS_COUNT = SystemType.values().length;
 
-    private boolean mRedAlert;
-    private final HashMap<SystemType, Float> mSystems = new HashMap<SystemType, Float>();
-    private final HashMap<SystemType, Integer> mCoolant = new HashMap<SystemType, Integer>();
-    public float mShieldsFront, mShieldsMaxFront;
-    public float mShieldsRear, mShieldsMaxRear;
+    private BoolState mRedAlert;
+    private final float[] mHeat = new float[SYS_COUNT];
+    private final float[] mSystems = new float[SYS_COUNT];
+    private final int[] mCoolant = new int[SYS_COUNT];
 
-    public ArtemisPlayer(int objId, String name, int hullId, boolean redAlert) {
+    private float mEnergy;
+
+    public ArtemisPlayer(int objId, String name, int hullId, BoolState redAlert) {
         super(objId, name, hullId);
         
         mRedAlert = redAlert;
+        
+        // pre-fill
+        for (int i=0; i<SYS_COUNT; i++) {
+            mHeat[i] = -1;
+            mSystems[i] = -1;
+            mCoolant[i] = -1;
+        }
     }
     
-    public float getFrontShields() {
-        return mShieldsFront;
-    }
-    public float getFrontShieldsMax() {
-        return mShieldsMaxFront;
-    }
-    public float getRearShields() {
-        return mShieldsRear;
-    }
-    public float getRearShieldsMax() {
-        return mShieldsMaxRear;
+    public float getEnergy() {
+        return mEnergy;
     }
     
     /**
@@ -38,9 +38,10 @@ public class ArtemisPlayer extends BaseArtemisShip {
      * @return The setting as an int [0, 8], or -1 if we don't know
      */
     public int getSystemCoolant(SystemType sys) {
-        return mCoolant.containsKey(sys)
-                ? mCoolant.get(sys)
-                : -1;
+//        return mCoolant.containsKey(sys)
+//                ? mCoolant.get(sys)
+//                : -1;
+        return mCoolant[sys.ordinal()];
     }
     
     /**
@@ -50,10 +51,18 @@ public class ArtemisPlayer extends BaseArtemisShip {
      *  or -1 if we don't know
      */
     public float getSystemEnergy(SystemType sys) {
-        return mSystems.containsKey(sys) 
-                ? mSystems.get(sys) 
-                : -1f;
+//        return mSystems.containsKey(sys) 
+//                ? mSystems.get(sys) 
+//                : -1f;
+        return mSystems[sys.ordinal()];
     }
+    
+    public float getSystemHeat(SystemType sys) {
+//      return mSystems.containsKey(sys) 
+//              ? mSystems.get(sys) 
+//              : -1f;
+      return mHeat[sys.ordinal()];
+  }
     
     @Override
     public int getType() {
@@ -61,7 +70,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
     }
     
     public boolean isRedAlert() {
-        return mRedAlert;
+        return mRedAlert == BoolState.TRUE;
     }
 
     @Override
@@ -69,31 +78,32 @@ public class ArtemisPlayer extends BaseArtemisShip {
         return String.format("[PLAYER:%s:%d:%c]", 
                 mName,
                 mHullId,
-                mRedAlert ? 'R' : '_');
+                isRedAlert() ? 'R' : '_');
     }
 
     public void setRedAlert(boolean newState) {
-        mRedAlert = newState;
+        mRedAlert = BoolState.from(newState);
     }
 
     public void setSystemCoolant(SystemType sys, int coolant) {
-        mCoolant.put(sys, coolant);
+        mCoolant[sys.ordinal()] = coolant;
     }
 
     public void setSystemEnergy(SystemType sys, float energy) {
-        mSystems.put(sys, energy);
+        mSystems[sys.ordinal()] = energy;
     }
 
-    public void setFrontShields(float value) {
-        mShieldsFront = value;
+    public void setSystemHeat(SystemType sys, float heat) {
+        mHeat[sys.ordinal()] = heat;
     }
-    public void setFrontShieldsMax(float value) {
-        mShieldsMaxFront = value;
+
+
+    public void setShipEnergy(float energy) {
+        mEnergy = energy;
     }
-    public void setRearShields(float value) {
-        mShieldsRear = value;
-    }
-    public void setRearShieldsMax(float value) {
-        mShieldsMaxRear = value;
+    
+    @Override
+    public void updateFrom(ArtemisPositionable eng) {
+        super.updateFrom(eng);
     }
 }

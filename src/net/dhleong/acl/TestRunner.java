@@ -15,6 +15,7 @@ import net.dhleong.acl.net.GameMessagePacket;
 import net.dhleong.acl.net.ObjUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.net.PlayerUpdatePacket;
+import net.dhleong.acl.net.ReadyPacket;
 import net.dhleong.acl.net.SetStationPacket;
 import net.dhleong.acl.net.SetStationPacket.StationType;
 import net.dhleong.acl.net.SysCreatePacket;
@@ -205,6 +206,7 @@ public class TestRunner {
         
         net.send(new SetStationPacket(StationType.SCIENCE, true));
 
+        net.send(new ReadyPacket());
 //        net.stop();
     }
 }

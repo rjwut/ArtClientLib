@@ -86,6 +86,7 @@ public class ObjUpdatePacket implements ArtemisPacket {
         boolean scanned = false;
         String name = null;
         int hullId = -1;
+        int elite = -1;
 
         float shieldsFront, shieldsFrontMax;
         float shieldsRear, shieldsRearMax;
@@ -149,7 +150,7 @@ public class ObjUpdatePacket implements ArtemisPacket {
                 if (p.getTargetType() == ArtemisObject.TYPE_ENEMY) {
 
                     // don't care right now
-                    p.readInt(ELITE);
+                    elite = p.readInt(ELITE);
                     //p.readShort(ELITE);
                 }
 
@@ -207,6 +208,7 @@ public class ObjUpdatePacket implements ArtemisPacket {
                     ArtemisEnemy enemy = new ArtemisEnemy(p.getTargetId(), name, hullId);
                     if (scanned)
                         enemy.setScanned();
+                    enemy.setEliteBits(elite);
 
                     newObj = enemy;
                     break;

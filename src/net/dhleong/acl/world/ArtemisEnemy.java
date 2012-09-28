@@ -12,6 +12,7 @@ public class ArtemisEnemy extends BaseArtemisShip {
     public static final int ELITE_TELEPORT              = 64;
     
     private boolean mIsScanned = false;
+    private int mElite;
     
     public ArtemisEnemy(int objId, String name, int hullId) {
         super(objId, name, hullId);
@@ -23,10 +24,18 @@ public class ArtemisEnemy extends BaseArtemisShip {
         return TYPE_ENEMY;
     }
     
+    public boolean hasEliteAbility(int ability) {
+        return mElite != -1 && (mElite & ability) != 0;
+    }
+    
     public boolean isScanned() {
         return mIsScanned;
     }
     
+    public void setEliteBits(int elite) {
+        mElite = elite;
+    }
+
     public void setScanned() {
         mIsScanned = true;
     }
@@ -40,6 +49,9 @@ public class ArtemisEnemy extends BaseArtemisShip {
             ArtemisEnemy cast = (ArtemisEnemy)eng;
             if (cast.isScanned())
                 setScanned();
+            
+            if (cast.mElite != -1)
+                setEliteBits(cast.mElite);
         }
         
     }

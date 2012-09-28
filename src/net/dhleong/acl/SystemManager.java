@@ -8,8 +8,6 @@ import net.dhleong.acl.net.DestroyObjectPacket;
 import net.dhleong.acl.net.EngGridUpdatePacket;
 import net.dhleong.acl.net.EngGridUpdatePacket.GridDamage;
 import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
-import net.dhleong.acl.net.EngSystemUpdatePacket;
-import net.dhleong.acl.net.EngSystemUpdatePacket.BoolState;
 import net.dhleong.acl.net.ObjUpdatePacket;
 import net.dhleong.acl.net.PlayerUpdatePacket;
 import net.dhleong.acl.net.SysCreatePacket;
@@ -17,7 +15,6 @@ import net.dhleong.acl.net.SystemInfoPacket;
 import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ShipSystemGrid;
 import net.dhleong.acl.world.ArtemisObject;
-import net.dhleong.acl.world.ArtemisPlayer;
 import net.dhleong.acl.world.ArtemisPositionable;
 
 /**
@@ -108,35 +105,7 @@ public class SystemManager implements OnPacketListener {
                 // signal change
                 mListener.onObjectCountChanged(mObjects.size());
             }
-        } else if (EngSystemUpdatePacket.isExtensionOf(info)) {
-            EngSystemUpdatePacket eng = new EngSystemUpdatePacket(info);
-            
-            ArtemisPlayer p = (ArtemisPlayer) mObjects.get(info.getTarget());
-            if (p != null) {
-                
-                if (eng.getRedAlert() != BoolState.UNKNOWN) {
-                    p.setRedAlert(eng.getRedAlert().getBooleanValue());
-                }
-                
-                // this packet will be deprecated anyway
-//                if (eng.hasShields()) {
-//                    
-//                    if (eng.mShieldsFront > -1)
-//                        p.setFrontShields(eng.mShieldsFront);
-//                    if (eng.mShieldsMaxFront > -1)
-//                        p.setFrontShieldsMax(eng.mShieldsMaxFront);
-//                    if (eng.mShieldsRear > -1)
-//                        p.setRearShields(eng.mShieldsRear);
-//                    if (eng.mShieldsMaxRear > -1)
-//                        p.setRearShieldsMax(eng.mShieldsMaxRear);
-//                    
-//                }
-            
-                if (eng.x != -1) p.setX(eng.x);
-                if (eng.y != -1) p.setY(eng.y);
-                if (eng.z != -1) p.setZ(eng.z);
-                if (eng.bearing != Float.MIN_VALUE) p.setBearing(eng.bearing);
-            }
+
         } else if (ObjUpdatePacket.isExtensionOf(info)) {
             
             ObjUpdatePacket e = new ObjUpdatePacket(info);

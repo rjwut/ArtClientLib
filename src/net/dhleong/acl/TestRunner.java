@@ -11,7 +11,6 @@ import net.dhleong.acl.net.CommsIncomingPacket;
 import net.dhleong.acl.net.DestroyObjectPacket;
 import net.dhleong.acl.net.EngGridUpdatePacket;
 import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
-import net.dhleong.acl.net.EngSystemUpdatePacket;
 import net.dhleong.acl.net.GameMessagePacket;
 import net.dhleong.acl.net.ObjUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
@@ -113,10 +112,6 @@ public class TestRunner {
                             }
                         }
                         System.out.println("--> " + create);
-                        return;
-                    } else if (EngSystemUpdatePacket.isExtensionOf(sys)) {
-                        EngSystemUpdatePacket eng = new EngSystemUpdatePacket(sys);
-                        eng.debugPrint();
                         return;
                     } else if (ObjUpdatePacket.isExtensionOf(sys)) {
 //                        System.out.println("** Update: " + mgr.getObject(sys.getTarget()));

@@ -1,8 +1,7 @@
-package net.dhleong.acl;
+package net.dhleong.acl.net;
 
-import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
-import net.dhleong.acl.net.PacketParser;
+
 
 public class EngSetCoolantPacket extends BaseArtemisPacket {
     private static final int FLAGS = 0x18;

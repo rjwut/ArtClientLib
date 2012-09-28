@@ -5,15 +5,12 @@ import java.io.OutputStream;
 
 import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
-import net.dhleong.acl.net.EngSystemUpdatePacket.BoolState;
+import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.util.ObjectParser;
 import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisPlayer;
 
 public class PlayerUpdatePacket implements ArtemisPacket {
-    
-    /** a gross hack because I have no idea */
-    private static final byte ACTION_CREATE_MASK  = (byte) 0xf0;
     
     private static final byte ACTION_UPDATE_BYTE  = (byte) 0x80;
     

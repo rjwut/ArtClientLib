@@ -1,7 +1,7 @@
 package net.dhleong.acl.world;
 
 import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
-import net.dhleong.acl.net.EngSystemUpdatePacket.BoolState;
+import net.dhleong.acl.util.BoolState;
 
 
 public class ArtemisPlayer extends BaseArtemisShip {

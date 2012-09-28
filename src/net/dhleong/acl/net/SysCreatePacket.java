@@ -7,7 +7,7 @@ import java.util.List;
 
 import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
-import net.dhleong.acl.net.EngSystemUpdatePacket.BoolState;
+import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisPlayer;
 import net.dhleong.acl.world.ArtemisStation;

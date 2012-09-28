@@ -131,6 +131,8 @@ public class SystemManager implements OnPacketListener {
                 mObjects.put(o.getId(), o);
             }
             
+            mListener.onObjectCountChanged(mObjects.size());
+            
             return true;
         }
     }

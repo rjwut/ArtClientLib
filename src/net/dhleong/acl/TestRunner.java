@@ -121,20 +121,21 @@ public class TestRunner {
                         return;
                         
                     } else if (PlayerUpdatePacket.isExtensionOf(sys)) {
-                        PlayerUpdatePacket up = new PlayerUpdatePacket(sys);
-                        ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
-                        
-                        up.debugPrint();
-                        System.out.println("Player: " + plr);
-                        for (SystemType s : SystemType.values()) {
-                            float heat = plr.getSystemHeat(s);
-                            float energy = plr.getSystemEnergy(s);
-                            int coolant = plr.getSystemCoolant(s);
-                            System.out.println("    \\_> " + s + ": " +
-                                    coolant + " / " + energy + " :: " + heat);
-                        }
-                        
-                        System.out.println("--> " + up);
+//                        PlayerUpdatePacket up = new PlayerUpdatePacket(sys);
+//                        ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
+//                        
+//                        up.debugPrint();
+//                        System.out.println("Player: " + plr);
+//                        for (SystemType s : SystemType.values()) {
+//                            float heat = plr.getSystemHeat(s);
+//                            float energy = plr.getSystemEnergy(s);
+//                            int coolant = plr.getSystemCoolant(s);
+//                            System.out.println("    \\_> " + s + ": " +
+//                                    coolant + " / " + energy + " :: " + heat);
+//                        }
+//                        
+//                        System.out.println("--> " + up);
+                        return;
                     } else if (sys.getTargetType() == ArtemisObject.TYPE_PLAYER){
                         System.out.println("INFO << " + sys);
                         return;
@@ -176,7 +177,7 @@ public class TestRunner {
                 }
 
                  // default
-//                System.out.println("<< " + pkt);
+                System.out.println("<< " + pkt);
             }
         });
         
@@ -203,7 +204,6 @@ public class TestRunner {
         */
         
         net.send(new SetStationPacket(StationType.SCIENCE, true));
-        
 
 //        net.stop();
     }

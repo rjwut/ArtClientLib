@@ -138,11 +138,9 @@ public class ObjUpdatePacket implements ArtemisPacket {
                 shieldsRear = p.readFloat(SHLD_REAR, -1);
                 shieldsRearMax = p.readFloat(SHLD_REAR_MX, -1);
 
-                if (p.getTargetType() == ArtemisObject.TYPE_ENEMY) {
-                    //p.readFloat(DUNNO_NEW_0, 0);
-                    p.readShort(DUNNO_NEW_0);
-                    //p.readByte(DUNNO_NEW_0, (byte)0);
-                }
+                //p.readFloat(DUNNO_NEW_0, 0);
+                p.readShort(DUNNO_NEW_0);
+                //p.readByte(DUNNO_NEW_0, (byte)0);
                 
                 // ????
                 //p.readShort(DUNNO_NEW_1);
@@ -157,7 +155,11 @@ public class ObjUpdatePacket implements ArtemisPacket {
 
                 //p.readByte(DUNNO_NEW_2, (byte)0);
 //                p.readShort(DUNNO_NEW_2);
-                p.readInt(DUNNO_NEW_2);
+                if (p.getTargetType() == ArtemisObject.TYPE_ENEMY) {
+                    p.readInt(DUNNO_NEW_2);
+                } else {
+                    p.readShort(DUNNO_NEW_2);
+                }
 
                 /*
                 if (p.has(ELITE))
@@ -165,7 +167,12 @@ public class ObjUpdatePacket implements ArtemisPacket {
                 else
                     p.readShort(DUNNO_NEW_3);
                 */
-                p.readInt(DUNNO_NEW_3);
+                //p.readInt(DUNNO_NEW_3);
+                if (p.getTargetType() == ArtemisObject.TYPE_ENEMY) {
+                    p.readInt(DUNNO_NEW_3);
+                } else {
+                    p.readShort(DUNNO_NEW_3);
+                }
                 
                 if (p.getTargetType() == ArtemisObject.TYPE_ENEMY) {
                 

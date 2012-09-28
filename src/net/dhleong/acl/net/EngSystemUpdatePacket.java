@@ -8,7 +8,6 @@ import java.util.List;
 
 import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
-import net.dhleong.acl.world.ArtemisObject;
 
 public class EngSystemUpdatePacket implements ArtemisPacket {
     
@@ -302,9 +301,10 @@ public class EngSystemUpdatePacket implements ArtemisPacket {
     }
     
     public static boolean isExtensionOf(SystemInfoPacket pkt) {
-        return pkt.getTargetType() == ArtemisObject.TYPE_PLAYER && 
-                (pkt.getAction() == SystemInfoPacket.ACTION_UPDATE_SYSTEMS
-                    || pkt.getAction() == SystemInfoPacket.ACTION_UPDATE_SYSTEMS_2);
+//        return pkt.getTargetType() == ArtemisObject.TYPE_PLAYER && 
+//                (pkt.getAction() == SystemInfoPacket.ACTION_UPDATE_SYSTEMS
+//                    || pkt.getAction() == SystemInfoPacket.ACTION_UPDATE_SYSTEMS_2);
+        return false;
     }
 
     public boolean hasShields() {

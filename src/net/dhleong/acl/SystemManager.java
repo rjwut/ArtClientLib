@@ -152,14 +152,17 @@ public class SystemManager implements OnPacketListener {
         }
     }
     
-    public void updateOrCreate(ArtemisPositionable o) {
+    public boolean updateOrCreate(ArtemisPositionable o) {
         ArtemisPositionable p = (ArtemisPositionable) mObjects.get(o.getId());
         if (p != null) {
             p.updateFrom(o);
+            return false;
         } else {
             synchronized(this) {
                 mObjects.put(o.getId(), o);
             }
+            
+            return true;
         }
     }
 
@@ -234,6 +237,10 @@ public class SystemManager implements OnPacketListener {
         return null;
     }
     
+    public boolean hasSystemGrid() {
+        return mGrid != null;
+    }
+
     public void setOnObjectCountChangedListener(OnObjectCountChangeListener listener) {
         mListener = (listener == null) ? sDummyListener : listener;
     }

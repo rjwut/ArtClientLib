@@ -105,5 +105,27 @@ public class ArtemisPlayer extends BaseArtemisShip {
     @Override
     public void updateFrom(ArtemisPositionable eng) {
         super.updateFrom(eng);
+        
+        // it should be!
+        if (eng instanceof ArtemisPlayer) {
+            ArtemisPlayer plr = (ArtemisPlayer) eng;
+            
+            if (plr.mRedAlert != BoolState.UNKNOWN)
+                mRedAlert = plr.mRedAlert;
+            
+            if (plr.mEnergy != -1)
+                mEnergy = plr.mEnergy;
+            
+            for (int i=0; i<SYS_COUNT; i++) {
+                if (plr.mHeat[i] != -1)
+                    mHeat[i] = plr.mHeat[i];
+                
+                if (plr.mSystems[i] != -1)
+                    mSystems[i] = plr.mSystems[i];
+                
+                if (plr.mCoolant[i] != -1)
+                    mCoolant[i] = plr.mCoolant[i];
+            }
+        }
     }
 }

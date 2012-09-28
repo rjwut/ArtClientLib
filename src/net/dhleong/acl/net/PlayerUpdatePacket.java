@@ -281,4 +281,8 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     public static boolean isExtensionOf(SystemInfoPacket pkt) {
         return (pkt.getTargetType() == ArtemisObject.TYPE_PLAYER);
     }
+
+    public BoolState getRedAlert() {
+        return mRedAlert;
+    }
 }

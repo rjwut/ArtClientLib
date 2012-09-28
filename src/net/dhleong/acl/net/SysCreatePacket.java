@@ -164,7 +164,7 @@ public class SysCreatePacket implements ArtemisPacket {
         // new crazy is temporary as we transition to merged packet
         return (pkt.getAction() & SystemInfoPacket.ACTION_MASK) 
                     == ACTION_CREATE 
-                && (pkt.getTargetType() == ArtemisObject.TYPE_PLAYER 
-                    || pkt.getTargetType() == ArtemisObject.TYPE_STATION);
+//                && (pkt.getTargetType() == ArtemisObject.TYPE_PLAYER 
+                    && (pkt.getTargetType() == ArtemisObject.TYPE_STATION);
     }
 }

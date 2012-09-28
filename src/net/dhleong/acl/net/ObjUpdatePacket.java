@@ -130,9 +130,13 @@ public class ObjUpdatePacket implements ArtemisPacket {
                 //p.readShort(DUNNO_SKIP_3);
                 if (p.getTargetType() == ArtemisObject.TYPE_ENEMY)
                     p.readByte(DUNNO_SKIP_3, (byte)0); 
- 
+                else
+                    p.readShort(DUNNO_SKIP_3);
 
-                p.readShort(DUNNO_SKIP_4);
+                if (p.getTargetType() == ArtemisObject.TYPE_ENEMY)
+                    p.readShort(DUNNO_SKIP_4);
+                else if (p.getAction() != (byte)0xff) //hax?
+                    p.readInt(DUNNO_SKIP_4);
 
                 shieldsFront = p.readFloat(SHLD_FRNT, -1);
                 shieldsFrontMax = p.readFloat(SHLD_FRNT_MX, -1);

@@ -15,6 +15,7 @@ import net.dhleong.acl.net.EngSystemUpdatePacket;
 import net.dhleong.acl.net.GameMessagePacket;
 import net.dhleong.acl.net.ObjUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
+import net.dhleong.acl.net.PlayerUpdatePacket;
 import net.dhleong.acl.net.SetStationPacket;
 import net.dhleong.acl.net.SetStationPacket.StationType;
 import net.dhleong.acl.net.SysCreatePacket;
@@ -123,6 +124,22 @@ public class TestRunner {
 //                        up.debugPrint();
 //                        System.out.println("--> " + up);
                         return;
+                        
+                    } else if (PlayerUpdatePacket.isExtensionOf(sys)) {
+                        PlayerUpdatePacket up = new PlayerUpdatePacket(sys);
+                        ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
+                        
+                        up.debugPrint();
+                        System.out.println("Player: " + plr);
+                        for (SystemType s : SystemType.values()) {
+                            float heat = plr.getSystemHeat(s);
+                            float energy = plr.getSystemEnergy(s);
+                            int coolant = plr.getSystemCoolant(s);
+                            System.out.println("    \\_> " + s + ": " +
+                                    coolant + " / " + energy + " :: " + heat);
+                        }
+                        
+                        System.out.println("--> " + up);
                     } else if (sys.getTargetType() == ArtemisObject.TYPE_PLAYER){
                         System.out.println("INFO << " + sys);
                         return;

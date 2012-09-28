@@ -141,8 +141,10 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             p.readInt(ACTION_DUNNO_4);
             p.readInt(ACTION_DUNNO_5);
 
-            // !?!?!
-            p.readShort(ACTION_DUNNO_6); 
+            // !?!?! super hax
+            if (-1 == p.readShort(ACTION_DUNNO_6) &&
+                    (p.getAction() & (byte)0xf0) == (byte)0xb0)
+                p.readByte();
 
             // energy is apparently really special
 //            if (p.getAction() != 0x0 && !p.has(NO_ENERGY)) {
@@ -173,7 +175,10 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             // 6 bytes
             p.readShort(UNKNOWN_1);
             p.readShort(UNKNOWN_2);
-            p.readShort(UNKNOWN_3);
+
+            // wtf? hax!?
+            if (p.has(UNKNOWN_1) && p.has(UNKNOWN_2))
+                p.readShort(UNKNOWN_3);
             
             name = p.readName(ACTION_NAME_BYTE);
 
@@ -192,9 +197,11 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             
             p.readInt(UNKNOWN_FLT_0);
             p.readShort(UNKNOWN_6);
-            p.readShort(UNKNOWN_7);
-            p.readShort(UNKNOWN_8);
-            p.readShort(UNKNOWN_9);
+            p.readByte(UNKNOWN_7, (byte)0);
+
+            p.readByte(UNKNOWN_8, (byte)0);
+
+            p.readInt(UNKNOWN_9);
             p.readShort(UNKNOWN_10);
             p.readShort(UNKNOWN_11);            
 

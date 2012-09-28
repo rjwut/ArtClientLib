@@ -27,6 +27,10 @@ public class ObjectParser {
         args = PacketParser.getLendInt(mData, offset+5);
         offset += 9;
     }
+    
+    public boolean has(int ifArgsByte) {
+        return (action & ifArgsByte) != 0;
+    }
 
     public boolean hasMore() {
 //        return offset+10 < mData.length;
@@ -71,6 +75,16 @@ public class ObjectParser {
         } 
 
         return defaultValue;
+    }
+    
+    public long readLong(int ifArgsByte) {
+        if ((args & ifArgsByte) != 0) {
+            long value = PacketParser.getLendLong(mData, offset); 
+            offset += 8; 
+            return value;
+        }
+        
+        return -1;
     }
     
     public int readShort(int ifArgsByte) {

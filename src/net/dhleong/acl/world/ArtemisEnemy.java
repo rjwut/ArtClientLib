@@ -2,6 +2,15 @@ package net.dhleong.acl.world;
 
 public class ArtemisEnemy extends BaseArtemisShip {
     
+    // elite enemy bits
+    public static final int ELITE_INVIS_TO_MAIN_SCREEN  = 1;
+    public static final int ELITE_INVIS_TO_SCIENCE      = 2;
+    public static final int ELITE_INVIS_TO_TACTICAL     = 4;
+    public static final int ELITE_CLOAKING              = 8;
+    public static final int ELITE_HET                   = 16;
+    public static final int ELITE_WARP                  = 32;
+    public static final int ELITE_TELEPORT              = 64;
+    
     private boolean mIsScanned = false;
     
     public ArtemisEnemy(int objId, String name, int hullId) {

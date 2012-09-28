@@ -42,8 +42,8 @@ public class ObjUpdatePacket implements ArtemisPacket {
     private static final int SHLD_REAR_MX= 0x00000800; 
     private static final int DUNNO_NEW_0 = 0x00001000; // ?
     private static final int DUNNO_NEW_1 = 0x00002000; // ?
-    private static final int DUNNO_NEW_2 = 0x00004000; // ?
-    private static final int ELITE       = 0x00008000; // just a guess
+    private static final int ELITE       = 0x00004000; // just a guess
+    private static final int DUNNO_NEW_2 = 0x00008000; // ?
     
     private static final int DUNNO_NEW_3 = 0x00010000;
 
@@ -139,17 +139,15 @@ public class ObjUpdatePacket implements ArtemisPacket {
                 shieldsRearMax = p.readFloat(SHLD_REAR_MX, -1);
 
                 if (p.getTargetType() == ArtemisObject.TYPE_ENEMY) {
-                    p.readFloat(DUNNO_NEW_0, 0);
-                    //p.readShort(DUNNO_NEW_0);
+                    //p.readFloat(DUNNO_NEW_0, 0);
+                    p.readShort(DUNNO_NEW_0);
+                    //p.readByte(DUNNO_NEW_0, (byte)0);
                 }
                 
                 // ????
                 //p.readShort(DUNNO_NEW_1);
                 p.readByte(DUNNO_NEW_1, (byte)0);
 
-                //p.readShort(DUNNO_NEW_2);
-                p.readInt(DUNNO_NEW_2);
-                
                 if (p.getTargetType() == ArtemisObject.TYPE_ENEMY) {
 
                     // don't care right now
@@ -157,7 +155,17 @@ public class ObjUpdatePacket implements ArtemisPacket {
                     //p.readShort(ELITE);
                 }
 
-                p.readShort(DUNNO_NEW_3);
+                //p.readByte(DUNNO_NEW_2, (byte)0);
+//                p.readShort(DUNNO_NEW_2);
+                p.readInt(DUNNO_NEW_2);
+
+                /*
+                if (p.has(ELITE))
+                    p.readLong(DUNNO_NEW_3);
+                else
+                    p.readShort(DUNNO_NEW_3);
+                */
+                p.readInt(DUNNO_NEW_3);
                 
                 if (p.getTargetType() == ArtemisObject.TYPE_ENEMY) {
                 

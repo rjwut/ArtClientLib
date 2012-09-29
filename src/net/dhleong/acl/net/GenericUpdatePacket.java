@@ -34,15 +34,18 @@ public class GenericUpdatePacket implements ArtemisPacket {
     private static final byte WHALE_ACTION_X        = 0x08;
     private static final byte WHALE_ACTION_Y        = 0x10;
     private static final byte WHALE_ACTION_Z        = 0x20;
-    private static final byte WHALE_ACTION_BEARING  = 0x40;
-    private static final byte WHALE_ACTION_DUNNO_3  = (byte) 0x80;
+    private static final byte WHALE_ACTION_DUNNO_3  = 0x40;
+    private static final byte WHALE_ACTION_DUNNO_4  = (byte) 0x80;
+    
+    private static final byte WHALE_ARG_BEARING     = 0x01;
     
     private static final byte[] WHALE_ARGS = new byte[] {
-        0x01, 0x02, 0x04, 0x08,
+        0x02, 0x04, 0x08,
         0x10
     };
     
     public final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
+    private byte[] mData;
     
     public GenericUpdatePacket(SystemInfoPacket pkt) {
         ArtemisGenericObject.Type type = ArtemisGenericObject.Type
@@ -57,7 +60,9 @@ public class GenericUpdatePacket implements ArtemisPacket {
         init(data);
     }
     
-    private void init(byte[] mData) {
+    private void init(byte[] data) {
+        mData = data;
+        
         try {
             
             ObjectParser p = new ObjectParser(mData, 0);
@@ -84,9 +89,14 @@ public class GenericUpdatePacket implements ArtemisPacket {
                     x = p.readFloat(WHALE_ACTION_X, -1);
                     y = p.readFloat(WHALE_ACTION_Y, -1);
                     z = p.readFloat(WHALE_ACTION_Z, -1);
-                    bearing = p.readFloat(WHALE_ACTION_BEARING, -1);
                     
                     p.readInt(WHALE_ACTION_DUNNO_3);
+                    p.readInt(WHALE_ACTION_DUNNO_4);
+                    
+                    if ((whaleArgs & WHALE_ARG_BEARING) != 0)
+                        bearing = p.readFloat();
+                    else
+                        bearing = Float.MIN_VALUE;
                     
                     // read off extra args that I dunno what they are
                     for (int arg : WHALE_ARGS) {
@@ -147,6 +157,11 @@ public class GenericUpdatePacket implements ArtemisPacket {
     @Override
     public boolean write(OutputStream os) throws IOException {
         return false;
+    }
+    
+    @Override
+    public String toString() {
+        return BaseArtemisPacket.byteArrayToHexString(mData);
     }
     
     public static boolean isExtensionOf(SystemInfoPacket pkt) {

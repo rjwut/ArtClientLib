@@ -146,11 +146,15 @@ public class PlayerUpdatePacket implements ArtemisPacket {
                     (p.getAction() & (byte)0xf0) == (byte)0xb0)
                 p.readByte();
 
+            // ???
+            if ((p.getAction() & (byte)0xf0) == (byte)0x90)
+                p.readInt();
+
             // energy is apparently really special
 //            if (p.getAction() != 0x0 && !p.has(NO_ENERGY)) {
 //                energy = p.readFloat();
 //            }
-            if (p.getAction() == (byte) 0xff 
+            if ((p.getAction() & (byte)0x0f) == (byte) 0x0f 
                     || (p.has(ACTION_UPDATE_BYTE) && !p.has(NO_ENERGY))) {
                 energy = p.readFloat();
             } else {
@@ -158,7 +162,10 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             }
             
             // !?!?!
-            p.readShort(ACTION_DUNNO_6); 
+            if (p.has(ACTION_DUNNO_6) 
+                    || (p.getAction() & (byte)0xf0) == (byte)0x90)  {
+                p.readShort(); 
+            }
 
             p.readInt(DUNNO_SKIP_1);
             hullId = p.readInt(HULL_ID);
@@ -196,8 +203,11 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             }
             
             p.readInt(UNKNOWN_FLT_0);
-            p.readShort(UNKNOWN_6);
-            p.readByte(UNKNOWN_7, (byte)0);
+            //p.readShort(UNKNOWN_6);
+            p.readByte(UNKNOWN_6, (byte)0);
+
+            //p.readByte(UNKNOWN_7, (byte)0);
+            p.readShort(UNKNOWN_7);
 
             p.readByte(UNKNOWN_8, (byte)0);
 
@@ -272,8 +282,8 @@ public class PlayerUpdatePacket implements ArtemisPacket {
                 shieldsFront, shieldsFrontMax, shieldsRear, shieldsRearMax));
         for (int i=0; i<heat.length; i++) {
             System.out.println(SystemType.values()[i] + 
-                    "= " + heat[i] + 
-                    " :: " + sysEnergy[i] +
+                    "= " + sysEnergy[i] +
+                    " :: " + heat[i] + 
                     " :: " + coolant[i]);
         }
     }

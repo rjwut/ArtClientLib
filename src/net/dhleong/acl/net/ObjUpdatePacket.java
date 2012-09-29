@@ -83,7 +83,7 @@ public class ObjUpdatePacket implements ArtemisPacket {
 
         float x, y, z, bearing;
         float[] freqs = new float[SHLD_FREQS.length];
-        boolean scanned = false;
+        byte scanned = -1;
         String name = null;
         int hullId = -1;
         int elite = -1;
@@ -182,7 +182,7 @@ public class ObjUpdatePacket implements ArtemisPacket {
                 
                 if (p.getTargetType() == ArtemisObject.TYPE_ENEMY) {
                 
-                    scanned = p.readByte(SCANNED, (byte) 0) != 0;
+                    scanned = p.readByte(SCANNED, (byte) -1);
                 }
 
                 p.readInt(UNUSED_1);
@@ -211,8 +211,7 @@ public class ObjUpdatePacket implements ArtemisPacket {
                 default:
                 case ArtemisObject.TYPE_ENEMY:
                     ArtemisEnemy enemy = new ArtemisEnemy(p.getTargetId(), name, hullId);
-                    if (scanned)
-                        enemy.setScanned();
+                    enemy.setScanned(scanned);
                     enemy.setEliteBits(elite);
 
                     newObj = enemy;

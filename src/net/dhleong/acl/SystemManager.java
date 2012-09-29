@@ -131,6 +131,10 @@ public class SystemManager implements OnPacketListener {
                 mObjects.put(o.getId(), o);
             }
             
+            if (DEBUG && o.getName() == null)
+                throw new IllegalStateException("Creating object without name! " + 
+                        Integer.toHexString(o.getId()));
+            
             mListener.onObjectCountChanged(mObjects.size());
             
             return true;

@@ -15,7 +15,7 @@ public class ArtemisEnemy extends BaseArtemisShip {
     public static final byte SCAN_LEVEL_BASIC = 1;
     public static final byte SCAN_LEVEL_FULL  = 2;
     
-    private byte mScannedStatus = -1;
+    private byte mScannedLevel = -1;
     private int mElite;
     
     public ArtemisEnemy(int objId, String name, int hullId) {
@@ -33,7 +33,7 @@ public class ArtemisEnemy extends BaseArtemisShip {
     }
     
     public boolean isScanned(byte scanLevel) {
-        return mScannedStatus >= scanLevel;
+        return mScannedLevel >= scanLevel;
     }
     
     public void setEliteBits(int elite) {
@@ -41,7 +41,7 @@ public class ArtemisEnemy extends BaseArtemisShip {
     }
 
     public void setScanned(byte scanned) {
-        mScannedStatus = scanned;
+        mScannedLevel = scanned;
     }
     
     @Override
@@ -51,8 +51,8 @@ public class ArtemisEnemy extends BaseArtemisShip {
         // it SHOULD be an ArtemisEnemy
         if (eng instanceof ArtemisEnemy) {
             ArtemisEnemy cast = (ArtemisEnemy)eng;
-            if (cast.mScannedStatus != -1)
-                setScanned(cast.mScannedStatus);
+            if (cast.mScannedLevel != -1)
+                setScanned(cast.mScannedLevel);
             
             if (cast.mElite != -1)
                 setEliteBits(cast.mElite);
@@ -65,7 +65,36 @@ public class ArtemisEnemy extends BaseArtemisShip {
         return String.format("[ENEMY:%s:%d:%c]%s", 
                 mName, 
                 mHullId,
-                (mScannedStatus > 0) ? mScannedStatus : '_',
+                (mScannedLevel > 0) ? mScannedLevel : '_',
                 super.toString());
+    }
+
+    /**
+     * Return whether or not we can show the given scanLevel info
+     *  for ANY ArtemisObject. The logic is we can ALWAYS show
+     *  scan info for non-enemies; otherwise, if it IS an enemy,
+     *  it must pass {@link #isScanned(byte)} (of course)
+     *  
+     * @param obj
+     * @param scanLevel
+     * @return
+     */
+    public static boolean isScanned(ArtemisObject obj, byte scanLevel) {
+        return !(obj instanceof ArtemisEnemy) 
+                || ((ArtemisEnemy)obj).isScanned(scanLevel);
+    }
+
+    /**
+     * Convenience, checks if we've scanned the obj AT ALL 
+     *  (IE: do we have BASIC level scan?) 
+     * @param obj
+     * @return
+     */
+    public static boolean isScanned(ArtemisObject obj) {
+        return isScanned(obj, SCAN_LEVEL_BASIC);
+    }
+
+    public byte getScanLevel() {
+        return mScannedLevel;
     }
 }

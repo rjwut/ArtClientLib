@@ -102,7 +102,6 @@ public class TestRunner {
                     if (SysCreatePacket.isExtensionOf(sys)) {
                         SysCreatePacket create = new SysCreatePacket(sys);
                         create.debugPrint();
-                        
                         System.out.println("--> " + create);
                         return;
                     } else if (ObjUpdatePacket.isExtensionOf(sys)) {

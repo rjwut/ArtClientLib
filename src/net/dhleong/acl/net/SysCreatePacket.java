@@ -23,7 +23,7 @@ public class SysCreatePacket implements ArtemisPacket {
     private static final byte GEN_ACTION_Z = 0x04;
 
     /* one of these may be a name... */
-    private static final byte GEN_ACTION_DUNNO_1 = 0x08;
+    private static final byte GEN_ACTION_NAME    = 0x08;
     private static final byte GEN_ACTION_DUNNO_2 = 0x10;
     private static final byte GEN_ACTION_DUNNO_3 = 0x20;
 
@@ -107,6 +107,9 @@ public class SysCreatePacket implements ArtemisPacket {
     private void parseGenericObjects(SystemInfoPacket pkt) {
         ArtemisGenericObject.Type type = ArtemisGenericObject.Type
                 .fromInt(pkt.getTargetType());
+        if (type == null)
+            return; // unhandled type
+        
         ObjectParser p = new ObjectParser(mData, 0);
 
         try {
@@ -117,11 +120,12 @@ public class SysCreatePacket implements ArtemisPacket {
                 float y = p.readFloat(GEN_ACTION_Y, -1);
                 float z = p.readFloat(GEN_ACTION_Z, -1);
 
-                p.readInt(GEN_ACTION_DUNNO_1);
+                String name = p.readName(GEN_ACTION_NAME);
                 p.readInt(GEN_ACTION_DUNNO_2);
                 p.readInt(GEN_ACTION_DUNNO_3);
 
-                ArtemisGenericObject obj = new ArtemisGenericObject(p.getTargetId(), type);
+                ArtemisGenericObject obj = new ArtemisGenericObject(
+                        p.getTargetId(), name, type);
                 obj.setX(x);
                 obj.setY(y);
                 obj.setZ(z);

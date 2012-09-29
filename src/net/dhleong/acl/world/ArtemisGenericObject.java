@@ -5,6 +5,7 @@ public class ArtemisGenericObject extends BaseArtemisObject {
     
     public enum Type {
         MINE(ArtemisObject.TYPE_MINE),
+        ANOMALY(ArtemisObject.TYPE_ANOMALY),
         NEBULA(ArtemisObject.TYPE_NEBULA),
         BLACK_HOLE(ArtemisObject.TYPE_BLACK_HOLE),
         ASTEROID(ArtemisObject.TYPE_ASTEROID);
@@ -23,6 +24,8 @@ public class ArtemisGenericObject extends BaseArtemisObject {
             switch (targetType) {
             case ArtemisObject.TYPE_MINE:
                 return MINE;
+            case ArtemisObject.TYPE_ANOMALY:
+                return ANOMALY;
             case ArtemisObject.TYPE_NEBULA:
                 return NEBULA;
             case ArtemisObject.TYPE_BLACK_HOLE:
@@ -36,8 +39,8 @@ public class ArtemisGenericObject extends BaseArtemisObject {
     
     private final Type mType;
 
-    public ArtemisGenericObject(int objId, Type type) {
-        super(objId, type.toString());
+    public ArtemisGenericObject(int objId, String name, Type type) {
+        super(objId, (name == null ? type.toString() : name));
         
         mType = type;
     }

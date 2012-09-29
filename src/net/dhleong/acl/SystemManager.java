@@ -14,6 +14,7 @@ import net.dhleong.acl.net.SysCreatePacket;
 import net.dhleong.acl.net.SystemInfoPacket;
 import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ShipSystemGrid;
+import net.dhleong.acl.world.ArtemisGenericObject;
 import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisPositionable;
 
@@ -34,7 +35,7 @@ public class SystemManager implements OnPacketListener {
         public void onObjectCountChanged(int count) {/* nop */}
     };
 
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     
     private final HashMap<Integer, ArtemisObject> mObjects = 
             new HashMap<Integer, ArtemisObject>();
@@ -121,6 +122,7 @@ public class SystemManager implements OnPacketListener {
         }
     }
     
+    @SuppressWarnings("unused")
     public boolean updateOrCreate(ArtemisPositionable o) {
         ArtemisPositionable p = (ArtemisPositionable) mObjects.get(o.getId());
         if (p != null) {
@@ -143,6 +145,15 @@ public class SystemManager implements OnPacketListener {
 
     public synchronized void getAll(List<ArtemisObject> dest) {
         dest.addAll(mObjects.values());
+    }
+
+    public synchronized void getAllSelectable(List<ArtemisObject> dest) {
+        for (ArtemisObject obj : mObjects.values()) {
+            // tentative
+            if (!(obj instanceof ArtemisGenericObject) 
+                    && obj instanceof ArtemisPositionable)
+                dest.add(obj);
+        }
     }
 
     /**

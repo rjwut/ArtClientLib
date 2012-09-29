@@ -34,7 +34,7 @@ public class SystemManager implements OnPacketListener {
         public void onObjectCountChanged(int count) {/* nop */}
     };
 
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     
     private final HashMap<Integer, ArtemisObject> mObjects = 
             new HashMap<Integer, ArtemisObject>();
@@ -132,7 +132,7 @@ public class SystemManager implements OnPacketListener {
             }
             
             if (DEBUG && o.getName() == null)
-                throw new IllegalStateException("Creating object without name! " + 
+                throw new IllegalStateException("Creating " + p +" without name! " + 
                         Integer.toHexString(o.getId()));
             
             mListener.onObjectCountChanged(mObjects.size());

@@ -22,7 +22,6 @@ import net.dhleong.acl.net.SysCreatePacket;
 import net.dhleong.acl.net.SystemInfoPacket;
 import net.dhleong.acl.util.ShipSystemGrid;
 import net.dhleong.acl.world.ArtemisObject;
-import net.dhleong.acl.world.ArtemisPlayer;
 
 public class TestRunner {
 
@@ -114,20 +113,20 @@ public class TestRunner {
                         return;
                         
                     } else if (PlayerUpdatePacket.isExtensionOf(sys)) {
-                        PlayerUpdatePacket up = new PlayerUpdatePacket(sys);
-                        ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
-                        
-                        up.debugPrint();
-                        System.out.println("Player: " + plr);
-                        for (SystemType s : SystemType.values()) {
-                            float heat = plr.getSystemHeat(s);
-                            float energy = plr.getSystemEnergy(s);
-                            int coolant = plr.getSystemCoolant(s);
-                            System.out.println("    \\_> " + s + ": " +
-                                    coolant + " / " + energy + " :: " + heat);
-                        }
-                        
-                        System.out.println("--> " + up);
+//                        PlayerUpdatePacket up = new PlayerUpdatePacket(sys);
+//                        ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
+//                        
+//                        up.debugPrint();
+//                        System.out.println("Player: " + plr);
+//                        for (SystemType s : SystemType.values()) {
+//                            float heat = plr.getSystemHeat(s);
+//                            float energy = plr.getSystemEnergy(s);
+//                            int coolant = plr.getSystemCoolant(s);
+//                            System.out.println("    \\_> " + s + ": " +
+//                                    coolant + " / " + energy + " :: " + heat);
+//                        }
+//                        
+//                        System.out.println("--> " + up);
                         return;
                     } else if (sys.getTargetType() == ArtemisObject.TYPE_PLAYER){
                         System.out.println("INFO << " + sys);

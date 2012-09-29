@@ -20,25 +20,6 @@ public class ObjectParser {
         offset = initialOffset;
     }
     
-    public void start() {
-        start(false);
-    }
-    
-    public void start(boolean useLong) {
-        targetType = mData[offset++];
-        targetId = PacketParser.getLendInt(mData, offset);
-        
-        action = mData[offset+4];
-        
-        if (useLong) {
-            longArgs = PacketParser.getLendLong(mData, offset+5);
-            offset += 13;
-        } else {
-            args = PacketParser.getLendInt(mData, offset+5);
-            offset += 9;
-        }
-    }
-    
     public byte getAction() {
         return action;
     }
@@ -207,5 +188,35 @@ public class ObjectParser {
     
     public void skip(int bytes) {
         offset += bytes;
+    }
+
+    public void start() {
+        start(false);
+    }
+
+    public void start(boolean useLong) {
+        targetType = mData[offset++];
+        targetId = PacketParser.getLendInt(mData, offset);
+        
+        action = mData[offset+4];
+        
+        if (useLong) {
+            longArgs = PacketParser.getLendLong(mData, offset+5);
+            offset += 13;
+        } else {
+            args = PacketParser.getLendInt(mData, offset+5);
+            offset += 9;
+        }
+    }
+
+    /**
+     * If your packet only has action and no args
+     */
+    public void startNoArgs() {
+        targetType = mData[offset++];
+        targetId = PacketParser.getLendInt(mData, offset);
+        
+        action = mData[offset+4];
+        offset += 5;
     }
 }

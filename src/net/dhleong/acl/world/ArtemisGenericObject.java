@@ -8,7 +8,9 @@ public class ArtemisGenericObject extends BaseArtemisObject {
         ANOMALY(ArtemisObject.TYPE_ANOMALY),
         NEBULA(ArtemisObject.TYPE_NEBULA),
         BLACK_HOLE(ArtemisObject.TYPE_BLACK_HOLE),
-        ASTEROID(ArtemisObject.TYPE_ASTEROID);
+        ASTEROID(ArtemisObject.TYPE_ASTEROID),
+        MONSTER(ArtemisObject.TYPE_MONSTER),
+        WHALE(ArtemisObject.TYPE_WHALE);
         
         private final byte mIntType;
 
@@ -32,6 +34,10 @@ public class ArtemisGenericObject extends BaseArtemisObject {
                 return BLACK_HOLE;
             case ArtemisObject.TYPE_ASTEROID:
                 return ASTEROID;
+            case ArtemisObject.TYPE_MONSTER:
+                return MONSTER;
+            case ArtemisObject.TYPE_WHALE:
+                return WHALE;
             }
             return null;
         }

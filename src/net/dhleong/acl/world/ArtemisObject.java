@@ -10,11 +10,14 @@ public interface ArtemisObject {
     
     public static final byte TYPE_MINE      = 0x05;
     public static final byte TYPE_ANOMALY   = 0x06; 
-    // TODO whales?
+
     public static final byte TYPE_NEBULA    = 0x08;
-    // TODO monsters?
+
     public static final byte TYPE_BLACK_HOLE= 0x0a;
     public static final byte TYPE_ASTEROID  = 0x0b;
+    
+    public static final byte TYPE_MONSTER   = 0x0d;
+    public static final byte TYPE_WHALE     = 0x0e;
     
     public int getType();
     

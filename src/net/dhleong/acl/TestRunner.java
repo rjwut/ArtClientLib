@@ -12,6 +12,7 @@ import net.dhleong.acl.net.DestroyObjectPacket;
 import net.dhleong.acl.net.EngGridUpdatePacket;
 import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.GameMessagePacket;
+import net.dhleong.acl.net.GenericUpdatePacket;
 import net.dhleong.acl.net.ObjUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.net.PlayerUpdatePacket;
@@ -106,6 +107,15 @@ public class TestRunner {
                     } else if (ObjUpdatePacket.isExtensionOf(sys)) {
                         System.out.println("** Update: ");
                         ObjUpdatePacket up = new ObjUpdatePacket(sys);
+//                        up.debugPrint();
+                        for (ArtemisObject obj : up.mObjects)
+                            System.out.println(" + " + mgr.getObject(obj.getId()));
+                        System.out.println("--> " + up);
+                        return;
+                        
+                    } else if (GenericUpdatePacket.isExtensionOf(sys)) {
+                        System.out.println("** Update: ");
+                        GenericUpdatePacket up = new GenericUpdatePacket(sys);
 //                        up.debugPrint();
                         for (ArtemisObject obj : up.mObjects)
                             System.out.println(" + " + mgr.getObject(obj.getId()));

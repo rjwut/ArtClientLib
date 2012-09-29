@@ -6,9 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.dhleong.acl.ArtemisPacket;
-import net.dhleong.acl.util.ObjectParser;
-import net.dhleong.acl.world.ArtemisGenericObject;
 import net.dhleong.acl.world.ArtemisObject;
+import net.dhleong.acl.world.ArtemisPositionable;
 import net.dhleong.acl.world.ArtemisStation;
 
 public class SysCreatePacket implements ArtemisPacket {
@@ -18,20 +17,12 @@ public class SysCreatePacket implements ArtemisPacket {
     private static final byte FLAG_STATION_SKIP_2  = 0x08;
     private static final byte FLAG_STATION_POS     = 0x10;
 
-    private static final byte GEN_ACTION_X = 0x01;
-    private static final byte GEN_ACTION_Y = 0x02;
-    private static final byte GEN_ACTION_Z = 0x04;
-
-    /* one of these may be a name... */
-    private static final byte GEN_ACTION_NAME    = 0x08;
-    private static final byte GEN_ACTION_DUNNO_2 = 0x10;
-    private static final byte GEN_ACTION_DUNNO_3 = 0x20;
 
     private static final byte ACTION_CREATE = (byte) 0xf0;
 
     private final byte[] mData;
 
-    private final List<ArtemisObject> mCreatedObjs = new ArrayList<ArtemisObject>();
+    private final List<ArtemisPositionable> mCreatedObjs = new ArrayList<ArtemisPositionable>();
 
     public SysCreatePacket(SystemInfoPacket pkt) {
         mData = pkt.mData;
@@ -99,48 +90,11 @@ public class SysCreatePacket implements ArtemisPacket {
             //            debugPrint();
             //            System.out.println("DEBUG: Packet = " + this);
             break; }
-        default:
-            parseGenericObjects(pkt);
+            
         }
     }
 
-    private void parseGenericObjects(SystemInfoPacket pkt) {
-        ArtemisGenericObject.Type type = ArtemisGenericObject.Type
-                .fromInt(pkt.getTargetType());
-        if (type == null)
-            return; // unhandled type
-        
-        ObjectParser p = new ObjectParser(mData, 0);
-
-        try {
-            while (p.hasMore()) {
-                p.startNoArgs();
-
-                float x = p.readFloat(GEN_ACTION_X, -1);
-                float y = p.readFloat(GEN_ACTION_Y, -1);
-                float z = p.readFloat(GEN_ACTION_Z, -1);
-
-                String name = p.readName(GEN_ACTION_NAME);
-                p.readInt(GEN_ACTION_DUNNO_2);
-                p.readInt(GEN_ACTION_DUNNO_3);
-
-                ArtemisGenericObject obj = new ArtemisGenericObject(
-                        p.getTargetId(), name, type);
-                obj.setX(x);
-                obj.setY(y);
-                obj.setZ(z);
-
-                mCreatedObjs.add(obj);
-
-            }
-        } catch (RuntimeException e) {
-            debugPrint();
-            System.out.println("--> " + this);
-            throw e;
-        }
-    }
-
-    public List<ArtemisObject> getCreatedObjects() {
+    public List<ArtemisPositionable> getCreatedObjects() {
         return mCreatedObjs;
     }
 
@@ -173,9 +127,7 @@ public class SysCreatePacket implements ArtemisPacket {
     public static boolean isExtensionOf(SystemInfoPacket pkt) {
         //        return pkt.getAction() == SystemInfoPacket.ACTION_CREATE;
         // new crazy is temporary as we transition to merged packet
-        return pkt.getTargetType() > ArtemisObject.TYPE_STATION 
-                ||
-                (pkt.getAction() & SystemInfoPacket.ACTION_MASK) 
+        return (pkt.getAction() & SystemInfoPacket.ACTION_MASK) 
                 == ACTION_CREATE 
                 //                && (pkt.getTargetType() == ArtemisObject.TYPE_PLAYER 
                 && (pkt.getTargetType() == ArtemisObject.TYPE_STATION);

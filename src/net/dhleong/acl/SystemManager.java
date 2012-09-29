@@ -8,6 +8,7 @@ import net.dhleong.acl.net.DestroyObjectPacket;
 import net.dhleong.acl.net.EngGridUpdatePacket;
 import net.dhleong.acl.net.EngGridUpdatePacket.GridDamage;
 import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
+import net.dhleong.acl.net.GenericUpdatePacket;
 import net.dhleong.acl.net.ObjUpdatePacket;
 import net.dhleong.acl.net.PlayerUpdatePacket;
 import net.dhleong.acl.net.SysCreatePacket;
@@ -91,7 +92,7 @@ public class SystemManager implements OnPacketListener {
             // CREATE objects
             SysCreatePacket create = new SysCreatePacket(info);
             
-            List<ArtemisObject> newObjs = create.getCreatedObjects();
+            List<ArtemisPositionable> newObjs = create.getCreatedObjects();
             for (ArtemisObject obj : newObjs) {
                 synchronized(this) {
                     mObjects.put(obj.getId(), obj);
@@ -119,7 +120,14 @@ public class SystemManager implements OnPacketListener {
             
             updateOrCreate(e.getPlayer());
             
-        }
+        } else if (GenericUpdatePacket.isExtensionOf(info)) {
+            
+            GenericUpdatePacket e = new GenericUpdatePacket(info);
+            
+            for (ArtemisPositionable eng : e.mObjects) {
+                updateOrCreate(eng);
+            }
+        } 
     }
     
     @SuppressWarnings("unused")

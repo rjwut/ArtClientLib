@@ -1,6 +1,6 @@
 package net.dhleong.acl.world;
 
-public abstract class BaseArtemisShip extends BaseArtemisObject {
+public abstract class BaseArtemisShip extends BaseArtemisObject implements ArtemisBearable {
 
     protected final int mHullId;
     

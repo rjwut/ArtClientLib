@@ -102,40 +102,33 @@ public class TestRunner {
                     if (SysCreatePacket.isExtensionOf(sys)) {
                         SysCreatePacket create = new SysCreatePacket(sys);
                         create.debugPrint();
-                        ArtemisObject obj = create.getCreatedObjects().get(0);
-                        if (obj instanceof ArtemisPlayer) {
-                            ArtemisPlayer plr = (ArtemisPlayer) obj;
-                            for (SystemType s : SystemType.values()) {
-                                float energy = plr.getSystemEnergy(s);
-                                int coolant = plr.getSystemCoolant(s);
-                                System.out.println("    \\_> " + s + ": " +
-                                        coolant + " / " + energy);
-                            }
-                        }
+                        
                         System.out.println("--> " + create);
                         return;
                     } else if (ObjUpdatePacket.isExtensionOf(sys)) {
-//                        System.out.println("** Update: " + mgr.getObject(sys.getTarget()));
-//                        ObjUpdatePacket up = new ObjUpdatePacket(sys);
+                        System.out.println("** Update: ");
+                        ObjUpdatePacket up = new ObjUpdatePacket(sys);
 //                        up.debugPrint();
-//                        System.out.println("--> " + up);
+                        for (ArtemisObject obj : up.mObjects)
+                            System.out.println(" + " + mgr.getObject(obj.getId()));
+                        System.out.println("--> " + up);
                         return;
                         
                     } else if (PlayerUpdatePacket.isExtensionOf(sys)) {
-//                        PlayerUpdatePacket up = new PlayerUpdatePacket(sys);
-//                        ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
-//                        
-//                        up.debugPrint();
-//                        System.out.println("Player: " + plr);
-//                        for (SystemType s : SystemType.values()) {
-//                            float heat = plr.getSystemHeat(s);
-//                            float energy = plr.getSystemEnergy(s);
-//                            int coolant = plr.getSystemCoolant(s);
-//                            System.out.println("    \\_> " + s + ": " +
-//                                    coolant + " / " + energy + " :: " + heat);
-//                        }
-//                        
-//                        System.out.println("--> " + up);
+                        PlayerUpdatePacket up = new PlayerUpdatePacket(sys);
+                        ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
+                        
+                        up.debugPrint();
+                        System.out.println("Player: " + plr);
+                        for (SystemType s : SystemType.values()) {
+                            float heat = plr.getSystemHeat(s);
+                            float energy = plr.getSystemEnergy(s);
+                            int coolant = plr.getSystemCoolant(s);
+                            System.out.println("    \\_> " + s + ": " +
+                                    coolant + " / " + energy + " :: " + heat);
+                        }
+                        
+                        System.out.println("--> " + up);
                         return;
                     } else if (sys.getTargetType() == ArtemisObject.TYPE_PLAYER){
                         System.out.println("INFO << " + sys);

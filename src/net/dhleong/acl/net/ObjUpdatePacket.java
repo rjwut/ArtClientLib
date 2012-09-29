@@ -160,7 +160,8 @@ public class ObjUpdatePacket implements ArtemisPacket {
 
                 //p.readByte(DUNNO_NEW_2, (byte)0);
 //                p.readShort(DUNNO_NEW_2);
-                if (p.getTargetType() == ArtemisObject.TYPE_ENEMY) {
+                if (p.getTargetType() == ArtemisObject.TYPE_ENEMY
+                        || p.getAction() != (byte)0xff) {
                     p.readInt(DUNNO_NEW_2);
                 } else {
                     p.readShort(DUNNO_NEW_2);

@@ -88,11 +88,15 @@ public final class GridCoord {
         // put it in the queue, if there's room. 
         int size = sCache.size();
         if (size >= CACHE_SIZE) {
-            GridCoord old = sCache.poll(); // free up space
-            if (DEBUG) System.out.println("~~ Removed: " + old + " for " + c);
+            synchronized(sCache) {
+                GridCoord old = sCache.poll(); // free up space
+                if (DEBUG) System.out.println("~~ Removed: " + old + " for " + c);
+            }
         }
 
-        sCache.offer(c);
+        synchronized(sCache) {
+            sCache.offer(c);
+        }
 
         return c;
     }

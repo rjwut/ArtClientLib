@@ -2,7 +2,7 @@ package net.dhleong.acl.world;
 
 public abstract class BaseArtemisShip extends BaseArtemisObject implements ArtemisBearable {
 
-    protected final int mHullId;
+    protected int mHullId;
     
     private float mBearing;
 
@@ -20,10 +20,12 @@ public abstract class BaseArtemisShip extends BaseArtemisObject implements Artem
         return mHullId;
     }
 
+    @Override
     public float getBearing() {
         return mBearing;
     }
 
+    @Override
     public void setBearing(float bearing) {
         mBearing = bearing;
     }
@@ -37,31 +39,6 @@ public abstract class BaseArtemisShip extends BaseArtemisObject implements Artem
                 getShieldsFront(), getShieldsFrontMax(), getShieldsRear(), getShieldsRearMax());
     }
     
-    @Override
-    public void updateFrom(ArtemisPositionable eng) {
-        super.updateFrom(eng);
-        
-        if (eng instanceof BaseArtemisShip) {
-            BaseArtemisShip ship = (BaseArtemisShip) eng;
-            if (ship.getBearing() != Float.MIN_VALUE) 
-                setBearing(ship.getBearing());
-            
-            if (ship.mShieldsFront != -1)
-                mShieldsFront = ship.mShieldsFront;
-            if (ship.mShieldsFrontMax != -1)
-                mShieldsFrontMax = ship.mShieldsFrontMax;
-            if (ship.mShieldsRear != -1)
-                mShieldsRear = ship.mShieldsRear;
-            if (ship.mShieldsRearMax != -1)
-                mShieldsRearMax = ship.mShieldsRearMax;
-            
-            for (int i=0; i<mShieldFreqs.length; i++) {
-                if (ship.mShieldFreqs[i] != -1)
-                    mShieldFreqs[i] = ship.mShieldFreqs[i];
-            }
-        }
-    }
-
     public float getShieldsFront() {
         return mShieldsFront;
     }
@@ -100,5 +77,33 @@ public abstract class BaseArtemisShip extends BaseArtemisObject implements Artem
     
     public void setShieldFreq(int freq, float value) {
         mShieldFreqs[freq] = value;
+    }
+
+    @Override
+    public void updateFrom(ArtemisPositionable eng) {
+        super.updateFrom(eng);
+        
+        if (eng instanceof BaseArtemisShip) {
+            BaseArtemisShip ship = (BaseArtemisShip) eng;
+            if (mHullId == -1 && ship.mHullId != -1)
+                mHullId = ship.mHullId;
+            
+            if (ship.getBearing() != Float.MIN_VALUE) 
+                setBearing(ship.getBearing());
+            
+            if (ship.mShieldsFront != -1)
+                mShieldsFront = ship.mShieldsFront;
+            if (ship.mShieldsFrontMax != -1)
+                mShieldsFrontMax = ship.mShieldsFrontMax;
+            if (ship.mShieldsRear != -1)
+                mShieldsRear = ship.mShieldsRear;
+            if (ship.mShieldsRearMax != -1)
+                mShieldsRearMax = ship.mShieldsRearMax;
+            
+            for (int i=0; i<mShieldFreqs.length; i++) {
+                if (ship.mShieldFreqs[i] != -1)
+                    mShieldFreqs[i] = ship.mShieldFreqs[i];
+            }
+        }
     }
 }

@@ -3,7 +3,7 @@ package net.dhleong.acl.world;
 public abstract class BaseArtemisObject implements ArtemisPositionable {
 
     protected final int mId;
-    public final String mName;
+    public String mName;
     
     private float mX;
     private float mY;
@@ -74,6 +74,9 @@ public abstract class BaseArtemisObject implements ArtemisPositionable {
     
     @Override
     public void updateFrom(ArtemisPositionable eng) {
+        if (mName == null && eng.getName() != null)
+            mName = eng.getName();
+        
         if (eng.getX() != -1) setX(eng.getX());
         if (eng.getY() != -1) setY(eng.getY());
         if (eng.getZ() != -1) setZ(eng.getZ());

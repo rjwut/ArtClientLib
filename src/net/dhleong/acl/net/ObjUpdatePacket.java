@@ -42,6 +42,11 @@ public class ObjUpdatePacket implements ArtemisPacket {
     private static final int SHLD_REAR_MX= 0x00000800; 
     private static final int DUNNO_NEW_0 = 0x00001000; // ?
     private static final int DUNNO_NEW_1 = 0x00002000; // ?
+
+    /* 
+     * I think the bits 0x003FC000 represent system 
+     * damage for neutral ships....
+     */
     private static final int ELITE       = 0x00004000; // just a guess
     private static final int DUNNO_NEW_2 = 0x00008000; // ?
     
@@ -185,6 +190,8 @@ public class ObjUpdatePacket implements ArtemisPacket {
                 if (p.getTargetType() == ArtemisObject.TYPE_ENEMY) {
                 
                     scanned = p.readByte(SCANNED, (byte) -1);
+                } else {
+                    p.readInt(SCANNED);
                 }
 
                 p.readInt(UNUSED_1);

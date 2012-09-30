@@ -16,6 +16,15 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
     private float mEnergy;
 
+    /**
+     * 
+     * @param objId
+     * @param name
+     * @param hullId
+     * @param shipNumber The number [1,6] of the ship,
+     *  as found in the packet. NOT the ship index!
+     * @param redAlert
+     */
     public ArtemisPlayer(int objId, String name, int hullId, 
             int shipNumber, BoolState redAlert) {
         super(objId, name, hullId);
@@ -48,11 +57,13 @@ public class ArtemisPlayer extends BaseArtemisShip {
     }
 
     /**
-     * Get this ship's player ship number
-     * @return int in [1,6]
+     * Get this ship's player ship index. This
+     *  is NOT the displayed number, but the INDEX
+     *  (used in SystemManager#getPlayerShip) 
+     * @return int in [0,5]
      */
-    public int getShipNumber() {
-        return mShipNumber;
+    public int getShipIndex() {
+        return mShipNumber-1;
     }
     
     /**

@@ -1,6 +1,5 @@
 package net.dhleong.acl;
 
-import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.ObjUpdatePacket;
 import net.dhleong.acl.net.PlayerUpdatePacket;
 
@@ -41,12 +40,13 @@ public class PacketTestingRunner {
     }
 
     private static void testOtherShips(String[] tests) {
-        for (String s : tests) {
-            byte[] bytes = hexStringToByteArray(s);
-            if (!BaseArtemisPacket.byteArrayToHexString(bytes).equals(s))
-                throw new RuntimeException("byte conversion fail");
+        for (int i=0; i<tests.length; i++) {
+            byte[] bytes = hexStringToByteArray(tests[i]);
+//            if (!BaseArtemisPacket.byteArrayToHexString(bytes).equals(s))
+//                throw new RuntimeException("byte conversion fail");
             
             System.out.println();
+            System.out.println("Test[" + i + "] of total " + tests.length);
             ObjUpdatePacket pkt = new ObjUpdatePacket(bytes);
             pkt.debugPrint();
             System.out.println("--> " + pkt);
@@ -54,11 +54,14 @@ public class PacketTestingRunner {
         }
     }
 
-    private static void testPlayers(String[] plrTests) {
-        for (String s : plrTests) {
-            byte[] bytes = hexStringToByteArray(s);
+    private static void testPlayers(String[] tests) {
+        for (int i=0; i<tests.length; i++) {
+            byte[] bytes = hexStringToByteArray(tests[i]);
+//            if (!BaseArtemisPacket.byteArrayToHexString(bytes).equals(s))
+//                throw new RuntimeException("byte conversion fail");
             
             System.out.println();
+            System.out.println("Test[" + i + "] of total " + tests.length);
             PlayerUpdatePacket pkt = new PlayerUpdatePacket(bytes);
             pkt.debugPrint();
             System.out.println("--> " + pkt);

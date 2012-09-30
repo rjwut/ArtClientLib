@@ -142,8 +142,9 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             p.readInt(ACTION_DUNNO_5);
 
             // !?!?! super hax
-            if (-1 == p.readShort(ACTION_DUNNO_6) &&
-                    (p.getAction() & (byte)0xf0) == (byte)0xb0)
+            //if (!p.has(ACTION_DUNNO_6) &&
+            p.readShort(ACTION_DUNNO_6);
+            if ((p.getAction() & (byte)0xf0) == (byte)0xb0)
                 p.readByte();
 
             // ???
@@ -163,7 +164,8 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             
             // !?!?!
             if (p.has(ACTION_DUNNO_6) 
-                    || (p.getAction() & (byte)0xf0) == (byte)0x90)  {
+                    || (p.getAction() & (byte)0xf0) == (byte)0x90
+                    || p.has(HULL_ID)) {
                 p.readShort(); 
             }
 

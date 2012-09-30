@@ -17,6 +17,7 @@ import net.dhleong.acl.net.ObjUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.net.PlayerUpdatePacket;
 import net.dhleong.acl.net.ReadyPacket;
+import net.dhleong.acl.net.SetShipPacket;
 import net.dhleong.acl.net.SetStationPacket;
 import net.dhleong.acl.net.SetStationPacket.StationType;
 import net.dhleong.acl.net.SysCreatePacket;
@@ -184,6 +185,7 @@ public class TestRunner {
         });
         
         net.start();
+        net.send(new SetShipPacket(SetShipPacket.SHIP_1_ARTEMIS));
         
         
 //        // ENG test 

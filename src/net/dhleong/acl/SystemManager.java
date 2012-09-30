@@ -74,6 +74,7 @@ public class SystemManager implements OnPacketListener {
             mListener.onObjectCountChanged(mObjects.size());
             return;
         } else if (pkt instanceof EngGridUpdatePacket) {
+            // this ONLY goes to the appropriate ship's engineer station
             EngGridUpdatePacket gridUp = (EngGridUpdatePacket) pkt;
             List<GridDamage> damages = gridUp.getDamage();
             if (damages.size() > 0 && mGridDamage != null) {

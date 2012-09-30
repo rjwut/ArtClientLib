@@ -5,13 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.dhleong.acl.net.DestroyObjectPacket;
-import net.dhleong.acl.net.EngGridUpdatePacket;
-import net.dhleong.acl.net.EngGridUpdatePacket.GridDamage;
-import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
+import net.dhleong.acl.net.eng.EngGridUpdatePacket;
+import net.dhleong.acl.net.eng.EngGridUpdatePacket.GridDamage;
+import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
+import net.dhleong.acl.net.setup.SetShipPacket;
 import net.dhleong.acl.net.GenericUpdatePacket;
 import net.dhleong.acl.net.ObjUpdatePacket;
 import net.dhleong.acl.net.PlayerUpdatePacket;
-import net.dhleong.acl.net.SetShipPacket;
 import net.dhleong.acl.net.SysCreatePacket;
 import net.dhleong.acl.net.SystemInfoPacket;
 import net.dhleong.acl.util.GridCoord;

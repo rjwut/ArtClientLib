@@ -1,8 +1,10 @@
-package net.dhleong.acl.net;
+package net.dhleong.acl.net.eng;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import net.dhleong.acl.net.BaseArtemisPacket;
+import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.util.GridCoord;
 
 public class EngGridUpdatePacket extends BaseArtemisPacket {

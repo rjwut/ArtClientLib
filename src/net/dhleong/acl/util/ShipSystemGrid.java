@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
+import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.PacketParser;
 
 /**

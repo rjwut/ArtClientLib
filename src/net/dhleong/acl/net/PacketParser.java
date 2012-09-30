@@ -5,6 +5,8 @@ import java.io.InputStream;
 
 import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.ArtemisPacketException;
+import net.dhleong.acl.net.comms.CommsIncomingPacket;
+import net.dhleong.acl.net.eng.EngGridUpdatePacket;
 
 public class PacketParser {
     

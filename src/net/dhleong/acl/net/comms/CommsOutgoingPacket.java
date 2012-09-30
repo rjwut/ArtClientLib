@@ -1,5 +1,7 @@
-package net.dhleong.acl.net;
+package net.dhleong.acl.net.comms;
 
+import net.dhleong.acl.net.BaseArtemisPacket;
+import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.world.ArtemisObject;
 
 public class CommsOutgoingPacket extends BaseArtemisPacket {

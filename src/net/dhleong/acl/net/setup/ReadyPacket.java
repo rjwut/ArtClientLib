@@ -1,4 +1,7 @@
-package net.dhleong.acl.net;
+package net.dhleong.acl.net.setup;
+
+import net.dhleong.acl.net.BaseArtemisPacket;
+import net.dhleong.acl.net.PacketParser;
 
 
 /**

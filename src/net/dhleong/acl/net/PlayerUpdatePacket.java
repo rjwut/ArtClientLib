@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import net.dhleong.acl.ArtemisPacket;
-import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
+import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.util.ObjectParser;
 import net.dhleong.acl.world.ArtemisObject;

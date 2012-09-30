@@ -1,6 +1,6 @@
 package net.dhleong.acl.world;
 
-import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
+import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.util.BoolState;
 
 

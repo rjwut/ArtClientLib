@@ -9,6 +9,8 @@ package net.dhleong.acl.net;
  */
 public class SetShipPacket extends BaseArtemisPacket {
     
+    public static final int TOTAL_SHIPS = 6;
+    
     public static final int SHIP_1_ARTEMIS  = 0;
     public static final int SHIP_2_INTREPID = 1;
     public static final int SHIP_3_AEGIS    = 2;

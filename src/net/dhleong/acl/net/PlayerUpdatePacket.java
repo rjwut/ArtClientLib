@@ -108,7 +108,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     private ArtemisPlayer mPlayer;
     
     String name;
-    int hullId;
+    int shipNumber, hullId;
     float energy;
     float x, y, z, bearing;
     BoolState mRedAlert;
@@ -169,7 +169,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
                 p.readShort(); 
             }
 
-            p.readInt(DUNNO_SKIP_1);
+            shipNumber = p.readInt(DUNNO_SKIP_1);
             hullId = p.readInt(HULL_ID);
 
             x = p.readFloat(POS_X, -1);
@@ -229,7 +229,8 @@ public class PlayerUpdatePacket implements ArtemisPacket {
                 coolant[i] = p.readByte(COOLANTS[i], -1);
             }
             
-            mPlayer = new ArtemisPlayer(p.getTargetId(), name, hullId, mRedAlert);
+            mPlayer = new ArtemisPlayer(p.getTargetId(), name, hullId, 
+                shipNumber, mRedAlert);
             mPlayer.setX(x);
             mPlayer.setY(y);
             mPlayer.setZ(z);
@@ -279,6 +280,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     public void debugPrint() {
         System.out.println(String.format("DEBUG: %s:%d(%.0f)@[%.2f,%.2f,%.2f]<%.2f>", 
                 name, hullId, energy, x, y, z, bearing));
+        System.out.println("-------Ship numb: " + shipNumber);
         System.out.println("-------Red Alert: " + mRedAlert);
         System.out.println(String.format("-------[%.1f/%.2f  %.1f,%.1f]", 
                 shieldsFront, shieldsFrontMax, shieldsRear, shieldsRearMax));

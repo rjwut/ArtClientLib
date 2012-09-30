@@ -11,12 +11,14 @@ import net.dhleong.acl.net.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.GenericUpdatePacket;
 import net.dhleong.acl.net.ObjUpdatePacket;
 import net.dhleong.acl.net.PlayerUpdatePacket;
+import net.dhleong.acl.net.SetShipPacket;
 import net.dhleong.acl.net.SysCreatePacket;
 import net.dhleong.acl.net.SystemInfoPacket;
 import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ShipSystemGrid;
 import net.dhleong.acl.world.ArtemisGenericObject;
 import net.dhleong.acl.world.ArtemisObject;
+import net.dhleong.acl.world.ArtemisPlayer;
 import net.dhleong.acl.world.ArtemisPositionable;
 
 /**
@@ -44,6 +46,8 @@ public class SystemManager implements OnPacketListener {
 
     private HashMap<GridCoord, Float> mGridDamage;
     private ShipSystemGrid mGrid;
+    
+    private final ArtemisPlayer[] mPlayers = new ArtemisPlayer[SetShipPacket.TOTAL_SHIPS];
     
     /** Manually add an obj to the system */
     public void addObject(ArtemisObject obj) {
@@ -132,14 +136,30 @@ public class SystemManager implements OnPacketListener {
     }
     
     @SuppressWarnings("unused")
-    public boolean updateOrCreate(ArtemisPositionable o) {
+    private boolean updateOrCreate(ArtemisPositionable o) {
         ArtemisPositionable p = (ArtemisPositionable) mObjects.get(o.getId());
         if (p != null) {
             p.updateFrom(o);
+            
+            if (o instanceof ArtemisPlayer) {
+                // just in case we get the ship number AFTER
+                //  first creating the object, we store the
+                //  updated ORIGINAL with the new ship number
+                ArtemisPlayer plr = (ArtemisPlayer) o;
+                if (plr.getShipNumber() > 0)
+                    mPlayers[plr.getShipNumber()-1] = (ArtemisPlayer) p;
+            }
+            
             return false;
         } else {
             synchronized(this) {
                 mObjects.put(o.getId(), o);
+            }
+            
+            if (o instanceof ArtemisPlayer) {
+                ArtemisPlayer plr = (ArtemisPlayer) o;
+                if (plr.getShipNumber() > 0)
+                    mPlayers[plr.getShipNumber()-1] = plr;
             }
             
             if (DEBUG && o.getName() == null)
@@ -199,6 +219,22 @@ public class SystemManager implements OnPacketListener {
 
     public ArtemisObject getObject(int objId) {
         return mObjects.get(objId);
+    }
+    
+    /**
+     * Get the player ship by index. Possible values
+     *  are the SetShipPacket#SHIP_* constants (that
+     *  is, ints in range [0,5]) and NOT the 
+     *  {@link ArtemisPlayer#getShipNumber()} value
+     *  
+     * @param shipIndex
+     * @return
+     */
+    public ArtemisPlayer getPlayerShip(int shipIndex) {
+        if (shipIndex < 0 || shipIndex >= mPlayers.length)
+            throw new IllegalArgumentException("Invalid ship index " + shipIndex);
+        
+        return mPlayers[shipIndex];
     }
     
     /**

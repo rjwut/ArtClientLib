@@ -106,12 +106,12 @@ public class TestRunner {
                         System.out.println("--> " + create);
                         return;
                     } else if (ObjUpdatePacket.isExtensionOf(sys)) {
-                        System.out.println("** Update: ");
-                        ObjUpdatePacket up = new ObjUpdatePacket(sys);
-//                        up.debugPrint();
-                        for (ArtemisObject obj : up.mObjects)
-                            System.out.println(" + " + mgr.getObject(obj.getId()));
-                        System.out.println("--> " + up);
+//                        System.out.println("** Update: ");
+//                        ObjUpdatePacket up = new ObjUpdatePacket(sys);
+////                        up.debugPrint();
+//                        for (ArtemisObject obj : up.mObjects)
+//                            System.out.println(" + " + mgr.getObject(obj.getId()));
+//                        System.out.println("--> " + up);
                         return;
                         
                     } else if (GenericUpdatePacket.isExtensionOf(sys)) {
@@ -186,6 +186,7 @@ public class TestRunner {
         
         net.start();
         net.send(new SetShipPacket(SetShipPacket.SHIP_1_ARTEMIS));
+//        net.send(new SetShipPacket(SetShipPacket.SHIP_3_AEGIS));
         
         
 //        // ENG test 

@@ -9,16 +9,19 @@ public class ArtemisPlayer extends BaseArtemisShip {
     private static final int SYS_COUNT = SystemType.values().length;
 
     private BoolState mRedAlert;
+    private int mShipNumber;
     private final float[] mHeat = new float[SYS_COUNT];
     private final float[] mSystems = new float[SYS_COUNT];
     private final int[] mCoolant = new int[SYS_COUNT];
 
     private float mEnergy;
 
-    public ArtemisPlayer(int objId, String name, int hullId, BoolState redAlert) {
+    public ArtemisPlayer(int objId, String name, int hullId, 
+            int shipNumber, BoolState redAlert) {
         super(objId, name, hullId);
         
         mRedAlert = redAlert;
+        mShipNumber = shipNumber;
         
         // pre-fill
         for (int i=0; i<SYS_COUNT; i++) {
@@ -42,6 +45,14 @@ public class ArtemisPlayer extends BaseArtemisShip {
 //                ? mCoolant.get(sys)
 //                : -1;
         return mCoolant[sys.ordinal()];
+    }
+
+    /**
+     * Get this ship's player ship number
+     * @return int in [1,6]
+     */
+    public int getShipNumber() {
+        return mShipNumber;
     }
     
     /**
@@ -75,7 +86,8 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
     @Override
     public String toString() {
-        return String.format("[PLAYER:%s:%d:%c]", 
+        return String.format("[PLAYER#%d:%s:%d:%c]", 
+                mShipNumber,
                 mName,
                 mHullId,
                 isRedAlert() ? 'R' : '_');
@@ -109,6 +121,9 @@ public class ArtemisPlayer extends BaseArtemisShip {
         // it should be!
         if (eng instanceof ArtemisPlayer) {
             ArtemisPlayer plr = (ArtemisPlayer) eng;
+
+            if (mShipNumber == -1)
+                mShipNumber = plr.mShipNumber;
             
             if (plr.mRedAlert != BoolState.UNKNOWN)
                 mRedAlert = plr.mRedAlert;

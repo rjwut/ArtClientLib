@@ -115,7 +115,12 @@ public class GenericUpdatePacket implements ArtemisPacket {
                     z = p.readFloat(GEN_ACTION_Z, -1);
                     bearing = -1;
     
-                    name = p.readName(GEN_ACTION_NAME);
+                    if (type.hasName) {
+                        name = p.readName(GEN_ACTION_NAME);
+                    } else {
+                        name = null;
+                        p.readInt(GEN_ACTION_NAME);
+                    }
                     p.readInt(GEN_ACTION_DUNNO_2);
                     p.readInt(GEN_ACTION_DUNNO_3);
                     

@@ -4,18 +4,22 @@ package net.dhleong.acl.world;
 public class ArtemisGenericObject extends BaseArtemisObject {
     
     public enum Type {
-        MINE(ArtemisObject.TYPE_MINE),
-        ANOMALY(ArtemisObject.TYPE_ANOMALY),
-        NEBULA(ArtemisObject.TYPE_NEBULA),
-        BLACK_HOLE(ArtemisObject.TYPE_BLACK_HOLE),
-        ASTEROID(ArtemisObject.TYPE_ASTEROID),
-        MONSTER(ArtemisObject.TYPE_MONSTER),
-        WHALE(ArtemisObject.TYPE_WHALE);
+        MINE(ArtemisObject.TYPE_MINE, false),
+        ANOMALY(ArtemisObject.TYPE_ANOMALY, true),
+        NEBULA(ArtemisObject.TYPE_NEBULA, false),
+        BLACK_HOLE(ArtemisObject.TYPE_BLACK_HOLE, true),
+        ASTEROID(ArtemisObject.TYPE_ASTEROID, false),
+        MONSTER(ArtemisObject.TYPE_MONSTER, true),
+        WHALE(ArtemisObject.TYPE_WHALE, true);
         
         private final byte mIntType;
+        
+        /** Whether or not this type can have a name */
+        public final boolean hasName;
 
-        Type(byte intType) {
+        Type(byte intType, boolean hasName) {
             mIntType = intType;
+            this.hasName = hasName;
         }
         
         public byte asInt() {

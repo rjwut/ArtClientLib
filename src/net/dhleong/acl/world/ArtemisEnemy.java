@@ -97,4 +97,9 @@ public class ArtemisEnemy extends BaseArtemisShip {
     public byte getScanLevel() {
         return mScannedLevel;
     }
+
+    public static boolean hasEliteAbility(ArtemisObject obj, int ability) {
+        return (obj instanceof ArtemisEnemy) 
+                && ((ArtemisEnemy)obj).hasEliteAbility(ability);
+    }
 }

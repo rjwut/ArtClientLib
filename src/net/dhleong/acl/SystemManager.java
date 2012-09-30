@@ -146,7 +146,7 @@ public class SystemManager implements OnPacketListener {
                 //  first creating the object, we store the
                 //  updated ORIGINAL with the new ship number
                 ArtemisPlayer plr = (ArtemisPlayer) o;
-                if (plr.getShipIndex() > 0)
+                if (plr.getShipIndex() >= 0)
                     mPlayers[plr.getShipIndex()] = (ArtemisPlayer) p;
             }
             
@@ -158,7 +158,7 @@ public class SystemManager implements OnPacketListener {
             
             if (o instanceof ArtemisPlayer) {
                 ArtemisPlayer plr = (ArtemisPlayer) o;
-                if (plr.getShipIndex() > 0)
+                if (plr.getShipIndex() >= 0)
                     mPlayers[plr.getShipIndex()] = plr;
             }
             

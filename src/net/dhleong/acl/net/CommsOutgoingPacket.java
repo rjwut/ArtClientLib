@@ -26,6 +26,20 @@ public class CommsOutgoingPacket extends BaseArtemisPacket {
     }
     
     public enum Message {
+        // for players
+        Yes(0x00),
+        No(0x01),
+        Help(0x02),
+        Greetings(0x03),
+        Die(0x04),
+        Were_leaving_the_sector_Bye(0x05),
+        Ready_to_go(0x06),
+        Please_follow_us(0x07),
+        Well_follow_you(0x08),
+        Were_badly_damaged(0x09),
+        Were_headed_back_to_the_station(0x0a),
+        Sorry_please_disregard(0x0b),
+        
         // for enemies
         Will_you_surrender(0x00),
         I_can_smell_you_from_here_space_scum(0x01),

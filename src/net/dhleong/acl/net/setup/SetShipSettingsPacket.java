@@ -22,10 +22,14 @@ public class SetShipSettingsPacket extends BaseArtemisPacket {
     private static final int TYPE = 0x4C821D3C;
 
     public SetShipSettingsPacket(DriveType drive, int shipHullId, String name) {
+        this(drive.ordinal(), shipHullId, name);
+    }
+
+    public SetShipSettingsPacket(int drive, int shipHullId, String name) {
         super(0x2, FLAGS, TYPE, new byte[12 + 4 + name.length()*2 + 2]);
         
         PacketParser.putLendInt(0x13, mData, 0);
-        PacketParser.putLendInt(drive.ordinal(), mData, 4);
+        PacketParser.putLendInt(drive, mData, 4);
         PacketParser.putLendInt(shipHullId, mData, 8);
         PacketParser.putNameString(name, mData, 12);
     }

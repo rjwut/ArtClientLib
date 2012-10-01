@@ -18,8 +18,6 @@ import net.dhleong.acl.net.SystemInfoPacket;
 import net.dhleong.acl.net.comms.CommsIncomingPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
-import net.dhleong.acl.net.helm.HelmSetWarpPacket;
-import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.SetShipPacket;
 import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
@@ -209,12 +207,12 @@ public class TestRunner {
 //        }
         */
         
-        net.send(new SetStationPacket(StationType.HELM, true));
+        net.send(new SetStationPacket(StationType.SCIENCE, true));
 
-        net.send(new ReadyPacket());
+//        net.send(new ReadyPacket());
         
 //        net.send(new HelmJumpPacket(.5f, .5f));
-        net.send(new HelmSetWarpPacket(2));
+//        net.send(new HelmSetWarpPacket(2));
 //        net.stop();
     }
 }

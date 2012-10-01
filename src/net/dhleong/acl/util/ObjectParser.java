@@ -40,6 +40,10 @@ public class ObjectParser {
 //        return offset+10 < mData.length;
         return offset < mData.length && mData[offset] != 0; // maybe?
     }
+
+    public byte peekByte() {
+        return mData[offset];
+    }
     
     public int readInt() {
         int value = PacketParser.getLendInt(mData, offset); 

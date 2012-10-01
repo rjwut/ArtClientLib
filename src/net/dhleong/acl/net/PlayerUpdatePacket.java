@@ -26,7 +26,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     private static final byte ACTION_DUNNO_6      = (byte) 0x40;
     
     private static final long NO_ENERGY     = 0x0000000000000001L;
-    private static final long DUNNO_SKIP_1  = 0x0000000000000002L;
+    private static final long SHIP_NUMBER   = 0x0000000000000002L;
     /* I think so? */
     private static final long HULL_ID       = 0x0000000000000004L;
     private static final long POS_X         = 0x0000000000000008L;
@@ -165,11 +165,12 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             // !?!?!
             if (p.has(ACTION_DUNNO_6) 
                     || (p.getAction() & (byte)0xf0) == (byte)0x90
-                    || p.has(HULL_ID)) {
+                    //|| p.has(HULL_ID)) {
+                    || p.peekByte() == 0x00) {
                 p.readShort(); 
             }
 
-            shipNumber = p.readInt(DUNNO_SKIP_1);
+            shipNumber = p.readInt(SHIP_NUMBER);
             hullId = p.readInt(HULL_ID);
 
             x = p.readFloat(POS_X, -1);
@@ -209,13 +210,16 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             p.readByte(UNKNOWN_6, (byte)0);
 
             //p.readByte(UNKNOWN_7, (byte)0);
-            p.readShort(UNKNOWN_7);
+            p.readInt(UNKNOWN_7);
 
             p.readByte(UNKNOWN_8, (byte)0);
 
             p.readInt(UNKNOWN_9);
-            p.readShort(UNKNOWN_10);
-            p.readShort(UNKNOWN_11);            
+            //p.readShort(UNKNOWN_10);
+            //p.readShort(UNKNOWN_11);            
+            p.readByte(UNKNOWN_10, (byte)0);
+
+            p.readByte(UNKNOWN_11, (byte)0);            
 
             for (int i=0; i<heat.length; i++) {
                 heat[i] = p.readFloat(SYSTEMS_HEAT[i], -1);

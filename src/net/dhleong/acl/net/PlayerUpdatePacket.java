@@ -132,7 +132,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
         p.start(true);
         
         try {
-            p.readShort(-1L);
+            p.readShort();
 
             // ???
             p.readInt(ACTION_DUNNO_1);

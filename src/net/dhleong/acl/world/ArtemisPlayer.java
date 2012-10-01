@@ -60,10 +60,10 @@ public class ArtemisPlayer extends BaseArtemisShip {
      * Get this ship's player ship index. This
      *  is NOT the displayed number, but the INDEX
      *  (used in SystemManager#getPlayerShip) 
-     * @return int in [0,5]
+     * @return int in [0,5], or -1 if undefined
      */
     public int getShipIndex() {
-        return mShipNumber-1;
+        return mShipNumber == -1 ? -1 : mShipNumber-1;
     }
     
     /**

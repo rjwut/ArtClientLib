@@ -171,4 +171,11 @@ public class PacketParser {
         bytes[offset] = (byte) (0xff & (intValue >> 0));         
     
     }
+
+    public static void putNameString(String name, byte[] mData, int offset) {
+        putLendInt(name.length()+1, mData, offset);
+        offset += 4;
+        byte[] bytes = name.getBytes();
+        System.arraycopy(bytes, 0, mData, offset, bytes.length);
+    }
 }

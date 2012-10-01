@@ -8,8 +8,8 @@ import net.dhleong.acl.ArtemisPacket;
 public class BaseArtemisPacket implements ArtemisPacket {
 
     protected final byte[] mData;
-    private final int mMode;
-    private final int mType;
+    protected final int mMode;
+    protected final int mType;
     protected final int mFlags;
     private final byte[] mIntBuffer = new byte[4];
 

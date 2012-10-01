@@ -176,6 +176,13 @@ public class PacketParser {
         putLendInt(name.length()+1, mData, offset);
         offset += 4;
         byte[] bytes = name.getBytes();
-        System.arraycopy(bytes, 0, mData, offset, bytes.length);
+        if (bytes.length == name.length()) {
+            for (int i=0; i<bytes.length; i++) {
+                mData[offset] = bytes[i];
+                offset += 2;
+            }
+        } else {            
+            System.arraycopy(bytes, 0, mData, offset, bytes.length);
+        }
     }
 }

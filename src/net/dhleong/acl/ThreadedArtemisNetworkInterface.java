@@ -73,6 +73,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                 }
             }
             
+            mConnected = false;
             mInterface.stop();
         }
 
@@ -83,9 +84,14 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         @Override
         public void onPacket(ArtemisPacket pkt) {
             if (pkt.getType() == 0x19c6e2d4) { // onConnect
+                
+                final boolean wasConnected = mConnected;
+                
                 mConnected = true;
-                if (mOnConnectedListener != null)
+                
+                if (!wasConnected && mOnConnectedListener != null) 
                     mOnConnectedListener.onConnected();
+                
             }
         }
     }

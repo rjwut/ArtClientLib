@@ -20,13 +20,12 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     private static final byte ACTION_DUNNO_4      = (byte) 0x10;
     private static final byte ACTION_DUNNO_5      = (byte) 0x20;
     
-//    private static final byte ACTION_HULL_ID      = (byte) 0x40;
     private static final byte ACTION_DUNNO_6      = (byte) 0x40;
 
     private static final byte ACTION_UPDATE_BYTE  = (byte) 0x80;
     
     
-    private static final long NO_ENERGY     = 0x0000000000000001L;
+    private static final long DUNNO_SKIP_2     = 0x0000000000000001L;
     private static final long SHIP_NUMBER   = 0x0000000000000002L;
     /* I think so? */
     private static final long HULL_ID       = 0x0000000000000004L;
@@ -145,45 +144,13 @@ public class PlayerUpdatePacket implements ArtemisPacket {
 
             p.readByte(ACTION_DUNNO_5, (byte)0);
 
-            // !?!?! super hax
-            //if (!p.has(ACTION_DUNNO_6) &&
-            /*
-            p.readShort(ACTION_DUNNO_6);
-            if ((p.getAction() & (byte)0xf0) == (byte)0xb0)
-                p.readByte();
-            */
+            // warp speed?
             p.readByte(ACTION_DUNNO_6, (byte)-1);
 
-            // ???
-            /*
-            if ((p.getAction() & (byte)0xf0) == (byte)0x90)
-                p.readInt();
-            */
-
-            // energy is apparently really special
-//            if (p.getAction() != 0x0 && !p.has(NO_ENERGY)) {
-//                energy = p.readFloat();
-//            }
-            /*
-            if ((p.getAction() & (byte)0x0f) == (byte) 0x0f 
-                    || (p.has(ACTION_UPDATE_BYTE) && !p.has(NO_ENERGY))) {
-                energy = p.readFloat();
-            } else {
-                energy = -1;
-            }
-            */
+           
             energy = p.readFloat(ACTION_UPDATE_BYTE, -1);
             
-            /*
-            // !?!?!
-            if (p.has(ACTION_DUNNO_6) 
-                    || (p.getAction() & (byte)0xf0) == (byte)0x90
-                    //|| p.has(HULL_ID)) {
-                    || p.peekByte() == 0x00) {
-                p.readShort(); 
-            }
-            */
-            p.readShort(NO_ENERGY);
+            p.readShort(DUNNO_SKIP_2);
 
             shipNumber = p.readInt(SHIP_NUMBER);
             hullId = p.readInt(HULL_ID);
@@ -198,12 +165,13 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             bearing = p.readFloat(BEARING, -1);
 
             // 6 bytes
-            p.readShort(UNKNOWN_1);
-            p.readShort(UNKNOWN_2);
+            p.readInt(UNKNOWN_1);
+            p.readByte(UNKNOWN_2, (byte)0);
 
             // wtf? hax!?
             if (p.has(UNKNOWN_1) && p.has(UNKNOWN_2))
-                p.readShort(UNKNOWN_3);
+                //p.readShort(UNKNOWN_3);
+                p.readByte(UNKNOWN_3, (byte)0);
             
             name = p.readName(ACTION_NAME_BYTE);
 

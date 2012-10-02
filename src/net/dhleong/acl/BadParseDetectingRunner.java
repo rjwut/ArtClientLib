@@ -105,8 +105,8 @@ public class BadParseDetectingRunner {
         
         assertRange(-1, 1000, p.getShieldsFrontMax(), "shieldFrontMax");
         assertRange(-1, 1000, p.getShieldsRearMax(), "shieldRearMax");
-        assertRange(-1, p.getShieldsFrontMax(), p.getShieldsFront(), "shieldFront");
-        assertRange(-1, p.getShieldsRearMax(), p.getShieldsRear(), "shieldRear");
+        assertRange(-1, 1000, p.getShieldsFront(), "shieldFront");
+        assertRange(-1, 1000, p.getShieldsRear(), "shieldRear");
     }
 
     public static void testPositionable(ArtemisPositionable p) {

@@ -12,8 +12,6 @@ import net.dhleong.acl.world.ArtemisPlayer;
 
 public class PlayerUpdatePacket implements ArtemisPacket {
     
-    private static final byte ACTION_UPDATE_BYTE  = (byte) 0x80;
-    
     private static final byte ACTION_NAME_BYTE    = (byte) 0x01;
     
     private static final byte ACTION_DUNNO_1      = (byte) 0x02;
@@ -24,6 +22,9 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     
 //    private static final byte ACTION_HULL_ID      = (byte) 0x40;
     private static final byte ACTION_DUNNO_6      = (byte) 0x40;
+
+    private static final byte ACTION_UPDATE_BYTE  = (byte) 0x80;
+    
     
     private static final long NO_ENERGY     = 0x0000000000000001L;
     private static final long SHIP_NUMBER   = 0x0000000000000002L;
@@ -135,33 +136,45 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             p.readShort();
 
             // ???
-            p.readInt(ACTION_DUNNO_1);
+            p.readInt(ACTION_DUNNO_1); // float [0,1]?
             p.readInt(ACTION_DUNNO_2);
             p.readInt(ACTION_DUNNO_3);
+
             p.readInt(ACTION_DUNNO_4);
-            p.readInt(ACTION_DUNNO_5);
+            p.readInt(ACTION_DUNNO_4);
+
+            p.readByte(ACTION_DUNNO_5, (byte)0);
 
             // !?!?! super hax
             //if (!p.has(ACTION_DUNNO_6) &&
+            /*
             p.readShort(ACTION_DUNNO_6);
             if ((p.getAction() & (byte)0xf0) == (byte)0xb0)
                 p.readByte();
+            */
+            p.readByte(ACTION_DUNNO_6, (byte)-1);
 
             // ???
+            /*
             if ((p.getAction() & (byte)0xf0) == (byte)0x90)
                 p.readInt();
+            */
 
             // energy is apparently really special
 //            if (p.getAction() != 0x0 && !p.has(NO_ENERGY)) {
 //                energy = p.readFloat();
 //            }
+            /*
             if ((p.getAction() & (byte)0x0f) == (byte) 0x0f 
                     || (p.has(ACTION_UPDATE_BYTE) && !p.has(NO_ENERGY))) {
                 energy = p.readFloat();
             } else {
                 energy = -1;
             }
+            */
+            energy = p.readFloat(ACTION_UPDATE_BYTE, -1);
             
+            /*
             // !?!?!
             if (p.has(ACTION_DUNNO_6) 
                     || (p.getAction() & (byte)0xf0) == (byte)0x90
@@ -169,6 +182,8 @@ public class PlayerUpdatePacket implements ArtemisPacket {
                     || p.peekByte() == 0x00) {
                 p.readShort(); 
             }
+            */
+            p.readShort(NO_ENERGY);
 
             shipNumber = p.readInt(SHIP_NUMBER);
             hullId = p.readInt(HULL_ID);
@@ -206,20 +221,38 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             }
             
             p.readInt(UNKNOWN_FLT_0);
+
+            p.readByte(UNKNOWN_6, (byte)-1);
             //p.readShort(UNKNOWN_6);
-            p.readByte(UNKNOWN_6, (byte)0);
+            //p.readInt(UNKNOWN_6);
 
-            //p.readByte(UNKNOWN_7, (byte)0);
-            p.readInt(UNKNOWN_7);
+            //p.readShort(UNKNOWN_7);
+            p.readByte(UNKNOWN_7, (byte)0);
+            //p.readInt(UNKNOWN_7);
 
-            p.readByte(UNKNOWN_8, (byte)0);
+            // total available coolant?
+            p.readByte(UNKNOWN_8, (byte)-1); // MUST
 
             p.readInt(UNKNOWN_9);
-            //p.readShort(UNKNOWN_10);
-            //p.readShort(UNKNOWN_11);            
-            p.readByte(UNKNOWN_10, (byte)0);
+            p.readShort(UNKNOWN_9);
 
-            p.readByte(UNKNOWN_11, (byte)0);            
+            //p.readByte(UNKNOWN_10, (byte)-1); 
+            p.readShort(UNKNOWN_10);
+
+            // I wonder if something in here
+            //  indicates torpedo tube status? would
+            //  explain the weird discrepancies
+            //  sometimes seen... (differing torpedo
+            //  tube counts)
+
+            // this doesn't seem right...
+            if (p.has(UNKNOWN_7))
+                p.readByte(UNKNOWN_11, (byte)-1); 
+            else {
+                p.readByte(UNKNOWN_11, (byte)-1);
+                p.readByte(UNKNOWN_11, (byte)-1);
+                p.readByte(UNKNOWN_11, (byte)-1);
+            }
 
             for (int i=0; i<heat.length; i++) {
                 heat[i] = p.readFloat(SYSTEMS_HEAT[i], -1);

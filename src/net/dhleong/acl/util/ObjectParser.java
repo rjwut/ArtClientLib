@@ -109,15 +109,27 @@ public class ObjectParser {
 
         return defaultValue;
     }
+
+    public long readLong() {
+        long value = PacketParser.getLendLong(mData, offset); 
+        offset += 8; 
+        return value;
+    }
     
     public long readLong(int ifArgsByte) {
         if ((args & ifArgsByte) != 0) {
-            long value = PacketParser.getLendLong(mData, offset); 
-            offset += 8; 
-            return value;
+            return readLong();
         }
         
         return -1;
+    }
+
+    public long readLong(long ifArgLong) {
+        if ((longArgs & ifArgLong) != 0) {
+            return readLong();
+        }
+
+        return -1L;
     }
     
     public int readShort() {
@@ -164,6 +176,14 @@ public class ObjectParser {
 
     public byte readByte() {
         return mData[offset++];
+    }
+
+    public byte readByte(byte ifActionByte, byte defaultValue) {
+        if ((action & ifActionByte) != 0) {
+            return readByte();
+        }
+
+        return defaultValue;
     }
 
     public byte readByte(int ifArgsByte, byte defaultValue) {

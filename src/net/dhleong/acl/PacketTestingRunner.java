@@ -3,6 +3,8 @@ package net.dhleong.acl;
 import net.dhleong.acl.net.ObjUpdatePacket;
 import net.dhleong.acl.net.PlayerUpdatePacket;
 import net.dhleong.acl.world.ArtemisPlayer;
+import net.dhleong.acl.world.ArtemisPositionable;
+import net.dhleong.acl.world.BaseArtemisShip;
 
 public class PacketTestingRunner {
     
@@ -56,6 +58,12 @@ public class PacketTestingRunner {
             System.out.println();
             System.out.println("Test[" + i + "] of total " + tests.length);
             ObjUpdatePacket pkt = new ObjUpdatePacket(bytes);
+            for (ArtemisPositionable o : pkt.mObjects) {
+                if (o instanceof BaseArtemisShip)
+                    BadParseDetectingRunner.testShip((BaseArtemisShip) o);
+                else
+                    BadParseDetectingRunner.testPositionable(o);
+            }
             pkt.debugPrint();
             System.out.println("--> " + pkt);
             System.out.println();

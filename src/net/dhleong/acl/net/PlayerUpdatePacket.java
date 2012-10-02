@@ -45,7 +45,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     private static final long SHLD_REAR     = 0x0000000000004000L;
     private static final long SHLD_REAR_MAX = 0x0000000000008000L;
     
-    private static final long UNKNOWN_4     = 0x0000000000010000L;
+    private static final long DOCKING_STATION     = 0x0000000000010000L;
 
     private static final long RED_ALERT     = 0x0000000000020000L;
     
@@ -115,6 +115,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     
     float shieldsFront, shieldsFrontMax;
     float shieldsRear, shieldsRearMax;
+    int dockingStation;
     
     float[] heat = new float[ SYSTEMS_HEAT.length ];
     float[] sysEnergy = new float[ SYSTEMS_ENRG.length ];
@@ -180,7 +181,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             shieldsRear = p.readFloat(SHLD_REAR, -1);
             shieldsRearMax = p.readFloat(SHLD_REAR_MAX, -1);
 
-            p.readInt(UNKNOWN_4);
+            dockingStation = p.readInt(DOCKING_STATION);
 
             if (p.has(RED_ALERT)) {
                 mRedAlert = (p.readByte() != 0) ? BoolState.TRUE : BoolState.FALSE;
@@ -241,6 +242,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             mPlayer.setZ(z);
             mPlayer.setBearing(bearing);
             mPlayer.setShipEnergy(energy);
+            mPlayer.setDockingStation(dockingStation);
             
             mPlayer.setShieldsFront(shieldsFront);
             mPlayer.setShieldsFrontMax(shieldsFrontMax);

@@ -18,6 +18,7 @@ import net.dhleong.acl.net.SystemInfoPacket;
 import net.dhleong.acl.net.comms.CommsIncomingPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
+import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.SetShipPacket;
 import net.dhleong.acl.net.setup.SetShipSettingsPacket;
 import net.dhleong.acl.net.setup.SetShipSettingsPacket.DriveType;
@@ -25,6 +26,7 @@ import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
 import net.dhleong.acl.util.ShipSystemGrid;
 import net.dhleong.acl.world.ArtemisObject;
+import net.dhleong.acl.world.ArtemisPlayer;
 
 public class TestRunner {
 
@@ -125,11 +127,11 @@ public class TestRunner {
                         return;
                         
                     } else if (PlayerUpdatePacket.isExtensionOf(sys)) {
-//                        PlayerUpdatePacket up = new PlayerUpdatePacket(sys);
-//                        ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
+                        PlayerUpdatePacket up = new PlayerUpdatePacket(sys);
+                        ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
 //                        
 //                        up.debugPrint();
-//                        System.out.println("Player: " + plr);
+                        System.out.println("Player: " + plr);
 //                        for (SystemType s : SystemType.values()) {
 //                            float heat = plr.getSystemHeat(s);
 //                            float energy = plr.getSystemEnergy(s);
@@ -138,7 +140,7 @@ public class TestRunner {
 //                                    coolant + " / " + energy + " :: " + heat);
 //                        }
 //                        
-//                        System.out.println("--> " + up);
+                        System.out.println("--> " + up);
                         return;
                     } else if (sys.getTargetType() == ArtemisObject.TYPE_PLAYER){
                         System.out.println("INFO << " + sys);
@@ -212,7 +214,7 @@ public class TestRunner {
         net.send(new SetStationPacket(StationType.HELM, true));
         net.send(new SetShipSettingsPacket(DriveType.JUMP, 1, "USS Awesome"));
 
-//        net.send(new ReadyPacket());
+        net.send(new ReadyPacket());
         
 //        net.send(new HelmJumpPacket(.5f, .5f));
 //        net.send(new HelmSetWarpPacket(2));

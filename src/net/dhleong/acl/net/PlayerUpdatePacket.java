@@ -85,6 +85,10 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     private static final long COOLANT_SFRNT = 0x0000800000000000L;
     private static final long COOLANT_SREAR = 0x0001000000000000L;
     
+    private static final long TORP_HOMING   = 0x0002000000000000L;
+    private static final long TORP_NUKES    = 0x0004000000000000L;
+    private static final long TORP_MINES    = 0x0008000000000000L;
+    private static final long TORP_ECMS     = 0x0010000000000000L;
     
     private static final long[] SYSTEMS_HEAT = {
         HEAT_BEAMS, HEAT_TORPS, HEAT_SENSR,
@@ -100,6 +104,10 @@ public class PlayerUpdatePacket implements ArtemisPacket {
         COOLANT_BEAMS, COOLANT_TORPS, COOLANT_SENSR,
         COOLANT_MANEU, COOLANT_IMPLS, COOLANT_JUMPS,
         COOLANT_SFRNT, COOLANT_SREAR
+    };
+
+    private static final long[] TORPEDOS = {
+        TORP_HOMING, TORP_NUKES, TORP_MINES, TORP_ECMS
     };
 
     private final byte[] mData;
@@ -120,6 +128,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     float[] heat = new float[ SYSTEMS_HEAT.length ];
     float[] sysEnergy = new float[ SYSTEMS_ENRG.length ];
     int[] coolant = new int[ COOLANTS.length ];
+    int[] torps = new int[ TORPEDOS.length ];
 
     public PlayerUpdatePacket(final SystemInfoPacket pkt) {
         this(pkt.mData);
@@ -240,6 +249,10 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             for (int i=0; i<coolant.length; i++) {
                 coolant[i] = p.readByte(COOLANTS[i], -1);
             }
+
+            for (int i=0; i<torps.length; i++) {
+                torps[i] = p.readByte(TORPEDOS[i], -1);
+            }
             
             mPlayer = new ArtemisPlayer(p.getTargetId(), name, hullId, 
                 shipNumber, mRedAlert, mShields);
@@ -260,6 +273,10 @@ public class PlayerUpdatePacket implements ArtemisPacket {
                 mPlayer.setSystemHeat(sys, heat[i]);
                 mPlayer.setSystemEnergy(sys, sysEnergy[i]);
                 mPlayer.setSystemCoolant(sys, coolant[i]);
+            }
+
+            for (int i=0; i<TORPEDOS.length; i++) {
+                mPlayer.setTorpedoCount(i, torps[i]);
             }
         
         } catch (RuntimeException e) {
@@ -303,6 +320,9 @@ public class PlayerUpdatePacket implements ArtemisPacket {
                     "= " + sysEnergy[i] +
                     " :: " + heat[i] + 
                     " :: " + coolant[i]);
+        }
+        for (int i=0; i<torps.length; i++) {
+            System.out.println(String.format("Torp type#%d: %d", i, torps[i]));
         }
     }
 

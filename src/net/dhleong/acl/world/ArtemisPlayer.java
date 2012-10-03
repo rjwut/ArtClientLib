@@ -1,8 +1,11 @@
 package net.dhleong.acl.world;
 
-import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
-import net.dhleong.acl.util.BoolState;
+import java.util.Arrays;
 
+import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
+
+import net.dhleong.acl.net.weap.LoadTubePacket;
+import net.dhleong.acl.util.BoolState;
 
 public class ArtemisPlayer extends BaseArtemisShip {
     
@@ -13,6 +16,8 @@ public class ArtemisPlayer extends BaseArtemisShip {
     private final float[] mHeat = new float[SYS_COUNT];
     private final float[] mSystems = new float[SYS_COUNT];
     private final int[] mCoolant = new int[SYS_COUNT];
+
+    private final int[] mTorpedos = new int[LoadTubePacket.TORPEDO_COUNT];
 
     private float mEnergy;
 
@@ -41,6 +46,8 @@ public class ArtemisPlayer extends BaseArtemisShip {
             mSystems[i] = -1;
             mCoolant[i] = -1;
         }
+
+        Arrays.fill(mTorpedos, -1);
     }
     
     public float getEnergy() {
@@ -151,6 +158,14 @@ public class ArtemisPlayer extends BaseArtemisShip {
     public void setDockingStation(int stationId) {
         mDockingStation = stationId;
     }
+
+    public int getTorpedoCount(int torpType) {
+        return mTorpedos[torpType];
+    }
+
+    public void setTorpedoCount(int torpType, int count) {
+        mTorpedos[torpType] = count;
+    }
     
     @Override
     public void updateFrom(ArtemisPositionable eng) {
@@ -184,6 +199,11 @@ public class ArtemisPlayer extends BaseArtemisShip {
                 
                 if (plr.mCoolant[i] != -1)
                     mCoolant[i] = plr.mCoolant[i];
+            }
+
+            for (int i=0; i<LoadTubePacket.TORPEDO_COUNT; i++) {
+                if (plr.mTorpedos[i] != -1)
+                    mTorpedos[i] = plr.mTorpedos[i];
             }
         }
     }

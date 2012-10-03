@@ -8,6 +8,7 @@ import net.dhleong.acl.net.SystemInfoPacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
+import net.dhleong.acl.net.weap.LoadTubePacket;
 import net.dhleong.acl.world.ArtemisPlayer;
 import net.dhleong.acl.world.ArtemisPositionable;
 import net.dhleong.acl.world.BaseArtemisShip;
@@ -92,6 +93,10 @@ public class BadParseDetectingRunner {
                 assertRange(0, 1, p.getSystemEnergy(sys), sys + "energy");
             assertRange(-1, 1, p.getSystemHeat(sys), sys + "heat");
             assertRange(-1, 16, p.getSystemCoolant(sys), sys + "coolant");
+        }
+        
+        for (int i=0; i<LoadTubePacket.TORPEDO_COUNT; i++) {
+            assertRange(-1, 99, p.getTorpedoCount(i), "Torp Type#" + i);
         }
     }
 

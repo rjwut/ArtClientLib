@@ -9,6 +9,9 @@ import net.dhleong.acl.net.PacketParser;
  *
  */
 public class LoadTubePacket extends BaseArtemisPacket {
+
+    /** Total num of types of torpedos */
+    public static final int TORPEDO_COUNT = 4;
     
     public static final int TORP_HOMING = 0;
     public static final int TORP_NUKE = 1;

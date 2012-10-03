@@ -163,7 +163,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             p.readInt(DUNNO_SKIP_3);
             p.readInt(DUNNO_SKIP_4);
 
-            bearing = p.readFloat(BEARING, -1);
+            bearing = p.readFloat(BEARING, Float.MIN_VALUE);
 
             // 6 bytes
             p.readInt(UNKNOWN_1);

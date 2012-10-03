@@ -181,7 +181,9 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             shieldsRear = p.readFloat(SHLD_REAR, -1);
             shieldsRearMax = p.readFloat(SHLD_REAR_MAX, -1);
 
-            dockingStation = p.readInt(DOCKING_STATION);
+            // I don't *think* the server sends us
+            //  this value when we undock...
+            dockingStation = p.readInt(DOCKING_STATION, 0);
 
             if (p.has(RED_ALERT)) {
                 mRedAlert = (p.readByte() != 0) ? BoolState.TRUE : BoolState.FALSE;

@@ -16,7 +16,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
     private float mEnergy;
 
-    private int mDockingStation = -1;
+    private int mDockingStation = 0;
 
     /**
      * 
@@ -130,14 +130,14 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
     /**
      * Get the ID of the station at which we're docking
-     * @return The station's ID, or -1 if not docking
+     * @return The station's ID, or 0 if not docking
      */
     public int getDockingStation() {
         return mDockingStation;
     }
 
     /**
-     * set -1 to indicate not docked
+     * set 0 to indicate not docked
      */
     public void setDockingStation(int stationId) {
         mDockingStation = stationId;
@@ -154,7 +154,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
             if (mShipNumber == -1)
                 mShipNumber = plr.mShipNumber;
 
-            if (plr.mDockingStation != -1)
+            if (plr.mDockingStation != 0)
                 mDockingStation = plr.mDockingStation;
             
             if (plr.mRedAlert != BoolState.UNKNOWN)

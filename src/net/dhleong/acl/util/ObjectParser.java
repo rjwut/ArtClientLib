@@ -68,13 +68,16 @@ public class ObjectParser {
     }
 
     public int readInt(long ifArgsLong) {
+        return readInt(ifArgsLong, -1);
+    }
+
+    public int readInt(long ifArgsLong, int defaultValue) {
         if ((longArgs & ifArgsLong) != 0) {
             return readInt();
         }
         
-        return -1;
+        return defaultValue;
     }
-
     /**
      * If you do your own checking, then 
      *  read a float manually with this

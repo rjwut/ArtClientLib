@@ -130,7 +130,7 @@ public class TestRunner {
                         PlayerUpdatePacket up = new PlayerUpdatePacket(sys);
                         ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
 //                        
-//                        up.debugPrint();
+                        up.debugPrint();
                         System.out.println("Player: " + plr);
 //                        for (SystemType s : SystemType.values()) {
 //                            float heat = plr.getSystemHeat(s);
@@ -215,6 +215,7 @@ public class TestRunner {
         net.send(new SetShipSettingsPacket(DriveType.JUMP, 1, "USS Awesome"));
 
         net.send(new ReadyPacket());
+//        net.send(new ToggleShieldsPacket());
         
 //        net.send(new HelmJumpPacket(.5f, .5f));
 //        net.send(new HelmSetWarpPacket(2));

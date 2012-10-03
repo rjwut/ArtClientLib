@@ -151,7 +151,11 @@ public class PlayerUpdatePacket implements ArtemisPacket {
            
             energy = p.readFloat(ACTION_UPDATE_BYTE, -1);
             
-            p.readShort(DUNNO_SKIP_2);
+            if (p.has(DUNNO_SKIP_2)) {
+                mShields = BoolState.from(p.readShort() != 0);
+            } else {
+                mShields = BoolState.UNKNOWN;
+            }
 
             shipNumber = p.readInt(SHIP_NUMBER);
             hullId = p.readInt(HULL_ID);
@@ -167,11 +171,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
 
             // 6 bytes
             p.readInt(UNKNOWN_1);
-            if (p.has(UNKNOWN_2)) {
-                mShields = (p.readByte() != 0) ? BoolState.TRUE : BoolState.FALSE;
-            } else {
-                mShields = BoolState.UNKNOWN;
-            }
+            p.readByte(UNKNOWN_2, (byte)0);
 
             // wtf? hax!?
             if (p.has(UNKNOWN_1) && p.has(UNKNOWN_2))
@@ -295,6 +295,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
                 name, hullId, energy, x, y, z, bearing));
         System.out.println("-------Ship numb: " + shipNumber);
         System.out.println("-------Red Alert: " + mRedAlert);
+        System.out.println("-------ShieldsUp: " + mShields);
         System.out.println(String.format("-------[%.1f/%.2f  %.1f,%.1f]", 
                 shieldsFront, shieldsFrontMax, shieldsRear, shieldsRearMax));
         for (int i=0; i<heat.length; i++) {

@@ -8,7 +8,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
     
     private static final int SYS_COUNT = SystemType.values().length;
 
-    private BoolState mRedAlert;
+    private BoolState mRedAlert, mShields;
     private int mShipNumber;
     private final float[] mHeat = new float[SYS_COUNT];
     private final float[] mSystems = new float[SYS_COUNT];
@@ -28,10 +28,11 @@ public class ArtemisPlayer extends BaseArtemisShip {
      * @param redAlert
      */
     public ArtemisPlayer(int objId, String name, int hullId, 
-            int shipNumber, BoolState redAlert) {
+            int shipNumber, BoolState redAlert, BoolState shields) {
         super(objId, name, hullId);
         
         mRedAlert = redAlert;
+        mShields = shields;
         mShipNumber = shipNumber;
         
         // pre-fill
@@ -93,6 +94,10 @@ public class ArtemisPlayer extends BaseArtemisShip {
         return TYPE_PLAYER;
     }
     
+    public boolean hasShieldsActive() {
+        return mShields == BoolState.TRUE;
+    }
+
     public boolean isRedAlert() {
         return mRedAlert == BoolState.TRUE;
     }
@@ -109,6 +114,10 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
     public void setRedAlert(boolean newState) {
         mRedAlert = BoolState.from(newState);
+    }
+
+    public void setShields(boolean newState) {
+        mShields = BoolState.from(newState);
     }
 
     public void setSystemCoolant(SystemType sys, int coolant) {
@@ -159,6 +168,9 @@ public class ArtemisPlayer extends BaseArtemisShip {
             
             if (plr.mRedAlert != BoolState.UNKNOWN)
                 mRedAlert = plr.mRedAlert;
+
+            if (plr.mShields != BoolState.UNKNOWN)
+                mShields = plr.mShields;
             
             if (plr.mEnergy != -1)
                 mEnergy = plr.mEnergy;
@@ -174,5 +186,13 @@ public class ArtemisPlayer extends BaseArtemisShip {
                     mCoolant[i] = plr.mCoolant[i];
             }
         }
+    }
+
+    public BoolState getRedAlertState() {
+        return mRedAlert;
+    }
+    
+    public BoolState getShieldsState() {
+        return mShields;
     }
 }

@@ -111,7 +111,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     int shipNumber, hullId;
     float energy;
     float x, y, z, bearing;
-    BoolState mRedAlert;
+    BoolState mRedAlert, mShields;
     
     float shieldsFront, shieldsFrontMax;
     float shieldsRear, shieldsRearMax;
@@ -167,7 +167,11 @@ public class PlayerUpdatePacket implements ArtemisPacket {
 
             // 6 bytes
             p.readInt(UNKNOWN_1);
-            p.readByte(UNKNOWN_2, (byte)0);
+            if (p.has(UNKNOWN_2)) {
+                mShields = (p.readByte() != 0) ? BoolState.TRUE : BoolState.FALSE;
+            } else {
+                mShields = BoolState.UNKNOWN;
+            }
 
             // wtf? hax!?
             if (p.has(UNKNOWN_1) && p.has(UNKNOWN_2))
@@ -238,7 +242,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             }
             
             mPlayer = new ArtemisPlayer(p.getTargetId(), name, hullId, 
-                shipNumber, mRedAlert);
+                shipNumber, mRedAlert, mShields);
             mPlayer.setX(x);
             mPlayer.setY(y);
             mPlayer.setZ(z);

@@ -2,10 +2,7 @@ package net.dhleong.acl.world;
 
 import java.util.Arrays;
 
-import net.dhleong.acl.net.PlayerUpdatePacket;
-
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
-
 import net.dhleong.acl.net.weap.LoadTubePacket;
 import net.dhleong.acl.util.BoolState;
 
@@ -26,12 +23,15 @@ public class ArtemisPlayer extends BaseArtemisShip {
     private final int[] mCoolant = new int[SYS_COUNT];
 
     private final int[] mTorpedos = new int[LoadTubePacket.TORPEDO_COUNT];
-    private final float[] mTubeTimes = new float[PlayerUpdatePacket.MAX_TUBES]; 
-    private final int[] mTubeTypes = new int[PlayerUpdatePacket.MAX_TUBES];
+    private final float[] mTubeTimes = new float[MAX_TUBES]; 
+    private final int[] mTubeTypes = new int[MAX_TUBES];
 
     private float mEnergy;
 
     private int mDockingStation = 0;
+
+    /** I guess? Maybe...? */
+    public static final int MAX_TUBES = 6;
 
     /**
      * 
@@ -58,6 +58,8 @@ public class ArtemisPlayer extends BaseArtemisShip {
         }
 
         Arrays.fill(mTorpedos, -1);
+        Arrays.fill(mTubeTypes, Integer.MIN_VALUE);
+        Arrays.fill(mTubeTimes, -1);
     }
     
     public float getEnergy() {
@@ -216,7 +218,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
                     mTorpedos[i] = plr.mTorpedos[i];
             }
 
-            for (int i=0; i<PlayerUpdatePacket.MAX_TUBES; i++) {
+            for (int i=0; i<ArtemisPlayer.MAX_TUBES; i++) {
                 // just copy this
                 mTubeTimes[i] = plr.mTubeTimes[i];
 

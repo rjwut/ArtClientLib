@@ -99,9 +99,6 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     private static final long TUBE_TIME_5   = 0x0400000000000000L;
     private static final long TUBE_TIME_6   = 0x0800000000000000L;
 
-    /** I guess? Maybe...? */
-    public static final int MAX_TUBES = 6;
-
     /* IE: is this tube in use? */
     private static final long TUBE_USE_1    = 0x1000000000000000L;
     private static final long TUBE_USE_2    = 0x2000000000000000L;
@@ -325,13 +322,15 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             // = Integer.MIN_VALUE means we DON'T KNOW
             // else the type of torpedo there
             for (int i=0; i<tubeContents.length; i++) {
-                int torpType = p.readByte(TUBE_TYPES[i], (byte)-1);
-                if (tubeContents[i] > 0)
-                    tubeContents[i] = torpType;
-                else if (tubeContents[i] == 0)
+                byte torpType = p.readByte(TUBE_TYPES[i], (byte)-1);
+                if (tubeContents[i] == 0)
                     tubeContents[i] = ArtemisPlayer.TUBE_EMPTY; // empty tube
-                else
+                else if (tubeContents[i] < 0) {
+                    // what's there? I don't even know
                     tubeContents[i] = ArtemisPlayer.TUBE_UNKNOWN;
+                } else if (tubeContents[i] > 0 && torpType != (byte) -1)
+                    tubeContents[i] = torpType;
+                
             }
 
             mPlayer = new ArtemisPlayer(p.getTargetId(), name, hullId, 

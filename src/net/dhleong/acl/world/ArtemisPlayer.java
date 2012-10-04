@@ -2,12 +2,20 @@ package net.dhleong.acl.world;
 
 import java.util.Arrays;
 
+import net.dhleong.acl.net.PlayerUpdatePacket;
+
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 
 import net.dhleong.acl.net.weap.LoadTubePacket;
 import net.dhleong.acl.util.BoolState;
 
 public class ArtemisPlayer extends BaseArtemisShip {
+
+    /** constant result of getTubeContents(), means NOTHING */
+    public static final int TUBE_EMPTY = -1;
+
+    /** constant result of getTubeContents(), means we DON'T KNOW */
+    public static final int TUBE_UNKNOWN = Integer.MIN_VALUE;
     
     private static final int SYS_COUNT = SystemType.values().length;
 
@@ -18,6 +26,8 @@ public class ArtemisPlayer extends BaseArtemisShip {
     private final int[] mCoolant = new int[SYS_COUNT];
 
     private final int[] mTorpedos = new int[LoadTubePacket.TORPEDO_COUNT];
+    private final float[] mTubeTimes = new float[PlayerUpdatePacket.MAX_TUBES]; 
+    private final int[] mTubeTypes = new int[PlayerUpdatePacket.MAX_TUBES];
 
     private float mEnergy;
 
@@ -205,6 +215,14 @@ public class ArtemisPlayer extends BaseArtemisShip {
                 if (plr.mTorpedos[i] != -1)
                     mTorpedos[i] = plr.mTorpedos[i];
             }
+
+            for (int i=0; i<PlayerUpdatePacket.MAX_TUBES; i++) {
+                // just copy this
+                mTubeTimes[i] = plr.mTubeTimes[i];
+
+                if (plr.mTubeTypes[i] != TUBE_UNKNOWN)
+                    mTubeTypes[i] = plr.mTubeTypes[i];
+            }
         }
     }
 
@@ -215,4 +233,25 @@ public class ArtemisPlayer extends BaseArtemisShip {
     public BoolState getShieldsState() {
         return mShields;
     }
+
+    /**
+     * Set by PlayerUpdatePacket. 
+     * @param tube Tube index number [0, 5]
+     * @param timeToLoad Time in seconds until it's loaded
+     * @param typeLoading Type of torpedo being loaded. This seems
+     *  to only be set when the process first begins
+     */
+    public void setTubeStatus(int tube, float timeToLoad, int typeLoading) {
+        mTubeTimes[tube] = timeToLoad;
+        mTubeTypes[tube] = typeLoading;
+    }
+
+    public int getTubeContents(int tube) {
+        return mTubeTypes[tube];
+    }
+
+    public float getTubeCountdown(int tube) {
+        return mTubeTimes[tube];
+    }
+
 }

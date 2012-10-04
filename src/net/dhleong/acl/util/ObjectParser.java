@@ -25,6 +25,10 @@ public class ObjectParser {
     public byte getAction() {
         return action;
     }
+
+    public void setArgs(int newArgs) {
+        args = newArgs;
+    }
     
     public boolean has(byte ifActionByte) {
         return (action & ifActionByte) != 0;

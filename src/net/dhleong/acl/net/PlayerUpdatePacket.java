@@ -89,6 +89,34 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     private static final long TORP_NUKES    = 0x0004000000000000L;
     private static final long TORP_MINES    = 0x0008000000000000L;
     private static final long TORP_ECMS     = 0x0010000000000000L;
+
+    private static final long UNKNOWN_BYTE  = 0x0020000000000000L;
+
+    private static final long TUBE_TIME_1   = 0x0040000000000000L;
+    private static final long TUBE_TIME_2   = 0x0080000000000000L;
+    private static final long TUBE_TIME_3   = 0x0100000000000000L;
+    private static final long TUBE_TIME_4   = 0x0200000000000000L;
+    private static final long TUBE_TIME_5   = 0x0400000000000000L;
+    private static final long TUBE_TIME_6   = 0x0800000000000000L;
+
+    /** I guess? Maybe...? */
+    public static final int MAX_TUBES = 6;
+
+    /* IE: is this tube in use? */
+    private static final long TUBE_USE_1    = 0x1000000000000000L;
+    private static final long TUBE_USE_2    = 0x2000000000000000L;
+    private static final long TUBE_USE_3    = 0x4000000000000000L;
+    private static final long TUBE_USE_4    = 0x8000000000000000L;
+
+    private static final int TUBE_USE_5     = 0x0001;
+    private static final int TUBE_USE_6     = 0x0002;
+
+    private static final int TUBE_TYPE_1    = 0x0004;
+    private static final int TUBE_TYPE_2    = 0x0008;
+    private static final int TUBE_TYPE_3    = 0x0001;
+    private static final int TUBE_TYPE_4    = 0x0002;
+    private static final int TUBE_TYPE_5    = 0x0004;
+    private static final int TUBE_TYPE_6    = 0x0008;
     
     private static final long[] SYSTEMS_HEAT = {
         HEAT_BEAMS, HEAT_TORPS, HEAT_SENSR,
@@ -108,6 +136,16 @@ public class PlayerUpdatePacket implements ArtemisPacket {
 
     private static final long[] TORPEDOS = {
         TORP_HOMING, TORP_NUKES, TORP_MINES, TORP_ECMS
+    };
+
+    private static final long[] TUBE_TIMES = {
+        TUBE_TIME_1, TUBE_TIME_2, TUBE_TIME_3,
+        TUBE_TIME_4, TUBE_TIME_5, TUBE_TIME_6,
+    };
+
+    private static final int[] TUBE_TYPES = {
+        TUBE_TYPE_1, TUBE_TYPE_2, TUBE_TYPE_3,
+        TUBE_TYPE_4, TUBE_TYPE_5, TUBE_TYPE_6,
     };
 
     private final byte[] mData;
@@ -130,6 +168,9 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     int[] coolant = new int[ COOLANTS.length ];
     int[] torps = new int[ TORPEDOS.length ];
 
+    float[] tubeTimes = new float[TUBE_TIMES.length];
+    int[] tubeContents = new int[TUBE_TIMES.length];
+
     public PlayerUpdatePacket(final SystemInfoPacket pkt) {
         this(pkt.mData);
     }
@@ -142,7 +183,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
         p.start(true);
         
         try {
-            p.readShort();
+            int extraArgs = p.readShort();
 
             p.readInt(ACTION_DUNNO_0);
 
@@ -258,7 +299,41 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             for (int i=0; i<torps.length; i++) {
                 torps[i] = ((byte)0xff & p.readByte(TORPEDOS[i], -1));
             }
-            
+
+            p.readByte(UNKNOWN_BYTE, (byte)-1);
+   
+            for (int i=0; i<TUBE_TIMES.length; i++) {
+                tubeTimes[i] = p.readFloat(TUBE_TIMES[i], -1);
+            }
+
+            // after this, tubeContents[i]...
+            // = 0 means that tube is EMPTY; 
+            // > 0 means that tube is IN USE;
+            // < 0  means we DON'T KNOW
+            tubeContents[0] = p.readByte(TUBE_USE_1, (byte)-1);
+            tubeContents[1] = p.readByte(TUBE_USE_2, (byte)-1);
+            tubeContents[2] = p.readByte(TUBE_USE_3, (byte)-1);
+            tubeContents[3] = p.readByte(TUBE_USE_4, (byte)-1);
+
+            p.setArgs(extraArgs);
+
+            tubeContents[4] = p.readByte(TUBE_USE_5, (byte)-1);
+            tubeContents[5] = p.readByte(TUBE_USE_6, (byte)-1);
+
+            // after this, tubeContents[i]...
+            // = -1 means EMPTY;
+            // = Integer.MIN_VALUE means we DON'T KNOW
+            // else the type of torpedo there
+            for (int i=0; i<tubeContents.length; i++) {
+                int torpType = p.readByte(TUBE_TYPES[i], (byte)-1);
+                if (tubeContents[i] > 0)
+                    tubeContents[i] = torpType;
+                else if (tubeContents[i] == 0)
+                    tubeContents[i] = ArtemisPlayer.TUBE_EMPTY; // empty tube
+                else
+                    tubeContents[i] = ArtemisPlayer.TUBE_UNKNOWN;
+            }
+
             mPlayer = new ArtemisPlayer(p.getTargetId(), name, hullId, 
                 shipNumber, mRedAlert, mShields);
             mPlayer.setX(x);
@@ -283,7 +358,11 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             for (int i=0; i<TORPEDOS.length; i++) {
                 mPlayer.setTorpedoCount(i, torps[i]);
             }
-        
+
+            for (int i=0; i<TUBE_TIMES.length; i++) {
+                mPlayer.setTubeStatus(i, tubeTimes[i], tubeContents[i]);
+            }
+                 
         } catch (RuntimeException e) {
             System.out.println("!!! Error!");
             debugPrint();
@@ -318,6 +397,8 @@ public class PlayerUpdatePacket implements ArtemisPacket {
         System.out.println("-------Ship numb: " + shipNumber);
         System.out.println("-------Red Alert: " + mRedAlert);
         System.out.println("-------ShieldsUp: " + mShields);
+        System.out.println(String.format("-------Torp Cnts: %d:%d:%d:%d", 
+            torps[0], torps[1], torps[2], torps[3]));
         System.out.println(String.format("-------[%.1f/%.2f  %.1f,%.1f]", 
                 shieldsFront, shieldsFrontMax, shieldsRear, shieldsRearMax));
         for (int i=0; i<heat.length; i++) {
@@ -326,8 +407,9 @@ public class PlayerUpdatePacket implements ArtemisPacket {
                     " :: " + heat[i] + 
                     " :: " + coolant[i]);
         }
-        for (int i=0; i<torps.length; i++) {
-            System.out.println(String.format("Torp type#%d: %d", i, torps[i]));
+        for (int i=0; i<TUBE_TIMES.length; i++) {
+            System.out.println(String.format("Tube#%d: (%f) %d", 
+                i, tubeTimes[i], tubeContents[i]));
         }
     }
 

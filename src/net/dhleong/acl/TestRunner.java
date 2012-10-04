@@ -116,12 +116,12 @@ public class TestRunner {
                         return;
                         
                     } else if (GenericUpdatePacket.isExtensionOf(sys)) {
-                        System.out.println("** Update: ");
-                        GenericUpdatePacket up = new GenericUpdatePacket(sys);
-//                        up.debugPrint();
-                        for (ArtemisObject obj : up.mObjects)
-                            System.out.println(" + " + mgr.getObject(obj.getId()));
-                        System.out.println("--> " + up);
+//                        System.out.println("** Update: ");
+//                        GenericUpdatePacket up = new GenericUpdatePacket(sys);
+////                        up.debugPrint();
+//                        for (ArtemisObject obj : up.mObjects)
+//                            System.out.println(" + " + mgr.getObject(obj.getId()));
+//                        System.out.println("--> " + up);
                         return;
                         
                     } else if (PlayerUpdatePacket.isExtensionOf(sys)) {
@@ -212,7 +212,7 @@ public class TestRunner {
 //        net.send(new SetStationPacket(StationType.HELM, true));
 //        net.send(new SetShipSettingsPacket(DriveType.JUMP, 1, "USS Awesome"));
         
-        net.send(new SetStationPacket(StationType.WEAPONS, true));
+        net.send(new SetStationPacket(StationType.SCIENCE, true));
 
         net.send(new ReadyPacket());
 //        net.send(new ToggleShieldsPacket());

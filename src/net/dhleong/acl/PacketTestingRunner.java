@@ -1,5 +1,6 @@
 package net.dhleong.acl;
 
+import net.dhleong.acl.net.GenericUpdatePacket;
 import net.dhleong.acl.net.ObjUpdatePacket;
 import net.dhleong.acl.net.PlayerUpdatePacket;
 import net.dhleong.acl.world.ArtemisPlayer;
@@ -9,6 +10,12 @@ import net.dhleong.acl.world.BaseArtemisShip;
 public class PacketTestingRunner {
     
     public static final void main(String[] args) {
+        String[] genTests = new String[] {
+                "09f5030000ff00c3b54547826e5242c6f84d472608c2b3d07f7f3ff40780bd020000000000000000000000",
+        };
+        
+        testGenerics(genTests);
+        
         String[] tests = new String[]{
                 "027c070000dd3a6f007c04000000460037003100000000000000cdcc4c3f6f12833b89130000a94ec3473250c3474215813ed0cc4cbed0cccc3e000096430000964300001643000016433518000000d27f023fe4353f3f16bb0a3f4f7fda3e1314d63e027d070000dd3a6f007c04000000500037003400000000000000cdcc4c3f6f12833b89130000a94ec347b2f89f414215813ed0cc4cbed0cccc3e000096430000964300001643000016433623000000e2f5f03e387ce83e6b121c3fc68b623ffe60e53e00000000",
                 "02470c0000853a40027c040000005900330032000000000000002d0c9247c3c1ba464215813ed0cc4cbed0cccc3e22000000002821fa3e2cee623fc6ad2f3fb3ac0c3fe9fbc03e02480c0000ffffffff7f040000004f003100360000000000803f00000000cdcc4c3f6f12833b010000008a1300003df02b470000000001189f47000000004215813ed0cc4cbed0cccc3e0000000000af430000af430000964300009643010043100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b0f5d73e2607133f1e09423f875ff63ebfba453f00000000",
@@ -53,6 +60,22 @@ public class PacketTestingRunner {
         };
         
         testPlayers(plrTests);
+    }
+
+    private static void testGenerics(String[] tests) {
+        for (int i=0; i<tests.length; i++) {
+            byte[] bytes = hexStringToByteArray(tests[i]);
+            
+            System.out.println();
+            System.out.println("Test[" + i + "] of total " + tests.length);
+            GenericUpdatePacket pkt = new GenericUpdatePacket(bytes);
+            for (ArtemisPositionable o : pkt.mObjects) {
+                BadParseDetectingRunner.testPositionable(o);
+            }
+            pkt.debugPrint();
+            System.out.println("--> " + pkt);
+            System.out.println();
+        }
     }
 
     private static void testOtherShips(String[] tests) {

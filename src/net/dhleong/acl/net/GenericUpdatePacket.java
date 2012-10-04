@@ -28,6 +28,9 @@ public class GenericUpdatePacket implements ArtemisPacket {
     private static final byte GEN_ACTION_DUNNO_2 = 0x10;
     private static final byte GEN_ACTION_DUNNO_3 = 0x20;
     
+    private static final byte TORP_ACTION_DUNNO_1 = 0x40;
+    private static final byte TORP_ACTION_DUNNO_2 = (byte) 0x80;
+    
     private static final byte WHALE_ACTION_NAME     = 0x01;
     private static final byte WHALE_ACTION_DUNNO_1  = 0x02;
     private static final byte WHALE_ACTION_DUNNO_2  = 0x04;
@@ -109,6 +112,10 @@ public class GenericUpdatePacket implements ArtemisPacket {
                     c.setBearing(bearing);
                     obj = c;
                 } else {
+                    
+//                    byte torpedoExtra = 0;
+                    if (type == Type.TORPEDO)
+                        p.readByte();
 
                     x = p.readFloat(GEN_ACTION_X, -1);
                     y = p.readFloat(GEN_ACTION_Y, -1);
@@ -123,6 +130,9 @@ public class GenericUpdatePacket implements ArtemisPacket {
                     }
                     p.readInt(GEN_ACTION_DUNNO_2);
                     p.readInt(GEN_ACTION_DUNNO_3);
+                    
+                    p.readInt(TORP_ACTION_DUNNO_1);
+                    p.readInt(TORP_ACTION_DUNNO_2);
                     
                     obj = new ArtemisGenericObject(
                             p.getTargetId(), name, type);

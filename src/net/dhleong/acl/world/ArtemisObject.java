@@ -12,6 +12,8 @@ public interface ArtemisObject {
     public static final byte TYPE_ANOMALY   = 0x06; 
 
     public static final byte TYPE_NEBULA    = 0x08;
+    
+    public static final byte TYPE_TORPEDO   = 0x09;
 
     public static final byte TYPE_BLACK_HOLE= 0x0a;
     public static final byte TYPE_ASTEROID  = 0x0b;

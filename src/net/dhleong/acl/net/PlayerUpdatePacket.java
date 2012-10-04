@@ -321,7 +321,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             // = -1 means EMPTY;
             // = Integer.MIN_VALUE means we DON'T KNOW
             // else the type of torpedo there
-            for (int i=0; i<tubeContents.length; i++) {
+            for (int i=0; i<TUBE_TYPES.length; i++) {
                 byte torpType = p.readByte(TUBE_TYPES[i], (byte)-1);
                 if (tubeContents[i] == 0)
                     tubeContents[i] = ArtemisPlayer.TUBE_EMPTY; // empty tube
@@ -330,7 +330,10 @@ public class PlayerUpdatePacket implements ArtemisPacket {
                     tubeContents[i] = ArtemisPlayer.TUBE_UNKNOWN;
                 } else if (tubeContents[i] > 0 && torpType != (byte) -1)
                     tubeContents[i] = torpType;
-                
+                else
+                    // IE: it's "in use" but type is unspecified/changed
+                    //  DO we need another constant for this?
+                    tubeContents[i] = ArtemisPlayer.TUBE_UNKNOWN; 
             }
 
             mPlayer = new ArtemisPlayer(p.getTargetId(), name, hullId, 

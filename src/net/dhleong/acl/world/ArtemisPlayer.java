@@ -58,7 +58,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
         }
 
         Arrays.fill(mTorpedos, -1);
-        Arrays.fill(mTubeTypes, Integer.MIN_VALUE);
+        Arrays.fill(mTubeTypes, TUBE_UNKNOWN);
         Arrays.fill(mTubeTimes, -1);
     }
     
@@ -254,6 +254,10 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
     public float getTubeCountdown(int tube) {
         return mTubeTimes[tube];
+    }
+
+    public void setTubeContents(int tube, int contents) {
+        mTubeTypes[tube] = contents;
     }
 
 }

@@ -20,8 +20,6 @@ import net.dhleong.acl.net.eng.EngGridUpdatePacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.SetShipPacket;
-import net.dhleong.acl.net.setup.SetShipSettingsPacket;
-import net.dhleong.acl.net.setup.SetShipSettingsPacket.DriveType;
 import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
 import net.dhleong.acl.util.ShipSystemGrid;
@@ -211,8 +209,10 @@ public class TestRunner {
 //        }
         */
         
-        net.send(new SetStationPacket(StationType.HELM, true));
-        net.send(new SetShipSettingsPacket(DriveType.JUMP, 1, "USS Awesome"));
+//        net.send(new SetStationPacket(StationType.HELM, true));
+//        net.send(new SetShipSettingsPacket(DriveType.JUMP, 1, "USS Awesome"));
+        
+        net.send(new SetStationPacket(StationType.WEAPONS, true));
 
         net.send(new ReadyPacket());
 //        net.send(new ToggleShieldsPacket());

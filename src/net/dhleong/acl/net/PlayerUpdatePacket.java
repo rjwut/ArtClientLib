@@ -12,7 +12,7 @@ import net.dhleong.acl.world.ArtemisPlayer;
 
 public class PlayerUpdatePacket implements ArtemisPacket {
     
-    private static final byte ACTION_NAME_BYTE    = (byte) 0x01;
+    private static final byte ACTION_DUNNO_0    = (byte) 0x01;
     
     private static final byte ACTION_DUNNO_1      = (byte) 0x02;
     private static final byte ACTION_DUNNO_2      = (byte) 0x04;
@@ -38,7 +38,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     
     private static final long UNKNOWN_1     = 0x0000000000000200L;
     private static final long UNKNOWN_2     = 0x0000000000000400L;
-    private static final long UNKNOWN_3     = 0x0000000000000800L;
+    private static final long SHIP_NAME     = 0x0000000000000800L;
     
     private static final long SHLD_FRONT    = 0x0000000000001000L;
     private static final long SHLD_FRONT_MAX= 0x0000000000002000L;
@@ -144,13 +144,15 @@ public class PlayerUpdatePacket implements ArtemisPacket {
         try {
             p.readShort();
 
+            p.readInt(ACTION_DUNNO_0);
+
             // ???
             p.readInt(ACTION_DUNNO_1); // float [0,1]?
             p.readInt(ACTION_DUNNO_2);
             p.readInt(ACTION_DUNNO_3);
 
             p.readInt(ACTION_DUNNO_4);
-            p.readInt(ACTION_DUNNO_4);
+            //p.readInt(ACTION_DUNNO_4);
 
             p.readByte(ACTION_DUNNO_5, (byte)0);
 
@@ -184,10 +186,10 @@ public class PlayerUpdatePacket implements ArtemisPacket {
 
             // wtf? hax!?
             if (p.has(UNKNOWN_1) && p.has(UNKNOWN_2))
-                //p.readShort(UNKNOWN_3);
-                p.readByte(UNKNOWN_3, (byte)0);
+                //p.readShort(SHIP_NAME);
+                p.readByte(SHIP_NAME, (byte)0);
             
-            name = p.readName(ACTION_NAME_BYTE);
+            name = p.readName(SHIP_NAME);
 
             shieldsFront = p.readFloat(SHLD_FRONT, -1);
             shieldsFrontMax = p.readFloat(SHLD_FRONT_MAX, -1);
@@ -251,7 +253,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             }
 
             for (int i=0; i<torps.length; i++) {
-                torps[i] = p.readByte(TORPEDOS[i], -1);
+                torps[i] = ((byte)0xff & p.readByte(TORPEDOS[i], -1));
             }
             
             mPlayer = new ArtemisPlayer(p.getTargetId(), name, hullId, 

@@ -1,5 +1,7 @@
 package net.dhleong.acl.util;
 
+import java.lang.String;
+
 import net.dhleong.acl.net.PacketParser;
 
 public class ObjectParser {
@@ -165,15 +167,27 @@ public class ObjectParser {
         return -1;
     }
 
+    public String readName() {
+        int nameLen = PacketParser.getNameLengthBytes(mData, offset);
+        String name = PacketParser.getNameString(mData, offset+4, nameLen);
+        
+        offset += 4 + 2 + nameLen;
+        
+        return name;
+    }
+
     public String readName(byte ifActionByte) {
-        if ((action & ifActionByte) != 0) {            
-            int nameLen = PacketParser.getNameLengthBytes(mData, offset);
-            String name = PacketParser.getNameString(mData, offset+4, nameLen);
-            
-            offset += 4 + 2 + nameLen;
-            
-            return name;
+        if ((action & ifActionByte) != 0) {
+            return readName();
         }
+        return null;
+    }
+
+    public String readName(long ifArgLong) {
+        if ((longArgs & ifArgLong) != 0) {
+            return readName();
+        }
+
         return null;
     }
 

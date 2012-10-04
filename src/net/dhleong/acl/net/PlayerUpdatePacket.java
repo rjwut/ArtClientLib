@@ -159,8 +159,9 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             // warp speed?
             p.readByte(ACTION_DUNNO_6, (byte)-1);
 
-           
             energy = p.readFloat(ACTION_UPDATE_BYTE, -1);
+            if (!p.has(ACTION_UPDATE_BYTE) && p.getAction() == 0)
+                energy = p.readFloat();
             
             if (p.has(DUNNO_SKIP_2)) {
                 mShields = BoolState.from(p.readShort() != 0);

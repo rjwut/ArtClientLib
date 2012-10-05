@@ -301,7 +301,8 @@ public class SystemManager implements OnPacketListener {
         Arrays.fill(mPlayers, null);
         
         mGrid = null;
-        mGridDamage.clear(); 
+        if (mGridDamage != null)
+            mGridDamage.clear(); 
     }
 
 //    @Override

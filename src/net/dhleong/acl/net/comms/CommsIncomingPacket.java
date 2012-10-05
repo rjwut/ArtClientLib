@@ -24,6 +24,13 @@ public class CommsIncomingPacket extends BaseArtemisPacket {
                 .replace('^', '\n');
     }
     
+    /**
+     * Get the priority of the message, with
+     *  lower values having higher priority
+     *  
+     * @return An integer typically in the range
+     *  [3, 8]
+     */
     public int getPriority() {
         return mPriority;
     }

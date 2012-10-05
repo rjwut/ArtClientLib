@@ -1,19 +1,20 @@
 package net.dhleong.acl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 import net.dhleong.acl.net.DestroyObjectPacket;
-import net.dhleong.acl.net.eng.EngGridUpdatePacket;
-import net.dhleong.acl.net.eng.EngGridUpdatePacket.GridDamage;
-import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
-import net.dhleong.acl.net.setup.SetShipPacket;
 import net.dhleong.acl.net.GenericUpdatePacket;
 import net.dhleong.acl.net.ObjUpdatePacket;
 import net.dhleong.acl.net.PlayerUpdatePacket;
 import net.dhleong.acl.net.SysCreatePacket;
 import net.dhleong.acl.net.SystemInfoPacket;
+import net.dhleong.acl.net.eng.EngGridUpdatePacket;
+import net.dhleong.acl.net.eng.EngGridUpdatePacket.GridDamage;
+import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
+import net.dhleong.acl.net.setup.SetShipPacket;
 import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ShipSystemGrid;
 import net.dhleong.acl.world.ArtemisGenericObject;
@@ -282,7 +283,11 @@ public class SystemManager implements OnPacketListener {
      * @param grid
      */
     public void setSystemGrid(ShipSystemGrid grid) {
-        mGridDamage = new HashMap<GridCoord, Float>();
+        if (mGridDamage == null) {
+            mGridDamage = new HashMap<GridCoord, Float>();
+        } else {
+            mGridDamage.clear(); // just in case
+        }
         mGrid = grid;
         
         // fill some default values
@@ -293,6 +298,10 @@ public class SystemManager implements OnPacketListener {
 
     public synchronized void clear() {
         mObjects.clear();
+        Arrays.fill(mPlayers, null);
+        
+        mGrid = null;
+        mGridDamage.clear(); 
     }
 
 //    @Override

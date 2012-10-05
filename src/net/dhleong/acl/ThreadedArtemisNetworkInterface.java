@@ -67,7 +67,6 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                         mOutput.flush();
                     }
                 } catch (IOException e) {
-                    // TODO stop everything?
                     e.printStackTrace();
                     break;
                 }
@@ -140,7 +139,6 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                         break;
                     }
                 } catch (IOException e) {
-                    // TODO stop everything?
                     e.printStackTrace();
                     break;
                 }

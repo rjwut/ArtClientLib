@@ -200,15 +200,19 @@ public class ObjUpdatePacket implements ArtemisPacket {
                 p.readInt(UNUSED_4);
                 p.readInt(UNUSED_5);
                 p.readInt(UNUSED_6);
-                p.readInt(UNUSED_7);
-                p.readInt(UNUSED_8);
                 
                 // shield frequencies
                 if (p.getTargetType() == ArtemisObject.TYPE_ENEMY) {
+                    p.readInt(UNUSED_7);
+                    p.readInt(UNUSED_8);
+
                     for (int i=0; i<SHLD_FREQS.length; i++) {
                         freqs[i] = p.readFloat(SHLD_FREQS[i], -1);
                     }
                 } else {
+                    p.readShort(UNUSED_7);
+                    p.readShort(UNUSED_8);
+
                     // hax
                     for (int i=0; i<SHLD_FREQS.length; i++) {
                         freqs[i] = p.readFloat(SHLD_FREQS[0], -1);

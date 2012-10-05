@@ -30,9 +30,27 @@ public class PacketTestingRunner {
                 "03a2070000801a000000528e6347ce69c14699cbc6b5a5c004be03a3070000841a0000003f00003f4bbe63473756064721b8c7b5b7f7163e03a4070000801a000000cc5dfb46b96c27471c654736b0f7ac3e03a5070000800a0000006d34864700c88247514c473703a6070000840a42000018fcff3e20d55247d4170c47aa894737f07c7fc1275c7f3f03a7070000840a00000030f8ff3ecafc804735dc8c477daac73700000000",
                 "0300060000801a000000259e2a47d29a7147d9adc7375e6910400301060000849a001100f900003f22714b47266334473c72c7b6ea68003f9eef7fc19c707d3f61917d3f00000000",
                 "039e050000801a000000e5b6c146b1799347bec647373a50d53f039f05000086bac03f0000000000f201003ff12a8f470eef53473db623b75c08a3bf65916d3e623bffc061917d3f75147e3fb0f37d3f9c707d3febd27d3f26b27d3f3a357e3fff557e3f03a0050000841a000000e403003fb7b76047fcb644479d9fc7b71cba1dc003a1050000800a002800df1ee1469ff958461ca247b73220503f3220503f00000000",
+                "03a1060000ffffffff0705000000540072003700340000000000803f30f8ff3e9a99993e6f12033b00000000dc050000e8c03e4700000000e14ea447000000002bb4c73764dc41c09a99993e0000000020420000204200002042000020420100000000000000000000000000000000000000000000000000000000000000000000000000007a473d3fcb85323f2856603f8bd7f83e73e21f3f03a3060000ffffffff0705000000440065003000310000000000803f18fcff3e3333333f6f12033b00000000dd0500002c817a4700000000017339470000000067ae4737e053afbf3333333f00000000a0420000a0420000a0420000a042010000000000000000000000000000000000000000000000000000000000000000000000000000f0202b3f58b2c53e8819113f8cac5f3f3fa31f3f03a4060000ffffffff0705000000440065003200330000000000803f7d00003f3333333f6f12033b00000000dd05000026bb84470000000052b606470000000035db47b68837ffbe3333333f00000000a0420000a0420000a0420000a04201000000000000000000000000000000000000000000000000000000000000000000000000000012513c3fbada433f8050a63e33f7cc3ee8d5f33e00000000",
         };
         
-        testOtherShips(tests);
+        int[] shipsCreated = new int[] {
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                3,
+        };
+        
+        testOtherShips(tests, shipsCreated);
         
         String[] plrTests = new String[] {
                 "01ec030000800000000000000000000080f3794400000000",
@@ -78,7 +96,7 @@ public class PacketTestingRunner {
         }
     }
 
-    private static void testOtherShips(String[] tests) {
+    private static void testOtherShips(String[] tests, int[] shipsCreated) {
         for (int i=0; i<tests.length; i++) {
             byte[] bytes = hexStringToByteArray(tests[i]);
 //            if (!BaseArtemisPacket.byteArrayToHexString(bytes).equals(s))
@@ -95,6 +113,12 @@ public class PacketTestingRunner {
             }
             pkt.debugPrint();
             System.out.println("--> " + pkt);
+            
+            if (pkt.mObjects.size() < shipsCreated[i]) {
+                throw new IllegalStateException("Must be at least " + 
+                        shipsCreated[i] +" ships; only created: " + pkt.mObjects.size());
+            }
+            
             System.out.println();
         }
     }

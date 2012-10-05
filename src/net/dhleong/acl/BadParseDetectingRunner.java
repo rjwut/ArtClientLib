@@ -3,6 +3,7 @@ package net.dhleong.acl;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+import net.dhleong.acl.net.ObjUpdatePacket;
 import net.dhleong.acl.net.PlayerUpdatePacket;
 import net.dhleong.acl.net.SystemInfoPacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
@@ -31,11 +32,9 @@ public class BadParseDetectingRunner {
         try {
             net = new ThreadedArtemisNetworkInterface(tgtIp, tgtPort);
         } catch (UnknownHostException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return;
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return;
         }
@@ -64,6 +63,24 @@ public class BadParseDetectingRunner {
                             
                             ArtemisPlayer p = up.getPlayer();
                             testPlayer(p);
+                            
+                        } catch (RuntimeException e) {
+                            up.debugPrint();
+                            System.out.println("--> " + up);
+                            net.stop();
+                            throw e;
+                        }
+                    } else if (ObjUpdatePacket.isExtensionOf(sys)) {
+                        ObjUpdatePacket up = null;
+                        try {
+                            up = new ObjUpdatePacket(sys);
+                            
+                            for (ArtemisPositionable p : up.mObjects) {
+                                if (p instanceof BaseArtemisShip)
+                                    testShip((BaseArtemisShip)p);
+                                else
+                                    testPositionable(p);
+                            }
                             
                         } catch (RuntimeException e) {
                             up.debugPrint();

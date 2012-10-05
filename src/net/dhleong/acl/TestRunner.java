@@ -13,6 +13,7 @@ import net.dhleong.acl.net.GenericUpdatePacket;
 import net.dhleong.acl.net.ObjUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.net.PlayerUpdatePacket;
+import net.dhleong.acl.net.SetMainScreenPacket;
 import net.dhleong.acl.net.SysCreatePacket;
 import net.dhleong.acl.net.SystemInfoPacket;
 import net.dhleong.acl.net.comms.CommsIncomingPacket;
@@ -24,6 +25,7 @@ import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
 import net.dhleong.acl.util.ShipSystemGrid;
 import net.dhleong.acl.world.ArtemisObject;
+import net.dhleong.acl.world.ArtemisPlayer.MainScreen;
 
 public class TestRunner {
 
@@ -208,13 +210,15 @@ public class TestRunner {
 //        }
         */
         
-//        net.send(new SetStationPacket(StationType.HELM, true));
+        net.send(new SetStationPacket(StationType.HELM, true));
 //        net.send(new SetShipSettingsPacket(DriveType.JUMP, 1, "USS Awesome"));
         
-        net.send(new SetStationPacket(StationType.SCIENCE, true));
+//        net.send(new SetStationPacket(StationType.SCIENCE, true));
 
         net.send(new ReadyPacket());
 //        net.send(new ToggleShieldsPacket());
+        
+        net.send(new SetMainScreenPacket(MainScreen.RIGHT));
         
 //        net.send(new HelmJumpPacket(.5f, .5f));
 //        net.send(new HelmSetWarpPacket(2));

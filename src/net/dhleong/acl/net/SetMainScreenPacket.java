@@ -13,7 +13,7 @@ public class SetMainScreenPacket extends BaseArtemisPacket {
     private static final int FLAGS = 0x0c;
 
     public SetMainScreenPacket(MainScreen screen) {
-        super(0x02, TYPE, FLAGS, new byte[8]);
+        super(0x02, FLAGS, TYPE, new byte[8]);
         
         PacketParser.putLendInt(0x01, mData);
         PacketParser.putLendInt(screen.ordinal(), mData, 4);

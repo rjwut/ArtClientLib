@@ -14,6 +14,16 @@ public class ArtemisPlayer extends BaseArtemisShip {
     /** constant result of getTubeContents(), means we DON'T KNOW */
     public static final int TUBE_UNKNOWN = Integer.MIN_VALUE;
     
+    public enum MainScreen {
+        FRONT,
+        LEFT,
+        RIGHT,
+        REAR,
+        TACTICAL,
+        LONG_RANGE,
+        STATUS
+    }
+    
     private static final int SYS_COUNT = SystemType.values().length;
 
     private BoolState mRedAlert, mShields;
@@ -29,6 +39,8 @@ public class ArtemisPlayer extends BaseArtemisShip {
     private float mEnergy;
 
     private int mDockingStation = 0;
+
+    private MainScreen mMainScreen;
 
     /** I guess? Maybe...? */
     public static final int MAX_TUBES = 6;
@@ -225,6 +237,10 @@ public class ArtemisPlayer extends BaseArtemisShip {
                 if (plr.mTubeTypes[i] != TUBE_UNKNOWN)
                     mTubeTypes[i] = plr.mTubeTypes[i];
             }
+            
+            if (plr.mMainScreen != null) {
+                mMainScreen = plr.mMainScreen;
+            }
         }
     }
 
@@ -258,6 +274,18 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
     public void setTubeContents(int tube, int contents) {
         mTubeTypes[tube] = contents;
+    }
+
+    /**
+     * Sets the current main screen in use
+     * @param mainScreen
+     */
+    public void setMainScreen(MainScreen screen) {
+        mMainScreen = screen;
+    }
+    
+    public MainScreen getMainScreen() {
+        return mMainScreen;
     }
 
 }

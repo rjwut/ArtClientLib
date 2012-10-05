@@ -9,6 +9,7 @@ import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.util.ObjectParser;
 import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisPlayer;
+import net.dhleong.acl.world.ArtemisPlayer.MainScreen;
 
 public class PlayerUpdatePacket implements ArtemisPacket {
     
@@ -50,7 +51,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     private static final long RED_ALERT     = 0x0000000000020000L;
     
     private static final long UNKNOWN_FLT_0 = 0x0000000000040000L;
-    private static final long UNKNOWN_6     = 0x0000000000080000L;
+    private static final long MAIN_SCREEN   = 0x0000000000080000L;
     private static final long UNKNOWN_7     = 0x0000000000100000L;
     private static final long UNKNOWN_8     = 0x0000000000200000L;
     private static final long UNKNOWN_9     = 0x0000000000400000L;
@@ -155,6 +156,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     float energy;
     float x, y, z, bearing;
     BoolState mRedAlert, mShields;
+    MainScreen mainScreen;
     
     float shieldsFront, shieldsFrontMax;
     float shieldsRear, shieldsRearMax;
@@ -249,9 +251,10 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             
             p.readInt(UNKNOWN_FLT_0);
 
-            p.readByte(UNKNOWN_6, (byte)-1);
-            //p.readShort(UNKNOWN_6);
-            //p.readInt(UNKNOWN_6);
+            if (p.has(MAIN_SCREEN))
+                mainScreen = MainScreen.values()[p.readByte()];
+            else
+                mainScreen = null;
 
             //p.readShort(UNKNOWN_7);
             p.readByte(UNKNOWN_7, (byte)0);
@@ -344,6 +347,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             mPlayer.setBearing(bearing);
             mPlayer.setShipEnergy(energy);
             mPlayer.setDockingStation(dockingStation);
+            mPlayer.setMainScreen(mainScreen);
             
             mPlayer.setShieldsFront(shieldsFront);
             mPlayer.setShieldsFrontMax(shieldsFrontMax);

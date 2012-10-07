@@ -26,7 +26,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     private static final byte ACTION_UPDATE_BYTE  = (byte) 0x80;
     
     
-    private static final long DUNNO_SKIP_2     = 0x0000000000000001L;
+    private static final long DUNNO_SKIP_2  = 0x0000000000000001L;
     private static final long SHIP_NUMBER   = 0x0000000000000002L;
     /* I think so? */
     private static final long HULL_ID       = 0x0000000000000004L;
@@ -264,10 +264,11 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             p.readByte(UNKNOWN_8, (byte)-1); // MUST
 
             p.readInt(UNKNOWN_9);
-            p.readShort(UNKNOWN_9);
+            //p.readShort(UNKNOWN_9);
 
             //p.readByte(UNKNOWN_10, (byte)-1); 
-            p.readShort(UNKNOWN_10);
+            //p.readShort(UNKNOWN_10);
+            p.readInt(UNKNOWN_10);
 
             // I wonder if something in here
             //  indicates torpedo tube status? would
@@ -275,14 +276,15 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             //  sometimes seen... (differing torpedo
             //  tube counts)
 
+            /*
             // this doesn't seem right...
             if (p.has(UNKNOWN_7))
-                p.readByte(UNKNOWN_11, (byte)-1); 
-            else {
+                */p.readByte(UNKNOWN_11, (byte)-1); 
+            /*else {
                 p.readByte(UNKNOWN_11, (byte)-1);
                 p.readByte(UNKNOWN_11, (byte)-1);
                 p.readByte(UNKNOWN_11, (byte)-1);
-            }
+            }*/
 
             for (int i=0; i<heat.length; i++) {
                 heat[i] = p.readFloat(SYSTEMS_HEAT[i], -1);

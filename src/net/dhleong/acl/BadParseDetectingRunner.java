@@ -25,10 +25,11 @@ import net.dhleong.acl.world.BaseArtemisShip;
 public class BadParseDetectingRunner {
 
     public static void main(String[] args) {
-        String tgtIp = "10.211.55.4";
+//        String tgtIp = "10.211.55.4";
+        final String tgtIp = "192.168.11.19";
         final int tgtPort = 2010;
         
-        final ArtemisNetworkInterface net; 
+        final ThreadedArtemisNetworkInterface net; 
         try {
             net = new ThreadedArtemisNetworkInterface(tgtIp, tgtPort);
         } catch (UnknownHostException e) {
@@ -41,6 +42,13 @@ public class BadParseDetectingRunner {
 
         final SystemManager mgr = new SystemManager();
         net.addOnPacketListener(mgr);
+        net.setOnConnectedListener(new OnConnectedListener() {
+            
+            @Override
+            public void onConnected() {
+                System.out.println("Connected to " + tgtIp);
+            }
+        });
         
         net.addOnPacketListener(new OnPacketListener() {
 

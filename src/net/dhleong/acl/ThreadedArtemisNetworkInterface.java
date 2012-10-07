@@ -81,6 +81,9 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
 
         public void end() {
             mRunning = false;
+            
+            // also, not interested in listening anymore
+            mOnConnectedListener = null;
         }
 
         @Override
@@ -160,6 +163,9 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         
         public void end() {
             mRunning = false;
+            
+            // also, not interested in listening anymore
+            mListeners.clear();
         }
 
         public void addOnPacketListener(OnPacketListener listener) {

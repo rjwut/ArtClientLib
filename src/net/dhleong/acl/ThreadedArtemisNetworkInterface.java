@@ -26,6 +26,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         
         private boolean mConnected = false;
         private OnConnectedListener mOnConnectedListener;
+        private boolean mStarted;
 
         public SenderThread(ThreadedArtemisNetworkInterface net, Socket skt) throws IOException {
             mInterface = net;
@@ -40,6 +41,8 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
 
         @Override
         public void run() {
+            mStarted = true;
+            
             while (mRunning) {
                 
                 try {
@@ -103,6 +106,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         private final PacketParser mParser;
         private final ThreadedArtemisNetworkInterface mInterface;
         private final Socket mSocket;
+        private boolean mStarted;
         
         public ReceiverThread(ThreadedArtemisNetworkInterface net, Socket skt) throws IOException {
             mInterface = net;
@@ -113,6 +117,8 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
 
         @Override
         public void run() {
+            mStarted = true;
+            
             while (mRunning) {
                 try {
                     Thread.sleep(5);
@@ -198,9 +204,9 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
     
     @Override
     public void start() {
-        if (!mReceiveThread.isAlive())
+        if (!mReceiveThread.mStarted)
             mReceiveThread.start();
-        if (!mSendThread.isAlive())
+        if (!mSendThread.mStarted)
             mSendThread.start();
     }
 

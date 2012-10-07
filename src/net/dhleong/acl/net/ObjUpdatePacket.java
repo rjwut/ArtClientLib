@@ -148,9 +148,14 @@ public class ObjUpdatePacket implements ArtemisPacket {
                 shieldsRear = p.readFloat(SHLD_REAR, -1);
                 shieldsRearMax = p.readFloat(SHLD_REAR_MX, -1);
 
-                //p.readFloat(DUNNO_NEW_0, 0);
-                p.readShort(DUNNO_NEW_0);
-                //p.readByte(DUNNO_NEW_0, (byte)0);
+                if (p.getTargetType() == ArtemisObject.TYPE_ENEMY
+                        || p.getAction() == (byte)0xff) {
+                    //p.readFloat(DUNNO_NEW_0, 0);
+                    p.readShort(DUNNO_NEW_0);
+                    //p.readByte(DUNNO_NEW_0, (byte)0);
+                } else {
+                    p.readInt(DUNNO_NEW_0);
+                }
                 
                 // ????
                 //p.readShort(DUNNO_NEW_1);

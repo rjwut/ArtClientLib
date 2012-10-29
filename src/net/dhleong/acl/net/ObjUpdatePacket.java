@@ -48,7 +48,7 @@ public class ObjUpdatePacket implements ArtemisPacket {
      * damage for neutral ships....
      */
     private static final int ELITE       = 0x00004000; // just a guess
-    private static final int DUNNO_NEW_2 = 0x00008000; // ?
+    private static final int ELITE_STATE = 0x00008000; // ?
     
     private static final int DUNNO_NEW_3 = 0x00010000;
 
@@ -92,6 +92,7 @@ public class ObjUpdatePacket implements ArtemisPacket {
         String name = null;
         int hullId = -1;
         int elite = -1;
+        int eliteState = -1;
 
         float shieldsFront, shieldsFrontMax;
         float shieldsRear, shieldsRearMax;
@@ -164,18 +165,22 @@ public class ObjUpdatePacket implements ArtemisPacket {
                 if (p.getTargetType() == ArtemisObject.TYPE_ENEMY
                         || p.getAction() != (byte)0xff) {
 
-                    // don't care right now
+                    // what abilities do you have?
                     elite = p.readInt(ELITE);
                     //p.readShort(ELITE);
+                } else {
+                    elite = -1;
                 }
 
                 //p.readByte(DUNNO_NEW_2, (byte)0);
 //                p.readShort(DUNNO_NEW_2);
                 if (p.getTargetType() == ArtemisObject.TYPE_ENEMY
                         || p.getAction() != (byte)0xff) {
-                    p.readInt(DUNNO_NEW_2);
+
+                    // what abilities are active?
+                    eliteState = p.readInt(ELITE_STATE);
                 } else {
-                    p.readShort(DUNNO_NEW_2);
+                    eliteState = p.readShort(ELITE_STATE);
                 }
 
                 /*
@@ -231,6 +236,7 @@ public class ObjUpdatePacket implements ArtemisPacket {
                     ArtemisEnemy enemy = new ArtemisEnemy(p.getTargetId(), name, hullId);
                     enemy.setScanned(scanned);
                     enemy.setEliteBits(elite);
+                    enemy.setEliteState(eliteState);
 
                     newObj = enemy;
                     break;

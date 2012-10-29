@@ -16,7 +16,7 @@ public class ArtemisEnemy extends BaseArtemisShip {
     public static final byte SCAN_LEVEL_FULL  = 2;
     
     private byte mScannedLevel = -1;
-    private int mElite;
+    private int mElite, mEliteState;
     
     public ArtemisEnemy(int objId, String name, int hullId) {
         super(objId, name, hullId);
@@ -31,6 +31,10 @@ public class ArtemisEnemy extends BaseArtemisShip {
     public boolean hasEliteAbility(int ability) {
         return mElite != -1 && (mElite & ability) != 0;
     }
+
+    public boolean isUsingEliteAbiilty(int ability) {
+        return mEliteState != -1 && (mEliteState & ability) != 0;
+    }
     
     public boolean isScanned(byte scanLevel) {
         return mScannedLevel >= scanLevel;
@@ -40,6 +44,10 @@ public class ArtemisEnemy extends BaseArtemisShip {
         mElite = elite;
     }
 
+    public void setEliteState(int elite) {
+        mEliteState = elite;
+    }
+    
     public void setScanned(byte scanned) {
         mScannedLevel = scanned;
     }
@@ -56,17 +64,25 @@ public class ArtemisEnemy extends BaseArtemisShip {
             
             if (cast.mElite != -1)
                 setEliteBits(cast.mElite);
+
+            if (cast.mEliteState != -1)
+                setEliteState(cast.mEliteState);
         }
         
     }
 
     @Override
     public String toString() {
-        return String.format("[ENEMY:%s:%d:%c]%s", 
+        final String base = String.format("[ENEMY:%s:%d:%c]%s", 
                 mName, 
                 mHullId,
                 (mScannedLevel > 0) ? mScannedLevel : '_',
                 super.toString());
+        if (mElite == -1 && mEliteState == -1)
+            return base;
+        else {
+            return String.format("%s\nELITE[%d]\nSTATE[%d]", base, mElite, mEliteState);
+        }
     }
 
     /**
@@ -98,8 +114,19 @@ public class ArtemisEnemy extends BaseArtemisShip {
         return mScannedLevel;
     }
 
+    /**
+     * Use for static abilities like ELITE_INVIS_TO_MAIN_SCREEN
+     */
     public static boolean hasEliteAbility(ArtemisObject obj, int ability) {
         return (obj instanceof ArtemisEnemy) 
                 && ((ArtemisEnemy)obj).hasEliteAbility(ability);
+    }
+
+    /**
+     * Use for dynamic abilities like ELITE_CLOAKING
+     */
+    public static boolean isUsingEliteAbility(ArtemisObject obj, int ability) {
+        return (obj instanceof ArtemisEnemy) 
+                && ((ArtemisEnemy)obj).isUsingEliteAbiilty(ability);
     }
 }

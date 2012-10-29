@@ -139,7 +139,7 @@ public class TestRunner {
 //                                    coolant + " / " + energy + " :: " + heat);
 //                        }
 //                        
-                        System.out.println("--> " + up);
+//                        System.out.println("--> " + up);
                         return;
                     } else if (sys.getTargetType() == ArtemisObject.TYPE_PLAYER){
                         System.out.println("INFO << " + sys);
@@ -210,10 +210,10 @@ public class TestRunner {
 //        }
         */
         
-        net.send(new SetStationPacket(StationType.HELM, true));
+//        net.send(new SetStationPacket(StationType.HELM, true));
 //        net.send(new SetShipSettingsPacket(DriveType.JUMP, 1, "USS Awesome"));
         
-//        net.send(new SetStationPacket(StationType.SCIENCE, true));
+        net.send(new SetStationPacket(StationType.SCIENCE, true));
 
         net.send(new ReadyPacket());
 //        net.send(new ToggleShieldsPacket());

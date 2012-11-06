@@ -123,30 +123,30 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
             mStarted = true;
             
             while (mRunning) {
-                try {
-                    Thread.sleep(5);
-                } catch (InterruptedException e) {}
+//                try {
+//                    Thread.sleep(5);
+//                } catch (InterruptedException e) {}
                 
-                try {
-                    if (mInput.available() < 8) {
-                        // nothing, or not enough to at least 
-                        //  figure out what we need
-                        continue;
-                    }
+//                try {
+                    // not sure this is actually useful
+//                    if (mInput.available() < 8) {
+//                        // nothing, or not enough to at least 
+//                        //  figure out what we need
+//                        continue;
+//                    }
                     
-                    try {
-                        // read packet
-                        ArtemisPacket pkt = mParser.readPacket(mInput);
-                        
-                        // notify listeners
-                        for (OnPacketListener listener : mListeners) {
-                            listener.onPacket(pkt);
-                        }
-                    } catch (ArtemisPacketException e) {
-                        // TODO ?
-                        e.printStackTrace();
-                        break;
+                try {
+                    // read packet
+                    ArtemisPacket pkt = mParser.readPacket(mInput);
+
+                    // notify listeners
+                    for (OnPacketListener listener : mListeners) {
+                        listener.onPacket(pkt);
                     }
+                } catch (ArtemisPacketException e) {
+                    // TODO ?
+                    e.printStackTrace();
+                    break;
                 } catch (IOException e) {
                     e.printStackTrace();
                     break;

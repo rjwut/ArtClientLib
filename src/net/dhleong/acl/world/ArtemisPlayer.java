@@ -7,6 +7,13 @@ import net.dhleong.acl.net.weap.LoadTubePacket;
 import net.dhleong.acl.util.BoolState;
 
 public class ArtemisPlayer extends BaseArtemisShip {
+    
+    /** default amount of available coolant */
+    public static final int DEFAULT_COOLANT = 8;
+    
+
+    /** I guess? Maybe...? */
+    public static final int MAX_TUBES = 6;
 
     /** constant result of getTubeContents(), means NOTHING */
     public static final int TUBE_EMPTY = -1;
@@ -42,8 +49,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
     private MainScreen mMainScreen;
 
-    /** I guess? Maybe...? */
-    public static final int MAX_TUBES = 6;
+    private int mAvailableCoolant = DEFAULT_COOLANT;
 
     /**
      * 
@@ -214,6 +220,9 @@ public class ArtemisPlayer extends BaseArtemisShip {
             if (plr.mEnergy != -1)
                 mEnergy = plr.mEnergy;
             
+            if (plr.mAvailableCoolant != -1)
+                mAvailableCoolant = plr.mAvailableCoolant;
+            
             for (int i=0; i<SYS_COUNT; i++) {
                 if (plr.mHeat[i] != -1)
                     mHeat[i] = plr.mHeat[i];
@@ -284,6 +293,17 @@ public class ArtemisPlayer extends BaseArtemisShip {
         mMainScreen = screen;
     }
     
+    /**
+     * How much coolant do we have available?
+     */
+    public int getAvailableCoolant() {
+        return mAvailableCoolant;
+    }
+    
+    public void setAvailableCoolant(int availableCoolant) {
+        mAvailableCoolant = availableCoolant;
+    }
+
     public MainScreen getMainScreen() {
         return mMainScreen;
     }

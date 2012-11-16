@@ -53,7 +53,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     private static final long UNKNOWN_FLT_0 = 0x0000000000040000L;
     private static final long MAIN_SCREEN   = 0x0000000000080000L;
     private static final long UNKNOWN_7     = 0x0000000000100000L;
-    private static final long UNKNOWN_8     = 0x0000000000200000L;
+    private static final long AVAILABLE_COOLANT     = 0x0000000000200000L;
     private static final long UNKNOWN_9     = 0x0000000000400000L;
     private static final long UNKNOWN_10    = 0x0000000000800000L;
     private static final long UNKNOWN_11    = 0x0000000001000000L;
@@ -161,6 +161,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     float shieldsFront, shieldsFrontMax;
     float shieldsRear, shieldsRearMax;
     int dockingStation;
+    int availableCoolant;
     
     float[] heat = new float[ SYSTEMS_HEAT.length ];
     float[] sysEnergy = new float[ SYSTEMS_ENRG.length ];
@@ -223,7 +224,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
 
             bearing = p.readFloat(BEARING, Float.MIN_VALUE);
 
-            // 6 bytes
+            // 5 bytes
             p.readInt(UNKNOWN_1);
             p.readByte(UNKNOWN_2, (byte)0);
 
@@ -261,7 +262,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             //p.readInt(UNKNOWN_7);
 
             // total available coolant?
-            p.readByte(UNKNOWN_8, (byte)-1); // MUST
+            availableCoolant = p.readByte(AVAILABLE_COOLANT, (byte)-1); // MUST
 
             p.readInt(UNKNOWN_9);
             //p.readShort(UNKNOWN_9);
@@ -350,6 +351,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             mPlayer.setShipEnergy(energy);
             mPlayer.setDockingStation(dockingStation);
             mPlayer.setMainScreen(mainScreen);
+            mPlayer.setAvailableCoolant(availableCoolant);
             
             mPlayer.setShieldsFront(shieldsFront);
             mPlayer.setShieldsFrontMax(shieldsFrontMax);

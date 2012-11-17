@@ -407,6 +407,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
         System.out.println("-------Ship numb: " + shipNumber);
         System.out.println("-------Red Alert: " + mRedAlert);
         System.out.println("-------ShieldsUp: " + mShields);
+        System.out.println("---------Coolant: " + availableCoolant);
         System.out.println(String.format("-------Torp Cnts: %d:%d:%d:%d", 
             torps[0], torps[1], torps[2], torps[3]));
         System.out.println(String.format("-------[%.1f/%.2f  %.1f,%.1f]", 

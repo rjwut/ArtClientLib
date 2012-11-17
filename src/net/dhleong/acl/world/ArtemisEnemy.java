@@ -1,5 +1,15 @@
 package net.dhleong.acl.world;
 
+/**
+ * An enemy ship; they may have special
+ *  abilities, and can be scanned.
+ *  
+ * Other ships objects may be scan-able,
+ *  but scanning for these is understood 
+ *  
+ * @author dhleong
+ *
+ */
 public class ArtemisEnemy extends BaseArtemisShip {
     
     // elite enemy bits

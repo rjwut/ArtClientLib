@@ -1,7 +1,5 @@
 package net.dhleong.acl.util;
 
-import java.lang.String;
-
 import net.dhleong.acl.net.PacketParser;
 
 public class ObjectParser {
@@ -186,6 +184,14 @@ public class ObjectParser {
         }
         return null;
     }
+    
+    public String readName(int ifArgs) {
+        if ((args & ifArgs) != 0) {
+            return readName();
+        }
+
+        return null;
+    }
 
     public String readName(long ifArgLong) {
         if ((longArgs & ifArgLong) != 0) {
@@ -263,5 +269,17 @@ public class ObjectParser {
         
         action = mData[offset+4];
         offset += 5;
+    }
+    
+    /**
+     * If your packet only has args (int) and no action
+     */
+    public void startNoAction() {
+        targetType = mData[offset++];
+        targetId = PacketParser.getLendInt(mData, offset);
+        
+        action = 0;
+        args = PacketParser.getLendInt(mData, offset+4);
+        offset += 8;
     }
 }

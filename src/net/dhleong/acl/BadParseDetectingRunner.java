@@ -112,6 +112,7 @@ public class BadParseDetectingRunner {
         
         assertRange(-1, 5000, p.getEnergy(), "energy");
         assertRange(-1, 6, p.getShipIndex(), "shipIndex");
+        assertRange(-1, 32, p.getAvailableCoolant(), "maxCoolant");
         
         for (SystemType sys : SystemType.values()) {
             if (p.getSystemEnergy(sys) != -1)

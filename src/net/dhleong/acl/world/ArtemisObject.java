@@ -1,5 +1,13 @@
 package net.dhleong.acl.world;
 
+/**
+ * Some sort of object in the World.
+ *  Every object has a Type, a Name
+ *  and an ID
+ * 
+ * @author dhleong
+ *
+ */
 public interface ArtemisObject {
     
     public static final byte TYPE_PLAYER = 0x01;
@@ -17,6 +25,7 @@ public interface ArtemisObject {
 
     public static final byte TYPE_BLACK_HOLE= 0x0a;
     public static final byte TYPE_ASTEROID  = 0x0b;
+    public static final byte TYPE_MESH      = 0x0c;
     
     public static final byte TYPE_MONSTER   = 0x0d;
     public static final byte TYPE_WHALE     = 0x0e;

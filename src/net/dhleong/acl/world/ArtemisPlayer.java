@@ -6,11 +6,19 @@ import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.weap.LoadTubePacket;
 import net.dhleong.acl.util.BoolState;
 
+/**
+ * A player ship
+ * 
+ * @author dhleong
+ *
+ */
 public class ArtemisPlayer extends BaseArtemisShip {
     
     /** default amount of available coolant */
     public static final int DEFAULT_COOLANT = 8;
     
+    /** maximum per-system value for coolant allocation */
+    public static final int MAX_COOLANT_PER_SYSTEM = 8;
 
     /** I guess? Maybe...? */
     public static final int MAX_TUBES = 6;

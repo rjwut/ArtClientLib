@@ -1,6 +1,12 @@
 package net.dhleong.acl.world;
 
-
+/**
+ * There are many "generic" objects which
+ *  are very similar in implementation
+ *  
+ * @author dhleong
+ *
+ */
 public class ArtemisGenericObject extends BaseArtemisObject {
     
     public enum Type {

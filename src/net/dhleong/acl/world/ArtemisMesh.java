@@ -67,9 +67,15 @@ public class ArtemisMesh extends BaseArtemisObject {
     }
 
     @Override
-    public void updateFrom(ArtemisPositionable eng) {
-        // TODO Auto-generated method stub
-        super.updateFrom(eng);
+    public void updateFrom(ArtemisPositionable other) {
+        super.updateFrom(other);
+        
+        ArtemisMesh m = (ArtemisMesh) other;
+        if (m.mShieldsFront != -1)
+            mShieldsFront = m.mShieldsFront;
+        
+        if (m.mShieldsRear != -1)
+            mShieldsRear = m.mShieldsRear;
     }
 
     @Override

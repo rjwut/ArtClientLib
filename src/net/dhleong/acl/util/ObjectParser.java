@@ -41,7 +41,9 @@ public class ObjectParser {
     }
 
     public boolean hasMore() {
-//        return offset+10 < mData.length;
+//        System.out.println("hasMore:: " + offset + "< " + mData.length);
+//        if (offset < mData.length)
+//            System.out.println("hasMore::> " + mData[offset]);
         return offset < mData.length && mData[offset] != 0; // maybe?
     }
 
@@ -221,7 +223,7 @@ public class ObjectParser {
         return defaultValue;
     }
     
-    public int readByte(long ifArgsLong, int defaultValue) {
+    public byte readByte(long ifArgsLong, byte defaultValue) {
         if ((longArgs & ifArgsLong) != 0) {
             return readByte();
         }

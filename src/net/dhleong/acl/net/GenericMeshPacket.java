@@ -26,17 +26,19 @@ public class GenericMeshPacket implements ArtemisPacket {
     private static final int q7= 0x00000200;
     
     private static final int NAME         = 0x00000400; 
+    @SuppressWarnings("unused")
     private static final int PATH_MESH    = 0x00000800; 
     private static final int PATH_TEXTURE = 0x00001000; // ?
     
-    private static final int UNKNOWN_SHORT = 0x00002000; // ?
+    private static final int UNKNOWN_FLT = 0x00002000; // ?
 
-    private static final int UNKNOWN_FLT_2 = 0x00004000; // just a guess
+    private static final int UNKNOWN_SHORT = 0x00004000; // just a guess
     private static final int UNKNOWN_FLT_1 = 0x00008000; // ?
     
     private static final int COLOR_R    = 0x00010000;
-    private static final int COLOR_G    = 0x00020000; 
-    private static final int COLOR_B    = 0x00040000;
+    private static final int COLOR_G    = 0x00020000;
+    
+    private static final int COLOR    = 0x00040000;
     
     private static final int FAKE_SHIELDS_FRONT = 0x00080000;
     private static final int FAKE_SHIELDS_REAR  = 0x00100000;
@@ -53,6 +55,8 @@ public class GenericMeshPacket implements ArtemisPacket {
 
     public final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
 
+    float r, g, b;
+    
     public GenericMeshPacket(final SystemInfoPacket pkt) {
         this(pkt.mData);
     }
@@ -61,15 +65,11 @@ public class GenericMeshPacket implements ArtemisPacket {
 
         mData = data;
 
-        float x, y, z, bearing;
-        byte scanned = -1;
+        float x, y, z;//, bearing;
+        
         String name = null, mesh = null, texture = null;
-        int hullId = -1;
-        int elite = -1;
-        int eliteState = -1;
 
-        float shieldsFront, shieldsFrontMax;
-        float shieldsRear, shieldsRearMax;
+        float shieldsFront, shieldsRear;
 
 //        int base = 0;
         ObjectParser p = new ObjectParser(mData, 0);
@@ -90,8 +90,37 @@ public class GenericMeshPacket implements ArtemisPacket {
                 p.readLong(q7);
                 
                 name = p.readName(NAME);
-                mesh = p.readName(PATH_MESH);
+                mesh = p.readName(PATH_TEXTURE); // wtf?!
                 texture = p.readName(PATH_TEXTURE);
+                
+//                if (p.has(PATH_MESH))
+//                    p.readShort(UNKNOWN_FLT);
+                p.readInt(UNKNOWN_FLT);
+                
+                p.readShort(UNKNOWN_SHORT);
+                p.readByte(UNKNOWN_FLT_1, (byte)-1);
+                p.readByte(COLOR_R, (byte)-1);
+                p.readByte(COLOR_G, (byte)-1);
+                
+                // color
+                boolean hasColor = p.has(COLOR);
+                
+                if (hasColor) {
+                    r = p.readFloat();
+                    g = p.readFloat();
+                    b = p.readFloat();
+                } else {
+                    r = g = b = -1;
+                }
+                
+                shieldsFront = p.readFloat(FAKE_SHIELDS_FRONT, -1);
+                shieldsRear  = p.readFloat(FAKE_SHIELDS_REAR, -1);
+                
+                p.readByte(UNKNOWN_BYTE, (byte)0xff);
+                p.readInt(UNKNOWN_INT_1);
+                p.readInt(UNKNOWN_INT_2);
+                p.readInt(UNKNOWN_INT_3);
+                p.readInt(UNKNOWN_INT_4);
                 
                 final ArtemisMesh newObj = new ArtemisMesh(p.getTargetId(), name);
                 
@@ -99,6 +128,13 @@ public class GenericMeshPacket implements ArtemisPacket {
                 newObj.setX(x);
                 newObj.setY(y);
                 newObj.setZ(z);
+                
+                newObj.setMesh(mesh);
+                newObj.setTexture(texture);
+                
+                newObj.setRGB(r, g, b);
+                
+                newObj.setFakeShields(shieldsFront, shieldsRear);
                 
                 // may have fake shields?
 //                if (newObj instanceof BaseArtemisShip) {

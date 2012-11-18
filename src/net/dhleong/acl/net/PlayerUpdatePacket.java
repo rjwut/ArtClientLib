@@ -296,11 +296,11 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             }
 
             for (int i=0; i<coolant.length; i++) {
-                coolant[i] = p.readByte(COOLANTS[i], -1);
+                coolant[i] = p.readByte(COOLANTS[i], (byte)-1);
             }
 
             for (int i=0; i<torps.length; i++) {
-                torps[i] = ((byte)0xff & p.readByte(TORPEDOS[i], -1));
+                torps[i] = ((byte)0xff & p.readByte(TORPEDOS[i], (byte)-1));
             }
 
             p.readByte(UNKNOWN_BYTE, (byte)-1);

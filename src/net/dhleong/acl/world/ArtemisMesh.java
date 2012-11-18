@@ -51,15 +51,17 @@ public class ArtemisMesh extends BaseArtemisObject {
         return mShieldsRear;
     }
     
-    public void setRGB(int r, int g, int b) {
+    public void setARGB(int a, int r, int g, int b) {
         mColor = 0;
+        mColor |= ((a & 0xff) << 24);
         mColor |= ((r & 0xff) << 16);
         mColor |= ((g & 0xff) << 8);
         mColor |= (b & 0xff);
     }
     
-    public void setRGB(float r, float g, float b) {
-        setRGB(
+    public void setARGB(float a, float r, float g, float b) {
+        setARGB(
+            (int)(255 * a),
             (int)(255 * r), 
             (int)(255 * g), 
             (int)(255 * b)

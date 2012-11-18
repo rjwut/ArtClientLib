@@ -132,7 +132,7 @@ public class GenericMeshPacket implements ArtemisPacket {
                 newObj.setMesh(mesh);
                 newObj.setTexture(texture);
                 
-                newObj.setRGB(r, g, b);
+                newObj.setARGB(1.0f, r, g, b);
                 
                 newObj.setFakeShields(shieldsFront, shieldsRear);
                 

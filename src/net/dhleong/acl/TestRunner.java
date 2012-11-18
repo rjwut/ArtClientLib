@@ -126,7 +126,7 @@ public class TestRunner {
                         return;
                         
                     } else if (PlayerUpdatePacket.isExtensionOf(sys)) {
-                        PlayerUpdatePacket up = new PlayerUpdatePacket(sys);
+//                        PlayerUpdatePacket up = new PlayerUpdatePacket(sys);
 //                        ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
 //
 //                        up.debugPrint();

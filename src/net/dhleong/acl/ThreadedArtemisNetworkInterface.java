@@ -116,14 +116,12 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         private final BufferedInputStream mInput;
         private final PacketParser mParser;
         private final ThreadedArtemisNetworkInterface mInterface;
-        private final Socket mSocket;
         private boolean mStarted;
         
         public ReceiverThread(ThreadedArtemisNetworkInterface net, Socket skt) throws IOException {
             mInterface = net;
             mInput = new BufferedInputStream(skt.getInputStream());
             mParser = new PacketParser();
-            mSocket = skt;
         }
 
         @Override

@@ -77,6 +77,14 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
             
             mConnected = false;
             mInterface.stop();
+            
+            // close the socket here; this will
+            //  allow us to send any closing
+            //  packets needed before shutting
+            //  down the pipes
+            try {
+                mSkt.close();
+            } catch (IOException e) {}
         }
 
         public void end() {
@@ -152,11 +160,6 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                     break;
                 }
             }
-            
-            // close the socket here;
-            try {
-                mSocket.close();
-            } catch (IOException e) {}
             
             mInterface.stop();
         }

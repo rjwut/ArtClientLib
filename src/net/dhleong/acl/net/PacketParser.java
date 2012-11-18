@@ -7,6 +7,7 @@ import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.ArtemisPacketException;
 import net.dhleong.acl.net.comms.CommsIncomingPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
+import net.dhleong.acl.world.ArtemisObject;
 
 public class PacketParser {
     
@@ -59,11 +60,7 @@ public class PacketParser {
             throw new ArtemisPacketException("EOF");
         }
         
-        switch (packetType) {
-        case SystemInfoPacket.TYPE:
-            // TODO we could directly return subtypes
-            return new SystemInfoPacket(flags, bucket);
-            
+        switch (packetType) {            
         case EngGridUpdatePacket.TYPE:
             return new EngGridUpdatePacket(flags, bucket);
             
@@ -75,6 +72,36 @@ public class PacketParser {
             
         case GameMessagePacket.TYPE:
             return new GameMessagePacket(flags, bucket);
+            
+        case ArtemisPacket.WORLD_TYPE:
+            // ooh, crazy world type; switch for kid types
+            final int type = bucket[0];
+            switch (type) {
+            case ArtemisObject.TYPE_PLAYER:
+                return new PlayerUpdatePacket(bucket);
+                
+            case ArtemisObject.TYPE_ENEMY:
+            case ArtemisObject.TYPE_OTHER:
+                return new ObjUpdatePacket(bucket);
+                
+            case ArtemisObject.TYPE_STATION:
+                return new StationPacket(bucket);
+
+            case ArtemisObject.TYPE_MESH:
+                return new GenericMeshPacket(bucket);
+
+            case ArtemisObject.TYPE_MINE:
+            case ArtemisObject.TYPE_ANOMALY:
+            case ArtemisObject.TYPE_NEBULA:
+            case ArtemisObject.TYPE_TORPEDO:
+            case ArtemisObject.TYPE_BLACK_HOLE:
+            case ArtemisObject.TYPE_ASTEROID:
+            case ArtemisObject.TYPE_MONSTER:
+            case ArtemisObject.TYPE_WHALE:
+                return new GenericUpdatePacket(bucket);
+            }
+            
+            // unhandled? fall through for generic 
         
         default:
             return new BaseArtemisPacket(mode, flags, packetType, bucket);

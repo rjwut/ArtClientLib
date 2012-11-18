@@ -6,12 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.dhleong.acl.net.DestroyObjectPacket;
-import net.dhleong.acl.net.GenericMeshPacket;
-import net.dhleong.acl.net.GenericUpdatePacket;
-import net.dhleong.acl.net.ObjUpdatePacket;
+import net.dhleong.acl.net.ObjectUpdatingPacket;
 import net.dhleong.acl.net.PlayerUpdatePacket;
-import net.dhleong.acl.net.SysCreatePacket;
-import net.dhleong.acl.net.SystemInfoPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket.GridDamage;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
@@ -91,57 +87,17 @@ public class SystemManager implements OnPacketListener {
         }
         
         // from here, we only care about this kind
-        if (!(pkt instanceof SystemInfoPacket))
-            return;
-        
-        SystemInfoPacket info = (SystemInfoPacket) pkt;
-        if (SysCreatePacket.isExtensionOf(info)) {
-            // CREATE objects
-            SysCreatePacket create = new SysCreatePacket(info);
-            
-            List<ArtemisPositionable> newObjs = create.getCreatedObjects();
-            for (ArtemisObject obj : newObjs) {
-                synchronized(this) {
-                    mObjects.put(obj.getId(), obj);
-                }
-                
-                if (DEBUG) System.out.println("SystemManager#created: " + obj);
+        if (pkt instanceof ObjectUpdatingPacket) {
+            for (ArtemisPositionable p : ((ObjectUpdatingPacket)pkt)
+                    .getObjects()) {
+                updateOrCreate(p);
             }
-            
-            if (DEBUG) System.out.println("--> " + create);
-            
-            if (newObjs.size() > 0) {
-                // signal change
-                mListener.onObjectCountChanged(mObjects.size());
-            }
-
-        } else if (ObjUpdatePacket.isExtensionOf(info)) {
-            
-            ObjUpdatePacket e = new ObjUpdatePacket(info);
-            
-            for (ArtemisPositionable eng : e.mObjects) {
-                updateOrCreate(eng);
-            }
-        } else if (PlayerUpdatePacket.isExtensionOf(info)) {
-            PlayerUpdatePacket e = new PlayerUpdatePacket(info);
+        } else if (pkt instanceof PlayerUpdatePacket) {
+            PlayerUpdatePacket e = (PlayerUpdatePacket) pkt;
             
             updateOrCreate(e.getPlayer());
-            
-        } else if (GenericUpdatePacket.isExtensionOf(info)) {
-            
-            GenericUpdatePacket e = new GenericUpdatePacket(info);
-            
-            for (ArtemisPositionable eng : e.mObjects) {
-                updateOrCreate(eng);
-            }
-        } else if (GenericMeshPacket.isExtensionOf(info)) {
-            
-            GenericMeshPacket e = new GenericMeshPacket(info);
-            
-            for (ArtemisPositionable eng : e.mObjects) {
-                updateOrCreate(eng);
-            }
-        }
+          
+        } 
     }
     
     @SuppressWarnings("unused")

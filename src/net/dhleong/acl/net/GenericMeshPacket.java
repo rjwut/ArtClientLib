@@ -8,10 +8,14 @@ import java.util.List;
 import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.util.ObjectParser;
 import net.dhleong.acl.world.ArtemisMesh;
-import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisPositionable;
 
-public class GenericMeshPacket implements ArtemisPacket {
+/**
+ * 
+ * @author dhleong
+ *
+ */
+public class GenericMeshPacket implements ObjectUpdatingPacket {
 
     private static final int POS_X       = 0x00000001; 
     private static final int POS_Y       = 0x00000002; 
@@ -56,10 +60,6 @@ public class GenericMeshPacket implements ArtemisPacket {
     public final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
 
     float r, g, b;
-    
-    public GenericMeshPacket(final SystemInfoPacket pkt) {
-        this(pkt.mData);
-    }
 
     public GenericMeshPacket(byte[] data) {
 
@@ -175,7 +175,7 @@ public class GenericMeshPacket implements ArtemisPacket {
 
     @Override
     public int getType() {
-        return SystemInfoPacket.TYPE;
+        return ArtemisPacket.WORLD_TYPE;
     }
 
     @Override
@@ -188,9 +188,14 @@ public class GenericMeshPacket implements ArtemisPacket {
         return true;
     }
 
-    public static boolean isExtensionOf(SystemInfoPacket pkt) {
-        // this may be a wrong assumption, but I'd think they're the same
-        return (pkt.getTargetType() == ArtemisObject.TYPE_MESH);
+    @Override
+    public List<ArtemisPositionable> getObjects() {
+        return mObjects;
     }
+
+//    public static boolean isExtensionOf(SystemInfoPacket pkt) {
+//        // this may be a wrong assumption, but I'd think they're the same
+//        return (pkt.getTargetType() == ArtemisObject.TYPE_MESH);
+//    }
 
 }

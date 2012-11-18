@@ -7,7 +7,6 @@ import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.util.ObjectParser;
-import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisPlayer;
 import net.dhleong.acl.world.ArtemisPlayer.MainScreen;
 
@@ -171,9 +170,9 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     float[] tubeTimes = new float[TUBE_TIMES.length];
     int[] tubeContents = new int[TUBE_TIMES.length];
 
-    public PlayerUpdatePacket(final SystemInfoPacket pkt) {
-        this(pkt.mData);
-    }
+//    public PlayerUpdatePacket(final SystemInfoPacket pkt) {
+//        this(pkt.mData);
+//    }
 
     public PlayerUpdatePacket(byte[] data) {
 
@@ -393,7 +392,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
 
     @Override
     public int getType() {
-        return SystemInfoPacket.TYPE;
+        return ArtemisPacket.WORLD_TYPE;
     }
     
     @Override
@@ -428,9 +427,9 @@ public class PlayerUpdatePacket implements ArtemisPacket {
         return mPlayer;
     }
 
-    public static boolean isExtensionOf(SystemInfoPacket pkt) {
-        return (pkt.getTargetType() == ArtemisObject.TYPE_PLAYER);
-    }
+//    public static boolean isExtensionOf(SystemInfoPacket pkt) {
+//        return (pkt.getTargetType() == ArtemisObject.TYPE_PLAYER);
+//    }
 
     public BoolState getRedAlert() {
         return mRedAlert;

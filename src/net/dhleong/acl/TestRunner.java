@@ -14,8 +14,7 @@ import net.dhleong.acl.net.ObjUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.net.PlayerUpdatePacket;
 import net.dhleong.acl.net.SetMainScreenPacket;
-import net.dhleong.acl.net.SysCreatePacket;
-import net.dhleong.acl.net.SystemInfoPacket;
+import net.dhleong.acl.net.StationPacket;
 import net.dhleong.acl.net.comms.CommsIncomingPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
@@ -93,58 +92,50 @@ public class TestRunner {
             
             @Override
             public void onPacket(ArtemisPacket pkt) {
-                if (pkt instanceof SystemInfoPacket &&
-                        ((SystemInfoPacket)pkt).isEmpty)
-                    return;
                 
 //                if (pkt instanceof SystemInfoPacket)
 //                    return; // ignore system info packets for now
                     
-                if (pkt instanceof SystemInfoPacket) {
-                    SystemInfoPacket sys = (SystemInfoPacket) pkt;
-                    if (SysCreatePacket.isExtensionOf(sys)) {
-                        SysCreatePacket create = new SysCreatePacket(sys);
-                        create.debugPrint();
-                        System.out.println("--> " + create);
-                        return;
-                    } else if (ObjUpdatePacket.isExtensionOf(sys)) {
-                        System.out.println("** Update: ");
-                        ObjUpdatePacket up = new ObjUpdatePacket(sys);
-//                        up.debugPrint();
-                        for (ArtemisObject obj : up.mObjects)
-                            System.out.println(" + " + mgr.getObject(obj.getId()));
-                        System.out.println("--> " + up);
-                        return;
-                        
-                    } else if (GenericUpdatePacket.isExtensionOf(sys)) {
-//                        System.out.println("** Update: ");
-//                        GenericUpdatePacket up = new GenericUpdatePacket(sys);
-////                        up.debugPrint();
-//                        for (ArtemisObject obj : up.mObjects)
-//                            System.out.println(" + " + mgr.getObject(obj.getId()));
-//                        System.out.println("--> " + up);
-                        return;
-                        
-                    } else if (PlayerUpdatePacket.isExtensionOf(sys)) {
-//                        PlayerUpdatePacket up = new PlayerUpdatePacket(sys);
-//                        ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
+                if (pkt instanceof StationPacket) {
+                    StationPacket create = (StationPacket) pkt;
+                    create.debugPrint();
+                    System.out.println("--> " + create);
+                    return;
+                } else if (pkt instanceof ObjUpdatePacket) {
+                    System.out.println("** Update: ");
+                    ObjUpdatePacket up = (ObjUpdatePacket) pkt;
+                    //                        up.debugPrint();
+                    for (ArtemisObject obj : up.mObjects)
+                        System.out.println(" + " + mgr.getObject(obj.getId()));
+                    System.out.println("--> " + up);
+                    return;
+
+                } else if (pkt instanceof GenericUpdatePacket) {
+//                    System.out.println("** Update: ");
+//                    GenericUpdatePacket up = new GenericUpdatePacket(sys);
+////                    up.debugPrint();
+//                    for (ArtemisObject obj : up.mObjects)
+//                        System.out.println(" + " + mgr.getObject(obj.getId()));
+//                    System.out.println("--> " + up);
+                    return;
+
+                } else if (pkt instanceof PlayerUpdatePacket) {
+//                    PlayerUpdatePacket up = new PlayerUpdatePacket(sys);
+//                    ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
 //
-//                        up.debugPrint();
-//                        System.out.println("Player: " + plr);
-//                        for (SystemType s : SystemType.values()) {
-//                            float heat = plr.getSystemHeat(s);
-//                            float energy = plr.getSystemEnergy(s);
-//                            int coolant = plr.getSystemCoolant(s);
-//                            System.out.println("    \\_> " + s + ": " +
-//                                    coolant + " / " + energy + " :: " + heat);
-//                        }
-//                        
-//                        System.out.println("--> " + up);
-                        return;
-                    } else if (sys.getTargetType() == ArtemisObject.TYPE_PLAYER){
-                        System.out.println("INFO << " + sys);
-                        return;
-                    }
+//                    up.debugPrint();
+//                    System.out.println("Player: " + plr);
+//                    for (SystemType s : SystemType.values()) {
+//                        float heat = plr.getSystemHeat(s);
+//                        float energy = plr.getSystemEnergy(s);
+//                        int coolant = plr.getSystemCoolant(s);
+//                        System.out.println("    \\_> " + s + ": " +
+//                                coolant + " / " + energy + " :: " + heat);
+//                    }
+//
+//                    System.out.println("--> " + up);
+                    return;
+
                 } else if (pkt instanceof CommsIncomingPacket) {
                     CommsIncomingPacket comms = (CommsIncomingPacket) pkt;
                     System.out.println("** From ``"+comms.getFrom()+"'': " + 

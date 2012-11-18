@@ -13,7 +13,7 @@ import net.dhleong.acl.world.ArtemisOtherShip;
 import net.dhleong.acl.world.ArtemisPositionable;
 import net.dhleong.acl.world.BaseArtemisShip;
 
-public class ObjUpdatePacket implements ArtemisPacket {
+public class ObjUpdatePacket implements ObjectUpdatingPacket {
 
     private static final byte ACTION_UPDATE_BYTE  = (byte) 0x80;
     
@@ -77,10 +77,6 @@ public class ObjUpdatePacket implements ArtemisPacket {
     private final byte[] mData;
 
     public final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
-
-    public ObjUpdatePacket(final SystemInfoPacket pkt) {
-        this(pkt.mData);
-    }
 
     public ObjUpdatePacket(byte[] data) {
 
@@ -291,7 +287,7 @@ public class ObjUpdatePacket implements ArtemisPacket {
 
     @Override
     public int getType() {
-        return SystemInfoPacket.TYPE;
+        return ArtemisPacket.WORLD_TYPE;
     }
 
     @Override
@@ -304,6 +300,12 @@ public class ObjUpdatePacket implements ArtemisPacket {
         return true;
     }
 
+    @Override
+    public List<ArtemisPositionable> getObjects() {
+        return mObjects;
+    }
+
+    /*
     public static boolean isExtensionOf(SystemInfoPacket pkt) {
         // this may be a wrong assumption, but I'd think they're the same
         return (pkt.getTargetType() == ArtemisObject.TYPE_ENEMY ||
@@ -311,5 +313,6 @@ public class ObjUpdatePacket implements ArtemisPacket {
 //                && 
 //                ((pkt.getAction() & SystemInfoPacket.ACTION_MASK) == ACTION_UPDATE_BYTE);
     }
+    */
 
 }

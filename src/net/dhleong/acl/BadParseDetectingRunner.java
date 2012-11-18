@@ -5,7 +5,6 @@ import java.net.UnknownHostException;
 
 import net.dhleong.acl.net.ObjUpdatePacket;
 import net.dhleong.acl.net.PlayerUpdatePacket;
-import net.dhleong.acl.net.SystemInfoPacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
@@ -25,10 +24,10 @@ import net.dhleong.acl.world.BaseArtemisShip;
 public class BadParseDetectingRunner {
 
     public static void main(String[] args) {
-//        String tgtIp = "10.211.55.4";
+        //        String tgtIp = "10.211.55.4";
         final String tgtIp = "192.168.11.3";
         final int tgtPort = 2010;
-        
+
         final ThreadedArtemisNetworkInterface net; 
         try {
             net = new ThreadedArtemisNetworkInterface(tgtIp, tgtPort);
@@ -43,84 +42,74 @@ public class BadParseDetectingRunner {
         final SystemManager mgr = new SystemManager();
         net.addOnPacketListener(mgr);
         net.setOnConnectedListener(new OnConnectedListener() {
-            
+
             @Override
             public void onConnected() {
                 System.out.println("Connected to " + tgtIp);
             }
         });
-        
+
         net.addOnPacketListener(new OnPacketListener() {
 
             @Override
             public void onPacket(ArtemisPacket pkt) {
-                if (pkt instanceof SystemInfoPacket &&
-                        ((SystemInfoPacket)pkt).isEmpty)
-                    return;
-                
-//                if (pkt instanceof SystemInfoPacket)
-//                    return; // ignore system info packets for now
-                    
-                if (pkt instanceof SystemInfoPacket) {
-                    SystemInfoPacket sys = (SystemInfoPacket) pkt;
-                    
-                    if (PlayerUpdatePacket.isExtensionOf(sys)) {
-                        PlayerUpdatePacket up = null;
-                        try {
-                            up = new PlayerUpdatePacket(sys);
-                            
-                            ArtemisPlayer p = up.getPlayer();
-                            testPlayer(p);
-                            
-                        } catch (RuntimeException e) {
-                            up.debugPrint();
-                            System.out.println("--> " + up);
-                            net.stop();
-                            throw e;
+
+                if (pkt instanceof PlayerUpdatePacket) {
+
+                    PlayerUpdatePacket up = (PlayerUpdatePacket) pkt;
+                    try {
+
+                        ArtemisPlayer p = up.getPlayer();
+                        testPlayer(p);
+
+                    } catch (RuntimeException e) {
+                        up.debugPrint();
+                        System.out.println("--> " + up);
+                        net.stop();
+                        throw e;
+                    }
+                } else if (pkt instanceof ObjUpdatePacket) {
+                    ObjUpdatePacket up = (ObjUpdatePacket) pkt;
+                    try {
+
+                        for (ArtemisPositionable p : up.mObjects) {
+                            if (p instanceof BaseArtemisShip)
+                                testShip((BaseArtemisShip)p);
+                            else
+                                testPositionable(p);
                         }
-                    } else if (ObjUpdatePacket.isExtensionOf(sys)) {
-                        ObjUpdatePacket up = null;
-                        try {
-                            up = new ObjUpdatePacket(sys);
-                            
-                            for (ArtemisPositionable p : up.mObjects) {
-                                if (p instanceof BaseArtemisShip)
-                                    testShip((BaseArtemisShip)p);
-                                else
-                                    testPositionable(p);
-                            }
-                            
-                        } catch (RuntimeException e) {
-                            up.debugPrint();
-                            System.out.println("--> " + up);
-                            net.stop();
-                            throw e;
-                        }
+
+                    } catch (RuntimeException e) {
+                        up.debugPrint();
+                        System.out.println("--> " + up);
+                        net.stop();
+                        throw e;
                     }
                 }
             }
+
         });
-        
+
         net.start();
-        
+
         net.send(new SetStationPacket(StationType.SCIENCE, true));
-        
+
     }
-    
+
     public static void testPlayer(ArtemisPlayer p) {
         testShip(p);
-        
+
         assertRange(-1, 5000, p.getEnergy(), "energy");
         assertRange(-1, 6, p.getShipIndex(), "shipIndex");
         assertRange(-1, 32, p.getAvailableCoolant(), "maxCoolant");
-        
+
         for (SystemType sys : SystemType.values()) {
             if (p.getSystemEnergy(sys) != -1)
                 assertRange(0, 1, p.getSystemEnergy(sys), sys + "energy");
             assertRange(-1, 1, p.getSystemHeat(sys), sys + "heat");
             assertRange(-1, 16, p.getSystemCoolant(sys), sys + "coolant");
         }
-        
+
         for (int i=0; i<LoadTubePacket.TORPEDO_COUNT; i++) {
             assertRange(-1, 99, p.getTorpedoCount(i), "Torp Type#" + i);
         }
@@ -128,12 +117,12 @@ public class BadParseDetectingRunner {
 
     public static void testShip(BaseArtemisShip p) {
         testPositionable(p);
-        
+
         assertRange(-1, 10000, p.getHullId(), "hullId");
-        
+
         if (p.getBearing() != Float.MIN_VALUE)
             assertRange(-4, 4, p.getBearing(), "bearing");
-        
+
         // I guess they can go negative when destroyed...?
         assertRange(-50, 1000, p.getShieldsFrontMax(), "shieldFrontMax");
         assertRange(-50, 1000, p.getShieldsRearMax(), "shieldRearMax");        

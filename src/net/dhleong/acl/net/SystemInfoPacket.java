@@ -1,6 +1,8 @@
 package net.dhleong.acl.net;
 
+import net.dhleong.acl.ArtemisPacket;
 
+@Deprecated
 public class SystemInfoPacket extends BaseArtemisPacket {
     
     public static final byte ACTION_CREATE = (byte) 0xff;
@@ -8,8 +10,6 @@ public class SystemInfoPacket extends BaseArtemisPacket {
     /** I dunno, this happens too */
     public static final byte ACTION_UPDATE_SYSTEMS_2 = (byte) 0x00;
 
-    public static final int TYPE = 0x80803df9;
-    
     public final boolean isEmpty;
 
     private final byte mTargetType;
@@ -18,7 +18,7 @@ public class SystemInfoPacket extends BaseArtemisPacket {
     static final byte ACTION_MASK  = (byte) 0xf0;
     
     public SystemInfoPacket(int flags, byte[] bucket) {
-        super(0x01, flags, TYPE, bucket); // TODO don't save the byte[]?
+        super(0x01, flags, ArtemisPacket.WORLD_TYPE, bucket); // TODO don't save the byte[]?
         
         // only gets the first one, but
         //  they seem to be grouped

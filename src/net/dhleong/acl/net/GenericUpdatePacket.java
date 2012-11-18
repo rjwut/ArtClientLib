@@ -17,7 +17,7 @@ import net.dhleong.acl.world.ArtemisPositionable;
  * @author dhleong
  *
  */
-public class GenericUpdatePacket implements ArtemisPacket {
+public class GenericUpdatePacket implements ObjectUpdatingPacket {
     
 
     private static final byte GEN_ACTION_X = 0x01;
@@ -50,14 +50,6 @@ public class GenericUpdatePacket implements ArtemisPacket {
     public final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
     private byte[] mData;
     
-    public GenericUpdatePacket(SystemInfoPacket pkt) {
-        ArtemisGenericObject.Type type = ArtemisGenericObject.Type
-                .fromInt(pkt.getTargetType());
-        if (type == null)
-            return; // unhandled type
-        
-        init(pkt.mData);
-    }
     
     public GenericUpdatePacket(byte[] data) {
         init(data);
@@ -166,7 +158,7 @@ public class GenericUpdatePacket implements ArtemisPacket {
 
     @Override
     public int getType() {
-        return SystemInfoPacket.TYPE;
+        return ArtemisPacket.WORLD_TYPE;
     }
 
     @Override
@@ -179,9 +171,14 @@ public class GenericUpdatePacket implements ArtemisPacket {
         return BaseArtemisPacket.byteArrayToHexString(mData);
     }
     
-    public static boolean isExtensionOf(SystemInfoPacket pkt) {
-        // any generic object
-        return ArtemisGenericObject.Type.fromInt(pkt.getTargetType()) != null;
+//    public static boolean isExtensionOf(SystemInfoPacket pkt) {
+//        // any generic object
+//        return ArtemisGenericObject.Type.fromInt(pkt.getTargetType()) != null;
+//    }
+
+    @Override
+    public List<ArtemisPositionable> getObjects() {
+        return mObjects;
     }
 
 }

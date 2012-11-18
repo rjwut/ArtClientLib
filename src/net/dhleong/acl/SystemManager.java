@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.dhleong.acl.net.DestroyObjectPacket;
+import net.dhleong.acl.net.GenericMeshPacket;
 import net.dhleong.acl.net.GenericUpdatePacket;
 import net.dhleong.acl.net.ObjUpdatePacket;
 import net.dhleong.acl.net.PlayerUpdatePacket;
@@ -133,7 +134,14 @@ public class SystemManager implements OnPacketListener {
             for (ArtemisPositionable eng : e.mObjects) {
                 updateOrCreate(eng);
             }
-        } 
+        } else if (GenericMeshPacket.isExtensionOf(info)) {
+            
+            GenericMeshPacket e = new GenericMeshPacket(info);
+            
+            for (ArtemisPositionable eng : e.mObjects) {
+                updateOrCreate(eng);
+            }
+        }
     }
     
     @SuppressWarnings("unused")

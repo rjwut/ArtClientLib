@@ -145,9 +145,15 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                     // read packet
                     ArtemisPacket pkt = mParser.readPacket(mInput);
 
-                    // notify listeners
-                    for (OnPacketListener listener : mListeners) {
-                        listener.onPacket(pkt);
+                    // only bother with non-null packets; else,
+                    //  they are just keepalive (I guess) for 
+                    //  indicating that the server aliveness
+                    //  and perhaps calculating latency
+                    if (pkt != null) {
+                        // notify listeners
+                        for (OnPacketListener listener : mListeners) {
+                            listener.onPacket(pkt);
+                        }
                     }
                 } catch (ArtemisPacketException e) {
                     // TODO ?

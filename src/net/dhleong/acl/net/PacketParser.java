@@ -9,10 +9,30 @@ import net.dhleong.acl.net.comms.CommsIncomingPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
 import net.dhleong.acl.world.ArtemisObject;
 
+/**
+ * Reads packets from a stream, and provides 
+ *  utilities for parsing various data
+ *  types from the raw bytes
+ *   
+ * @author dhleong
+ *
+ */
 public class PacketParser {
     
     private final byte[] mIntBuffer = new byte[4];
 
+    /**
+     * Read a Packet from the input stream
+     * @param is
+     * @return The packet, or NULL if it's not a handle-able packet;
+     *  this does not mean that we CAN'T handle it (we would throw
+     *  an ArtemisPacketException in that case) but rather that it
+     *  has no data; it's probably the old "empty SystemInfoPacket".
+     *  If it is null, you can safely discard it
+     *  
+     * @throws IOException
+     * @throws ArtemisPacketException
+     */
     public ArtemisPacket readPacket(InputStream is) throws IOException, ArtemisPacketException {
         is.read(mIntBuffer);
         final int header = getLendInt(mIntBuffer);
@@ -99,9 +119,12 @@ public class PacketParser {
             case ArtemisObject.TYPE_MONSTER:
             case ArtemisObject.TYPE_WHALE:
                 return new GenericUpdatePacket(bucket);
+                
+            case 0: // some sort of empty packet... possibly keepalive?
+                return null;
             }
             
-            // unhandled? fall through for generic 
+            // unhandled? fall through for generic
         
         default:
             return new BaseArtemisPacket(mode, flags, packetType, bucket);

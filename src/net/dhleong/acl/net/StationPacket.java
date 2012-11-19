@@ -6,16 +6,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.dhleong.acl.ArtemisPacket;
+import net.dhleong.acl.util.ObjectParser;
 import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisPositionable;
 import net.dhleong.acl.world.ArtemisStation;
 
 public class StationPacket implements ObjectUpdatingPacket {
 
-    private static final byte FLAG_STATION_SHIELDS = 0x02;
-    private static final byte FLAG_STATION_SKIP_1  = 0x04;
-    private static final byte FLAG_STATION_SKIP_2  = 0x08;
-    private static final byte FLAG_STATION_POS     = 0x10;
+    private static final byte NAME    = 0x01;
+    private static final byte SHIELDS_FRONT = 0x02;
+    private static final byte SHIELDS_REAR  = 0x04;
+    private static final byte SKIP_1  = 0x08;
+    private static final byte SKIP_2  = 0x10;
+    private static final byte POS_X   = 0x20;
+    private static final byte POS_Y   = 0x40;
+    private static final byte POS_Z   = (byte)0x80;
+    
+    private static final byte[] UNKNOWN_INTS = new byte[] {
+        0x01, 0x02, 0x04, 0x08, 0x01
+    };
+    
+    private static final byte UNKNOWN_BYTE  = 0x20;
+    
 
 //    private static final byte ACTION_CREATE = (byte) 0xf0;
 
@@ -25,63 +37,53 @@ public class StationPacket implements ObjectUpdatingPacket {
 
     public StationPacket(byte[] data) {
         mData = data;
+        
+        String name;
+        float x, y, z;
+        float shieldsFront, shieldsRear;
 
-        // TODO use ObjectParser to allow updating shield status, etc.
-        int offset = 0;
-        while (mData[offset] != 0x00) {
-            //                // this length does NOT include the obj TYPE and ID
-            ////                byte action = mData[offset+5];
-            //                int lenSubPacket = (0xff & mData[offset+6]);
-            ////                if (lenSubPacket == 0x1f)
-            //                if (lenSubPacket != 0x3f)
-            //                    lenSubPacket = 62; // seems to be the case...
-            final byte args = mData[offset+6];
+        ObjectParser p = new ObjectParser(data, 0);
+        while (p.hasMore()) {
+            p.startNoArgs();
 
-            int objId = PacketParser.getLendInt(mData, offset+1);
-            int nameLen = PacketParser.getNameLengthBytes(mData, offset+7);
-            final ArtemisStation station;
-            try {
-                String name = PacketParser.getNameString(mData, offset+11, nameLen);
-                station = new ArtemisStation(objId, name);
+            byte args2 = p.readByte();
+            
+            name = p.readName(NAME);
 
-                mCreatedObjs.add(station);
-            } catch (StringIndexOutOfBoundsException e) {
-                debugPrint();
-                System.out.println("DEBUG: subpLen = " + args);
-                System.out.println("DEBUG: objId   = " + objId);
-                System.out.println("DEBUG: nameLen = " + nameLen);
-                System.out.println("DEBUG: offset = " + offset);
-                System.out.println("DEBUG: Packet = " + this);
-                throw e;
-            }
-            //                offset += lenSubPacket + 5; // +5 for the TYPE and ID
+            shieldsFront = p.readFloat(SHIELDS_FRONT, -1);
+            shieldsRear = p.readFloat(SHIELDS_REAR, -1);
 
-            offset += 11 + 2 + nameLen; // plus 2 for the null bytes
+            p.readInt(SKIP_1);
+            p.readInt(SKIP_2); 
 
-            if ((args & FLAG_STATION_SHIELDS) != 0) {
-                offset += 8; // TODO get these
-            }
+            x = p.readFloat(POS_X, -1);
+            y = p.readFloat(POS_Y, -1);
+            z = p.readFloat(POS_Z, -1);
+            
+            // secondary args... unknown purpose
+            p.setArgs(args2);
+            
+            for (byte arg : UNKNOWN_INTS)
+                p.readInt(arg);
 
-            if ((args & FLAG_STATION_SKIP_1) != 0)
-                offset += 4; 
-            if ((args & FLAG_STATION_SKIP_2) != 0)
-                offset += 4; 
+            p.readByte(UNKNOWN_BYTE, (byte)-1);
+            
+            // create the obj!
+            ArtemisStation station = new ArtemisStation(p.getTargetId(), name);
+            station.setX(x);
+            station.setY(y);
+            station.setZ(z);
+            
+            station.setShieldsFront(shieldsFront);
+            station.setShieldsRear(shieldsRear);
+            
+            mCreatedObjs.add(station);
 
-            if ((args & FLAG_STATION_POS) != 0) {
-                station.setX(PacketParser.getLendFloat(mData, offset));
-                offset += 4;
-                station.setY(PacketParser.getLendFloat(mData, offset));
-                offset += 4;
-                station.setZ(PacketParser.getLendFloat(mData, offset));
-                offset += 4;
-            }
-
-
-            // for some reason, station packets are sometimes retarded
-            //  and have lots of 0 padding at the end.
-            while (offset+1 < mData.length && 
-                    mData[offset] != ArtemisObject.TYPE_STATION)
-                offset++;
+//            // for some reason, station packets are sometimes retarded
+//            //  and have lots of 0 padding at the end.
+//            while (offset+1 < mData.length && 
+//                    mData[offset] != ArtemisObject.TYPE_STATION)
+//                offset++;
         }
 
         //            debugPrint();

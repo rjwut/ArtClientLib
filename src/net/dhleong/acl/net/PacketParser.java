@@ -80,6 +80,21 @@ public class PacketParser {
             throw new ArtemisPacketException("EOF");
         }
         
+        try {
+        
+            return buildPacket(packetType, mode, flags, bucket);
+        
+        } catch (RuntimeException e) {
+            System.err.println("Unable to parse packet of type " 
+                    + Integer.toHexString(packetType));
+            System.err.println("--> " + BaseArtemisPacket
+                    .byteArrayToHexString(bucket));
+            throw e;
+        }
+    }
+    
+    public static ArtemisPacket buildPacket(int packetType, int mode, 
+            int flags, byte[] bucket) {
         switch (packetType) {            
         case EngGridUpdatePacket.TYPE:
             return new EngGridUpdatePacket(flags, bucket);
@@ -128,9 +143,9 @@ public class PacketParser {
         
         default:
             return new BaseArtemisPacket(mode, flags, packetType, bucket);
-        }        
+        }       
     }
-    
+
     public static int getLendInt(byte[] bytes) {
         return getLendInt(bytes, 0);
     }

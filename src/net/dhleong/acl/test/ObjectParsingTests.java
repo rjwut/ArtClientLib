@@ -180,12 +180,25 @@ public class ObjectParsingTests extends TestCase {
     public void testStation() {
         String[] tests = new String[] {
                 "04eb030000020023d1384300000000",
+                "04e8030000ff3f0400000044005300310000000000c8430000c84300000000e8030000bc7042470000000085df424700000000000000000000000000000000000000000004e9030000ff3f0400000044005300320000000000c8430000c84301000000e80300008b231f4700000000ee8b654700000000000000000000000000000000000000000004ea030000ff3f0400000044005300330000000000c8430000c84302000000e80300003279824700000000c4aa3b4700000000000000000000000000000000000000000004eb030000ff3f0400000044005300340000000000c8430000c84303000000e8030000347c7d47000000004067714700000000000000000000000000000000000000000000000000",
+        };
+        
+        int[] created = new int[] {
+                1,
+                4,
         };
         
         for (int i=0; i<tests.length; i++) {
-            byte[] bytes = hexStringToByteArray(tests[i]);
             
+            byte[] bytes = hexStringToByteArray(tests[i]);
+            System.out.println("Test[" + i + "] of total " + tests.length);
+            System.out.println("--> " + tests[i]);
             StationPacket pkt = new StationPacket(bytes);
+            for (ArtemisPositionable p : pkt.getCreatedObjects()) {
+                BadParseDetectingRunner.testPositionable(p);
+            }
+            pkt.debugPrint();
+            assertCount(created[i], pkt.getCreatedObjects());
         }
     }
 

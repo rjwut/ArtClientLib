@@ -1,12 +1,13 @@
 package net.dhleong.acl.world;
 
-public abstract class BaseArtemisShip extends BaseArtemisObject implements ArtemisBearable {
+public abstract class BaseArtemisShip extends BaseArtemisShielded
+implements ArtemisBearable {
 
     protected int mHullId;
     
     private float mBearing;
 
-    private float mShieldsFront, mShieldsFrontMax, mShieldsRear, mShieldsRearMax;
+    private float mShieldsFrontMax, mShieldsRearMax;
 
     private final float[] mShieldFreqs = new float[5];
 
@@ -38,14 +39,6 @@ public abstract class BaseArtemisShip extends BaseArtemisObject implements Artem
                 super.toString(), mBearing,
                 getShieldsFront(), getShieldsFrontMax(), getShieldsRear(), getShieldsRearMax());
     }
-    
-    public float getShieldsFront() {
-        return mShieldsFront;
-    }
-
-    public void setShieldsFront(float shieldsFront) {
-        this.mShieldsFront = shieldsFront;
-    }
 
     public float getShieldsFrontMax() {
         return mShieldsFrontMax;
@@ -54,15 +47,7 @@ public abstract class BaseArtemisShip extends BaseArtemisObject implements Artem
     public void setShieldsFrontMax(float shieldsFrontMax) {
         this.mShieldsFrontMax = shieldsFrontMax;
     }
-
-    public float getShieldsRear() {
-        return mShieldsRear;
-    }
-
-    public void setShieldsRear(float shieldsRear) {
-        this.mShieldsRear = shieldsRear;
-    }
-
+    
     public float getShieldsRearMax() {
         return mShieldsRearMax;
     }
@@ -91,12 +76,8 @@ public abstract class BaseArtemisShip extends BaseArtemisObject implements Artem
             if (ship.getBearing() != Float.MIN_VALUE) 
                 setBearing(ship.getBearing());
             
-            if (ship.mShieldsFront != -1)
-                mShieldsFront = ship.mShieldsFront;
             if (ship.mShieldsFrontMax != -1)
                 mShieldsFrontMax = ship.mShieldsFrontMax;
-            if (ship.mShieldsRear != -1)
-                mShieldsRear = ship.mShieldsRear;
             if (ship.mShieldsRearMax != -1)
                 mShieldsRearMax = ship.mShieldsRearMax;
             

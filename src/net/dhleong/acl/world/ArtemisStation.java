@@ -1,7 +1,7 @@
 package net.dhleong.acl.world;
 
 
-public class ArtemisStation extends BaseArtemisObject {
+public class ArtemisStation extends BaseArtemisShielded {
     
     public ArtemisStation(int objId, String name) {
         super(objId, name);
@@ -14,7 +14,10 @@ public class ArtemisStation extends BaseArtemisObject {
 
     @Override
     public String toString() {
-        return String.format("[STATION:%s]@%s", mName, super.toString());
+        return String.format("[STATION:%s <%.1f|%.1f>]@%s", 
+                mName,
+                getShieldsFront(), getShieldsRear(),
+                super.toString());
     }
 
 }

@@ -8,11 +8,12 @@ import net.dhleong.acl.net.GenericMeshPacket;
 import net.dhleong.acl.net.GenericUpdatePacket;
 import net.dhleong.acl.net.ObjUpdatePacket;
 import net.dhleong.acl.net.PlayerUpdatePacket;
+import net.dhleong.acl.net.StationPacket;
 import net.dhleong.acl.world.ArtemisPlayer;
 import net.dhleong.acl.world.ArtemisPositionable;
 import net.dhleong.acl.world.BaseArtemisShip;
 
-public class PacketTestingRunner extends TestCase {
+public class ObjectParsingTests extends TestCase {
     
     public void testMesh() {
         
@@ -47,12 +48,23 @@ public class PacketTestingRunner extends TestCase {
     
     public void testGenerics() { 
         
-
-        String[] genTests = new String[] {
+        String[] tests = new String[] {
                 "09f5030000ff00c3b54547826e5242c6f84d472608c2b3d07f7f3ff40780bd020000000000000000000000",
         };
         
-        testGenerics(genTests);
+        for (int i=0; i<tests.length; i++) {
+            byte[] bytes = hexStringToByteArray(tests[i]);
+            
+            System.out.println();
+            System.out.println("Test[" + i + "] of total " + tests.length);
+            GenericUpdatePacket pkt = new GenericUpdatePacket(bytes);
+            for (ArtemisPositionable o : pkt.mObjects) {
+                BadParseDetectingRunner.testPositionable(o);
+            }
+            pkt.debugPrint();
+            System.out.println("--> " + pkt);
+            System.out.println();
+        }
     }
     
     public void testOther() {
@@ -94,11 +106,32 @@ public class PacketTestingRunner extends TestCase {
                 3,
         };
         
-        testOtherShips(tests, shipsCreated);
+        for (int i=0; i<tests.length; i++) {
+            byte[] bytes = hexStringToByteArray(tests[i]);
+//            if (!BaseArtemisPacket.byteArrayToHexString(bytes).equals(s))
+//                throw new RuntimeException("byte conversion fail");
+            
+            System.out.println();
+            System.out.println("Test[" + i + "] of total " + tests.length);
+            ObjUpdatePacket pkt = new ObjUpdatePacket(bytes);
+            for (ArtemisPositionable o : pkt.mObjects) {
+                if (o instanceof BaseArtemisShip)
+                    BadParseDetectingRunner.testShip((BaseArtemisShip) o);
+                else
+                    BadParseDetectingRunner.testPositionable(o);
+            }
+            pkt.debugPrint();
+            System.out.println("--> " + pkt);
+            
+            
+            assertCount(shipsCreated[i], pkt.mObjects);
+            
+            System.out.println();
+        }
     }
     
     public void testPlayer() {
-        String[] plrTests = new String[] {
+        String[] tests = new String[] {
                 "01ec030000800000000000000000000080f3794400000000",
                 "015c04000000000040000000000000005d04000000000000",
                 "01e803000080000002000000000000004e007a440100000000",
@@ -125,52 +158,7 @@ public class PacketTestingRunner extends TestCase {
                 "01f8030000ffffffffffffffffffff0000000000000000000000003f9a99193f6f12833b010050007a4400000100000003000000bc7d4a47000000007bc744470000000000000000db0f49400000000000000c000000550053005300200041007700650073006f006d00650000000000dc420000dc420000a0420000a0420000000000005043480000080000000000000000010000000000000000000000000000000000000000000000000000000000000000abaaaa3eabaaaa3eabaaaa3eabaaaa3eabaaaa3eabaaaa3eabaaaa3eabaaaa3e000000000000000014070d0b03000000000000000000000000000000000d010c040600000001000101000001030203000000000000",
         };
         
-        testPlayers(plrTests);
-    }
 
-
-    private static void testGenerics(String[] tests) {
-        for (int i=0; i<tests.length; i++) {
-            byte[] bytes = hexStringToByteArray(tests[i]);
-            
-            System.out.println();
-            System.out.println("Test[" + i + "] of total " + tests.length);
-            GenericUpdatePacket pkt = new GenericUpdatePacket(bytes);
-            for (ArtemisPositionable o : pkt.mObjects) {
-                BadParseDetectingRunner.testPositionable(o);
-            }
-            pkt.debugPrint();
-            System.out.println("--> " + pkt);
-            System.out.println();
-        }
-    }
-
-    private static void testOtherShips(String[] tests, int[] shipsCreated) {
-        for (int i=0; i<tests.length; i++) {
-            byte[] bytes = hexStringToByteArray(tests[i]);
-//            if (!BaseArtemisPacket.byteArrayToHexString(bytes).equals(s))
-//                throw new RuntimeException("byte conversion fail");
-            
-            System.out.println();
-            System.out.println("Test[" + i + "] of total " + tests.length);
-            ObjUpdatePacket pkt = new ObjUpdatePacket(bytes);
-            for (ArtemisPositionable o : pkt.mObjects) {
-                if (o instanceof BaseArtemisShip)
-                    BadParseDetectingRunner.testShip((BaseArtemisShip) o);
-                else
-                    BadParseDetectingRunner.testPositionable(o);
-            }
-            pkt.debugPrint();
-            System.out.println("--> " + pkt);
-            
-            
-            assertCount(shipsCreated[i], pkt.mObjects);
-            
-            System.out.println();
-        }
-    }
-
-    private static void testPlayers(String[] tests) {
         for (int i=0; i<tests.length; i++) {
             byte[] bytes = hexStringToByteArray(tests[i]);
 //            if (!BaseArtemisPacket.byteArrayToHexString(bytes).equals(s))
@@ -186,6 +174,18 @@ public class PacketTestingRunner extends TestCase {
             BadParseDetectingRunner.testPlayer(plr);
             
             System.out.println();
+        }
+    }
+    
+    public void testStation() {
+        String[] tests = new String[] {
+                "04eb030000020023d1384300000000",
+        };
+        
+        for (int i=0; i<tests.length; i++) {
+            byte[] bytes = hexStringToByteArray(tests[i]);
+            
+            StationPacket pkt = new StationPacket(bytes);
         }
     }
 

@@ -7,6 +7,12 @@ import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.util.GridCoord;
 
+/**
+ * Updates damage to the various system grids on the
+ *  ship, as well as (I think!) DamCon team status/location
+ * @author dhleong
+ *
+ */
 public class EngGridUpdatePacket extends BaseArtemisPacket {
     
     public static final class GridDamage {
@@ -16,6 +22,21 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
         private GridDamage(GridCoord coord, float damage) {
             this.coord = coord;
             this.damage = damage;
+        }
+        
+        public GridDamage(int x, int y, int z, float damage) {
+            coord = GridCoord.getInstance(x, y, z);
+            this.damage = damage;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (other == null || !(other instanceof GridDamage))
+                return false;
+            
+            GridDamage cast = (GridDamage) other;
+            return coord.equals(cast.coord) 
+                    && (Math.abs(damage - cast.damage)) < 0.01f;
         }
     }
 
@@ -28,7 +49,7 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
         
         int offset = 1;
         while (offset < bucket.length && bucket[offset] >= 0) {
-                try {
+            try {
                 GridCoord coord = GridCoord.getInstance(
                         bucket[offset], 
                         bucket[offset+1], 

@@ -13,10 +13,10 @@ import net.dhleong.acl.net.GenericUpdatePacket;
 import net.dhleong.acl.net.ObjUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.net.PlayerUpdatePacket;
-import net.dhleong.acl.net.SetMainScreenPacket;
 import net.dhleong.acl.net.StationPacket;
 import net.dhleong.acl.net.comms.CommsIncomingPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
+import net.dhleong.acl.net.eng.EngSendDamconPacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.SetShipPacket;
@@ -24,7 +24,6 @@ import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
 import net.dhleong.acl.util.ShipSystemGrid;
 import net.dhleong.acl.world.ArtemisObject;
-import net.dhleong.acl.world.ArtemisPlayer.MainScreen;
 
 public class TestRunner {
 
@@ -156,6 +155,7 @@ public class TestRunner {
                         System.out.println("- " + sys + ": " + 
                                 mgr.getHealthOfSystem(sys));
                     }
+                    System.out.println("--> " + dmg);
                     return;
                 } else if (pkt instanceof GameMessagePacket) {
                     GameMessagePacket msg = (GameMessagePacket) pkt;
@@ -183,7 +183,8 @@ public class TestRunner {
         
         
 //        // ENG test 
-//        net.send(new SetStationPacket(StationType.ENGINEERING, true));
+        net.send(new SetStationPacket(StationType.ENGINEERING, true));
+        net.send(new EngSendDamconPacket(0, 2, 4, 0));
         
 //        net.send(new EngSetEnergyPacket(SystemType.IMPULSE, .5f));
 //        net.send(new EngSetCoolantPacket(SystemType.IMPULSE, 0));
@@ -204,12 +205,12 @@ public class TestRunner {
 //        net.send(new SetStationPacket(StationType.HELM, true));
 //        net.send(new SetShipSettingsPacket(DriveType.JUMP, 1, "USS Awesome"));
         
-        net.send(new SetStationPacket(StationType.SCIENCE, true));
+//        net.send(new SetStationPacket(StationType.SCIENCE, true));
 
         net.send(new ReadyPacket());
 //        net.send(new ToggleShieldsPacket());
         
-        net.send(new SetMainScreenPacket(MainScreen.RIGHT));
+//        net.send(new SetMainScreenPacket(MainScreen.RIGHT));
         
 //        net.send(new HelmJumpPacket(.5f, .5f));
 //        net.send(new HelmSetWarpPacket(2));

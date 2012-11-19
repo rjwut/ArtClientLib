@@ -23,8 +23,8 @@ import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.SetShipPacket;
 import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
+import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ShipSystemGrid;
-import net.dhleong.acl.world.ArtemisObject;
 
 public class TestRunner {
 
@@ -48,11 +48,11 @@ public class TestRunner {
         System.out.println("- Reading grid: " + sntFile);
         InputStream is = new FileInputStream(sntFile);
         final ShipSystemGrid grid = new ShipSystemGrid(is);
-//        for (SystemType type : SystemType.values()) {
-//            System.out.println("--+ " + type +": " + grid.getSystemCount(type));
-//            for (GridCoord c : grid.getCoordsFor(type))
-//                System.out.println("--+--+" + c);
-//        }
+        for (SystemType type : SystemType.values()) {
+            System.out.println("--+ " + type +": " + grid.getSystemCount(type));
+            for (GridCoord c : grid.getCoordsFor(type))
+                System.out.println("--+--+" + c);
+        }
         
 //        // testing LRU
 //        GridCoord.getInstance(3, 2, 7);
@@ -102,12 +102,12 @@ public class TestRunner {
                     System.out.println("--> " + create);
                     return;
                 } else if (pkt instanceof ObjUpdatePacket) {
-                    System.out.println("** Update: ");
-                    ObjUpdatePacket up = (ObjUpdatePacket) pkt;
-                    //                        up.debugPrint();
-                    for (ArtemisObject obj : up.mObjects)
-                        System.out.println(" + " + mgr.getObject(obj.getId()));
-                    System.out.println("--> " + up);
+//                    System.out.println("** Update: ");
+//                    ObjUpdatePacket up = (ObjUpdatePacket) pkt;
+//                    //                        up.debugPrint();
+//                    for (ArtemisObject obj : up.mObjects)
+//                        System.out.println(" + " + mgr.getObject(obj.getId()));
+//                    System.out.println("--> " + up);
                     return;
 
                 } else if (pkt instanceof GenericUpdatePacket) {
@@ -151,11 +151,11 @@ public class TestRunner {
                     EngGridUpdatePacket dmg = (EngGridUpdatePacket) pkt;
                     System.out.println("** GRID UPDATE: ");
                     dmg.debugPrint();
-                    System.out.println("Overall healths: ");
-                    for (SystemType sys : SystemType.values()) {
-                        System.out.println("- " + sys + ": " + 
-                                mgr.getHealthOfSystem(sys));
-                    }
+//                    System.out.println("Overall healths: ");
+//                    for (SystemType sys : SystemType.values()) {
+//                        System.out.println("- " + sys + ": " + 
+//                                mgr.getHealthOfSystem(sys));
+//                    }
                     System.out.println("--> " + dmg);
                     return;
                 } else if (pkt instanceof GameMessagePacket) {
@@ -186,7 +186,10 @@ public class TestRunner {
 //        // ENG test 
         net.send(new SetStationPacket(StationType.ENGINEERING, true));
         net.send(new EngSetAutoDamconPacket(false));
-        net.send(new EngSendDamconPacket(0, 2, 4, 0));
+        
+        net.send(new EngSendDamconPacket(0,  2,1,9));
+        net.send(new EngSendDamconPacket(1,  2,1,9));
+        net.send(new EngSendDamconPacket(2,  2,1,9));
         
 //        net.send(new EngSetEnergyPacket(SystemType.IMPULSE, .5f));
 //        net.send(new EngSetCoolantPacket(SystemType.IMPULSE, 0));

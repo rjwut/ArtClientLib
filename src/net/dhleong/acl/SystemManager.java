@@ -9,6 +9,7 @@ import net.dhleong.acl.net.DestroyObjectPacket;
 import net.dhleong.acl.net.ObjectUpdatingPacket;
 import net.dhleong.acl.net.PlayerUpdatePacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
+import net.dhleong.acl.net.eng.EngGridUpdatePacket.DamconStatus;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket.GridDamage;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.setup.SetShipPacket;
@@ -45,7 +46,14 @@ public class SystemManager implements OnPacketListener {
     private HashMap<GridCoord, Float> mGridDamage;
     private ShipSystemGrid mGrid;
     
+    private final HashMap<Integer, DamconStatus> mDamcons =
+            new HashMap<Integer, DamconStatus>();
+    
     private final ArtemisPlayer[] mPlayers = new ArtemisPlayer[SetShipPacket.TOTAL_SHIPS];
+    
+    public SystemManager() {
+        clear();
+    }
     
     /** Manually add an obj to the system */
     public void addObject(ArtemisObject obj) {
@@ -82,6 +90,17 @@ public class SystemManager implements OnPacketListener {
             if (damages.size() > 0 && mGridDamage != null) {
                 for (GridDamage d : damages) {
                     mGridDamage.put(d.coord, d.damage);
+                }
+            }
+            
+            // update/init damcon teams
+            for (DamconStatus s : gridUp.getDamcons()) {
+                final int team = s.getTeamNumber();
+                if (mDamcons.containsKey(team)) {
+                    DamconStatus old = mDamcons.get(team);
+                    old.updateFrom(s);
+                } else {
+                    mDamcons.put(team, s);
                 }
             }
         }
@@ -203,6 +222,22 @@ public class SystemManager implements OnPacketListener {
     }
     
     /**
+     * Get the status of the given Damcon Team
+     *  if we have it, else null. It would be
+     *  great to have a good first guess, but
+     *  I can't seem to find any pattern, nor
+     *  does there seem to be an init data---even
+     *  the native client just uses a first guess
+     *  on connect 
+     *  
+     * @param teamNumber
+     * @return
+     */
+    public DamconStatus getDamcon(int teamNumber) {
+        return mDamcons.get(teamNumber);
+    }
+    
+    /**
      * Get the overall health of the given system
      * @param sys
      * @return A float [0, 1] indicating percentage health
@@ -267,6 +302,15 @@ public class SystemManager implements OnPacketListener {
         mGrid = null;
         if (mGridDamage != null)
             mGridDamage.clear(); 
+        
+        mDamcons.clear();
+        
+//        // Damcon teams seem to start in similar places each time,
+//        //  but I can't quite figure out the pattern... seems
+//        //  to be the same per-ship, but there's nothing in the .snt
+//        mDamcons.put(0, new DamconStatus(0, 6, 0,0,0, 2,6,1, 0));
+//        mDamcons.put(1, new DamconStatus(1, 6, 0,0,0, 0,3,1, 0));
+//        mDamcons.put(2, new DamconStatus(2, 6, 0,0,0, 3,7,2, 0));
     }
 
 //    @Override

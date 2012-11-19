@@ -17,6 +17,7 @@ import net.dhleong.acl.net.StationPacket;
 import net.dhleong.acl.net.comms.CommsIncomingPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
 import net.dhleong.acl.net.eng.EngSendDamconPacket;
+import net.dhleong.acl.net.eng.EngSetAutoDamconPacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.SetShipPacket;
@@ -184,6 +185,7 @@ public class TestRunner {
         
 //        // ENG test 
         net.send(new SetStationPacket(StationType.ENGINEERING, true));
+        net.send(new EngSetAutoDamconPacket(false));
         net.send(new EngSendDamconPacket(0, 2, 4, 0));
         
 //        net.send(new EngSetEnergyPacket(SystemType.IMPULSE, .5f));

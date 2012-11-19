@@ -2,6 +2,7 @@ package net.dhleong.acl.net.eng;
 
 import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.PacketParser;
+import net.dhleong.acl.util.GridCoord;
 
 /**
  * Send a Damcon team to a grid location
@@ -31,5 +32,9 @@ public class EngSendDamconPacket extends BaseArtemisPacket {
         PacketParser.putLendInt(x, mData, 8);
         PacketParser.putLendInt(y, mData, 12);
         PacketParser.putLendInt(z, mData, 16);
+    }
+
+    public EngSendDamconPacket(int teamNumber, GridCoord coord) {
+        this(teamNumber, coord.x, coord.y, coord.z);
     }
 }

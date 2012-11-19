@@ -7,15 +7,25 @@ import net.dhleong.acl.net.PacketParser;
 public class EngSetEnergyPacket extends BaseArtemisPacket {
 
     public enum SystemType {
-        BEAMS,
-        TORPEDOS,
-        SENSORS,
-        MANEUVER,
-        IMPULSE,
+        BEAMS("Beams"),
+        TORPEDOS("Torpedos"),
+        SENSORS("Sensors"),
+        MANEUVER("Maneuvering"),
+        IMPULSE("Impulse"),
         /** AKA warp */
-        JUMP, 
-        SHIELD_FRONT,
-        SHIELD_REAR
+        JUMP("Jump/Warp"), 
+        SHIELD_FRONT("Front Shields"),
+        SHIELD_REAR("Rear Shields");
+        
+        private String name;
+        
+        SystemType(String name) {
+            this.name = name;
+        }
+
+        public String getReadableName() {
+            return name;
+        }
     }
 
     private static final int FLAGS = 0x10;

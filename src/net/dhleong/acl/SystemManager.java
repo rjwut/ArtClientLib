@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import net.dhleong.acl.net.DestroyObjectPacket;
 import net.dhleong.acl.net.ObjectUpdatingPacket;
@@ -15,6 +17,7 @@ import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.setup.SetShipPacket;
 import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ShipSystemGrid;
+import net.dhleong.acl.util.ShipSystemGrid.GridEntry;
 import net.dhleong.acl.world.ArtemisGenericObject;
 import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisPlayer;
@@ -237,6 +240,26 @@ public class SystemManager implements OnPacketListener {
         return mDamcons.get(teamNumber);
     }
     
+    public GridEntry getGridAt(int x, int y, int z) {
+        return mGrid.getGridAt(GridCoord.getInstance(x, y, z));
+    }
+
+    public GridEntry getGridAt(GridCoord key) {
+        return mGrid.getGridAt(key);
+    }
+
+    /**
+     * Get the type of System at the grid coordinates,
+     *  or NULL if it's just a hallway
+     * @param x
+     * @param y
+     * @param z
+     * @return
+     */
+    public SystemType getSystemTypeAt(int x, int y, int z) {
+        return mGrid.getSystemTypeAt(GridCoord.getInstance(x, y, z));
+    }
+
     /**
      * Get the overall health of the given system
      * @param sys
@@ -274,6 +297,10 @@ public class SystemManager implements OnPacketListener {
 
     public void setOnObjectCountChangedListener(OnObjectCountChangeListener listener) {
         mListener = (listener == null) ? sDummyListener : listener;
+    }
+    
+    public Set<Entry<GridCoord, Float>> getGridDamages() {
+        return mGridDamage.entrySet();
     }
 
     /**

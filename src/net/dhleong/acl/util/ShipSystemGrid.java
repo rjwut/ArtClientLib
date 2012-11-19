@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.PacketParser;
+import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 
 /**
  * Some basic management of the internal systems
@@ -27,7 +27,19 @@ import net.dhleong.acl.net.PacketParser;
  */
 public class ShipSystemGrid {
     
-    private final HashMap<GridCoord, SystemType> mSystems = new HashMap<GridCoord, SystemType>();
+    public static class GridEntry {
+        public final SystemType type;
+        
+        /** The index of this system among its types, [0,N) */
+        public final int index;
+        
+        private GridEntry(SystemType type, int index) {
+            this.type = type;
+            this.index = index;
+        }
+    }
+    
+    private final HashMap<GridCoord, GridEntry> mSystems = new HashMap<GridCoord, GridEntry>();
     private final int[] mSystemCounts = new int[SystemType.values().length];
 
     /**
@@ -65,7 +77,8 @@ public class ShipSystemGrid {
             int system = PacketParser.getLendInt(row, 12);
             if (system >= 0) {
                 mSystems.put(GridCoord.getInstance(x, y, z), 
-                        SystemType.values()[system]);
+                        new GridEntry(SystemType.values()[system],
+                                mSystemCounts[system]));
                 mSystemCounts[system]++;
             }
         }
@@ -83,8 +96,12 @@ public class ShipSystemGrid {
         return mSystemCounts[sys.ordinal()];
     }
     
-    public SystemType getSystemTypeAt(GridCoord coord) {
+    public GridEntry getGridAt(GridCoord coord) {
         return mSystems.get(coord);
+    }
+    
+    public SystemType getSystemTypeAt(GridCoord coord) {
+        return mSystems.get(coord).type;
     }
 
     /**
@@ -97,8 +114,8 @@ public class ShipSystemGrid {
     
     public Collection<GridCoord> getCoordsFor(SystemType sys) {
         List<GridCoord> coords = new ArrayList<GridCoord>(); 
-        for (Entry<GridCoord, SystemType> e : mSystems.entrySet()) {
-            if (e.getValue() == sys)
+        for (Entry<GridCoord, GridEntry> e : mSystems.entrySet()) {
+            if (e.getValue().type == sys)
                 coords.add(e.getKey());
         }
         return coords;

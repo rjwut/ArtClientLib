@@ -16,7 +16,6 @@ import net.dhleong.acl.net.PlayerUpdatePacket;
 import net.dhleong.acl.net.StationPacket;
 import net.dhleong.acl.net.comms.CommsIncomingPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
-import net.dhleong.acl.net.eng.EngSendDamconPacket;
 import net.dhleong.acl.net.eng.EngSetAutoDamconPacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.setup.ReadyPacket;
@@ -120,7 +119,7 @@ public class TestRunner {
                     return;
 
                 } else if (pkt instanceof PlayerUpdatePacket) {
-//                    PlayerUpdatePacket up = new PlayerUpdatePacket(sys);
+                    PlayerUpdatePacket up = (PlayerUpdatePacket) pkt;
 //                    ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
 //
 //                    up.debugPrint();
@@ -133,7 +132,7 @@ public class TestRunner {
 //                                coolant + " / " + energy + " :: " + heat);
 //                    }
 //
-//                    System.out.println("--> " + up);
+                    System.out.println("--> " + up);
                     return;
 
                 } else if (pkt instanceof CommsIncomingPacket) {
@@ -185,11 +184,14 @@ public class TestRunner {
         
 //        // ENG test 
         net.send(new SetStationPacket(StationType.ENGINEERING, true));
+        
+//        Thread.sleep(2000);
+        
         net.send(new EngSetAutoDamconPacket(false));
         
-        net.send(new EngSendDamconPacket(0,  2,1,9));
-        net.send(new EngSendDamconPacket(1,  2,1,9));
-        net.send(new EngSendDamconPacket(2,  2,1,9));
+//        net.send(new EngSendDamconPacket(0,  2,1,9));
+//        net.send(new EngSendDamconPacket(1,  2,1,9));
+//        net.send(new EngSendDamconPacket(2,  2,1,9));
         
 //        net.send(new EngSetEnergyPacket(SystemType.IMPULSE, .5f));
 //        net.send(new EngSetCoolantPacket(SystemType.IMPULSE, 0));

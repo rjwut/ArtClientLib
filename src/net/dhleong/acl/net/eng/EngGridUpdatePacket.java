@@ -91,12 +91,22 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
         
         public void updateFrom(DamconStatus other) {
             this.members = other.members;
+            
+            if (other.progress < 0.001 && progress > 0) {
+                // we've made it to our goal!
+                this.x = xGoal;
+                this.y = yGoal;
+                this.z = zGoal;
+            } else {
+                this.x = other.x;
+                this.y = other.y;
+                this.z = other.z;
+            }
+            
             this.xGoal = other.xGoal;
             this.yGoal = other.yGoal;
             this.zGoal = other.zGoal;
-            this.x = other.x;
-            this.y = other.y;
-            this.z = other.z;
+            
             this.progress = other.progress;
         }
      

@@ -23,6 +23,10 @@ public class ObjectParser {
     public byte getAction() {
         return action;
     }
+    
+    public void setAction(byte newAction) {
+        action = newAction;
+    }
 
     public void setArgs(int newArgs) {
         args = newArgs;

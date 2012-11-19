@@ -45,10 +45,21 @@ public class StationPacket implements ObjectUpdatingPacket {
         ObjectParser p = new ObjectParser(data, 0);
         while (p.hasMore()) {
             p.startNoArgs();
-
-            byte args2 = p.readByte();
             
-            name = p.readName(NAME);
+            // grab the secondary action
+            byte secondaryAction = p.readByte();
+            
+            try {
+                name = p.readName(NAME);
+            } catch (StringIndexOutOfBoundsException e) {
+                debugPrint();
+//                System.out.println("DEBUG: subpLen = " + args);
+//                System.out.println("DEBUG: objId   = " + objId);
+//                System.out.println("DEBUG: nameLen = " + nameLen);
+//                System.out.println("DEBUG: offset = " + offset);
+                System.out.println("DEBUG: Packet = " + this);
+                throw e;
+            }
 
             shieldsFront = p.readFloat(SHIELDS_FRONT, -1);
             shieldsRear = p.readFloat(SHIELDS_REAR, -1);
@@ -60,8 +71,8 @@ public class StationPacket implements ObjectUpdatingPacket {
             y = p.readFloat(POS_Y, -1);
             z = p.readFloat(POS_Z, -1);
             
-            // secondary args... unknown purpose
-            p.setArgs(args2);
+            // secondary action... unknown purpose
+            p.setAction(secondaryAction);
             
             for (byte arg : UNKNOWN_INTS)
                 p.readInt(arg);

@@ -157,10 +157,12 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                     }
                 } catch (ArtemisPacketException e) {
                     // TODO ?
-                    e.printStackTrace();
+                    if (mRunning)
+                        e.printStackTrace();
                     break;
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    if (mRunning)
+                        e.printStackTrace();
                     break;
                 }
             }

@@ -7,6 +7,7 @@ import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.ArtemisPacketException;
 import net.dhleong.acl.net.comms.CommsIncomingPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
+import net.dhleong.acl.net.setup.StationStatusPacket;
 import net.dhleong.acl.world.ArtemisObject;
 
 /**
@@ -107,6 +108,9 @@ public class PacketParser {
             
         case GameMessagePacket.TYPE:
             return new GameMessagePacket(flags, bucket);
+            
+        case StationStatusPacket.TYPE:
+            return new StationStatusPacket(bucket);
             
         case ArtemisPacket.WORLD_TYPE:
             // ooh, crazy world type; switch for kid types

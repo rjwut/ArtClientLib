@@ -16,10 +16,11 @@ import net.dhleong.acl.net.PlayerUpdatePacket;
 import net.dhleong.acl.net.StationPacket;
 import net.dhleong.acl.net.comms.CommsIncomingPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
-import net.dhleong.acl.net.eng.EngSetAutoDamconPacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.SetShipPacket;
+import net.dhleong.acl.net.setup.SetShipSettingsPacket;
+import net.dhleong.acl.net.setup.SetShipSettingsPacket.DriveType;
 import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
 import net.dhleong.acl.util.GridCoord;
@@ -179,15 +180,14 @@ public class TestRunner {
         
         net.start();
         net.send(new SetShipPacket(SetShipPacket.SHIP_1_ARTEMIS));
+//        net.send(new SetShipPacket(SetShipPacket.SHIP_2_INTREPID));
 //        net.send(new SetShipPacket(SetShipPacket.SHIP_3_AEGIS));
         
         
 //        // ENG test 
-        net.send(new SetStationPacket(StationType.ENGINEERING, true));
-        
+//        net.send(new SetStationPacket(StationType.ENGINEERING, true));
 //        Thread.sleep(2000);
-        
-        net.send(new EngSetAutoDamconPacket(false));
+//        net.send(new EngSetAutoDamconPacket(false));
         
 //        net.send(new EngSendDamconPacket(0,  2,1,9));
 //        net.send(new EngSendDamconPacket(1,  2,1,9));
@@ -209,8 +209,8 @@ public class TestRunner {
 //        }
         */
         
-//        net.send(new SetStationPacket(StationType.HELM, true));
-//        net.send(new SetShipSettingsPacket(DriveType.JUMP, 1, "USS Awesome"));
+        net.send(new SetStationPacket(StationType.HELM, true));
+        net.send(new SetShipSettingsPacket(DriveType.JUMP, 1, "USS Awesome"));
         
 //        net.send(new SetStationPacket(StationType.SCIENCE, true));
 

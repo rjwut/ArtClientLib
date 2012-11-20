@@ -3,7 +3,12 @@ package net.dhleong.acl.net.setup;
 import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.PacketParser;
 
-
+/**
+ * "Take" or "Untake" a station
+ * 
+ * @author dhleong
+ *
+ */
 public class SetStationPacket extends BaseArtemisPacket {
 
     public enum StationType {

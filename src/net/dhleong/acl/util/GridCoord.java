@@ -11,7 +11,7 @@ import java.util.Queue;
  * @author dhleong
  *
  */
-public final class GridCoord {
+public final class GridCoord implements Comparable<GridCoord> {
 
     private static final int CACHE_SIZE = 50;
 
@@ -99,5 +99,30 @@ public final class GridCoord {
         }
 
         return c;
+    }
+
+    /**
+     * Return a unique long representing this coord.
+     *  It's super simple, but should work since our
+     *  coords tend to be 10 or less in any dimension
+     * 
+     * @return
+     */
+    public long getUniqueId() {
+        return (x * 10000L) + (y * 100) + z;
+    }
+
+    /**
+     * Sorts in z order, then x, then y
+     */
+    @Override
+    public int compareTo(GridCoord other) {
+        if (z != other.z)
+            return z - other.z;
+        
+        if (x != other.x)
+            return x - other.x;
+        
+        return y - other.y;
     }
 }

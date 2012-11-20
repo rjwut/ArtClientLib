@@ -26,6 +26,10 @@ public class EngSetEnergyPacket extends BaseArtemisPacket {
         public String getReadableName() {
             return name;
         }
+
+        public static final int count() {
+            return values().length;
+        }
     }
 
     private static final int FLAGS = 0x10;

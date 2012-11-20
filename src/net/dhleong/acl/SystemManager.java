@@ -299,6 +299,19 @@ public class SystemManager implements OnPacketListener {
         mListener = (listener == null) ? sDummyListener : listener;
     }
     
+    /**
+     * Get the damage at a specific grid coord
+     * @param coord
+     * @return The damage as a value [0, 1] or -1
+     *  if we don't have the any entry for the coord
+     */
+    public float getGridDamageAt(GridCoord coord) {
+        if (mGridDamage.containsKey(coord))
+            return mGridDamage.get(coord);
+        
+        return -1f;
+    }
+
     public Set<Entry<GridCoord, Float>> getGridDamages() {
         return mGridDamage.entrySet();
     }

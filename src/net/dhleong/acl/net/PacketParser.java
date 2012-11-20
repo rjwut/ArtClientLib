@@ -7,6 +7,7 @@ import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.ArtemisPacketException;
 import net.dhleong.acl.net.comms.CommsIncomingPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
+import net.dhleong.acl.net.setup.AllShipSettingsPacket;
 import net.dhleong.acl.net.setup.StationStatusPacket;
 import net.dhleong.acl.world.ArtemisObject;
 
@@ -95,7 +96,7 @@ public class PacketParser {
     }
     
     public static ArtemisPacket buildPacket(int packetType, int mode, 
-            int flags, byte[] bucket) {
+            int flags, byte[] bucket) throws ArtemisPacketException {
         switch (packetType) {            
         case EngGridUpdatePacket.TYPE:
             return new EngGridUpdatePacket(flags, bucket);
@@ -107,7 +108,12 @@ public class PacketParser {
             return new DestroyObjectPacket(flags, bucket);
             
         case GameMessagePacket.TYPE:
-            return new GameMessagePacket(flags, bucket);
+            // this is another generic type; "all ship settings"
+            //  is also included
+            if (bucket[0] == AllShipSettingsPacket.MSG_TYPE)
+                return new AllShipSettingsPacket(bucket);
+            else
+                return new GameMessagePacket(flags, bucket);
             
         case StationStatusPacket.TYPE:
             return new StationStatusPacket(bucket);

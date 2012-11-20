@@ -89,14 +89,16 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                 mSkt.close();
             } catch (IOException e) {}
             
-            mOnConnectedListener.onDisconnected(mInterface.errorCode);
+            if (mOnConnectedListener != null) {
+                mOnConnectedListener.onDisconnected(mInterface.errorCode);
+    
+                // not interested in listening anymore
+                mOnConnectedListener = null;
+            }
         }
 
         public void end() {
             mRunning = false;
-            
-            // also, not interested in listening anymore
-            mOnConnectedListener = null;
         }
 
         @Override

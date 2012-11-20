@@ -70,7 +70,10 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                         mOutput.flush();
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    if (mRunning) {
+                        e.printStackTrace();
+                        mInterface.errorCode = OnConnectedListener.ERROR_IO;
+                    }
                     break;
                 }
             }
@@ -85,6 +88,8 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
             try {
                 mSkt.close();
             } catch (IOException e) {}
+            
+            mOnConnectedListener.onDisconnected(mInterface.errorCode);
         }
 
         public void end() {
@@ -157,12 +162,16 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                     }
                 } catch (ArtemisPacketException e) {
                     // TODO ?
-                    if (mRunning)
+                    if (mRunning) {
                         e.printStackTrace();
+                        mInterface.errorCode = OnConnectedListener.ERROR_PARSE;
+                    }
                     break;
                 } catch (IOException e) {
-                    if (mRunning)
+                    if (mRunning) {
                         e.printStackTrace();
+                        mInterface.errorCode = OnConnectedListener.ERROR_IO;
+                    }
                     break;
                 }
             }
@@ -187,6 +196,9 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
     private final ReceiverThread mReceiveThread;
     private final SenderThread mSendThread;
     
+    /** Error code, for when we disconnect */
+    private int errorCode = OnConnectedListener.ERROR_NONE;
+
     public ThreadedArtemisNetworkInterface(final String tgtIp, final int tgtPort) 
             throws UnknownHostException, IOException {
         Socket skt = new Socket(tgtIp, tgtPort);

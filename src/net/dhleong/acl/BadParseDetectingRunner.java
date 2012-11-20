@@ -47,6 +47,11 @@ public class BadParseDetectingRunner {
             public void onConnected() {
                 System.out.println("Connected to " + tgtIp);
             }
+
+            @Override
+            public void onDisconnected(int errorCode) {
+                System.out.println("Disconnected: " + errorCode);
+            }
         });
 
         net.addOnPacketListener(new OnPacketListener() {

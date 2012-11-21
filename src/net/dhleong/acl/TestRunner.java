@@ -148,15 +148,15 @@ public class TestRunner {
                             mgr.getObject(destroy.getTarget()));
                     return;
                 } else if (pkt instanceof EngGridUpdatePacket) {
-                    EngGridUpdatePacket dmg = (EngGridUpdatePacket) pkt;
-                    System.out.println("** GRID UPDATE: ");
-                    dmg.debugPrint();
+//                    EngGridUpdatePacket dmg = (EngGridUpdatePacket) pkt;
+//                    System.out.println("** GRID UPDATE: ");
+//                    dmg.debugPrint();
 //                    System.out.println("Overall healths: ");
 //                    for (SystemType sys : SystemType.values()) {
 //                        System.out.println("- " + sys + ": " + 
 //                                mgr.getHealthOfSystem(sys));
 //                    }
-                    System.out.println("--> " + dmg);
+//                    System.out.println("--> " + dmg);
                     return;
                 } else if (pkt instanceof GameMessagePacket) {
                     GameMessagePacket msg = (GameMessagePacket) pkt;
@@ -219,7 +219,9 @@ public class TestRunner {
         
 //        net.send(new SetMainScreenPacket(MainScreen.RIGHT));
         
+//        Thread.sleep(2000);
 //        net.send(new HelmJumpPacket(.5f, .5f));
+        
 //        net.send(new HelmSetWarpPacket(2));
 //        net.stop();
     }

@@ -7,6 +7,7 @@ import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.ArtemisPacketException;
 import net.dhleong.acl.net.comms.CommsIncomingPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
+import net.dhleong.acl.net.helm.JumpStatusPacket;
 import net.dhleong.acl.net.setup.AllShipSettingsPacket;
 import net.dhleong.acl.net.setup.StationStatusPacket;
 import net.dhleong.acl.world.ArtemisObject;
@@ -108,12 +109,17 @@ public class PacketParser {
             return new DestroyObjectPacket(flags, bucket);
             
         case GameMessagePacket.TYPE:
-            // this is another generic type; "all ship settings"
-            //  is also included
-            if (bucket[0] == AllShipSettingsPacket.MSG_TYPE)
+            // this is another generic type; a few other 
+            //  global messages are included
+            switch(bucket[0]) {
+            case AllShipSettingsPacket.MSG_TYPE:
                 return new AllShipSettingsPacket(bucket);
-            else
+            case JumpStatusPacket.MSG_TYPE_BEGIN:
+            case JumpStatusPacket.MSG_TYPE_END:
+                return new JumpStatusPacket(bucket);
+            default:
                 return new GameMessagePacket(flags, bucket);
+            }
             
         case StationStatusPacket.TYPE:
             return new StationStatusPacket(bucket);

@@ -78,6 +78,8 @@ public class StationStatusPacket implements ArtemisPacket {
      * @return
      */
     public Status get(StationType station) {
+        if (station == null)
+            throw new IllegalArgumentException("Null station");
         switch (station) {
         case HELM:
             return helm;

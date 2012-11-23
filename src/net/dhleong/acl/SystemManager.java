@@ -312,6 +312,17 @@ public class SystemManager implements OnPacketListener {
         return -1f;
     }
 
+    /**
+     * Convenience 
+     * @param x
+     * @param y
+     * @param z
+     * @return
+     */
+    public float getGridDamageAt(int x, int y, int z) {
+        return getGridDamageAt(GridCoord.getInstance(x, y, z));
+    }
+
     public Set<Entry<GridCoord, Float>> getGridDamages() {
         return mGridDamage.entrySet();
     }

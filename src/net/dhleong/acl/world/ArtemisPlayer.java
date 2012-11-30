@@ -61,6 +61,8 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
     private float mImpulse;
 
+    private float mSteering;
+
     /**
      * 
      * @param objId
@@ -220,6 +222,8 @@ public class ArtemisPlayer extends BaseArtemisShip {
             
             if (plr.mImpulse != -1)
                 mImpulse = plr.mImpulse;
+            if (plr.mSteering != -1)
+                mSteering = plr.mSteering;
 
             if (plr.mDockingStation != 0)
                 mDockingStation = plr.mDockingStation;
@@ -335,6 +339,14 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
     public void setImpulse(float impulseSlider) {
         mImpulse = impulseSlider;
+    }
+    
+    public float getSteering() {
+        return mSteering;
+    }
+
+    public void setSteering(float steeringSlider) {
+        mSteering = steeringSlider;
     }
 
 }

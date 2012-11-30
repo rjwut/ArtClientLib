@@ -23,8 +23,6 @@ import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
 import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ShipSystemGrid;
-import net.dhleong.acl.world.ArtemisBearable;
-import net.dhleong.acl.world.ArtemisPlayer;
 
 public class TestRunner {
 
@@ -125,7 +123,7 @@ public class TestRunner {
 
                 } else if (pkt instanceof PlayerUpdatePacket) {
                     PlayerUpdatePacket up = (PlayerUpdatePacket) pkt;
-                    ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
+//                    ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
                     
 //                    for (int i=0; i<ArtemisPlayer.MAX_TUBES; i++) {
 //                        System.out.println(String.format("Tube#%d: (%f) %d", 
@@ -142,11 +140,8 @@ public class TestRunner {
 //                                coolant + " / " + energy + " :: " + heat);
 //                    }
 //
-                    System.out.println("Ba=" + plr.getBearing());
-                    System.out.println("Ve=" + plr.getVelocity());
-                    System.out.println("XZ=" + plr.getX() + ", " + plr.getZ());
-                    float dist = ArtemisBearable.BASE_VELOCITY_MS * 500 * plr.getVelocity();
-                    System.out.println(Math.cos(Math.PI/2 + plr.getBearing()) * dist);
+
+                    System.out.println("--> " + up.steeringSlider);
                     System.out.println("--> " + up);
                     return;
 

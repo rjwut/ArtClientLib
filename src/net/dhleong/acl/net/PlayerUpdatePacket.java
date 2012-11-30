@@ -14,7 +14,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     
     private static final byte ACTION_DUNNO_0    = (byte) 0x01;
     
-    private static final byte ACTION_DUNNO_1      = (byte) 0x02;
+    private static final byte IMPULSE_SLIDER      = (byte) 0x02;
     private static final byte ACTION_DUNNO_2      = (byte) 0x04;
     private static final byte ACTION_DUNNO_3      = (byte) 0x08;
     private static final byte ACTION_DUNNO_4      = (byte) 0x10;
@@ -174,6 +174,8 @@ public class PlayerUpdatePacket implements ArtemisPacket {
 
     private float impulseSlider;
 
+    public float steeringSlider;
+
 //    public PlayerUpdatePacket(final SystemInfoPacket pkt) {
 //        this(pkt.mData);
 //    }
@@ -191,8 +193,8 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             p.readInt(ACTION_DUNNO_0);
 
             // ???
-            impulseSlider = p.readFloat(ACTION_DUNNO_1, -1); // float [0,1]?
-            p.readInt(ACTION_DUNNO_2);
+            impulseSlider = p.readFloat(IMPULSE_SLIDER, -1); 
+            steeringSlider = p.readFloat(ACTION_DUNNO_2, Float.MIN_VALUE);
             p.readInt(ACTION_DUNNO_3);
 
             p.readInt(ACTION_DUNNO_4);
@@ -342,6 +344,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             mPlayer = new ArtemisPlayer(p.getTargetId(), name, hullId, 
                 shipNumber, mRedAlert, mShields);
             mPlayer.setImpulse(impulseSlider);
+            mPlayer.setSteering(steeringSlider);
             mPlayer.setX(x);
             mPlayer.setY(y);
             mPlayer.setZ(z);

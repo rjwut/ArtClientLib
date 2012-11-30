@@ -21,7 +21,6 @@ import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.SetShipPacket;
 import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
-import net.dhleong.acl.net.weap.UnloadTubePacket;
 import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ShipSystemGrid;
 import net.dhleong.acl.world.ArtemisPlayer;
@@ -122,10 +121,11 @@ public class TestRunner {
                 } else if (pkt instanceof PlayerUpdatePacket) {
                     PlayerUpdatePacket up = (PlayerUpdatePacket) pkt;
                     ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
-                    for (int i=0; i<ArtemisPlayer.MAX_TUBES; i++) {
-                        System.out.println(String.format("Tube#%d: (%f) %d", 
-                            i, plr.getTubeCountdown(i), plr.getTubeContents(i)));
-                    }
+                    
+//                    for (int i=0; i<ArtemisPlayer.MAX_TUBES; i++) {
+//                        System.out.println(String.format("Tube#%d: (%f) %d", 
+//                            i, plr.getTubeCountdown(i), plr.getTubeContents(i)));
+//                    }
 //
 //                    up.debugPrint();
 //                    System.out.println("Player: " + plr);
@@ -137,6 +137,7 @@ public class TestRunner {
 //                                coolant + " / " + energy + " :: " + heat);
 //                    }
 //
+                    System.out.println("Vel=" + plr.getVelocity());
                     System.out.println("--> " + up);
                     return;
 
@@ -216,11 +217,11 @@ public class TestRunner {
 //        net.send(new SetStationPacket(StationType.HELM, true));
 //        net.send(new SetShipSettingsPacket(DriveType.JUMP, 1, "USS Awesome"));
         
-        net.send(new SetStationPacket(StationType.WEAPONS, true));
+//        net.send(new SetStationPacket(StationType.WEAPONS, true));
 //        net.send(new LoadTubePacket(1, 1));
-        net.send(new UnloadTubePacket(1));
+//        net.send(new UnloadTubePacket(1));
         
-//        net.send(new SetStationPacket(StationType.SCIENCE, true));
+        net.send(new SetStationPacket(StationType.SCIENCE, true));
 
         net.send(new ReadyPacket());
 //        net.send(new ToggleShieldsPacket());

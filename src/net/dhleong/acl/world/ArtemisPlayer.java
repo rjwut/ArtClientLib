@@ -59,6 +59,8 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
     private int mAvailableCoolant = DEFAULT_COOLANT;
 
+    private float mImpulse;
+
     /**
      * 
      * @param objId
@@ -215,6 +217,9 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
             if (mShipNumber == -1)
                 mShipNumber = plr.mShipNumber;
+            
+            if (plr.mImpulse != -1)
+                mImpulse = plr.mImpulse;
 
             if (plr.mDockingStation != 0)
                 mDockingStation = plr.mDockingStation;
@@ -321,6 +326,15 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
     public MainScreen getMainScreen() {
         return mMainScreen;
+    }
+    
+    /** Get the value of the impulse slider */
+    public float getImpulse() {
+        return mImpulse;
+    }
+
+    public void setImpulse(float impulseSlider) {
+        mImpulse = impulseSlider;
     }
 
 }

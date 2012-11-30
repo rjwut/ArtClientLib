@@ -36,7 +36,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     private static final long DUNNO_SKIP_4  = 0x0000000000000080L;
     private static final long BEARING       = 0x0000000000000100L;
     
-    private static final long UNKNOWN_1     = 0x0000000000000200L;
+    private static final long VELOCITY      = 0x0000000000000200L;
     private static final long UNKNOWN_2     = 0x0000000000000400L;
     private static final long SHIP_NAME     = 0x0000000000000800L;
     
@@ -170,6 +170,10 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     float[] tubeTimes = new float[TUBE_TIMES.length];
     int[] tubeContents = new int[TUBE_TIMES.length];
 
+    public float velocity;
+
+    private float impulseSlider;
+
 //    public PlayerUpdatePacket(final SystemInfoPacket pkt) {
 //        this(pkt.mData);
 //    }
@@ -187,7 +191,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             p.readInt(ACTION_DUNNO_0);
 
             // ???
-            p.readInt(ACTION_DUNNO_1); // float [0,1]?
+            impulseSlider = p.readFloat(ACTION_DUNNO_1, -1); // float [0,1]?
             p.readInt(ACTION_DUNNO_2);
             p.readInt(ACTION_DUNNO_3);
 
@@ -222,13 +226,12 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             p.readInt(DUNNO_SKIP_4);
 
             bearing = p.readFloat(BEARING, Float.MIN_VALUE);
+            velocity = p.readFloat(VELOCITY, -1);
 
-            // 5 bytes
-            p.readInt(UNKNOWN_1);
-            p.readByte(UNKNOWN_2, (byte)0);
+            p.readByte(UNKNOWN_2, (byte)0); // warp speed?
 
             // wtf? hax!?
-            if (p.has(UNKNOWN_1) && p.has(UNKNOWN_2))
+            if (p.has(VELOCITY) && p.has(UNKNOWN_2))
                 //p.readShort(SHIP_NAME);
                 p.readByte(SHIP_NAME, (byte)0);
             
@@ -270,11 +273,6 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             //p.readShort(UNKNOWN_10);
             p.readInt(UNKNOWN_10);
 
-            // I wonder if something in here
-            //  indicates torpedo tube status? would
-            //  explain the weird discrepancies
-            //  sometimes seen... (differing torpedo
-            //  tube counts)
 
             /*
             // this doesn't seem right...
@@ -343,10 +341,12 @@ public class PlayerUpdatePacket implements ArtemisPacket {
 
             mPlayer = new ArtemisPlayer(p.getTargetId(), name, hullId, 
                 shipNumber, mRedAlert, mShields);
+            mPlayer.setImpulse(impulseSlider);
             mPlayer.setX(x);
             mPlayer.setY(y);
             mPlayer.setZ(z);
             mPlayer.setBearing(bearing);
+            mPlayer.setVelocity(velocity);
             mPlayer.setShipEnergy(energy);
             mPlayer.setDockingStation(dockingStation);
             mPlayer.setMainScreen(mainScreen);

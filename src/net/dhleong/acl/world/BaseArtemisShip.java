@@ -5,7 +5,7 @@ implements ArtemisBearable {
 
     protected int mHullId;
     
-    private float mBearing;
+    private float mBearing, mVelocity;
 
     private float mShieldsFrontMax, mShieldsRearMax;
 
@@ -29,6 +29,14 @@ implements ArtemisBearable {
     @Override
     public void setBearing(float bearing) {
         mBearing = bearing;
+    }
+    
+    public float getVelocity() {
+        return mVelocity;
+    }
+    
+    public void setVelocity(float velocity) {
+        mVelocity = velocity;
     }
     
     @Override
@@ -73,8 +81,11 @@ implements ArtemisBearable {
             if (mHullId == -1 && ship.mHullId != -1)
                 mHullId = ship.mHullId;
             
-            if (ship.getBearing() != Float.MIN_VALUE) 
-                setBearing(ship.getBearing());
+            if (ship.mBearing != Float.MIN_VALUE) 
+                mBearing = ship.mBearing;
+            
+            if (ship.mVelocity != -1)
+                mVelocity = ship.mVelocity;
             
             if (ship.mShieldsFrontMax != -1)
                 mShieldsFrontMax = ship.mShieldsFrontMax;

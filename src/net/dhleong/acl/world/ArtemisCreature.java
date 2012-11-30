@@ -2,7 +2,7 @@ package net.dhleong.acl.world;
 
 public class ArtemisCreature extends ArtemisGenericObject implements ArtemisBearable {
 
-    private float mBearing;
+    private float mBearing, mVelocity;
 
     public ArtemisCreature(int objId, String name, ArtemisGenericObject.Type type) {
         super(objId, name, type);
@@ -32,5 +32,15 @@ public class ArtemisCreature extends ArtemisGenericObject implements ArtemisBear
     @Override
     public String toString() {
         return super.toString() + String.format("<%.2f>", mBearing);
+    }
+
+    @Override
+    public float getVelocity() {
+        return mVelocity;
+    }
+    
+    @Override
+    public void setVelocity(float velocity) {
+        mVelocity = velocity;
     }
 }

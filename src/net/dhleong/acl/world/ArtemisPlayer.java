@@ -61,7 +61,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
     private float mImpulse;
 
-    private float mSteering;
+    private float mSteering = 0.5f; // default to centered
 
     /**
      * 

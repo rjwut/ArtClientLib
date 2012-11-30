@@ -23,6 +23,7 @@ import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
 import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ShipSystemGrid;
+import net.dhleong.acl.world.ArtemisPlayer;
 
 public class TestRunner {
 
@@ -123,7 +124,7 @@ public class TestRunner {
 
                 } else if (pkt instanceof PlayerUpdatePacket) {
                     PlayerUpdatePacket up = (PlayerUpdatePacket) pkt;
-//                    ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
+                    ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
                     
 //                    for (int i=0; i<ArtemisPlayer.MAX_TUBES; i++) {
 //                        System.out.println(String.format("Tube#%d: (%f) %d", 
@@ -141,7 +142,9 @@ public class TestRunner {
 //                    }
 //
 
-                    System.out.println("--> " + up.steeringSlider);
+                    System.out.println("Be=" + plr.getBearing());
+                    System.out.println("St=" + plr.getSteering());
+                    System.out.println("Mn=" + plr.getSystemEnergy(SystemType.MANEUVER));
                     System.out.println("--> " + up);
                     return;
 

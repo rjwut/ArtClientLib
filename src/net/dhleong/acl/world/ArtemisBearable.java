@@ -20,6 +20,11 @@ public interface ArtemisBearable extends ArtemisPositionable {
      */
     public static final float BASE_VELOCITY_MS = BASE_VELOCITY / 1000f;
 
+    /**
+     * Empirically determined base rotation per ms
+     */
+    public static final float BASE_ROTATION_MS = 0.1367f;
+
     public float getBearing();
 
     public void setBearing(float bearing);

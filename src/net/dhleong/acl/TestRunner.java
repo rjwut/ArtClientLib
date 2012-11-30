@@ -23,6 +23,8 @@ import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
 import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ShipSystemGrid;
+import net.dhleong.acl.world.ArtemisBearable;
+import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisPlayer;
 
 public class TestRunner {
@@ -102,10 +104,14 @@ public class TestRunner {
                     return;
                 } else if (pkt instanceof ObjUpdatePacket) {
 //                    System.out.println("** Update: ");
-//                    ObjUpdatePacket up = (ObjUpdatePacket) pkt;
+                    ObjUpdatePacket up = (ObjUpdatePacket) pkt;
 //                    //                        up.debugPrint();
-//                    for (ArtemisObject obj : up.mObjects)
-//                        System.out.println(" + " + mgr.getObject(obj.getId()));
+                    for (ArtemisObject obj : up.mObjects) {
+                        ArtemisObject full = mgr.getObject(obj.getId());
+                        System.out.println(" + " + obj + " vel=" +
+                                ((ArtemisBearable)full)
+                                    .getVelocity());
+                    }
 //                    System.out.println("--> " + up);
                     return;
 

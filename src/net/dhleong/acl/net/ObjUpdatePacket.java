@@ -32,7 +32,7 @@ public class ObjUpdatePacket implements ObjectUpdatingPacket {
     private static final int DUNNO_SKIP_0= 0x00000004; 
     private static final int DUNNO_SKIP  = 0x00000008; 
     private static final int BEARING     = 0x00000010; 
-    private static final int DUNNO_SKIP_2= 0x00000020; // wtf?
+    private static final int VELOCITY= 0x00000020; // wtf?
     private static final int DUNNO_SKIP_3= 0x00000040; // wtf?
     private static final int DUNNO_SKIP_4= 0x00000080; // wtf?
 
@@ -77,6 +77,8 @@ public class ObjUpdatePacket implements ObjectUpdatingPacket {
     private final byte[] mData;
 
     public final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
+
+    private float velocity;
 
     public ObjUpdatePacket(byte[] data) {
 
@@ -125,8 +127,7 @@ public class ObjUpdatePacket implements ObjectUpdatingPacket {
                 p.readInt(DUNNO_SKIP);
 
                 bearing = p.readFloat(BEARING, Float.MIN_VALUE);
-
-                p.readFloat(DUNNO_SKIP_2, -1);
+                velocity = p.readFloat(VELOCITY, -1);
 
                 //p.readFloat(DUNNO_SKIP_3, -1);
                 //p.readShort(DUNNO_SKIP_3);
@@ -252,6 +253,7 @@ public class ObjUpdatePacket implements ObjectUpdatingPacket {
                 if (newObj instanceof BaseArtemisShip) {
                     BaseArtemisShip ship = (BaseArtemisShip) newObj;
                     ship.setBearing(bearing);
+                    ship.setVelocity(velocity);
                     
                     ship.setShieldsFront(shieldsFront);
                     ship.setShieldsFrontMax(shieldsFrontMax);

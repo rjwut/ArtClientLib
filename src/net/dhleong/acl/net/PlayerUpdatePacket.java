@@ -15,14 +15,14 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     private static final byte ACTION_DUNNO_0    = (byte) 0x01;
     
     private static final byte IMPULSE_SLIDER      = (byte) 0x02;
-    private static final byte ACTION_DUNNO_2      = (byte) 0x04;
+    private static final byte STEERING_SLIDER      = (byte) 0x04;
     private static final byte ACTION_DUNNO_3      = (byte) 0x08;
     private static final byte ACTION_DUNNO_4      = (byte) 0x10;
     private static final byte ACTION_DUNNO_5      = (byte) 0x20;
     
     private static final byte ACTION_DUNNO_6      = (byte) 0x40;
 
-    private static final byte ACTION_UPDATE_BYTE  = (byte) 0x80;
+    private static final byte ACTION_ENERGY  = (byte) 0x80;
     
     
     private static final long DUNNO_SKIP_2  = 0x0000000000000001L;
@@ -194,7 +194,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
 
             // ???
             impulseSlider = p.readFloat(IMPULSE_SLIDER, -1); 
-            steeringSlider = p.readFloat(ACTION_DUNNO_2, -1);
+            steeringSlider = p.readFloat(STEERING_SLIDER, -1);
             p.readInt(ACTION_DUNNO_3);
 
             p.readInt(ACTION_DUNNO_4);
@@ -205,7 +205,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             // warp speed?
             p.readByte(ACTION_DUNNO_6, (byte)-1);
 
-            energy = p.readFloat(ACTION_UPDATE_BYTE, -1);
+            energy = p.readFloat(ACTION_ENERGY, -1);
             /*
             if (!p.has(ACTION_UPDATE_BYTE) && p.getAction() == 0)
                 energy = p.readFloat();
@@ -230,12 +230,13 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             bearing = p.readFloat(BEARING, Float.MIN_VALUE);
             velocity = p.readFloat(VELOCITY, -1);
 
-            p.readByte(UNKNOWN_2, (byte)0); // warp speed?
+            p.readByte(UNKNOWN_2, (byte)0); 
+            p.readByte(UNKNOWN_2, (byte)0); 
 
-            // wtf? hax!?
-            if (p.has(VELOCITY) && p.has(UNKNOWN_2))
-                //p.readShort(SHIP_NAME);
-                p.readByte(SHIP_NAME, (byte)0);
+//            // wtf? hax!?
+//            if (p.has(VELOCITY) && p.has(UNKNOWN_2))
+//                //p.readShort(SHIP_NAME);
+//                p.readByte(SHIP_NAME, (byte)0);
             
             name = p.readName(SHIP_NAME);
 

@@ -24,7 +24,6 @@ import net.dhleong.acl.net.setup.SetStationPacket.StationType;
 import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ShipSystemGrid;
 import net.dhleong.acl.world.ArtemisBearable;
-import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisPlayer;
 
 public class TestRunner {
@@ -104,14 +103,14 @@ public class TestRunner {
                     return;
                 } else if (pkt instanceof ObjUpdatePacket) {
 //                    System.out.println("** Update: ");
-                    ObjUpdatePacket up = (ObjUpdatePacket) pkt;
+//                    ObjUpdatePacket up = (ObjUpdatePacket) pkt;
 //                    //                        up.debugPrint();
-                    for (ArtemisObject obj : up.mObjects) {
-                        ArtemisObject full = mgr.getObject(obj.getId());
-                        System.out.println(" + " + obj + " vel=" +
-                                ((ArtemisBearable)full)
-                                    .getVelocity());
-                    }
+//                    for (ArtemisObject obj : up.mObjects) {
+//                        ArtemisObject full = mgr.getObject(obj.getId());
+//                        System.out.println(" + " + obj + " vel=" +
+//                                ((ArtemisBearable)full)
+//                                    .getVelocity());
+//                    }
 //                    System.out.println("--> " + up);
                     return;
 
@@ -143,7 +142,11 @@ public class TestRunner {
 //                                coolant + " / " + energy + " :: " + heat);
 //                    }
 //
-                    System.out.println("Vel=" + plr.getVelocity());
+                    System.out.println("Ba=" + plr.getBearing());
+                    System.out.println("Ve=" + plr.getVelocity());
+                    System.out.println("XZ=" + plr.getX() + ", " + plr.getZ());
+                    float dist = ArtemisBearable.BASE_VELOCITY_MS * 500 * plr.getVelocity();
+                    System.out.println(Math.cos(Math.PI/2 + plr.getBearing()) * dist);
                     System.out.println("--> " + up);
                     return;
 

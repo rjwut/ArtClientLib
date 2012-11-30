@@ -249,7 +249,14 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
             for (int i=0; i<ArtemisPlayer.MAX_TUBES; i++) {
                 // just copy this
-                mTubeTimes[i] = plr.mTubeTimes[i];
+                if (plr.mTubeTimes[i] >= 0) {
+                    mTubeTimes[i] = plr.mTubeTimes[i];
+                    
+                    // round down
+                    if (mTubeTimes[i] < 0.05)
+                        mTubeTimes[i] = 0;
+                }
+                
 
                 if (plr.mTubeTypes[i] != TUBE_UNKNOWN)
                     mTubeTypes[i] = plr.mTubeTypes[i];

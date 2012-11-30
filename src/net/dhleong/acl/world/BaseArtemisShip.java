@@ -20,6 +20,11 @@ implements ArtemisBearable {
     public int getHullId() {
         return mHullId;
     }
+    
+
+    public void setHullId(int hullId) {
+        mHullId = hullId;
+    }
 
     @Override
     public float getBearing() {
@@ -31,10 +36,12 @@ implements ArtemisBearable {
         mBearing = bearing;
     }
     
+    @Override
     public float getVelocity() {
         return mVelocity;
     }
     
+    @Override
     public void setVelocity(float velocity) {
         mVelocity = velocity;
     }

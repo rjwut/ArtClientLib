@@ -37,35 +37,28 @@ public class PacketParser {
      * @throws ArtemisPacketException
      */
     public ArtemisPacket readPacket(InputStream is) throws IOException, ArtemisPacketException {
-        is.read(mIntBuffer);
-        final int header = getLendInt(mIntBuffer);
+        int header = readInt(is);
         if (header != 0xdeadbeef) {
             throw new ArtemisPacketException("Illegal packet header: " + Integer.toHexString(header));
         }
         
-        is.read(mIntBuffer);
-        final int len = getLendInt(mIntBuffer);
+        final int len = readInt(is);
         if (len <= 8) {
             return new BaseArtemisPacket();
         }
         
-        is.read(mIntBuffer);
-        final int mode = getLendInt(mIntBuffer);
+        final int mode = readInt(is);
         if (mode != 1 && mode != 2) {
             throw new ArtemisPacketException("Unknown packet mode: " + mode);
         }
         
-        is.read(mIntBuffer);
-        final int modeIsh = getLendInt(mIntBuffer);
+        final int modeIsh = readInt(is);
         if (modeIsh != 0) {
             throw new ArtemisPacketException("No empty padding after 4-byte mode?");
         }
         
-        is.read(mIntBuffer);
-        final int flags = getLendInt(mIntBuffer);
-        
-        is.read(mIntBuffer);
-        final int packetType = getLendInt(mIntBuffer);
+        final int flags = readInt(is);
+        final int packetType = readInt(is);
         
         // for now, just shove it in a byte[]
         // len - 24 because the length includes the entire packet;
@@ -96,6 +89,21 @@ public class PacketParser {
         }
     }
     
+    /**
+     * Make sure to read a full int 
+     * 
+     * @param is
+     * @return
+     * @throws IOException
+     */
+    private int readInt(InputStream is) throws IOException {
+        int read = 0;
+        while (read < 4) {
+            read += is.read(mIntBuffer, read, 4-read);
+        }
+        return getLendInt(mIntBuffer);
+    }
+
     public static ArtemisPacket buildPacket(int packetType, int mode, 
             int flags, byte[] bucket) throws ArtemisPacketException {
         switch (packetType) {            

@@ -1,5 +1,6 @@
 package net.dhleong.acl.net;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -97,9 +98,13 @@ public class PacketParser {
      * @throws IOException
      */
     private int readInt(InputStream is) throws IOException {
-        int read = 0;
-        while (read < 4) {
-            read += is.read(mIntBuffer, read, 4-read);
+        int readTotal = 0, read;
+        while (readTotal < 4) {
+            read = is.read(mIntBuffer, readTotal, 4-readTotal);
+            if (read == -1)
+                throw new EOFException(); // disconnected! 
+                
+            readTotal += read;
         }
         return getLendInt(mIntBuffer);
     }

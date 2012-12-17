@@ -8,12 +8,9 @@ import java.util.List;
 import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.util.ObjectParser;
 import net.dhleong.acl.world.ArtemisEnemy;
-import net.dhleong.acl.world.ArtemisObject;
-import net.dhleong.acl.world.ArtemisOtherShip;
 import net.dhleong.acl.world.ArtemisPositionable;
-import net.dhleong.acl.world.BaseArtemisShip;
 
-public class ObjUpdatePacket implements ObjectUpdatingPacket {
+public class EnemyUpdatePacket implements ObjectUpdatingPacket {
 
     private static final byte ACTION_UPDATE_BYTE  = (byte) 0x80;
     
@@ -80,7 +77,7 @@ public class ObjUpdatePacket implements ObjectUpdatingPacket {
 
     private float velocity;
 
-    public ObjUpdatePacket(byte[] data) {
+    public EnemyUpdatePacket(byte[] data) {
 
         mData = data;
 
@@ -129,77 +126,28 @@ public class ObjUpdatePacket implements ObjectUpdatingPacket {
                 bearing = p.readFloat(BEARING, Float.MIN_VALUE);
                 velocity = p.readFloat(VELOCITY, -1);
 
-                //p.readFloat(DUNNO_SKIP_3, -1);
-                //p.readShort(DUNNO_SKIP_3);
-                if (p.getTargetType() == ArtemisObject.TYPE_ENEMY)
-                    p.readByte(DUNNO_SKIP_3, (byte)0); 
-                else
-                    p.readShort(DUNNO_SKIP_3);
-
-                if (p.getTargetType() == ArtemisObject.TYPE_ENEMY)
-                    p.readShort(DUNNO_SKIP_4);
-                else if (p.getAction() != (byte)0xff) //hax?
-                    p.readInt(DUNNO_SKIP_4);
+                p.readByte(DUNNO_SKIP_3, (byte)0); 
+                p.readShort(DUNNO_SKIP_4);
 
                 shieldsFront = p.readFloat(SHLD_FRNT, -1);
                 shieldsFrontMax = p.readFloat(SHLD_FRNT_MX, -1);
                 shieldsRear = p.readFloat(SHLD_REAR, -1);
                 shieldsRearMax = p.readFloat(SHLD_REAR_MX, -1);
 
-                if (p.getTargetType() == ArtemisObject.TYPE_ENEMY
-                        || p.getAction() == (byte)0xff) {
-                    //p.readFloat(DUNNO_NEW_0, 0);
-                    p.readShort(DUNNO_NEW_0);
-                    //p.readByte(DUNNO_NEW_0, (byte)0);
-                } else {
-                    p.readInt(DUNNO_NEW_0);
-                }
+                p.readShort(DUNNO_NEW_0);
                 
                 // ????
                 //p.readShort(DUNNO_NEW_1);
                 p.readByte(DUNNO_NEW_1, (byte)0);
 
-                if (p.getTargetType() == ArtemisObject.TYPE_ENEMY
-                        || p.getAction() != (byte)0xff) {
+                elite = p.readInt(ELITE);
 
-                    // what abilities do you have?
-                    elite = p.readInt(ELITE);
-                    //p.readShort(ELITE);
-                } else {
-                    elite = -1;
-                }
+                // what abilities are active?
+                eliteState = p.readInt(ELITE_STATE);
 
-                //p.readByte(DUNNO_NEW_2, (byte)0);
-//                p.readShort(DUNNO_NEW_2);
-                if (p.getTargetType() == ArtemisObject.TYPE_ENEMY
-                        || p.getAction() != (byte)0xff) {
-
-                    // what abilities are active?
-                    eliteState = p.readInt(ELITE_STATE);
-                } else {
-                    eliteState = p.readShort(ELITE_STATE);
-                }
-
-                /*
-                if (p.has(ELITE))
-                    p.readLong(DUNNO_NEW_3);
-                else
-                    p.readShort(DUNNO_NEW_3);
-                */
-                //p.readInt(DUNNO_NEW_3);
-                if (p.getTargetType() == ArtemisObject.TYPE_ENEMY
-                        || p.getAction() != (byte) 0xff) {
-                    p.readInt(DUNNO_NEW_3);
-                } else {
-                    p.readShort(DUNNO_NEW_3);
-                }
+                p.readInt(DUNNO_NEW_3);
                 
-                if (p.getTargetType() == ArtemisObject.TYPE_ENEMY) {
-                
-                    scanned = p.readByte(SCANNED, (byte) -1);
-                } else {
-                    p.readInt(SCANNED);
-                }
+                scanned = p.readByte(SCANNED, (byte) -1);
 
                 p.readInt(UNUSED_1);
                 p.readInt(UNUSED_2);
@@ -207,65 +155,39 @@ public class ObjUpdatePacket implements ObjectUpdatingPacket {
                 p.readInt(UNUSED_4);
                 p.readInt(UNUSED_5);
                 p.readInt(UNUSED_6);
+                p.readInt(UNUSED_7);
+                p.readInt(UNUSED_8);
                 
                 // shield frequencies
-                if (p.getTargetType() == ArtemisObject.TYPE_ENEMY) {
-                    p.readInt(UNUSED_7);
-                    p.readInt(UNUSED_8);
-
-                    for (int i=0; i<SHLD_FREQS.length; i++) {
-                        freqs[i] = p.readFloat(SHLD_FREQS[i], -1);
-                    }
-                } else {
-                    p.readShort(UNUSED_7);
-                    p.readShort(UNUSED_8);
-
-                    // hax
-                    for (int i=0; i<SHLD_FREQS.length; i++) {
-                        freqs[i] = p.readFloat(SHLD_FREQS[0], -1);
-                    }
+                for (int i=0; i<SHLD_FREQS.length; i++) {
+                    freqs[i] = p.readFloat(SHLD_FREQS[i], -1);
                 }
                 
-                final ArtemisPositionable newObj;
-                switch (p.getTargetType()) {
-                default:
-                case ArtemisObject.TYPE_ENEMY:
-                    ArtemisEnemy enemy = new ArtemisEnemy(p.getTargetId(), name, hullId);
-                    enemy.setScanned(scanned);
-                    enemy.setEliteBits(elite);
-                    enemy.setEliteState(eliteState);
+                
+                ArtemisEnemy enemy = new ArtemisEnemy(p.getTargetId(), name, hullId);
+                enemy.setScanned(scanned);
+                enemy.setEliteBits(elite);
+                enemy.setEliteState(eliteState);
 
-                    newObj = enemy;
-                    break;
-                case ArtemisObject.TYPE_OTHER:
-                    ArtemisOtherShip other = new ArtemisOtherShip(
-                            p.getTargetId(), name, hullId);
-                    
-                    newObj = other;
-                    break;
-                }
                 
                 // shared updates
-                newObj.setX(x);
-                newObj.setY(y);
-                newObj.setZ(z);
+                enemy.setX(x);
+                enemy.setY(y);
+                enemy.setZ(z);
                 
-                if (newObj instanceof BaseArtemisShip) {
-                    BaseArtemisShip ship = (BaseArtemisShip) newObj;
-                    ship.setBearing(bearing);
-                    ship.setVelocity(velocity);
-                    
-                    ship.setShieldsFront(shieldsFront);
-                    ship.setShieldsFrontMax(shieldsFrontMax);
-                    ship.setShieldsRear(shieldsRear);
-                    ship.setShieldsRearMax(shieldsRearMax);
-                    
-                    for (int i=0; i<freqs.length; i++) {
-                        ship.setShieldFreq(i, freqs[i]);
-                    }
+                enemy.setBearing(bearing);
+                enemy.setVelocity(velocity);
+                
+                enemy.setShieldsFront(shieldsFront);
+                enemy.setShieldsFrontMax(shieldsFrontMax);
+                enemy.setShieldsRear(shieldsRear);
+                enemy.setShieldsRearMax(shieldsRearMax);
+                
+                for (int i=0; i<freqs.length; i++) {
+                    enemy.setShieldFreq(i, freqs[i]);
                 }
-
-                mObjects.add(newObj);
+                
+                mObjects.add(enemy);
 //                base = offset;
             } catch (RuntimeException e) {
                 debugPrint();
@@ -276,6 +198,7 @@ public class ObjUpdatePacket implements ObjectUpdatingPacket {
         }
     }
 
+    @Override
     public void debugPrint() {
         for (ArtemisPositionable u : mObjects) {
             System.out.println("- DEBUG: " + u);

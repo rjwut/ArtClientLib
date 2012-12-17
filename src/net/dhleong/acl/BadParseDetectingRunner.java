@@ -3,7 +3,7 @@ package net.dhleong.acl;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import net.dhleong.acl.net.ObjUpdatePacket;
+import net.dhleong.acl.net.ObjectUpdatingPacket;
 import net.dhleong.acl.net.PlayerUpdatePacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.setup.SetStationPacket;
@@ -73,11 +73,11 @@ public class BadParseDetectingRunner {
                         net.stop();
                         throw e;
                     }
-                } else if (pkt instanceof ObjUpdatePacket) {
-                    ObjUpdatePacket up = (ObjUpdatePacket) pkt;
+                } else if (pkt instanceof ObjectUpdatingPacket) {
+                    ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
                     try {
 
-                        for (ArtemisPositionable p : up.mObjects) {
+                        for (ArtemisPositionable p : up.getObjects()) {
                             if (p instanceof BaseArtemisShip)
                                 testShip((BaseArtemisShip)p);
                             else

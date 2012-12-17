@@ -10,7 +10,7 @@ import java.net.UnknownHostException;
 import net.dhleong.acl.net.DestroyObjectPacket;
 import net.dhleong.acl.net.GameMessagePacket;
 import net.dhleong.acl.net.GenericUpdatePacket;
-import net.dhleong.acl.net.ObjUpdatePacket;
+import net.dhleong.acl.net.OtherShipUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.net.PlayerUpdatePacket;
 import net.dhleong.acl.net.StationPacket;
@@ -100,7 +100,7 @@ public class TestRunner {
                     create.debugPrint();
                     System.out.println("--> " + create);
                     return;
-                } else if (pkt instanceof ObjUpdatePacket) {
+                } else if (pkt instanceof OtherShipUpdatePacket) {
 //                    System.out.println("** Update: ");
 //                    ObjUpdatePacket up = (ObjUpdatePacket) pkt;
 //                    //                        up.debugPrint();

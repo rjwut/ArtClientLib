@@ -16,4 +16,6 @@ public interface ObjectUpdatingPacket extends ArtemisPacket {
     
     /** Get a list of objects updated/created here */
     public List<ArtemisPositionable> getObjects();
+
+    public void debugPrint();
 }

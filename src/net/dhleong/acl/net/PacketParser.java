@@ -145,8 +145,10 @@ public class PacketParser {
                 return new PlayerUpdatePacket(bucket);
                 
             case ArtemisObject.TYPE_ENEMY:
+                return new EnemyUpdatePacket(bucket);
+                
             case ArtemisObject.TYPE_OTHER:
-                return new ObjUpdatePacket(bucket);
+                return new OtherShipUpdatePacket(bucket);
                 
             case ArtemisObject.TYPE_STATION:
                 return new StationPacket(bucket);

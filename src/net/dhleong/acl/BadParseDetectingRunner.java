@@ -130,15 +130,24 @@ public class BadParseDetectingRunner {
 
         // I guess they can go negative when destroyed...?
         assertRange(-50, 1000, p.getShieldsFrontMax(), "shieldFrontMax");
-        assertRange(-50, 1000, p.getShieldsRearMax(), "shieldRearMax");        
+        assertRange(-50, 1000, p.getShieldsRearMax(), "shieldRearMax");
+        assertNotEqual(0, p.getShieldsFrontMax(), "shieldFrontMax");
+        assertNotEqual(0, p.getShieldsRearMax(), "shieldRearMax");
         assertRange(-50, 1000, p.getShieldsFront(), "shieldFront");
         assertRange(-50, 1000, p.getShieldsRear(), "shieldRear");
     }
 
+    private static void assertNotEqual(float expected, float actual, String label) {
+        if (Math.abs(expected - actual) < 0.001)
+            throw new RuntimeException(
+                    String.format("Value ``%s'' is illegal value (%f)", 
+                            label, expected));
+    }
+
     public static void testPositionable(ArtemisPositionable p) {
-        assertRange(-1, 100001, p.getX(), "x");
-        assertRange(-1, 100, p.getY(), "y");
-        assertRange(-1, 100001, p.getZ(), "z");
+        assertRange(-1, 100020, p.getX(), "x");
+        assertRange(-100, 100, p.getY(), "y");
+        assertRange(-1, 100020, p.getZ(), "z");
     }
 
     private static void assertRange(float low, float high, float value, String label) {

@@ -70,11 +70,15 @@ public class ObjectParser {
     }
     
     public int readInt(int ifArgsByte) {
+        return readInt(ifArgsByte, -1);
+    }
+    
+    public int readInt(int ifArgsByte, int defaultValue) {
         if ((args & ifArgsByte) != 0) {
             return readInt();
         }
         
-        return -1;
+        return defaultValue;
     }
 
     public int readInt(long ifArgsLong) {

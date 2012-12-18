@@ -24,9 +24,10 @@ public class DestroyObjectPacket extends BaseArtemisPacket {
     
     @Override
     public String toString() {
-        return String.format("[DESTROY(%d): %d:%d]",
+        return String.format("[DESTROY(%s): %d:%s]",
                 Integer.toHexString(mFlags),
                 mTargetType, 
-                Integer.toHexString(mTarget));
+//                Integer.toHexString(mTarget));
+                mTarget);
     }
 }

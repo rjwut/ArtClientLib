@@ -15,7 +15,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     private static final byte ACTION_DUNNO_0    = (byte) 0x01;
     
     private static final byte IMPULSE_SLIDER      = (byte) 0x02;
-    private static final byte STEERING_SLIDER      = (byte) 0x04;
+    private static final byte STEERING_SLIDER     = (byte) 0x04;
     private static final byte ACTION_DUNNO_3      = (byte) 0x08;
     private static final byte ACTION_DUNNO_4      = (byte) 0x10;
     private static final byte ACTION_DUNNO_5      = (byte) 0x20;
@@ -25,7 +25,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     private static final byte ACTION_ENERGY  = (byte) 0x80;
     
     
-    private static final long DUNNO_SKIP_2  = 0x0000000000000001L;
+    private static final long SHIELD_STATE  = 0x0000000000000001L;
     private static final long SHIP_NUMBER   = 0x0000000000000002L;
     /* I think so? */
     private static final long HULL_ID       = 0x0000000000000004L;
@@ -211,7 +211,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
                 energy = p.readFloat();
             */
             
-            if (p.has(DUNNO_SKIP_2)) {
+            if (p.has(SHIELD_STATE)) {
                 mShields = BoolState.from(p.readShort() != 0);
             } else {
                 mShields = BoolState.UNKNOWN;

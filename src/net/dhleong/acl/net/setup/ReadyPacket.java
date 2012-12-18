@@ -9,6 +9,9 @@ import net.dhleong.acl.net.PacketParser;
  *  picks a station and joins. Maybe this will 
  *  hint the server to send all info for objs?
  *   
+ * Client also seems to send this in ACK to
+ *  a GameOverPacket 
+ *   
  * @author dhleong
  *
  */

@@ -74,7 +74,8 @@ public abstract class BaseArtemisObject implements ArtemisPositionable {
     
     @Override
     public void updateFrom(ArtemisPositionable eng) {
-        if (mName == null && eng.getName() != null)
+        // names can actually change!
+        if (eng.getName() != null)
             mName = eng.getName();
         
         if (eng.getX() != -1) setX(eng.getX());

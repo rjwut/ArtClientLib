@@ -130,6 +130,8 @@ public class PacketParser {
             case JumpStatusPacket.MSG_TYPE_BEGIN:
             case JumpStatusPacket.MSG_TYPE_END:
                 return new JumpStatusPacket(bucket);
+            case GameStartPacket.MSG_TYPE:
+                return new GameStartPacket(flags, bucket);
             default:
                 return new GameMessagePacket(flags, bucket);
             }

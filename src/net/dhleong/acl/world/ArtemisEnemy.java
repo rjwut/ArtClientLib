@@ -91,7 +91,7 @@ public class ArtemisEnemy extends BaseArtemisShip {
         if (mElite == -1 && mEliteState == -1)
             return base;
         else {
-            return String.format("%s\nELITE[%d]\nSTATE[%d]", base, mElite, mEliteState);
+            return String.format("%s[ELITE|%d][STATE:%d]", base, mElite, mEliteState);
         }
     }
 

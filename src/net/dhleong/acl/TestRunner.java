@@ -8,8 +8,11 @@ import java.io.PipedOutputStream;
 import java.net.UnknownHostException;
 
 import net.dhleong.acl.net.DestroyObjectPacket;
+import net.dhleong.acl.net.EnemyUpdatePacket;
 import net.dhleong.acl.net.GameMessagePacket;
+import net.dhleong.acl.net.GameStartPacket;
 import net.dhleong.acl.net.GenericUpdatePacket;
+import net.dhleong.acl.net.ObjectUpdatingPacket;
 import net.dhleong.acl.net.OtherShipUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.net.PlayerUpdatePacket;
@@ -23,7 +26,9 @@ import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
 import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ShipSystemGrid;
-import net.dhleong.acl.world.ArtemisPlayer;
+import net.dhleong.acl.world.ArtemisObject;
+import net.dhleong.acl.world.ArtemisPositionable;
+import net.dhleong.acl.world.BaseArtemisShip;
 
 public class TestRunner {
 
@@ -31,7 +36,7 @@ public class TestRunner {
         
         // configs
 //        final String tgtIp = "localhost";
-        String tgtIp = "10.211.55.4";
+        String tgtIp = "10.211.55.3";
         final int tgtPort = 2010;
         
         // quick test
@@ -85,6 +90,76 @@ public class TestRunner {
         final SystemManager mgr = new SystemManager();
         mgr.setSystemGrid(grid);
         
+        // this will be BEFORE the mgr updates
+        net.addOnPacketListener(new OnPacketListener() {
+            
+            private int noHull = -1;
+
+            @Override
+            public void onPacket(ArtemisPacket pkt) {
+                if (pkt instanceof ObjectUpdatingPacket) {
+                    ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
+//                    up.debugPrint();
+                    for (ArtemisObject obj : up.getObjects()) {
+//                        ArtemisObject full = mgr.getObject(obj.getId());
+//                        System.out.println(" + " + obj + " vel=" +
+//                                ((ArtemisBearable)full)
+//                                    .getVelocity());
+                        if (mgr.getObject(obj.getId()) == null) {
+                            System.out.println("create: " + 
+//                                    Integer.toHexString(obj.getId())
+                                    obj.getId()
+                                    + " " + obj);
+                        } else if (obj.getId() == noHull) {
+                            System.out.println("\n**\n** Update to missing hull: " + obj + "\n**\n");
+                        }
+                    }
+                }
+                
+                if (pkt instanceof EnemyUpdatePacket) {
+                    EnemyUpdatePacket up = (EnemyUpdatePacket) pkt;
+                    
+                    for (ArtemisPositionable obj : up.getObjects()) {
+                        if (obj.getName() != null) {
+
+//                            System.out.println("** Update: ");
+//                            up.debugPrint();
+//                            System.out.println("--> " + up);
+                            
+                            if (obj instanceof BaseArtemisShip) {
+                                BaseArtemisShip ship = (BaseArtemisShip) obj;
+                                if (ship.getHullId() == -1 && noHull == -1) {
+                                    noHull = ship.getId();
+                                    BaseArtemisShip filled = (BaseArtemisShip) mgr
+                                            .getObject(ship.getId());
+                                    if (filled == null || filled.getHullId() == -1) {
+                                        System.out.println("\n---------");
+                                        up.debugPrint();
+                                        System.out.println("--> " + up);
+                                        System.out.println("Ship[" + 
+//                                                Integer.toHexString(ship.getId())
+                                                ship.getId()
+                                                +"] " + obj.getName() + " has no hull! old=" + filled);        
+//                                        net.stop();
+                                    }
+                                }
+                            }
+                            
+                            break;
+//                        } else {
+//                            net.stop();
+                        }
+                    }
+                } else if (pkt instanceof DestroyObjectPacket) {
+                    DestroyObjectPacket destroy = (DestroyObjectPacket) pkt;
+                    System.out.println("** " + destroy 
+                            +":" +
+                            mgr.getObject(destroy.getTarget()));
+                    return;
+                } 
+            }
+        });
+        
         net.addOnPacketListener(mgr);
         
         net.addOnPacketListener(new OnPacketListener() {
@@ -96,22 +171,38 @@ public class TestRunner {
 //                    return; // ignore system info packets for now
                     
                 if (pkt instanceof StationPacket) {
-                    StationPacket create = (StationPacket) pkt;
-                    create.debugPrint();
-                    System.out.println("--> " + create);
+//                    StationPacket create = (StationPacket) pkt;
+//                    create.debugPrint();
+//                    System.out.println("--> " + create);
                     return;
-                } else if (pkt instanceof OtherShipUpdatePacket) {
+                } else if (pkt instanceof EnemyUpdatePacket) {
 //                    System.out.println("** Update: ");
-//                    ObjUpdatePacket up = (ObjUpdatePacket) pkt;
-//                    //                        up.debugPrint();
+//                    ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
+//                    up.debugPrint();
 //                    for (ArtemisObject obj : up.mObjects) {
 //                        ArtemisObject full = mgr.getObject(obj.getId());
 //                        System.out.println(" + " + obj + " vel=" +
 //                                ((ArtemisBearable)full)
 //                                    .getVelocity());
 //                    }
+                    
 //                    System.out.println("--> " + up);
+                    
                     return;
+                } else if (pkt instanceof OtherShipUpdatePacket) {
+//                  System.out.println("** Update: ");
+//                  ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
+//                  up.debugPrint();
+//                  for (ArtemisObject obj : up.mObjects) {
+//                      ArtemisObject full = mgr.getObject(obj.getId());
+//                      System.out.println(" + " + obj + " vel=" +
+//                              ((ArtemisBearable)full)
+//                                  .getVelocity());
+//                  }
+                  
+//                  System.out.println("--> " + up);
+                  
+                  return;
 
                 } else if (pkt instanceof GenericUpdatePacket) {
 //                    System.out.println("** Update: ");
@@ -123,8 +214,8 @@ public class TestRunner {
                     return;
 
                 } else if (pkt instanceof PlayerUpdatePacket) {
-                    PlayerUpdatePacket up = (PlayerUpdatePacket) pkt;
-                    ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
+//                    PlayerUpdatePacket up = (PlayerUpdatePacket) pkt;
+//                    ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
                     
 //                    for (int i=0; i<ArtemisPlayer.MAX_TUBES; i++) {
 //                        System.out.println(String.format("Tube#%d: (%f) %d", 
@@ -142,10 +233,10 @@ public class TestRunner {
 //                    }
 //
 
-                    System.out.println("Be=" + plr.getBearing());
-                    System.out.println("St=" + plr.getSteering());
-                    System.out.println("Mn=" + plr.getSystemEnergy(SystemType.MANEUVER));
-                    System.out.println("--> " + up);
+//                    System.out.println("Be=" + plr.getBearing());
+//                    System.out.println("St=" + plr.getSteering());
+//                    System.out.println("Mn=" + plr.getSystemEnergy(SystemType.MANEUVER));
+//                    System.out.println("--> " + up);
                     return;
 
                 } else if (pkt instanceof CommsIncomingPacket) {
@@ -153,11 +244,6 @@ public class TestRunner {
                     System.out.println("** From ``"+comms.getFrom()+"'': " + 
                             comms.getMessage());
                     System.out.println("--> " + comms);
-                    return;
-                } else if (pkt instanceof DestroyObjectPacket) {
-                    DestroyObjectPacket destroy = (DestroyObjectPacket) pkt;
-                    System.out.println("** DESTROYED: " + 
-                            mgr.getObject(destroy.getTarget()));
                     return;
                 } else if (pkt instanceof EngGridUpdatePacket) {
 //                    EngGridUpdatePacket dmg = (EngGridUpdatePacket) pkt;
@@ -172,9 +258,10 @@ public class TestRunner {
                     return;
                 } else if (pkt instanceof GameMessagePacket) {
                     GameMessagePacket msg = (GameMessagePacket) pkt;
-                    if (msg.isGameOver())
+                    if (msg.isGameOver()) {
                         System.out.println("*** GAME OVER!!! ***");
-                    else if (msg.hasMessage()){
+                        net.send(new ReadyPacket());
+                    } else if (msg.hasMessage()){
                         System.out.println("\nvvv MESSAGE vvv");
                         System.out.println(msg.getMessage());
                         System.out.println("^^^ MESSAGE ^^^\n");
@@ -182,6 +269,13 @@ public class TestRunner {
                         System.out.println("!!! Unknown msg type...");
                     }
                     System.out.println("--> " + pkt);
+                    return;
+                } else if (pkt instanceof DestroyObjectPacket) {
+                    return;
+                } else if (pkt instanceof GameStartPacket) {
+                    GameStartPacket start = (GameStartPacket) pkt;
+                    start.debugPrint();
+//                    net.stop();
                     return;
                 }
 
@@ -194,6 +288,7 @@ public class TestRunner {
         net.send(new SetShipPacket(SetShipPacket.SHIP_1_ARTEMIS));
 //        net.send(new SetShipPacket(SetShipPacket.SHIP_2_INTREPID));
 //        net.send(new SetShipPacket(SetShipPacket.SHIP_3_AEGIS));
+        
         
         
 //        // ENG test 

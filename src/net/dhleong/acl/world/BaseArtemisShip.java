@@ -85,7 +85,7 @@ implements ArtemisBearable {
         
         if (eng instanceof BaseArtemisShip) {
             BaseArtemisShip ship = (BaseArtemisShip) eng;
-            if (mHullId == -1 && ship.mHullId != -1)
+            if (ship.mHullId != -1)
                 mHullId = ship.mHullId;
             
             if (ship.mBearing != Float.MIN_VALUE) 

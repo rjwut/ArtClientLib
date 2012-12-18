@@ -105,13 +105,19 @@ public class TestRunner {
 //                        System.out.println(" + " + obj + " vel=" +
 //                                ((ArtemisBearable)full)
 //                                    .getVelocity());
-                        if (mgr.getObject(obj.getId()) == null) {
-                            System.out.println("create: " + 
+                        ArtemisObject old = mgr.getObject(obj.getId());
+                        if (old == null) {
+                            if (obj instanceof BaseArtemisShip 
+                                    && ((BaseArtemisShip) obj).getName() == null) {
+                            System.out.println("create w/o name!: " + 
 //                                    Integer.toHexString(obj.getId())
                                     obj.getId()
                                     + " " + obj);
-                        } else if (obj.getId() == noHull) {
-                            System.out.println("\n**\n** Update to missing hull: " + obj + "\n**\n");
+                            }
+                        } else if (old instanceof BaseArtemisShip) {
+                            BaseArtemisShip ship = (BaseArtemisShip) old;
+                            if (ship.getName() == null && ((BaseArtemisShip)obj).getName() != null)
+                                System.out.println("** Update to missing name: " + obj);
                         }
                     }
                 }

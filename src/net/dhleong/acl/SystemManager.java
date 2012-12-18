@@ -72,17 +72,17 @@ public class SystemManager implements OnPacketListener {
             synchronized(this) {
                 mObjects.remove(((DestroyObjectPacket)pkt).getTarget());
             }
-//            // signal change
-//            if (mObjects.size() == 1) {
-//                ArtemisObject last = mObjects.values().iterator().next();
-//                if ("Artemis".equals(last.getName())) {
-//                    // special (hack?) case;
-//                    //  this is actually the end of the game
-//                    clear();
-//                    mListener.onObjectCountChanged(0);
-//                    return;
-//                }
-//            } 
+            // signal change
+            if (mObjects.size() == 1) {
+                ArtemisObject last = mObjects.values().iterator().next();
+                if ("Artemis".equals(last.getName())) {
+                    // special (hack?) case;
+                    //  this is actually the end of the game
+                    clear();
+                    mListener.onObjectCountChanged(0);
+                    return;
+                }
+            } 
 
             mListener.onObjectCountChanged(mObjects.size());
             return;
@@ -295,7 +295,6 @@ public class SystemManager implements OnPacketListener {
         return mGrid != null;
     }
 
-    @Deprecated
     public void setOnObjectCountChangedListener(OnObjectCountChangeListener listener) {
         mListener = (listener == null) ? sDummyListener : listener;
     }
@@ -348,7 +347,7 @@ public class SystemManager implements OnPacketListener {
     }
 
     public synchronized void clear() {
-//        mObjects.clear();
+        mObjects.clear();
         Arrays.fill(mPlayers, null);
         
         mGrid = null;

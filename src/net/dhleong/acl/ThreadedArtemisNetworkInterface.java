@@ -7,8 +7,9 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.dhleong.acl.net.PacketParser;
 
@@ -118,8 +119,11 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
 
     private static class ReceiverThread extends Thread {
 
+        // use CopyOnWrite so we can clear listeners from 
+        //  other threads w/o interfering with normal process
+        List<OnPacketListener> mListeners = new CopyOnWriteArrayList<OnPacketListener>();
+        
         private boolean mRunning = true;
-        ArrayList<OnPacketListener> mListeners = new ArrayList<OnPacketListener>();
         private final BufferedInputStream mInput;
         private final PacketParser mParser;
         private final ThreadedArtemisNetworkInterface mInterface;
@@ -165,12 +169,14 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                 } catch (ArtemisPacketException e) {
                     // TODO ?
                     if (mRunning) {
+                        System.err.println("Exitting due to parseException");
                         e.printStackTrace();
                         mInterface.errorCode = OnConnectedListener.ERROR_PARSE;
                     }
                     break;
                 } catch (IOException e) {
                     if (mRunning) {
+                        System.err.println("Exitting due to IOException");
                         e.printStackTrace();
                         mInterface.errorCode = OnConnectedListener.ERROR_IO;
                     }
@@ -185,7 +191,9 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
             mRunning = false;
             
             // also, not interested in listening anymore
-            mListeners.clear();
+            synchronized(mListeners) {
+                mListeners.clear();
+            }
         }
 
         public void addOnPacketListener(OnPacketListener listener) {

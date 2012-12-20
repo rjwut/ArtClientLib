@@ -100,6 +100,7 @@ public class TestRunner {
                 if (pkt instanceof ObjectUpdatingPacket) {
                     ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
 //                    up.debugPrint();
+                    boolean created = false;
                     for (ArtemisObject obj : up.getObjects()) {
 //                        ArtemisObject full = mgr.getObject(obj.getId());
 //                        System.out.println(" + " + obj + " vel=" +
@@ -107,6 +108,13 @@ public class TestRunner {
 //                                    .getVelocity());
                         ArtemisObject old = mgr.getObject(obj.getId());
                         if (old == null) {
+                            
+                            if (obj.getType() == ArtemisObject.TYPE_ENEMY) {
+                                System.out.println("Total created enemies=" + 
+                                        (mgr.getObjects(ArtemisObject.TYPE_ENEMY).size()+1));
+                                created = true;
+                            }
+                            
                             if (obj instanceof BaseArtemisShip 
                                     && ((BaseArtemisShip) obj).getName() == null) {
                             System.out.println("create w/o name!: " + 
@@ -119,6 +127,12 @@ public class TestRunner {
                             if (ship.getName() == null && ((BaseArtemisShip)obj).getName() != null)
                                 System.out.println("** Update to missing name: " + obj);
                         }
+                    }
+                    
+                    if (created) {
+                        System.out.println("create!");
+                        up.debugPrint();
+                        System.out.println("--> " + up);
                     }
                 }
                 
@@ -169,7 +183,9 @@ public class TestRunner {
         net.addOnPacketListener(mgr);
         
         net.addOnPacketListener(new OnPacketListener() {
-            
+
+            protected int destroyedEnemies = 0;
+
             @Override
             public void onPacket(ArtemisPacket pkt) {
                 
@@ -277,6 +293,11 @@ public class TestRunner {
                     System.out.println("--> " + pkt);
                     return;
                 } else if (pkt instanceof DestroyObjectPacket) {
+                    if (((DestroyObjectPacket)pkt).getTargetType() 
+                            == ArtemisObject.TYPE_ENEMY) {
+                        destroyedEnemies++;
+                        System.out.println("Total enemies destroyed=" + destroyedEnemies);
+                    }
                     return;
                 } else if (pkt instanceof GameStartPacket) {
                     GameStartPacket start = (GameStartPacket) pkt;

@@ -7,6 +7,7 @@ import java.io.InputStream;
 import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.ArtemisPacketException;
 import net.dhleong.acl.net.comms.CommsIncomingPacket;
+import net.dhleong.acl.net.comms.IncomingAudioPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
 import net.dhleong.acl.net.helm.JumpStatusPacket;
 import net.dhleong.acl.net.setup.AllShipSettingsPacket;
@@ -117,6 +118,9 @@ public class PacketParser {
             
         case CommsIncomingPacket.TYPE:
             return new CommsIncomingPacket(flags, bucket);
+            
+        case IncomingAudioPacket.TYPE:
+            return new IncomingAudioPacket(bucket);
             
         case DestroyObjectPacket.TYPE:
             return new DestroyObjectPacket(flags, bucket);

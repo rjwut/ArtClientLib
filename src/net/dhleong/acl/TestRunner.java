@@ -17,7 +17,10 @@ import net.dhleong.acl.net.OtherShipUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.net.PlayerUpdatePacket;
 import net.dhleong.acl.net.StationPacket;
+import net.dhleong.acl.net.comms.AudioCommandPacket;
+import net.dhleong.acl.net.comms.AudioCommandPacket.Command;
 import net.dhleong.acl.net.comms.CommsIncomingPacket;
+import net.dhleong.acl.net.comms.IncomingAudioPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.setup.ReadyPacket;
@@ -266,6 +269,16 @@ public class TestRunner {
                     System.out.println("** From ``"+comms.getFrom()+"'': " + 
                             comms.getMessage());
                     System.out.println("--> " + comms);
+                    return;
+                } else if (pkt instanceof IncomingAudioPacket) {
+                    IncomingAudioPacket audio = (IncomingAudioPacket) pkt;
+                    System.out.println(String.format("** Incoming[%d]: %s", 
+                            audio.getAudioId(),
+                            audio.getTitle()));
+                    if (audio.isIncoming()) {
+                        System.out.println("Requesting playback...");
+                        net.send(new AudioCommandPacket(audio.getAudioId(), Command.PLAY));
+                    }
                     return;
                 } else if (pkt instanceof EngGridUpdatePacket) {
 //                    EngGridUpdatePacket dmg = (EngGridUpdatePacket) pkt;

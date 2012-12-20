@@ -139,6 +139,8 @@ public class ObjectParsingTests extends TestCase {
                 0,
                 3,
                 6,
+                
+                3
         };
         
         for (int i=0; i<tests.length; i++) {

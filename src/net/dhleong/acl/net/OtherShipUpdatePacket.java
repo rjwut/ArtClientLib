@@ -152,9 +152,18 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
                         p.readInt(DUNNO_SKIP_4);
                 }
 
-                shieldsFront = p.readFloat(SHLD_FRNT, -1);
+                // WTF?!?! WHY!?!
+                if (p.has(SHLD_FRNT_MX) && !p.has(SHLD_FRNT))
+                    shieldsFront = p.readFloat();
+                else
+                    shieldsFront = p.readFloat(SHLD_FRNT, -1);
                 shieldsFrontMax = p.readFloat(SHLD_FRNT_MX, -1);
-                shieldsRear = p.readFloat(SHLD_REAR, -1);
+                
+                
+                if (p.has(SHLD_REAR_MX) && !p.has(SHLD_REAR))
+                    shieldsRear  = p.readFloat();
+                else
+                    shieldsRear = p.readFloat(SHLD_REAR, -1);
                 shieldsRearMax = p.readFloat(SHLD_REAR_MX, -1);
                 
 //                System.out.println(">> " + shieldsFront + " / " + shieldsRearMax);

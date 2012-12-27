@@ -83,7 +83,7 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
 
         mData = data;
 
-        float x, y, z, bearing;
+        float x, y, z, bearing, steering;
         float[] freqs = new float[SHLD_FREQS.length];
         String name = null;
         int hullId = -1;
@@ -126,7 +126,7 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
                 
                 float dunno0 = p.readFloat(DUNNO_SKIP_0, -1);
 
-                p.readFloat(STEERING, Float.MIN_VALUE); // I *think* so
+                steering = p.readFloat(STEERING, -1); // I *think* so
                 bearing = p.readFloat(BEARING, Float.MIN_VALUE);
                 velocity = p.readFloat(VELOCITY, -1);
 
@@ -200,6 +200,7 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
                 newObj.setY(y);
                 newObj.setZ(z);
                 
+                newObj.setSteering(steering);
                 newObj.setBearing(bearing);
                 newObj.setVelocity(velocity);
                 

@@ -27,9 +27,9 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
     private static final int POS_Z       = 0x00000002; // huh?
     private static final int POS_Y       = 0x00000001; // wtf?
     private static final int DUNNO_SKIP_0= 0x00000004; 
-    private static final int DUNNO_SKIP  = 0x00000008; 
+    private static final int STEERING  = 0x00000008; 
     private static final int BEARING     = 0x00000010; 
-    private static final int VELOCITY= 0x00000020; // wtf?
+    private static final int VELOCITY    = 0x00000020; // wtf?
     private static final int DUNNO_SKIP_3= 0x00000040; // wtf?
     private static final int DUNNO_SKIP_4= 0x00000080; // wtf?
 
@@ -81,7 +81,7 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
 
         mData = data;
 
-        float x, y, z, bearing;
+        float x, y, z, bearing, steering;
         float[] freqs = new float[SHLD_FREQS.length];
         byte scanned = -1;
         String name = null;
@@ -121,8 +121,7 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
                 
                 p.readFloat(DUNNO_SKIP_0, -1);
 
-                p.readInt(DUNNO_SKIP);
-
+                steering = p.readFloat(STEERING, -1); // I *think* so
                 bearing = p.readFloat(BEARING, Float.MIN_VALUE);
                 velocity = p.readFloat(VELOCITY, -1);
 
@@ -175,6 +174,7 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
                 enemy.setY(y);
                 enemy.setZ(z);
                 
+                enemy.setSteering(steering);
                 enemy.setBearing(bearing);
                 enemy.setVelocity(velocity);
                 

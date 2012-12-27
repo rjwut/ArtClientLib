@@ -29,6 +29,10 @@ public interface ArtemisBearable extends ArtemisPositionable {
 
     public void setBearing(float bearing);
     
+    public float getSteering();
+    
+    public void setSteering(float steering);
+    
     public float getVelocity();
 
     public void setVelocity(float velocity);

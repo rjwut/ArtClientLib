@@ -3,6 +3,9 @@ package net.dhleong.acl.world;
 public class ArtemisCreature extends ArtemisGenericObject implements ArtemisBearable {
 
     private float mBearing, mVelocity;
+    
+    // default to "straight ahead"
+    private float mSteering = 0.5f;
 
     public ArtemisCreature(int objId, String name, ArtemisGenericObject.Type type) {
         super(objId, name, type);
@@ -26,6 +29,9 @@ public class ArtemisCreature extends ArtemisGenericObject implements ArtemisBear
             ArtemisCreature cast = (ArtemisCreature) eng;
             if (cast.getBearing() != Float.MIN_VALUE) 
                 setBearing(cast.getBearing());
+            
+            if (cast.getSteering() != -1)
+                setSteering(cast.getSteering());
         }
     }
 
@@ -42,5 +48,15 @@ public class ArtemisCreature extends ArtemisGenericObject implements ArtemisBear
     @Override
     public void setVelocity(float velocity) {
         mVelocity = velocity;
+    }
+
+    @Override
+    public float getSteering() {
+        return mSteering;
+    }
+
+    @Override
+    public void setSteering(float steering) {
+        mSteering = steering;
     }
 }

@@ -10,6 +10,8 @@ implements ArtemisBearable {
     private float mShieldsFrontMax, mShieldsRearMax;
 
     private final float[] mShieldFreqs = new float[5];
+    
+    private float mSteering = 0.5f; // default to centered
 
     public BaseArtemisShip(int objId, String name, int hullId) {
         super(objId, name);
@@ -91,6 +93,9 @@ implements ArtemisBearable {
             if (ship.mBearing != Float.MIN_VALUE) 
                 mBearing = ship.mBearing;
             
+            if (ship.mSteering != -1)
+                mSteering = ship.mSteering;
+            
             if (ship.mVelocity != -1)
                 mVelocity = ship.mVelocity;
             
@@ -104,5 +109,15 @@ implements ArtemisBearable {
                     mShieldFreqs[i] = ship.mShieldFreqs[i];
             }
         }
+    }
+
+    @Override
+    public float getSteering() {
+        return mSteering;
+    }
+
+    @Override
+    public void setSteering(float steeringSlider) {
+        mSteering = steeringSlider;
     }
 }

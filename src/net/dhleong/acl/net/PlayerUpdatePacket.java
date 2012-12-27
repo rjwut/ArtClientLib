@@ -194,7 +194,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
 
             // ???
             impulseSlider = p.readFloat(IMPULSE_SLIDER, -1); 
-            steeringSlider = p.readFloat(STEERING_SLIDER, -1);
+            steeringSlider = p.readFloat(STEERING_SLIDER, Float.MIN_VALUE);
             p.readInt(ACTION_DUNNO_3);
 
             p.readInt(ACTION_DUNNO_4);

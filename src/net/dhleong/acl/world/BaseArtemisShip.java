@@ -93,7 +93,7 @@ implements ArtemisBearable {
             if (ship.mBearing != Float.MIN_VALUE) 
                 mBearing = ship.mBearing;
             
-            if (ship.mSteering != -1)
+            if (ship.mSteering != Float.MIN_VALUE)
                 mSteering = ship.mSteering;
             
             if (ship.mVelocity != -1)

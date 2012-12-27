@@ -126,7 +126,7 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
                 
                 float dunno0 = p.readFloat(DUNNO_SKIP_0, -1);
 
-                steering = p.readFloat(STEERING, -1); // I *think* so
+                steering = p.readFloat(STEERING, Float.MIN_VALUE); // I *think* so
                 bearing = p.readFloat(BEARING, Float.MIN_VALUE);
                 velocity = p.readFloat(VELOCITY, -1);
 

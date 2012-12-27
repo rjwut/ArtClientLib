@@ -30,7 +30,7 @@ public class ArtemisCreature extends ArtemisGenericObject implements ArtemisBear
             if (cast.getBearing() != Float.MIN_VALUE) 
                 setBearing(cast.getBearing());
             
-            if (cast.getSteering() != -1)
+            if (cast.getSteering() != Float.MIN_VALUE)
                 setSteering(cast.getSteering());
         }
     }

@@ -15,7 +15,7 @@ public class SetBeamFreqPacket extends BaseArtemisPacket {
     public SetBeamFreqPacket(int freq) {
         super(0x02, FLAGS, TYPE, new byte[8]);
         
-        PacketParser.putLendInt(7, mData);
+        PacketParser.putLendInt(9, mData);
         PacketParser.putLendInt(freq, mData, 4);
     }
 }

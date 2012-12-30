@@ -151,11 +151,12 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
     @Override
     public String toString() {
-        return String.format("[PLAYER#%d:%s:%d:%c]%s", 
+        return String.format("[PLAYER#%d:%s:%d:%c:%c]%s", 
                 mShipNumber,
                 mName,
                 mHullId,
                 isRedAlert() ? 'R' : '_',
+                hasShieldsActive() ? 'S' : '_',
                         super.toString());
     }
 

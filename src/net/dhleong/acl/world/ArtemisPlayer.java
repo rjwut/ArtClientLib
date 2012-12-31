@@ -65,7 +65,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
     private DriveType mDriveType;
 
     /** can probably go into BaseShip eventually */
-    private float mTopSpeed, mTurnRate;
+    private float mTopSpeed=-1, mTurnRate=-1;
 
     /**
      * 

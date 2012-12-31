@@ -26,7 +26,7 @@ public class SetShipSettingsPacket extends BaseArtemisPacket {
     }
 
     public SetShipSettingsPacket(int drive, int shipHullId, String name) {
-        super(0x2, FLAGS, TYPE, new byte[12 + 4 + name.length()*2 + 2]);
+        super(0x2, FLAGS, TYPE, new byte[12 + PacketParser.getNameLengthBytes(name)]);
         
         PacketParser.putLendInt(0x13, mData, 0);
         PacketParser.putLendInt(drive, mData, 4);

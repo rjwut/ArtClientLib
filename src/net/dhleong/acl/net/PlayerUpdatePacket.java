@@ -5,6 +5,7 @@ import java.io.OutputStream;
 
 import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
+import net.dhleong.acl.net.setup.SetShipSettingsPacket.DriveType;
 import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.util.ObjectParser;
 import net.dhleong.acl.world.ArtemisPlayer;
@@ -16,8 +17,8 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     
     private static final byte IMPULSE_SLIDER      = (byte) 0x02;
     private static final byte STEERING_SLIDER     = (byte) 0x04;
-    private static final byte ACTION_DUNNO_3      = (byte) 0x08;
-    private static final byte ACTION_DUNNO_4      = (byte) 0x10;
+    private static final byte TOP_SPEED      = (byte) 0x08;
+    private static final byte TURN_RATE      = (byte) 0x10;
     private static final byte ACTION_DUNNO_5      = (byte) 0x20;
     
     private static final byte ACTION_DUNNO_6      = (byte) 0x40;
@@ -176,6 +177,8 @@ public class PlayerUpdatePacket implements ArtemisPacket {
 
     public float steeringSlider;
 
+    private byte driveType;
+
 //    public PlayerUpdatePacket(final SystemInfoPacket pkt) {
 //        this(pkt.mData);
 //    }
@@ -192,14 +195,13 @@ public class PlayerUpdatePacket implements ArtemisPacket {
 
             p.readInt(ACTION_DUNNO_0);
 
-            // ???
             impulseSlider = p.readFloat(IMPULSE_SLIDER, -1); 
             steeringSlider = p.readFloat(STEERING_SLIDER, Float.MIN_VALUE);
-            p.readInt(ACTION_DUNNO_3);
+            
+            p.readFloat(TOP_SPEED, -1);
+            p.readFloat(TURN_RATE, -1);
 
-            p.readInt(ACTION_DUNNO_4);
-            //p.readInt(ACTION_DUNNO_4);
-
+            // drive type?
             p.readByte(ACTION_DUNNO_5, (byte)0);
 
             // warp speed?
@@ -276,16 +278,8 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             //p.readShort(UNKNOWN_10);
             p.readInt(UNKNOWN_10);
 
-
-            /*
-            // this doesn't seem right...
-            if (p.has(UNKNOWN_7))
-                */p.readByte(UNKNOWN_11, (byte)-1); 
-            /*else {
-                p.readByte(UNKNOWN_11, (byte)-1);
-                p.readByte(UNKNOWN_11, (byte)-1);
-                p.readByte(UNKNOWN_11, (byte)-1);
-            }*/
+            driveType = p.readByte(UNKNOWN_11, (byte)-1); 
+            
 
             for (int i=0; i<heat.length; i++) {
                 heat[i] = p.readFloat(SYSTEMS_HEAT[i], -1);
@@ -361,6 +355,10 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             mPlayer.setShieldsRear(shieldsRear);
             mPlayer.setShieldsRearMax(shieldsRearMax);
             
+            mPlayer.setDriveType(driveType == -1
+                    ? null
+                    : DriveType.values()[driveType]);
+            
             for (int i=0; i<SYSTEMS_HEAT.length; i++) {
                 SystemType sys = SystemType.values()[i];
                 mPlayer.setSystemHeat(sys, heat[i]);
@@ -411,6 +409,8 @@ public class PlayerUpdatePacket implements ArtemisPacket {
         System.out.println("-------Red Alert: " + mRedAlert);
         System.out.println("-------ShieldsUp: " + mShields);
         System.out.println("---------Coolant: " + availableCoolant);
+        if (driveType != -1)
+            System.out.println("-----------Drive: " + DriveType.values()[driveType]);
         System.out.println(String.format("-------Torp Cnts: %d:%d:%d:%d", 
             torps[0], torps[1], torps[2], torps[3]));
         System.out.println(String.format("-------[%.1f/%.2f  %.1f,%.1f]", 

@@ -25,6 +25,8 @@ import net.dhleong.acl.net.eng.EngGridUpdatePacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.SetShipPacket;
+import net.dhleong.acl.net.setup.SetShipSettingsPacket;
+import net.dhleong.acl.net.setup.SetShipSettingsPacket.DriveType;
 import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
 import net.dhleong.acl.util.GridCoord;
@@ -239,7 +241,7 @@ public class TestRunner {
                     return;
 
                 } else if (pkt instanceof PlayerUpdatePacket) {
-//                    PlayerUpdatePacket up = (PlayerUpdatePacket) pkt;
+                    PlayerUpdatePacket up = (PlayerUpdatePacket) pkt;
 //                    ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
                     
 //                    for (int i=0; i<ArtemisPlayer.MAX_TUBES; i++) {
@@ -247,7 +249,7 @@ public class TestRunner {
 //                            i, plr.getTubeCountdown(i), plr.getTubeContents(i)));
 //                    }
 //
-//                    up.debugPrint();
+                    up.debugPrint();
 //                    System.out.println("Player: " + plr);
 //                    for (SystemType s : SystemType.values()) {
 //                        float heat = plr.getSystemHeat(s);
@@ -261,7 +263,8 @@ public class TestRunner {
 //                    System.out.println("Be=" + plr.getBearing());
 //                    System.out.println("St=" + plr.getSteering());
 //                    System.out.println("Mn=" + plr.getSystemEnergy(SystemType.MANEUVER));
-//                    System.out.println("--> " + up);
+                    System.out.println("--> " + up);
+                    net.stop();
                     return;
 
                 } else if (pkt instanceof CommsIncomingPacket) {
@@ -363,9 +366,25 @@ public class TestRunner {
 //        net.send(new LoadTubePacket(1, 1));
 //        net.send(new UnloadTubePacket(1));
         
-        net.send(new SetStationPacket(StationType.SCIENCE, true));
-
+//        net.send(new SetShipPacket(6));
+//        String name = "Hera2";
+//        int nameLen = PacketParser.getNameLengthBytes(name);
+//        byte[] data = new byte[4];
+//        PacketParser.putLendInt(0x13, data);
+////        PacketParser.putLendInt(0, data, 4);
+////        PacketParser.putLendInt(0, data, 8);
+////        PacketParser.putNameString(name, data, 12);
+//////        PacketParser.putLendInt(0, data, 12);
+//        BaseArtemisPacket pkt = new BaseArtemisPacket(0x02, 0x26, 0x4C821D3C, data);
+//        net.send(pkt);
+//        net.send(new SetShipPacket(SetShipPacket.SHIP_1_ARTEMIS));
+        
+        
+        net.send(new SetStationPacket(StationType.HELM, true));
+        net.send(new SetShipSettingsPacket(DriveType.JUMP, 1, "USS Awesome"));
         net.send(new ReadyPacket());
+        
+        
 //        net.send(new ToggleShieldsPacket());
         
 //        net.send(new SetMainScreenPacket(MainScreen.RIGHT));

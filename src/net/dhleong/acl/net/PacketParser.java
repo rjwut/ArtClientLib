@@ -221,6 +221,18 @@ public class PacketParser {
         return Float.intBitsToFloat(bits);
     }
 
+    /**
+     * How many bytes would it take to insert 
+     *  the given "name" into a packet?
+     * @param name
+     * @return
+     */
+    public static int getNameLengthBytes(String name) {
+        // 4 bytes for the int length, 2 for 
+        //  each char, + 2 for the "null" bytes
+        return 4 + 2*name.length() + 2;
+    }
+
     public static int getNameLengthBytes(byte[] mData, int offset) {
         // nameLen includes the "null" bytes, and is 
         //  measured in 2-byte CHARs

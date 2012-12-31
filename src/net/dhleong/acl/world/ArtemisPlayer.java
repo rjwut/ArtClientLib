@@ -3,6 +3,7 @@ package net.dhleong.acl.world;
 import java.util.Arrays;
 
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
+import net.dhleong.acl.net.setup.SetShipSettingsPacket.DriveType;
 import net.dhleong.acl.net.weap.LoadTubePacket;
 import net.dhleong.acl.util.BoolState;
 
@@ -60,6 +61,8 @@ public class ArtemisPlayer extends BaseArtemisShip {
     private int mAvailableCoolant = DEFAULT_COOLANT;
 
     private float mImpulse;
+
+    private DriveType mDriveType;
 
     /**
      * 
@@ -237,6 +240,9 @@ public class ArtemisPlayer extends BaseArtemisShip {
             if (plr.mAvailableCoolant != -1)
                 mAvailableCoolant = plr.mAvailableCoolant;
             
+            if (plr.mDriveType != null)
+                mDriveType = plr.mDriveType;
+            
             for (int i=0; i<SYS_COUNT; i++) {
                 if (plr.mHeat[i] != -1)
                     mHeat[i] = plr.mHeat[i];
@@ -336,6 +342,19 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
     public void setImpulse(float impulseSlider) {
         mImpulse = impulseSlider;
+    }
+
+    public void setDriveType(DriveType driveType) {
+        mDriveType = driveType;
+    }
+
+    /**
+     * 
+     * @return null if unknown, else either 
+     *  {@link DriveType#WARP} or {@link DriveType#JUMP}
+     */
+    public DriveType getDriveType() {
+        return mDriveType;
     }
 
 }

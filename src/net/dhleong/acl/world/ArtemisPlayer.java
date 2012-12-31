@@ -64,6 +64,9 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
     private DriveType mDriveType;
 
+    /** can probably go into BaseShip eventually */
+    private float mTopSpeed, mTurnRate;
+
     /**
      * 
      * @param objId
@@ -222,6 +225,13 @@ public class ArtemisPlayer extends BaseArtemisShip {
             if (mShipNumber == -1)
                 mShipNumber = plr.mShipNumber;
             
+            if (plr.mTopSpeed != -1) {
+                mTopSpeed = plr.mTopSpeed;
+            }
+            if (plr.mTurnRate != -1) {
+                mTurnRate = plr.mTurnRate;
+            }
+            
             if (plr.mImpulse != -1)
                 mImpulse = plr.mImpulse;
 
@@ -357,4 +367,19 @@ public class ArtemisPlayer extends BaseArtemisShip {
         return mDriveType;
     }
 
+    public void setTopSpeed(float topSpeed) {
+        mTopSpeed = topSpeed;
+    }
+    
+    public void setTurnRate(float turnRate) {
+        mTurnRate = turnRate;
+    }
+    
+    public float getTopSpeed() {
+        return mTopSpeed;
+    }
+    
+    public float getTurnRate() {
+        return mTurnRate;
+    }
 }

@@ -179,6 +179,10 @@ public class PlayerUpdatePacket implements ArtemisPacket {
 
     private byte driveType;
 
+    private float topSpeed;
+
+    private float turnRate;
+
 //    public PlayerUpdatePacket(final SystemInfoPacket pkt) {
 //        this(pkt.mData);
 //    }
@@ -198,8 +202,8 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             impulseSlider = p.readFloat(IMPULSE_SLIDER, -1); 
             steeringSlider = p.readFloat(STEERING_SLIDER, Float.MIN_VALUE);
             
-            p.readFloat(TOP_SPEED, -1);
-            p.readFloat(TURN_RATE, -1);
+            topSpeed = p.readFloat(TOP_SPEED, -1);
+            turnRate = p.readFloat(TURN_RATE, -1);
 
             // drive type?
             p.readByte(ACTION_DUNNO_5, (byte)0);
@@ -338,6 +342,8 @@ public class PlayerUpdatePacket implements ArtemisPacket {
 
             mPlayer = new ArtemisPlayer(p.getTargetId(), name, hullId, 
                 shipNumber, mRedAlert, mShields);
+            mPlayer.setTopSpeed(topSpeed);
+            mPlayer.setTurnRate(turnRate);
             mPlayer.setImpulse(impulseSlider);
             mPlayer.setSteering(steeringSlider);
             mPlayer.setX(x);

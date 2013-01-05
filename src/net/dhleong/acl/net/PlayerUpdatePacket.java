@@ -15,13 +15,13 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     
     private static final byte ACTION_DUNNO_0    = (byte) 0x01;
     
-    private static final byte IMPULSE_SLIDER      = (byte) 0x02;
-    private static final byte STEERING_SLIDER     = (byte) 0x04;
-    private static final byte TOP_SPEED      = (byte) 0x08;
-    private static final byte TURN_RATE      = (byte) 0x10;
-    private static final byte ACTION_DUNNO_5      = (byte) 0x20;
+    private static final byte IMPULSE_SLIDER    = (byte) 0x02;
+    private static final byte STEERING_SLIDER   = (byte) 0x04;
+    private static final byte TOP_SPEED         = (byte) 0x08;
+    private static final byte TURN_RATE         = (byte) 0x10;
     
-    private static final byte ACTION_DUNNO_6      = (byte) 0x40;
+    private static final byte ACTION_DUNNO_5    = (byte) 0x20;
+    private static final byte ACTION_DUNNO_6    = (byte) 0x40;
 
     private static final byte ACTION_ENERGY  = (byte) 0x80;
     
@@ -56,7 +56,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     private static final long AVAILABLE_COOLANT     = 0x0000000000200000L;
     private static final long UNKNOWN_9     = 0x0000000000400000L;
     private static final long UNKNOWN_10    = 0x0000000000800000L;
-    private static final long UNKNOWN_11    = 0x0000000001000000L;
+    private static final long DRIVE_TYPE    = 0x0000000001000000L;
     
     private static final long HEAT_BEAMS    = 0x0000000002000000L;
     private static final long HEAT_TORPS    = 0x0000000004000000L;
@@ -205,17 +205,13 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             topSpeed = p.readFloat(TOP_SPEED, -1);
             turnRate = p.readFloat(TURN_RATE, -1);
 
-            // drive type?
+            // ???
             p.readByte(ACTION_DUNNO_5, (byte)0);
 
             // warp speed?
             p.readByte(ACTION_DUNNO_6, (byte)-1);
 
             energy = p.readFloat(ACTION_ENERGY, -1);
-            /*
-            if (!p.has(ACTION_UPDATE_BYTE) && p.getAction() == 0)
-                energy = p.readFloat();
-            */
             
             if (p.has(SHIELD_STATE)) {
                 mShields = BoolState.from(p.readShort() != 0);
@@ -282,7 +278,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             //p.readShort(UNKNOWN_10);
             p.readInt(UNKNOWN_10);
 
-            driveType = p.readByte(UNKNOWN_11, (byte)-1); 
+            driveType = p.readByte(DRIVE_TYPE, (byte)-1); 
             
 
             for (int i=0; i<heat.length; i++) {

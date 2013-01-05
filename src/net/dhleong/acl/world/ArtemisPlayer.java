@@ -177,8 +177,20 @@ public class ArtemisPlayer extends BaseArtemisShip {
     public void setSystemCoolant(SystemType sys, int coolant) {
         mCoolant[sys.ordinal()] = coolant;
     }
+    
+    /**
+     * Convenience, set energy as an int percentage [0, 300]
+     * @param sys
+     * @param energyPercentage
+     */
+    public void setSystemEnergy(SystemType sys, int energyPercentage) {
+        setSystemEnergy(sys, energyPercentage / 300f);
+    }
 
     public void setSystemEnergy(SystemType sys, float energy) {
+        if (energy > 1f) {
+            throw new IllegalArgumentException("Illegal energy value: " + energy);
+        }
         mSystems[sys.ordinal()] = energy;
     }
 

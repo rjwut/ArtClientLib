@@ -3,6 +3,7 @@ package net.dhleong.acl.test;
 import java.util.List;
 
 import junit.framework.TestCase;
+import net.dhleong.acl.ArtemisPacketException;
 import net.dhleong.acl.BadParseDetectingRunner;
 import net.dhleong.acl.net.EnemyUpdatePacket;
 import net.dhleong.acl.net.GenericMeshPacket;
@@ -172,7 +173,7 @@ public class ObjectParsingTests extends TestCase {
         }
     }
     
-    public void testPlayer() {
+    public void testPlayer() throws ArtemisPacketException {
         String[] tests = new String[] {
                 "011004000084280d00000000c00ffc000000003f79007a4483974a47d7874947db0f494021af0800000041007200740065006d00690073000000fd7532251ed7ee027a4b153a24dba432ff3c92eb332d5e985d75777c7c9e00000000",
                 "01ec030000800000000000000000000080f3794400000000",

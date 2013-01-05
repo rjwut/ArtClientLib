@@ -25,7 +25,7 @@ public class BadParseDetectingRunner {
 
     public static void main(String[] args) {
         //        String tgtIp = "10.211.55.4";
-        final String tgtIp = "192.168.11.3";
+        final String tgtIp = "192.168.1.11";
         final int tgtPort = 2010;
 
         final ThreadedArtemisNetworkInterface net; 

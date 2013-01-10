@@ -23,6 +23,10 @@ public class BaseArtemisPacket implements ArtemisPacket {
         mType = packetType;
         mData = bucket;
     }
+    
+    public byte[] getData() {
+        return mData;
+    }
 
     @Override
     public long getMode() {

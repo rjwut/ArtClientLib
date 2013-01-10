@@ -24,6 +24,7 @@ import net.dhleong.acl.world.ArtemisObject;
  */
 public class PacketParser {
     
+    private static boolean mNoParse;
     private final byte[] mIntBuffer = new byte[4];
 
     /**
@@ -92,6 +93,16 @@ public class PacketParser {
     }
     
     /**
+     * For debugging; disable actually parsing packets,
+     *  and just return {@link BaseArtemisPacket} instances
+     *  with the raw data
+     * @param noParse
+     */
+    public void setNoParseMode(boolean noParse) {
+        mNoParse = noParse;
+    }
+    
+    /**
      * Make sure to read a full int 
      * 
      * @param is
@@ -112,6 +123,10 @@ public class PacketParser {
 
     public static ArtemisPacket buildPacket(int packetType, int mode, 
             int flags, byte[] bucket) throws ArtemisPacketException {
+        
+        if (mNoParse)
+            return new BaseArtemisPacket(mode, flags, packetType, bucket);
+        
         switch (packetType) {            
         case EngGridUpdatePacket.TYPE:
             return new EngGridUpdatePacket(flags, bucket);

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.PacketParser;
 
 public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface {
@@ -104,7 +105,24 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
 
         @Override
         public void onPacket(ArtemisPacket pkt) {
-            if (pkt.getType() == 0x19c6e2d4) { // onConnect
+            if (pkt.getType() == 0xe548e74a) { // server version
+
+                BaseArtemisPacket base = (BaseArtemisPacket) pkt;
+                byte[] data = base.getData();
+                float version = PacketParser.getLendFloat(data, 4);
+                
+                if (version != ArtemisNetworkInterface.TARGET_VERSION) {
+                    System.err.println(String
+                            .format("Unsupported Artemis server version (%f)", version));
+                    if (mOnConnectedListener != null) {
+                        mOnConnectedListener.onDisconnected(
+                                ArtemisNetworkInterface.ERROR_VERSION);
+                    }
+                    
+                    end();
+                }
+                
+            } else if (pkt.getType() == 0x19c6e2d4) { // onConnect
                 
                 final boolean wasConnected = mConnected;
                 
@@ -125,8 +143,8 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         
         private boolean mRunning = true;
         private final BufferedInputStream mInput;
-        private final PacketParser mParser;
         private final ThreadedArtemisNetworkInterface mInterface;
+        private PacketParser mParser;
         private boolean mStarted;
         
         public ReceiverThread(ThreadedArtemisNetworkInterface net, Socket skt) throws IOException {
@@ -249,6 +267,10 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
 
     public void setOnConnectedListener(OnConnectedListener listener) {
         mSendThread.mOnConnectedListener = listener;
+    }
+    
+    public void setPacketParser(PacketParser parser) {
+        mReceiveThread.mParser = parser;
     }
 
 }

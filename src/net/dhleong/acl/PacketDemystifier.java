@@ -1,0 +1,341 @@
+package net.dhleong.acl;
+
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+
+import net.dhleong.acl.net.BaseArtemisPacket;
+import net.dhleong.acl.net.PacketParser;
+import net.dhleong.acl.net.setup.SetStationPacket;
+import net.dhleong.acl.net.setup.SetStationPacket.StationType;
+import net.dhleong.acl.test.ObjectParsingTests;
+import net.dhleong.acl.world.ArtemisObject;
+
+public abstract class PacketDemystifier implements OnPacketListener {
+    
+    /**
+     * The Demystifier we want to use for this run
+     */
+    private static final OnPacketListener THIS_DEMYSITIFIER = 
+            new UserPacketDemystifier();
+
+    static class UserPacketDemystifier extends WorldPacketDemystifier {
+        
+        @Override
+        protected int getFlagBytes() {
+//            return 11;
+            return 5;
+        }
+
+        @Override
+        protected int getWorldType() {
+            return ArtemisObject.TYPE_PLAYER;
+        }
+
+        
+    }
+    
+    /* Utility implementations */
+    
+    static abstract class WorldPacketDemystifier extends SimplePacketDemystifier {
+        
+        @Override
+        protected int getPacketType() {
+            return ArtemisPacket.WORLD_TYPE;
+        }
+        
+        @Override
+        protected boolean isHandled(ArtemisPacket pkt) {
+            return super.isHandled(pkt) 
+                    && getWorldType() == ((BaseArtemisPacket) pkt).getData()[0];
+        }
+
+        protected abstract int getWorldType();
+    }
+    
+    static abstract class SimplePacketDemystifier extends PacketDemystifier {
+        
+        @Override
+        protected boolean isHandled(ArtemisPacket pkt) {
+            return getPacketType() == pkt.getType();
+        }
+        
+        protected abstract int getPacketType();
+    }
+    
+    enum FieldType {
+        BYTE,
+        INT,
+        FLOAT, 
+        STRING
+    }
+    
+    static class Entry {
+        final int offset;
+        FieldType type;
+        String entryValue;
+        
+        private Entry(int offset) {
+            this.offset = offset;
+        }
+        
+        public Entry(int offset, byte byteVal) {
+            this(offset);
+            type = FieldType.BYTE;
+            entryValue = String.valueOf(byteVal);
+        }
+        
+        public Entry(int offset, int intVal) {
+            this(offset);
+            type = FieldType.INT;
+            entryValue = String.valueOf(intVal);
+        }
+        
+        public Entry(int offset, float floatVal) {
+            this(offset);
+            type = FieldType.FLOAT;
+            entryValue = String.valueOf(floatVal);
+        }
+        
+        public Entry(int offset, String string) {
+            this(offset);
+            type = FieldType.STRING;
+            entryValue = string;
+        }
+        
+        @Override
+        public String toString() {
+            return String.format("@%3d--%6s=%s", offset, type, entryValue);
+        }
+    }
+
+    
+    /* member variables */
+    private byte[] bytes;
+    private int offset;
+    
+    private final ArrayList<Entry> entries = new ArrayList<Entry>();
+    
+    
+    /* Passes to implementation stuff */
+
+    @Override
+    public void onPacket(ArtemisPacket pkt) {
+        if (isHandled(pkt)) {
+            System.out.println("<< " + pkt);
+            
+            entries.clear();
+            demystify((BaseArtemisPacket) pkt);
+        }
+        
+    }
+    
+    
+    protected void demystify(BaseArtemisPacket pkt) {
+        bytes = pkt.getData();
+        offset = 1;
+        int id = PacketParser.getLendInt(bytes, offset);
+        System.out.println("id=" + id);
+        offset += 4;
+        
+        offset += getFlagBytes();
+        
+        // first sweep
+        while (offset+3 < bytes.length) {
+            offset += guessNextType();
+        }
+        
+//        boolean compact = false;
+//        for (int i=0; ; i++) {
+//            // manual re-evaluation
+//            if (i > entries.size()-4)
+//                break;
+//            
+//            // check for 4 in a row
+//            compact = true;
+//            for (int j=i; j < i+3; j++) {
+//                if (entries.get(j).type != FieldType.BYTE) {
+//                    compact = false;
+//                    break;
+//                }
+//            }
+//            
+//            if (compact) {
+//                // remove the extras
+//                entries.remove(i+1);
+//                entries.remove(i+1);
+//                entries.remove(i+1);
+//                
+//                float floatVal = PacketParser.getLendFloat(bytes, i);
+//                entries.set(i, new Entry(i, floatVal));
+//            }
+//        }
+        
+        for (Entry e : entries) {
+            System.out.println(e.toString());
+        }
+    }
+
+    /* Implement these */
+
+
+    private int guessNextType() {
+        float floatVal = PacketParser.getLendFloat(bytes, offset);
+        if (floatVal > -20f && floatVal < 200000f
+                && !((floatVal > 0 && floatVal < 0.00001)
+                    || (floatVal < 0 && floatVal > -0.00001))) {
+            entries.add(new Entry(offset, floatVal));
+            return 4;
+        } 
+        
+        int intVal = PacketParser.getLendInt(bytes, offset);
+        if (intVal > -500 && intVal < 500) {
+            entries.add(new Entry(offset, intVal));
+            return 4;
+        }
+        
+//        System.out.println(getLastType() + "; " + bytes[offset+1]);
+        byte val = bytes[offset];
+        int stringLen;
+        if (getLastType() == FieldType.INT
+                && offset < bytes.length-1
+                && bytes[offset+1] == 0
+                && (stringLen = Integer.parseInt(getLastValue())) < 200) {
+            // oh shit, this is probably a string!
+            StringBuilder buf = new StringBuilder();
+            
+//            while (bytes[offset] != 0) {
+            for (int i=0; i<stringLen; i++) {
+                char charVal = (char) bytes[offset];
+                if (charVal != 0)
+                    buf.append(charVal);
+                offset += 2;
+            }
+            
+            String stringVal = buf.toString();
+            Entry sizeEntry = entries.remove(entries.size()-1); // remove the int
+            entries.add(new Entry(sizeEntry.offset, stringVal));
+            
+            return 2 + 2 * stringVal.length(); // skip the null byte
+        }
+        
+        if (offset > 3 && getLastType() == FieldType.BYTE
+                && getLastType(2) == FieldType.BYTE
+                && getLastType(3) == FieldType.BYTE) {
+            // 4 bytes in a row? probably actually a float!
+            entries.remove(entries.size()-1); // remove the int
+            entries.remove(entries.size()-1); // remove the int
+            entries.remove(entries.size()-1); // remove the int
+            
+            float compactedFloat = PacketParser.getLendFloat(bytes, offset-3);
+            entries.add(new Entry(offset-3, compactedFloat));
+            return 1; // the new byte
+        }
+        
+//        // don't think there are any negative bytes...
+//        if (val < 0) {
+//            int start;
+//            for (start=1; start<4; start++) {
+//                if (getLastType(start) == FieldType.BYTE) {
+//                    // remove the old byte while here
+//                    entries.remove(entries.size() - 1);                
+//                } else if (start == 1) {
+//                    start = 0;
+//                    break;
+//                }
+//            }
+//            
+//            if (start == 0) {
+//                entries.add(new Entry(offset, PacketParser.getLendFloat(bytes, offset)));
+//                return 4;
+//            } else {
+//                final int startPos = offset - start;
+//                entries.add(new Entry(startPos, PacketParser.getLendFloat(bytes, startPos)));
+//                return 4-start;
+//            }
+//        }
+        
+        // just a byte, I guess
+        entries.add(new Entry(offset, val));
+        
+        return 1;
+    }
+
+    private Entry getLastEntry(int offset) {
+        final int size = entries.size();
+        if (size-offset >= 0)
+            return entries.get(size-offset);
+        
+        return null;
+    }
+    
+    private FieldType getLastType() {
+        return getLastType(1);
+    }
+
+    private FieldType getLastType(int offset) {
+        Entry last = getLastEntry(offset);
+        if (last == null)
+            return null;
+        
+        return last.type;
+    }
+    
+    private String getLastValue() {
+        Entry last = getLastEntry(1);
+        if (last == null)
+            return null;
+        
+        return last.entryValue;
+    }
+
+
+    protected abstract int getFlagBytes();
+
+    protected abstract boolean isHandled(ArtemisPacket pkt);
+    
+    /* Runner */
+
+    public static final void main(String[] args) {
+        demystNetwork();
+//        demystTest();
+    }
+    
+    @SuppressWarnings("unused")
+    private static void demystTest() {
+        
+        String raw = "01f8030000bc2af924000000003f9a99193f6f12833b0179007a440100000019184e4776c44a47db0f49400800000041007200740065006d006900730000000000a0420000a0420000a0420000a042005043480800000000";
+        byte[] bytes = ObjectParsingTests.hexStringToByteArray(raw);
+        BaseArtemisPacket pkt = new BaseArtemisPacket(0, 0, ArtemisPacket.WORLD_TYPE, bytes);
+        THIS_DEMYSITIFIER.onPacket(pkt);
+    }
+     
+    private static void demystNetwork() {
+        String tgtIp = "10.211.55.3";
+        final int tgtPort = 2010;
+        
+        final ThreadedArtemisNetworkInterface net; 
+        try {
+            net = new ThreadedArtemisNetworkInterface(tgtIp, tgtPort);
+        } catch (UnknownHostException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return;
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return;
+        }
+        
+        PacketParser dummy = new PacketParser();
+        dummy.setNoParseMode(true);
+        
+        net.setPacketParser(dummy);
+        
+        net.addOnPacketListener(THIS_DEMYSITIFIER);
+        
+        net.start();
+        
+        net.send(new SetStationPacket(StationType.SCIENCE, true));
+    }
+}

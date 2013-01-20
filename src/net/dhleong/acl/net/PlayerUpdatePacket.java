@@ -27,37 +27,37 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     private static final byte ACTION_ENERGY  = (byte) 0x80;
     
     
-    private static final long SHIELD_STATE  = 0x0000000000000001L;
-    private static final long SHIP_NUMBER   = 0x0000000000000002L;
+    private static final int SHIELD_STATE  = 0x00000001;
+    private static final int SHIP_NUMBER   = 0x00000002;
     /* I think so? */
-    private static final long HULL_ID       = 0x0000000000000004L;
-    private static final long POS_X         = 0x0000000000000008L;
-    private static final long POS_Y         = 0x0000000000000010L;
-    private static final long POS_Z         = 0x0000000000000020L;
-    private static final long DUNNO_SKIP_3  = 0x0000000000000040L;
-    private static final long DUNNO_SKIP_4  = 0x0000000000000080L;
-    private static final long BEARING       = 0x0000000000000100L;
+    private static final int HULL_ID       = 0x00000004;
+    private static final int POS_X         = 0x00000008;
+    private static final int POS_Y         = 0x00000010;
+    private static final int POS_Z         = 0x00000020;
+    private static final int DUNNO_SKIP_3  = 0x00000040;
+    private static final int DUNNO_SKIP_4  = 0x00000080;
+    private static final int BEARING       = 0x00000100;
     
-    private static final long VELOCITY      = 0x0000000000000200L;
-    private static final long UNKNOWN_2     = 0x0000000000000400L;
-    private static final long SHIP_NAME     = 0x0000000000000800L;
+    private static final int VELOCITY      = 0x00000200;
+    private static final int UNKNOWN_2     = 0x00000400;
+    private static final int SHIP_NAME     = 0x00000800;
     
-    private static final long SHLD_FRONT    = 0x0000000000001000L;
-    private static final long SHLD_FRONT_MAX= 0x0000000000002000L;
-    private static final long SHLD_REAR     = 0x0000000000004000L;
-    private static final long SHLD_REAR_MAX = 0x0000000000008000L;
+    private static final int SHLD_FRONT    = 0x00001000;
+    private static final int SHLD_FRONT_MAX= 0x00002000;
+    private static final int SHLD_REAR     = 0x00004000;
+    private static final int SHLD_REAR_MAX = 0x00008000;
     
-    private static final long DOCKING_STATION     = 0x0000000000010000L;
+    private static final int DOCKING_STATION     = 0x00010000;
 
-    private static final long RED_ALERT     = 0x0000000000020000L;
+    private static final int RED_ALERT     = 0x00020000;
     
-    private static final long UNKNOWN_FLT_0 = 0x0000000000040000L;
-    private static final long MAIN_SCREEN   = 0x0000000000080000L;
-    private static final long UNKNOWN_7     = 0x0000000000100000L;
-    private static final long AVAILABLE_COOLANT     = 0x0000000000200000L;
-    private static final long UNKNOWN_9     = 0x0000000000400000L;
-    private static final long UNKNOWN_10    = 0x0000000000800000L;
-    private static final long DRIVE_TYPE    = 0x0000000001000000L;
+    private static final int UNKNOWN_FLT_0 = 0x00040000;
+    private static final int MAIN_SCREEN   = 0x00080000;
+    private static final int UNKNOWN_7     = 0x00100000;
+    private static final int AVAILABLE_COOLANT     = 0x00200000;
+    private static final int UNKNOWN_9     = 0x00400000;
+    private static final int UNKNOWN_10    = 0x00800000;
+    private static final int DRIVE_TYPE    = 0x01000000;
     
     private static final long HEAT_BEAMS    = 0x0000000002000000L;
     private static final long HEAT_TORPS    = 0x0000000004000000L;

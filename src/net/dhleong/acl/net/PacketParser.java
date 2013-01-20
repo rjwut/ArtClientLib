@@ -12,6 +12,7 @@ import net.dhleong.acl.net.eng.EngGridUpdatePacket;
 import net.dhleong.acl.net.helm.JumpStatusPacket;
 import net.dhleong.acl.net.setup.AllShipSettingsPacket;
 import net.dhleong.acl.net.setup.StationStatusPacket;
+import net.dhleong.acl.util.TextUtil;
 import net.dhleong.acl.world.ArtemisObject;
 
 /**
@@ -86,7 +87,7 @@ public class PacketParser {
         } catch (RuntimeException e) {
             System.err.println("Unable to parse packet of type " 
                     + Integer.toHexString(packetType));
-            System.err.println("--> " + BaseArtemisPacket
+            System.err.println("--> " + TextUtil
                     .byteArrayToHexString(bucket));
             throw e;
         }

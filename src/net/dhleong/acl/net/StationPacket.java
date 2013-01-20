@@ -7,6 +7,7 @@ import java.util.List;
 
 import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.util.ObjectParser;
+import net.dhleong.acl.util.TextUtil;
 import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisPositionable;
 import net.dhleong.acl.world.ArtemisStation;
@@ -123,7 +124,7 @@ public class StationPacket implements ObjectUpdatingPacket {
 
     @Override
     public String toString() {
-        return BaseArtemisPacket.byteArrayToHexString(mData); 
+        return TextUtil.byteArrayToHexString(mData); 
     }
 
     public void debugPrint() {

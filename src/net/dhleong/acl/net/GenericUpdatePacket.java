@@ -7,6 +7,7 @@ import java.util.List;
 
 import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.util.ObjectParser;
+import net.dhleong.acl.util.TextUtil;
 import net.dhleong.acl.world.ArtemisCreature;
 import net.dhleong.acl.world.ArtemisGenericObject;
 import net.dhleong.acl.world.ArtemisGenericObject.Type;
@@ -168,7 +169,7 @@ public class GenericUpdatePacket implements ObjectUpdatingPacket {
     
     @Override
     public String toString() {
-        return BaseArtemisPacket.byteArrayToHexString(mData);
+        return TextUtil.byteArrayToHexString(mData);
     }
     
 //    public static boolean isExtensionOf(SystemInfoPacket pkt) {

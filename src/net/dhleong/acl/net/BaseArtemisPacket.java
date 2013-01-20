@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import net.dhleong.acl.ArtemisPacket;
+import net.dhleong.acl.util.TextUtil;
 
 public class BaseArtemisPacket implements ArtemisPacket {
 
@@ -62,25 +63,6 @@ public class BaseArtemisPacket implements ArtemisPacket {
                 String.format("%1d:%-5s:%s", mMode,
                     Integer.toHexString(mFlags),
                     Integer.toHexString(mType)),
-                byteArrayToHexString(mData));
-    }
-    
-    public static String byteArrayToHexString(byte[] data) {
-        StringBuilder buf = new StringBuilder();
-        for (byte b : data) {
-            if (b <= 0x0F && b >= 0){
-                buf.append('0');
-            }
-            final String hex = Integer.toHexString(b);
-//            System.out.println("Read: " + hex + "(" + (b <= 0x0F));
-            final int len = hex.length();
-            if (len > 2 && (b > 0x0F || b < 0))
-                buf.append(hex.substring(len-2));
-            else if (len > 2)
-                buf.append(hex.substring(len-1));
-            else
-                buf.append(hex);
-        }
-        return buf.toString();
+                TextUtil.byteArrayToHexString(mData));
     }
 }

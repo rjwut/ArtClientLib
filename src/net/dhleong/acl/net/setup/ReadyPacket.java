@@ -23,7 +23,8 @@ public class ReadyPacket extends BaseArtemisPacket {
         super(0x2, FLAGS, TYPE, new byte[8]);
         
         // ??
-        PacketParser.putLendInt(0x0d, mData, 0);
+//        PacketParser.putLendInt(0x0d, mData, 0);
+        PacketParser.putLendInt(0x0f, mData, 0); // changed?
         PacketParser.putLendInt(0, mData, 4);
     }
 }

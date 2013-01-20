@@ -8,6 +8,7 @@ import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.setup.SetShipSettingsPacket.DriveType;
 import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.util.ObjectParser;
+import net.dhleong.acl.util.TextUtil;
 import net.dhleong.acl.world.ArtemisPlayer;
 import net.dhleong.acl.world.ArtemisPlayer.MainScreen;
 
@@ -401,7 +402,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
     
     @Override
     public String toString() {
-        return BaseArtemisPacket.byteArrayToHexString(mData); 
+        return TextUtil.byteArrayToHexString(mData); 
     }
 
     public void debugPrint() {

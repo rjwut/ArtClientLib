@@ -7,6 +7,7 @@ import java.util.List;
 
 import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.util.ObjectParser;
+import net.dhleong.acl.util.TextUtil;
 import net.dhleong.acl.world.ArtemisEnemy;
 import net.dhleong.acl.world.ArtemisPositionable;
 
@@ -192,7 +193,7 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
             } catch (RuntimeException e) {
                 debugPrint();
                 System.out.println("!! DEBUG this = " + 
-                        BaseArtemisPacket.byteArrayToHexString(mData));
+                        TextUtil.byteArrayToHexString(mData));
                 throw e;
             }
         }
@@ -217,7 +218,7 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
 
     @Override
     public String toString() {
-        return BaseArtemisPacket.byteArrayToHexString(mData); 
+        return TextUtil.byteArrayToHexString(mData); 
     }
 
     @Override

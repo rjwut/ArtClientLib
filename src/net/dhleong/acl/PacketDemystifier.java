@@ -5,12 +5,24 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import net.dhleong.acl.net.BaseArtemisPacket;
+import net.dhleong.acl.net.EnemyUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
+import net.dhleong.acl.net.PlayerUpdatePacket;
+import net.dhleong.acl.net.setup.ReadyPacket;
+import net.dhleong.acl.net.setup.ReadyPacket2;
 import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
 import net.dhleong.acl.test.ObjectParsingTests;
+import net.dhleong.acl.util.TextUtil;
 import net.dhleong.acl.world.ArtemisObject;
 
+/**
+ * This is kind of a (huge) mess, but it won't be used in
+ *  production code, so who cares?
+ *  
+ * @author dhleong
+ *
+ */
 public abstract class PacketDemystifier implements OnPacketListener {
     
     /**
@@ -21,10 +33,14 @@ public abstract class PacketDemystifier implements OnPacketListener {
 
     static class UserPacketDemystifier extends WorldPacketDemystifier {
         
-        @Override
-        protected int getFlagBytes() {
+//        @Override
+//        protected int getFlagBytes() {
 //            return 11;
-            return 5;
+//        }
+        
+        @Override
+        protected Class<?> getPacketClass() {
+            return PlayerUpdatePacket.class;
         }
 
         @Override
@@ -35,13 +51,56 @@ public abstract class PacketDemystifier implements OnPacketListener {
         
     }
     
+    static class EnemyPacketDemystifier extends WorldPacketDemystifier {
+
+        @Override
+        protected Class<?> getPacketClass() {
+            return EnemyUpdatePacket.class;
+        }
+        
+        @Override
+        protected int getWorldType() {
+            return ArtemisObject.TYPE_ENEMY;
+        }
+
+        
+    }
+    
     /* Utility implementations */
     
     static abstract class WorldPacketDemystifier extends SimplePacketDemystifier {
         
         @Override
+        protected void displayEntry(Entry e) {
+            super.displayEntry(e);
+            if (e.type == FieldType.FLAGS) {
+                byte action = bytes[e.offset];
+                System.out.println("Action = " + TextUtil.byteToHex(action));
+                
+                for (int i=0; i < 8; i++) {
+                    byte val = (byte) (1 << i);
+                    if ((action & val) != 0)
+                        System.out.println(" - " + TextUtil.byteToHex(val));
+                }
+                
+                int args = PacketParser.getLendInt(bytes, e.offset+1);
+                for (int i=0; i < 32; i++) {
+                    int val = (1 << i);
+                    if ((args & val) != 0)
+                        System.out.println(" - " + TextUtil.intToHex(val));
+                }
+            }
+        }
+        
+        protected abstract Class<?> getPacketClass() ;
+        
+        @Override
         protected int getPacketType() {
             return ArtemisPacket.WORLD_TYPE;
+        }
+        
+        protected int getFlagBytes() {
+            return 5;
         }
         
         @Override
@@ -67,7 +126,9 @@ public abstract class PacketDemystifier implements OnPacketListener {
         BYTE,
         INT,
         FLOAT, 
-        STRING
+        STRING,
+        ID, 
+        FLAGS
     }
     
     static class Entry {
@@ -86,8 +147,12 @@ public abstract class PacketDemystifier implements OnPacketListener {
         }
         
         public Entry(int offset, int intVal) {
+            this(offset, intVal, false);
+        }
+        
+        public Entry(int offset, int intVal, boolean isId) {
             this(offset);
-            type = FieldType.INT;
+            type = isId ? FieldType.ID : FieldType.INT;
             entryValue = String.valueOf(intVal);
         }
         
@@ -103,6 +168,26 @@ public abstract class PacketDemystifier implements OnPacketListener {
             entryValue = string;
         }
         
+        public Entry(int offset, byte[] data, int flagsLength) {
+            this(offset);
+            type = FieldType.FLAGS;
+            
+            StringBuilder b = new StringBuilder();
+            
+//            final int width = 2; // 2 -> hex strings
+            for (int i=offset; i < offset+flagsLength; i++) {
+                
+                if (i != offset)
+                    b.append(":");
+                
+                b.append(TextUtil.byteToHex(data[i]));
+            }
+            
+            entryValue = b.toString();
+            
+//            entryValue = String.format("(flags, len %d)", length);
+        }
+
         @Override
         public String toString() {
             return String.format("@%3d--%6s=%s", offset, type, entryValue);
@@ -111,7 +196,7 @@ public abstract class PacketDemystifier implements OnPacketListener {
 
     
     /* member variables */
-    private byte[] bytes;
+    byte[] bytes;
     private int offset;
     
     private final ArrayList<Entry> entries = new ArrayList<Entry>();
@@ -131,14 +216,15 @@ public abstract class PacketDemystifier implements OnPacketListener {
     }
     
     
-    protected void demystify(BaseArtemisPacket pkt) {
+    protected synchronized void demystify(BaseArtemisPacket pkt) {
         bytes = pkt.getData();
-        offset = 1;
-        int id = PacketParser.getLendInt(bytes, offset);
-        System.out.println("id=" + id);
-        offset += 4;
+        offset = 0;
+//        offset = 1;
+//        int id = PacketParser.getLendInt(bytes, offset);
+//        System.out.println("id=" + id);
+//        offset += 4;
         
-        offset += getFlagBytes();
+//        offset += getFlagBytes();
         
         // first sweep
         while (offset+3 < bytes.length) {
@@ -171,9 +257,20 @@ public abstract class PacketDemystifier implements OnPacketListener {
 //            }
 //        }
         
+        displayEntries();
+    }
+    
+    private void displayEntries() {
         for (Entry e : entries) {
-            System.out.println(e.toString());
-        }
+            displayEntry(e);
+//            if (e.type == FieldType.STRING) {
+//                break;
+//            }
+        }        
+    }
+    
+    protected void displayEntry(Entry e) {
+        System.out.println(e.toString());        
     }
 
     /* Implement these */
@@ -189,9 +286,27 @@ public abstract class PacketDemystifier implements OnPacketListener {
         } 
         
         int intVal = PacketParser.getLendInt(bytes, offset);
-        if (intVal > -500 && intVal < 500) {
-            entries.add(new Entry(offset, intVal));
-            return 4;
+        if (intVal > -500 && intVal < 10000) {
+            
+            // hax...
+            if (this instanceof WorldPacketDemystifier
+                    && getLastType() == FieldType.BYTE 
+                    && bytes[getLastEntry(1).offset] == 
+                        ((WorldPacketDemystifier)this).getWorldType()) {
+                // ooh, it's an ID!
+                Entry last = entries.remove(entries.size()-1); // remove byte
+                entries.add(new Entry(last.offset+1, intVal, true));
+                
+                // add the flags
+                int flagBytes = ((WorldPacketDemystifier)this).getFlagBytes();
+                entries.add(new Entry(last.offset+5, bytes, flagBytes));
+                
+                return 4 + flagBytes; 
+            } else {
+                // just an int
+                entries.add(new Entry(offset, intVal));
+                return 4;
+            }
         }
         
 //        System.out.println(getLastType() + "; " + bytes[offset+1]);
@@ -290,18 +405,15 @@ public abstract class PacketDemystifier implements OnPacketListener {
     }
 
 
-    protected abstract int getFlagBytes();
-
     protected abstract boolean isHandled(ArtemisPacket pkt);
     
     /* Runner */
 
     public static final void main(String[] args) {
-        demystNetwork();
-//        demystTest();
+        demystTest();
+//        demystNetwork();
     }
     
-    @SuppressWarnings("unused")
     private static void demystTest() {
         
         String raw = "01f8030000bc2af924000000003f9a99193f6f12833b0179007a440100000019184e4776c44a47db0f49400800000041007200740065006d006900730000000000a0420000a0420000a0420000a042005043480800000000";
@@ -310,6 +422,7 @@ public abstract class PacketDemystifier implements OnPacketListener {
         THIS_DEMYSITIFIER.onPacket(pkt);
     }
      
+    @SuppressWarnings("unused")
     private static void demystNetwork() {
         String tgtIp = "10.211.55.3";
         final int tgtPort = 2010;
@@ -336,6 +449,14 @@ public abstract class PacketDemystifier implements OnPacketListener {
         
         net.start();
         
+        net.send(new ReadyPacket2());
+        net.send(new ReadyPacket2());
+        
         net.send(new SetStationPacket(StationType.SCIENCE, true));
+        net.send(new ReadyPacket());
+//        
+//        try{ Thread.sleep(750); } catch (Throwable e) {}
+//        System.out.println("********READY 2 NOW");
+//        net.send(new ReadyPacket2());
     }
 }

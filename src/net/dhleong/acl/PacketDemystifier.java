@@ -3,6 +3,7 @@ package net.dhleong.acl;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.EnemyUpdatePacket;
@@ -70,25 +71,38 @@ public abstract class PacketDemystifier implements OnPacketListener {
     
     static abstract class WorldPacketDemystifier extends SimplePacketDemystifier {
         
+        private final LinkedList<String> flags = new LinkedList<String>();
+        
         @Override
         protected void displayEntry(Entry e) {
             super.displayEntry(e);
             if (e.type == FieldType.FLAGS) {
+                flags.clear();
                 byte action = bytes[e.offset];
                 System.out.println("Action = " + TextUtil.byteToHex(action));
                 
                 for (int i=0; i < 8; i++) {
                     byte val = (byte) (1 << i);
-                    if ((action & val) != 0)
-                        System.out.println(" - " + TextUtil.byteToHex(val));
+                    if ((action & val) != 0) {
+                        String flag = TextUtil.byteToHex(val);
+                        flags.addLast(flag);
+                        System.out.println(" - " + flag);
+                    }
                 }
                 
                 int args = PacketParser.getLendInt(bytes, e.offset+1);
+                System.out.println("Args = " + TextUtil.intToHex(args));
                 for (int i=0; i < 32; i++) {
                     int val = (1 << i);
-                    if ((args & val) != 0)
-                        System.out.println(" - " + TextUtil.intToHex(val));
+                    if ((args & val) != 0) {
+                        String flag = TextUtil.intToHex(val);
+                        flags.addLast(flag);
+                        System.out.println(" - " + flag);
+                    }
                 }
+            } else if (!flags.isEmpty()) {
+                System.out.println(" --> 0x" + flags.removeFirst());
+                System.out.println();
             }
         }
         

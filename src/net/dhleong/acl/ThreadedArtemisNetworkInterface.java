@@ -116,7 +116,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                             .format("Unsupported Artemis server version (%f)", version));
                     if (mOnConnectedListener != null) {
                         mOnConnectedListener.onDisconnected(
-                                ArtemisNetworkInterface.ERROR_VERSION);
+                                OnConnectedListener.ERROR_VERSION);
                     }
                     
                     end();

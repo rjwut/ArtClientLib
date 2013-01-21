@@ -14,6 +14,9 @@ public interface OnConnectedListener {
     /** Unknown error */
     public static final int ERROR_UNKNOWN = -1;
 
+    /** Unsupported server version */
+    public static final int ERROR_VERSION = 42;
+
 
     /**
      * Called when we've been disconnected

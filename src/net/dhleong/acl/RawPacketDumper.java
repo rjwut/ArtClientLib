@@ -4,6 +4,12 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 
 import net.dhleong.acl.net.PacketParser;
+import net.dhleong.acl.net.eng.EngSetEnergyPacket;
+import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
+import net.dhleong.acl.net.setup.ReadyPacket;
+import net.dhleong.acl.net.setup.ReadyPacket2;
+import net.dhleong.acl.net.setup.SetStationPacket;
+import net.dhleong.acl.net.setup.SetStationPacket.StationType;
 
 public class RawPacketDumper {
 
@@ -40,6 +46,14 @@ public class RawPacketDumper {
         
         net.start();
         
-//        net.send(new SetStationPacket(station, isSelected))
+        net.send(new ReadyPacket2());
+        net.send(new ReadyPacket2());
+        
+        net.send(new SetStationPacket(StationType.ENGINEERING, true));
+        net.send(new ReadyPacket());
+        
+        net.send(new ReadyPacket2());
+        net.send(new EngSetEnergyPacket(SystemType.IMPULSE, 300));
+        net.send(new ReadyPacket2());
     }
 }

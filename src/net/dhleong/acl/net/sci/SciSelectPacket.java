@@ -13,7 +13,7 @@ public class SciSelectPacket extends BaseArtemisPacket {
         super(0x2, FLAGS, TYPE, new byte[8]);
         
         // ??
-        PacketParser.putLendInt(0x0e, mData, 0);
+        PacketParser.putLendInt(0x0e, mData, 0); // FIXME Not true in 1.7 ....
         PacketParser.putLendInt(target == null ? 1 : target.getId(), mData, 4);
     }
 

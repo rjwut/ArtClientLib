@@ -18,7 +18,7 @@ public class SetWeaponsTargetPacket extends BaseArtemisPacket {
     public SetWeaponsTargetPacket(ArtemisObject target) {
         super(0x02, FLAGS, TYPE, new byte[8]);
         
-        PacketParser.putLendInt(2, mData);
+        PacketParser.putLendInt(0x02, mData);
         PacketParser.putLendInt(target == null ? 1 : target.getId(), mData, 4);
     }
 }

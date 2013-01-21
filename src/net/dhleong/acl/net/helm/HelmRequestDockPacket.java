@@ -18,7 +18,7 @@ public class HelmRequestDockPacket extends BaseArtemisPacket {
     public HelmRequestDockPacket() {
         super(0x02, FLAGS, TYPE, new byte[8]);
         
-        PacketParser.putLendInt(5, mData);
+        PacketParser.putLendInt(0x05, mData);
         PacketParser.putLendInt(0, mData, 4);
     }
 }

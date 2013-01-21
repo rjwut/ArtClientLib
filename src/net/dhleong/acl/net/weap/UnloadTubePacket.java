@@ -11,7 +11,7 @@ public class UnloadTubePacket extends BaseArtemisPacket {
     public UnloadTubePacket(int tube) {
         super(0x02, FLAGS, TYPE, new byte[8]);
         
-        PacketParser.putLendInt(7, mData);
+        PacketParser.putLendInt(0x07, mData);
         PacketParser.putLendInt(tube, mData, 4);
     }
 }

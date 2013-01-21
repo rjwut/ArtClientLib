@@ -34,7 +34,7 @@ public class SetStationPacket extends BaseArtemisPacket {
     public SetStationPacket(StationType station, boolean isSelected) {
         super(0x02, FLAGS, TYPE, new byte[12]);
         
-        PacketParser.putLendInt(0x0c, mData, 0); // ?
+        PacketParser.putLendInt(0x0e, mData, 0); // !! changed in 1.7
         PacketParser.putLendInt(station.ordinal(), mData, 4);
         PacketParser.putLendInt(isSelected ? 1 : 0, mData, 8);
     }

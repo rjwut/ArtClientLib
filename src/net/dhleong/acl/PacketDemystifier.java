@@ -9,6 +9,8 @@ import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.EnemyUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.net.PlayerUpdatePacket;
+import net.dhleong.acl.net.eng.EngSetEnergyPacket;
+import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.ReadyPacket2;
 import net.dhleong.acl.net.setup.SetStationPacket;
@@ -424,8 +426,8 @@ public abstract class PacketDemystifier implements OnPacketListener {
     /* Runner */
 
     public static final void main(String[] args) {
-        demystTest();
-//        demystNetwork();
+//        demystTest();
+        demystNetwork();
     }
     
     private static void demystTest() {
@@ -466,8 +468,10 @@ public abstract class PacketDemystifier implements OnPacketListener {
         net.send(new ReadyPacket2());
         net.send(new ReadyPacket2());
         
-        net.send(new SetStationPacket(StationType.SCIENCE, true));
+        net.send(new SetStationPacket(StationType.ENGINEERING, true));
         net.send(new ReadyPacket());
+        
+        net.send(new EngSetEnergyPacket(SystemType.IMPULSE, 300));
 //        
 //        try{ Thread.sleep(750); } catch (Throwable e) {}
 //        System.out.println("********READY 2 NOW");

@@ -17,7 +17,7 @@ public class FireTubePacket extends BaseArtemisPacket {
     public FireTubePacket(int tube) {
         super(0x02, FLAGS, TYPE, new byte[8]);
         
-        PacketParser.putLendInt(6, mData);
+        PacketParser.putLendInt(0x06, mData);
         PacketParser.putLendInt(tube, mData, 4);
     }
 }

@@ -193,10 +193,10 @@ public class PlayerUpdatePacket implements ArtemisPacket {
         mData = data;
         
         ObjectParser p = new ObjectParser(mData, 0);
-        p.start(true);
+        p.start();
         
         try {
-            int extraArgs = p.readShort();
+            //int extraArgs = p.readShort();
 
             p.readInt(ACTION_DUNNO_0);
 
@@ -298,6 +298,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
                 torps[i] = ((byte)0xff & p.readByte(TORPEDOS[i], (byte)-1));
             }
 
+            /* doesn't seem to be the case anymore 
             p.readByte(UNKNOWN_BYTE, (byte)-1);
    
             for (int i=0; i<TUBE_TIMES.length; i++) {
@@ -336,6 +337,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
                     //  DO we need another constant for this?
                     tubeContents[i] = ArtemisPlayer.TUBE_UNKNOWN; 
             }
+            */
 
             mPlayer = new ArtemisPlayer(p.getTargetId(), name, hullId, 
                 shipNumber, mRedAlert, mShields);
@@ -362,6 +364,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
                     ? null
                     : DriveType.values()[driveType]);
             
+            /*
             for (int i=0; i<SYSTEMS_HEAT.length; i++) {
                 SystemType sys = SystemType.values()[i];
                 mPlayer.setSystemHeat(sys, heat[i]);
@@ -376,6 +379,7 @@ public class PlayerUpdatePacket implements ArtemisPacket {
             for (int i=0; i<TUBE_TIMES.length; i++) {
                 mPlayer.setTubeStatus(i, tubeTimes[i], tubeContents[i]);
             }
+            */
                  
         } catch (RuntimeException e) {
             System.out.println("!!! Error!");

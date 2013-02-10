@@ -13,8 +13,6 @@ import net.dhleong.acl.world.ArtemisPositionable;
 
 public class EnemyUpdatePacket implements ObjectUpdatingPacket {
 
-    private static final byte ACTION_UPDATE_BYTE  = (byte) 0x80;
-    
     private static final byte ACTION_NAME_BYTE    = (byte) 0x01;
     private static final byte ACTION_SKIP_BYTES_1 = (byte) 0x02;
     private static final byte ACTION_SKIP_BYTES_2 = (byte) 0x04;
@@ -24,11 +22,13 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
     private static final byte ACTION_SKIP_BYTES_4 = (byte) 0x10;
     private static final byte ACTION_FLEET_MAYBE  = (byte) 0x20;
     private static final byte ACTION_HULL_ID      = (byte) 0x40;
+    
+    private static final byte POS_X               = (byte) 0x80;
 
     private static final int POS_Z       = 0x00000002; // huh?
     private static final int POS_Y       = 0x00000001; // wtf?
     private static final int DUNNO_SKIP_0= 0x00000004; 
-    private static final int STEERING  = 0x00000008; 
+    private static final int STEERING    = 0x00000008; 
     private static final int BEARING     = 0x00000010; 
     private static final int VELOCITY    = 0x00000020; // wtf?
     private static final int DUNNO_SKIP_3= 0x00000040; // wtf?
@@ -105,18 +105,15 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
                 p.readInt(ACTION_SKIP_BYTES_1);
                 p.readInt(ACTION_SKIP_BYTES_2);
                 
-//                 wild guessing, but 2 floats each?
                 p.readFloat(ACTION_SKIP_BYTES_3, -1);
-//                p.readFloat(ACTION_SKIP_BYTES_3, -1);
                 p.readFloat(ACTION_SKIP_BYTES_4, -1);
-//                p.readFloat(ACTION_SKIP_BYTES_4, -1);
                 
                 // ?
                 p.readInt(ACTION_FLEET_MAYBE);
                 
                 hullId = p.readInt(ACTION_HULL_ID);
 
-                x = p.readFloat(ACTION_UPDATE_BYTE, -1);
+                x = p.readFloat(POS_X, -1);
                 y = p.readFloat(POS_Y, -1);
                 z = p.readFloat(POS_Z, -1);
                 

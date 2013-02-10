@@ -32,7 +32,7 @@ public abstract class PacketDemystifier implements OnPacketListener {
      * The Demystifier we want to use for this run
      */
     private static final OnPacketListener THIS_DEMYSITIFIER = 
-            new UserPacketDemystifier();
+            new EnemyPacketDemystifier();
 
     static class UserPacketDemystifier extends WorldPacketDemystifier {
         
@@ -426,13 +426,14 @@ public abstract class PacketDemystifier implements OnPacketListener {
     /* Runner */
 
     public static final void main(String[] args) {
-//        demystTest();
-        demystNetwork();
+        demystTest();
+//        demystNetwork();
     }
     
     private static void demystTest() {
         
-        String raw = "01f8030000bc2af924000000003f9a99193f6f12833b0179007a440100000019184e4776c44a47db0f49400800000041007200740065006d006900730000000000a0420000a0420000a0420000a042005043480800000000";
+        //String raw = "01f8030000bc2af924000000003f9a99193f6f12833b0179007a440100000019184e4776c44a47db0f49400800000041007200740065006d006900730000000000a0420000a0420000a0420000a042005043480800000000";
+        String raw = "0475040000fb3a5f007c0400000049003400340000000000803f9a99993e6f12033b01000000d107000050896d472650c3474215013ed0ccccbd9a99993e0000a0420000a0420000a0420000a042010030000000a8a9203ff0bbc43e6c5b363fe644263fe234243f0476040000fb3a5f007c0400000058003100350000000000803f9a99993e6f12033b01000000d0070000501f6e472650c3474215013ed0ccccbd9a99993e000020420000204200002042000020420100060000005c18943e04d01b3f9d539b3e4495553ffacb163f00000000";
         byte[] bytes = ObjectParsingTests.hexStringToByteArray(raw);
         BaseArtemisPacket pkt = new BaseArtemisPacket(0, 0, ArtemisPacket.WORLD_TYPE, bytes);
         THIS_DEMYSITIFIER.onPacket(pkt);

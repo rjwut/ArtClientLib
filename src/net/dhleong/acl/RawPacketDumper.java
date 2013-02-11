@@ -23,11 +23,9 @@ public class RawPacketDumper {
         try {
             net = new ThreadedArtemisNetworkInterface(tgtIp, tgtPort);
         } catch (UnknownHostException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return;
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return;
         }

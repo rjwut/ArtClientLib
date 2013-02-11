@@ -13,6 +13,6 @@ public class HelmSetWarpPacket extends ShipActionPacket {
     private static final int FLAGS = 0x0c;
     
     public HelmSetWarpPacket(int warp) {
-        super(FLAGS, TYPE_WARPSPEED, 0);
+        super(FLAGS, TYPE_WARPSPEED, warp);
     }
 }

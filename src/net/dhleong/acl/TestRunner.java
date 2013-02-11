@@ -389,7 +389,7 @@ public class TestRunner {
         net.send(new ReadyPacket());
         
         
-        net.send(new EngSetEnergyPacket(SystemType.TORPEDOS, 300));
+        net.send(new EngSetEnergyPacket(SystemType.TORPEDOS, 10));
         
 //        net.send(new ToggleShieldsPacket());
         

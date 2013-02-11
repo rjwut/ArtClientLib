@@ -13,6 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.PacketParser;
+import net.dhleong.acl.net.setup.ReadyPacket2;
 
 public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface {
     
@@ -127,6 +128,10 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                 final boolean wasConnected = mConnected;
                 
                 mConnected = true;
+                
+                // send a couple of these to prime the server
+                offer(new ReadyPacket2());
+                offer(new ReadyPacket2());
                 
                 if (!wasConnected && mOnConnectedListener != null) 
                     mOnConnectedListener.onConnected();

@@ -244,8 +244,6 @@ public class ArtemisPlayer extends BaseArtemisShip {
         // it should be!
         if (eng instanceof ArtemisPlayer) {
             ArtemisPlayer plr = (ArtemisPlayer) eng;
-            
-            System.err.println("COPYOVER from: " + plr);
 
             if (mShipNumber == -1)
                 mShipNumber = plr.mShipNumber;

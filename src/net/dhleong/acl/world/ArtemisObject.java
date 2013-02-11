@@ -24,7 +24,7 @@ public interface ArtemisObject {
 
     public static final byte TYPE_NEBULA    = 0x0a;
     
-    public static final byte TYPE_TORPEDO   = 0x0b; // TODO CONFIRM
+    public static final byte TYPE_TORPEDO   = 0x0b; 
 
     public static final byte TYPE_BLACK_HOLE= 0x0c;
     public static final byte TYPE_ASTEROID  = 0x0d;

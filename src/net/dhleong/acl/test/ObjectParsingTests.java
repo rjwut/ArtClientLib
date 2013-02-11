@@ -54,7 +54,9 @@ public class ObjectParsingTests extends TestCase {
     public void testGenerics() { 
         
         String[] tests = new String[] {
-                "09f5030000ff00c3b54547826e5242c6f84d472608c2b3d07f7f3ff40780bd020000000000000000000000",
+                /* // 1.661
+                 * "09f5030000ff00c3b54547826e5242c6f84d472608c2b3d07f7f3ff40780bd020000000000000000000000",
+                 */
         };
         
         for (int i=0; i<tests.length; i++) {
@@ -240,7 +242,8 @@ public class ObjectParsingTests extends TestCase {
     
     public void testPlayerWeapons() {
         String[] tests = new String[] {
-                "0220050000ffff7f070206040000000000000000000000000000000000000000000000000000010000000000000000000000000000"
+                "0220050000ffff7f070206040000000000000000000000000000000000000000000000000000010000000000000000000000000000",
+                "02ec03000020000010006a4100000000"
         };
         
         for (int i=0; i<tests.length; i++) {

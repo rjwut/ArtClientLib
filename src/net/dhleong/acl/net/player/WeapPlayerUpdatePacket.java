@@ -69,7 +69,6 @@ public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
         super(data);
         
         ObjectParser p = new ObjectParser(mData, 0);
-        p.start();
         p.startNoArgs();
                     
         try {

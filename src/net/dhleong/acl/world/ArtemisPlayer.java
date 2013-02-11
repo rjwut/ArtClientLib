@@ -52,7 +52,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
     private final float[] mTubeTimes = new float[MAX_TUBES]; 
     private final int[] mTubeTypes = new int[MAX_TUBES];
 
-    private float mEnergy;
+    private float mEnergy = -1;
 
     private int mDockingStation = 0;
 
@@ -69,6 +69,10 @@ public class ArtemisPlayer extends BaseArtemisShip {
     
     public ArtemisPlayer(int objId) {
         this(objId, null, -1, -1, BoolState.UNKNOWN, BoolState.UNKNOWN); // ?
+        
+        mAvailableCoolant = -1;
+        mShipNumber = -1;
+        mImpulse = -1;
     }
 
     /**

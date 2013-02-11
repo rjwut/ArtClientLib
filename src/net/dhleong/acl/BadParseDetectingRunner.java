@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 
 import net.dhleong.acl.net.ObjectUpdatingPacket;
-import net.dhleong.acl.net.PlayerUpdatePacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
+import net.dhleong.acl.net.player.PlayerUpdatePacket;
 import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
 import net.dhleong.acl.net.weap.LoadTubePacket;

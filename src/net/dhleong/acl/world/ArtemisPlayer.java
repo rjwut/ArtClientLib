@@ -66,6 +66,10 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
     /** can probably go into BaseShip eventually */
     private float mTopSpeed=-1, mTurnRate=-1;
+    
+    public ArtemisPlayer(int objId) {
+        this(objId, null, -1, -1, BoolState.UNKNOWN, BoolState.UNKNOWN); // ?
+    }
 
     /**
      * 
@@ -96,6 +100,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
         Arrays.fill(mTubeTimes, -1);
     }
     
+
     public float getEnergy() {
         return mEnergy;
     }
@@ -144,7 +149,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
     
     @Override
     public int getType() {
-        return TYPE_PLAYER;
+        return TYPE_PLAYER_MAIN;
     }
     
     public boolean hasShieldsActive() {
@@ -157,13 +162,19 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
     @Override
     public String toString() {
-        return String.format("[PLAYER#%d:%s:%d:%c:%c]%s", 
+        return String.format("[PLAYER#%d:%s:%d:%c:%c]%s\n" +
+        		"Systems[%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f]\n" +
+        		"Heat[%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f]", 
                 mShipNumber,
                 mName,
                 mHullId,
                 isRedAlert() ? 'R' : '_',
                 hasShieldsActive() ? 'S' : '_',
-                        super.toString());
+                        super.toString(),
+                mSystems[0], mSystems[1], mSystems[2], mSystems[3], 
+                mSystems[4], mSystems[5], mSystems[6], mSystems[7],
+                mHeat[0], mHeat[1], mHeat[2], mHeat[3],
+                mHeat[4], mHeat[5], mHeat[6], mHeat[7]);
     }
 
     public void setRedAlert(boolean newState) {
@@ -233,6 +244,8 @@ public class ArtemisPlayer extends BaseArtemisShip {
         // it should be!
         if (eng instanceof ArtemisPlayer) {
             ArtemisPlayer plr = (ArtemisPlayer) eng;
+            
+            System.err.println("COPYOVER from: " + plr);
 
             if (mShipNumber == -1)
                 mShipNumber = plr.mShipNumber;

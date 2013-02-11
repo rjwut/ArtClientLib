@@ -15,23 +15,24 @@ import net.dhleong.acl.net.GenericUpdatePacket;
 import net.dhleong.acl.net.ObjectUpdatingPacket;
 import net.dhleong.acl.net.OtherShipUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
-import net.dhleong.acl.net.PlayerUpdatePacket;
 import net.dhleong.acl.net.StationPacket;
 import net.dhleong.acl.net.comms.AudioCommandPacket;
 import net.dhleong.acl.net.comms.AudioCommandPacket.Command;
 import net.dhleong.acl.net.comms.CommsIncomingPacket;
 import net.dhleong.acl.net.comms.IncomingAudioPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
+import net.dhleong.acl.net.eng.EngSetEnergyPacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
+import net.dhleong.acl.net.player.PlayerUpdatePacket;
 import net.dhleong.acl.net.setup.ReadyPacket;
+import net.dhleong.acl.net.setup.ReadyPacket2;
 import net.dhleong.acl.net.setup.SetShipPacket;
-import net.dhleong.acl.net.setup.SetShipSettingsPacket;
-import net.dhleong.acl.net.setup.SetShipSettingsPacket.DriveType;
 import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
 import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ShipSystemGrid;
 import net.dhleong.acl.world.ArtemisObject;
+import net.dhleong.acl.world.ArtemisPlayer;
 import net.dhleong.acl.world.ArtemisPositionable;
 import net.dhleong.acl.world.BaseArtemisShip;
 
@@ -242,7 +243,7 @@ public class TestRunner {
 
                 } else if (pkt instanceof PlayerUpdatePacket) {
                     PlayerUpdatePacket up = (PlayerUpdatePacket) pkt;
-//                    ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
+                    ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
                     
 //                    for (int i=0; i<ArtemisPlayer.MAX_TUBES; i++) {
 //                        System.out.println(String.format("Tube#%d: (%f) %d", 
@@ -250,7 +251,7 @@ public class TestRunner {
 //                    }
 //
                     up.debugPrint();
-//                    System.out.println("Player: " + plr);
+                    System.out.println("Player: " + plr);
 //                    for (SystemType s : SystemType.values()) {
 //                        float heat = plr.getSystemHeat(s);
 //                        float energy = plr.getSystemEnergy(s);
@@ -264,8 +265,8 @@ public class TestRunner {
 //                    System.out.println("St=" + plr.getSteering());
 //                    System.out.println("Mn=" + plr.getSystemEnergy(SystemType.MANEUVER));
                     System.out.println("--> " + up);
-                    net.stop();
-                    return;
+//                    net.stop();
+//                    return;
 
                 } else if (pkt instanceof CommsIncomingPacket) {
                     CommsIncomingPacket comms = (CommsIncomingPacket) pkt;
@@ -380,10 +381,15 @@ public class TestRunner {
 //        net.send(new SetShipPacket(SetShipPacket.SHIP_1_ARTEMIS));
         
         
-        net.send(new SetStationPacket(StationType.HELM, true));
-        net.send(new SetShipSettingsPacket(DriveType.JUMP, 1, "USS Awesome"));
+        net.send(new ReadyPacket2());
+        net.send(new ReadyPacket2());
+        
+        net.send(new SetStationPacket(StationType.ENGINEERING, true));
+        //net.send(new SetShipSettingsPacket(DriveType.JUMP, 1, "USS Awesome"));
         net.send(new ReadyPacket());
         
+        
+        net.send(new EngSetEnergyPacket(SystemType.TORPEDOS, 300));
         
 //        net.send(new ToggleShieldsPacket());
         

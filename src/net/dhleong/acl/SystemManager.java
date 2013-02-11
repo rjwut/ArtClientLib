@@ -9,11 +9,11 @@ import java.util.Set;
 
 import net.dhleong.acl.net.DestroyObjectPacket;
 import net.dhleong.acl.net.ObjectUpdatingPacket;
-import net.dhleong.acl.net.PlayerUpdatePacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket.DamconStatus;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket.GridDamage;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
+import net.dhleong.acl.net.player.PlayerUpdatePacket;
 import net.dhleong.acl.net.setup.SetShipPacket;
 import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ShipSystemGrid;

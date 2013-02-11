@@ -5,9 +5,9 @@ public abstract class BaseArtemisObject implements ArtemisPositionable {
     protected final int mId;
     public String mName;
     
-    private float mX;
-    private float mY;
-    private float mZ;
+    private float mX = -1;
+    private float mY = -1;
+    private float mZ = -1;
 
     public BaseArtemisObject(int objId, String name) {
         mId = objId;

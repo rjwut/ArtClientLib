@@ -10,6 +10,9 @@ import net.dhleong.acl.net.comms.CommsIncomingPacket;
 import net.dhleong.acl.net.comms.IncomingAudioPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
 import net.dhleong.acl.net.helm.JumpStatusPacket;
+import net.dhleong.acl.net.player.EngPlayerUpdatePacket;
+import net.dhleong.acl.net.player.MainPlayerUpdatePacket;
+import net.dhleong.acl.net.player.WeapPlayerUpdatePacket;
 import net.dhleong.acl.net.setup.AllShipSettingsPacket;
 import net.dhleong.acl.net.setup.StationStatusPacket;
 import net.dhleong.acl.util.TextUtil;
@@ -163,8 +166,12 @@ public class PacketParser {
             // ooh, crazy world type; switch for kid types
             final int type = bucket[0];
             switch (type) {
-            case ArtemisObject.TYPE_PLAYER:
-                return new PlayerUpdatePacket(bucket);
+            case ArtemisObject.TYPE_PLAYER_MAIN:
+                return new MainPlayerUpdatePacket(bucket);
+            case ArtemisObject.TYPE_PLAYER_WEAP:
+                return new WeapPlayerUpdatePacket(bucket);
+            case ArtemisObject.TYPE_PLAYER_ENG:
+                return new EngPlayerUpdatePacket(bucket);
                 
             case ArtemisObject.TYPE_ENEMY:
                 return new EnemyUpdatePacket(bucket);

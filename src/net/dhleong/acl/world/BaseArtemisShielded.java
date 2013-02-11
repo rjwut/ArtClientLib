@@ -7,6 +7,8 @@ implements ArtemisShielded {
 
     public BaseArtemisShielded(int objId, String name) {
         super(objId, name);
+        
+        mShieldsFront = mShieldsRear = -1;
     }
 
     @Override

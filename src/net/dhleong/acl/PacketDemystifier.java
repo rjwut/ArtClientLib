@@ -8,9 +8,9 @@ import java.util.LinkedList;
 import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.EnemyUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
-import net.dhleong.acl.net.PlayerUpdatePacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
+import net.dhleong.acl.net.player.MainPlayerUpdatePacket;
 import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.ReadyPacket2;
 import net.dhleong.acl.net.setup.SetStationPacket;
@@ -43,12 +43,12 @@ public abstract class PacketDemystifier implements OnPacketListener {
         
         @Override
         protected Class<?> getPacketClass() {
-            return PlayerUpdatePacket.class;
+            return MainPlayerUpdatePacket.class;
         }
 
         @Override
         protected int getWorldType() {
-            return ArtemisObject.TYPE_PLAYER;
+            return ArtemisObject.TYPE_PLAYER_MAIN;
         }
 
         

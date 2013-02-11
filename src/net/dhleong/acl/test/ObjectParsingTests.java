@@ -9,8 +9,11 @@ import net.dhleong.acl.net.EnemyUpdatePacket;
 import net.dhleong.acl.net.GenericMeshPacket;
 import net.dhleong.acl.net.GenericUpdatePacket;
 import net.dhleong.acl.net.OtherShipUpdatePacket;
-import net.dhleong.acl.net.PlayerUpdatePacket;
 import net.dhleong.acl.net.StationPacket;
+import net.dhleong.acl.net.player.EngPlayerUpdatePacket;
+import net.dhleong.acl.net.player.MainPlayerUpdatePacket;
+import net.dhleong.acl.net.player.PlayerUpdatePacket;
+import net.dhleong.acl.net.player.WeapPlayerUpdatePacket;
 import net.dhleong.acl.world.ArtemisPlayer;
 import net.dhleong.acl.world.ArtemisPositionable;
 import net.dhleong.acl.world.BaseArtemisShip;
@@ -224,7 +227,7 @@ public class ObjectParsingTests extends TestCase {
             
             System.out.println();
             System.out.println("Test[" + i + "] of total " + tests.length);
-            PlayerUpdatePacket pkt = new PlayerUpdatePacket(bytes);
+            PlayerUpdatePacket pkt = new MainPlayerUpdatePacket(bytes);
             
             ArtemisPlayer plr = pkt.getPlayer();
             pkt.debugPrint();
@@ -235,6 +238,51 @@ public class ObjectParsingTests extends TestCase {
         }
     }
     
+    public void testPlayerWeapons() {
+        String[] tests = new String[] {
+                "0220050000ffff7f070206040000000000000000000000000000000000000000000000000000010000000000000000000000000000"
+        };
+        
+        for (int i=0; i<tests.length; i++) {
+            byte[] bytes = hexStringToByteArray(tests[i]);
+//            if (!BaseArtemisPacket.byteArrayToHexString(bytes).equals(s))
+//                throw new RuntimeException("byte conversion fail");
+            
+            System.out.println();
+            System.out.println("Test[" + i + "] of total " + tests.length);
+            PlayerUpdatePacket pkt = new WeapPlayerUpdatePacket(bytes);
+            
+            ArtemisPlayer plr = pkt.getPlayer();
+            pkt.debugPrint();
+            System.out.println("--> " + pkt);
+            BadParseDetectingRunner.testPlayer(plr);
+            
+            System.out.println();
+        }
+    }
+    
+    public void testPlayerEng() {
+        String[] tests = new String[] {
+            "0313040000ffffff000000000000000000000000000000000000000000000000000000000000000000abaaaa3e00000000abaaaa3eabaaaa3eabaaaa3eabaaaa3eabaaaa3eabaaaa3e000000000000000000000000",
+        };
+        
+        for (int i=0; i<tests.length; i++) {
+            byte[] bytes = hexStringToByteArray(tests[i]);
+//            if (!BaseArtemisPacket.byteArrayToHexString(bytes).equals(s))
+//                throw new RuntimeException("byte conversion fail");
+            
+            System.out.println();
+            System.out.println("Test[" + i + "] of total " + tests.length);
+            PlayerUpdatePacket pkt = new EngPlayerUpdatePacket(bytes);
+            
+            ArtemisPlayer plr = pkt.getPlayer();
+            pkt.debugPrint();
+            System.out.println("--> " + pkt);
+            BadParseDetectingRunner.testPlayer(plr);
+            
+            System.out.println();
+        }
+    }
     public void testStation() {
         String[] tests = new String[] {
                 "04eb030000020023d1384300000000",

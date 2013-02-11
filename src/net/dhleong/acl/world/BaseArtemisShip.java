@@ -17,6 +17,8 @@ implements ArtemisBearable {
         super(objId, name);
         
         mHullId = hullId;
+        
+        mShieldsFrontMax = mShieldsRearMax = -1;
     }
 
     public int getHullId() {

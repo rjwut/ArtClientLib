@@ -3,6 +3,7 @@ package net.dhleong.acl;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
@@ -40,6 +41,14 @@ public class RawPacketDumper {
             
             @Override
             public void onPacket(ArtemisPacket pkt) {
+                // filter out noise
+                BaseArtemisPacket base = (BaseArtemisPacket) pkt;
+                byte[] data = base.getData();
+                if (base.getType() == ArtemisPacket.WORLD_TYPE
+                        && data.length == 4 
+                        && PacketParser.getLendInt(data) == 0)
+                    return;
+                
                 System.out.println("<< " + pkt);
             }
         });
@@ -49,11 +58,12 @@ public class RawPacketDumper {
         net.send(new ReadyPacket2());
         net.send(new ReadyPacket2());
         
+        //net.send(new SetStationPacket(StationType.SCIENCE, true));
         net.send(new SetStationPacket(StationType.ENGINEERING, true));
         net.send(new ReadyPacket());
         
         net.send(new ReadyPacket2());
-        net.send(new EngSetEnergyPacket(SystemType.IMPULSE, 300));
+        net.send(new EngSetEnergyPacket(SystemType.IMPULSE, 0));
         net.send(new ReadyPacket2());
     }
 }

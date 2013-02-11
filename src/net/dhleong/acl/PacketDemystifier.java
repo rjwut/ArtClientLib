@@ -8,9 +8,8 @@ import java.util.LinkedList;
 import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.EnemyUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
-import net.dhleong.acl.net.eng.EngSetEnergyPacket;
-import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.player.MainPlayerUpdatePacket;
+import net.dhleong.acl.net.player.WeapPlayerUpdatePacket;
 import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.ReadyPacket2;
 import net.dhleong.acl.net.setup.SetStationPacket;
@@ -32,14 +31,9 @@ public abstract class PacketDemystifier implements OnPacketListener {
      * The Demystifier we want to use for this run
      */
     private static final OnPacketListener THIS_DEMYSITIFIER = 
-            new EnemyPacketDemystifier();
+            new UserWeapPacketDemystifier();
 
     static class UserPacketDemystifier extends WorldPacketDemystifier {
-        
-//        @Override
-//        protected int getFlagBytes() {
-//            return 11;
-//        }
         
         @Override
         protected Class<?> getPacketClass() {
@@ -50,10 +44,20 @@ public abstract class PacketDemystifier implements OnPacketListener {
         protected int getWorldType() {
             return ArtemisObject.TYPE_PLAYER_MAIN;
         }
-
-        
     }
     
+    static class UserWeapPacketDemystifier extends WorldPacketDemystifier {
+        
+        @Override
+        protected Class<?> getPacketClass() {
+            return WeapPlayerUpdatePacket.class;
+        }
+
+        @Override
+        protected int getWorldType() {
+            return ArtemisObject.TYPE_PLAYER_WEAP;
+        }
+    }
     static class EnemyPacketDemystifier extends WorldPacketDemystifier {
 
         @Override
@@ -433,7 +437,8 @@ public abstract class PacketDemystifier implements OnPacketListener {
     private static void demystTest() {
         
         //String raw = "01f8030000bc2af924000000003f9a99193f6f12833b0179007a440100000019184e4776c44a47db0f49400800000041007200740065006d006900730000000000a0420000a0420000a0420000a042005043480800000000";
-        String raw = "0475040000fb3a5f007c0400000049003400340000000000803f9a99993e6f12033b01000000d107000050896d472650c3474215013ed0ccccbd9a99993e0000a0420000a0420000a0420000a042010030000000a8a9203ff0bbc43e6c5b363fe644263fe234243f0476040000fb3a5f007c0400000058003100350000000000803f9a99993e6f12033b01000000d0070000501f6e472650c3474215013ed0ccccbd9a99993e000020420000204200002042000020420100060000005c18943e04d01b3f9d539b3e4495553ffacb163f00000000";
+        //String raw = "0475040000fb3a5f007c0400000049003400340000000000803f9a99993e6f12033b01000000d107000050896d472650c3474215013ed0ccccbd9a99993e0000a0420000a0420000a0420000a042010030000000a8a9203ff0bbc43e6c5b363fe644263fe234243f0476040000fb3a5f007c0400000058003100350000000000803f9a99993e6f12033b01000000d0070000501f6e472650c3474215013ed0ccccbd9a99993e000020420000204200002042000020420100060000005c18943e04d01b3f9d539b3e4495553ffacb163f00000000";
+        String raw = "0279060000ef075408020604030012000200000069640003150015002002f70079002e0001f6ce00000000";
         byte[] bytes = ObjectParsingTests.hexStringToByteArray(raw);
         BaseArtemisPacket pkt = new BaseArtemisPacket(0, 0, ArtemisPacket.WORLD_TYPE, bytes);
         THIS_DEMYSITIFIER.onPacket(pkt);
@@ -469,10 +474,10 @@ public abstract class PacketDemystifier implements OnPacketListener {
         net.send(new ReadyPacket2());
         net.send(new ReadyPacket2());
         
-        net.send(new SetStationPacket(StationType.ENGINEERING, true));
+        net.send(new SetStationPacket(StationType.WEAPONS, true));
         net.send(new ReadyPacket());
         
-        net.send(new EngSetEnergyPacket(SystemType.IMPULSE, 300));
+        //net.send(new EngSetEnergyPacket(SystemType.IMPULSE, 300));
 //        
 //        try{ Thread.sleep(750); } catch (Throwable e) {}
 //        System.out.println("********READY 2 NOW");

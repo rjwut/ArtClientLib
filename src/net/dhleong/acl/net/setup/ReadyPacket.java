@@ -1,7 +1,6 @@
 package net.dhleong.acl.net.setup;
 
-import net.dhleong.acl.net.BaseArtemisPacket;
-import net.dhleong.acl.net.PacketParser;
+import net.dhleong.acl.net.ShipActionPacket;
 
 
 /**
@@ -15,16 +14,9 @@ import net.dhleong.acl.net.PacketParser;
  * @author dhleong
  *
  */
-public class ReadyPacket extends BaseArtemisPacket {
+public class ReadyPacket extends ShipActionPacket {
     private static final int FLAGS = 0x0c;
-    private static final int TYPE = 0x4C821D3C;
-
     public ReadyPacket() {
-        super(0x2, FLAGS, TYPE, new byte[8]);
-        
-        // ??
-//        PacketParser.putLendInt(0x0d, mData, 0);
-        PacketParser.putLendInt(0x0f, mData, 0); // changed?
-        PacketParser.putLendInt(0, mData, 4);
+        super(FLAGS, TYPE_READY, 0);
     }
 }

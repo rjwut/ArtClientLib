@@ -1,7 +1,6 @@
 package net.dhleong.acl.net.helm;
 
-import net.dhleong.acl.net.BaseArtemisPacket;
-import net.dhleong.acl.net.PacketParser;
+import net.dhleong.acl.net.ShipActionPacket;
 
 /**
  * Set warp speed
@@ -9,16 +8,11 @@ import net.dhleong.acl.net.PacketParser;
  * @author dhleong
  *
  */
-public class HelmSetWarpPacket extends BaseArtemisPacket {
-    
-    public static final int TYPE = 0x4C821D3C;
+public class HelmSetWarpPacket extends ShipActionPacket {
     
     private static final int FLAGS = 0x0c;
     
     public HelmSetWarpPacket(int warp) {
-        super(0x02, FLAGS, TYPE, new byte[8]);
-        
-        PacketParser.putLendInt(0, mData);
-        PacketParser.putLendInt(warp, mData, 4);
+        super(FLAGS, TYPE_WARPSPEED, 0);
     }
 }

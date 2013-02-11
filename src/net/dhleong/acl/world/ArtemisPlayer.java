@@ -67,12 +67,21 @@ public class ArtemisPlayer extends BaseArtemisShip {
     /** can probably go into BaseShip eventually */
     private float mTopSpeed=-1, mTurnRate=-1;
     
+    /**
+     * Special constructor for a very incomplete ArtemisPlayer
+     * @param objId
+     */
     public ArtemisPlayer(int objId) {
         this(objId, null, -1, -1, BoolState.UNKNOWN, BoolState.UNKNOWN); // ?
         
         mAvailableCoolant = -1;
         mShipNumber = -1;
         mImpulse = -1;
+        
+        setSteering(Float.MIN_VALUE);
+        setBearing(Float.MIN_VALUE);
+        setVelocity(Float.MIN_VALUE);
+        setHullId(-1);
     }
 
     /**

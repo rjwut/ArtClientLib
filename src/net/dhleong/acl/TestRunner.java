@@ -21,14 +21,15 @@ import net.dhleong.acl.net.comms.AudioCommandPacket.Command;
 import net.dhleong.acl.net.comms.CommsIncomingPacket;
 import net.dhleong.acl.net.comms.IncomingAudioPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
-import net.dhleong.acl.net.eng.EngSetEnergyPacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.player.PlayerUpdatePacket;
+import net.dhleong.acl.net.player.WeapPlayerUpdatePacket;
 import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.ReadyPacket2;
 import net.dhleong.acl.net.setup.SetShipPacket;
 import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
+import net.dhleong.acl.net.weap.LoadTubePacket;
 import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ShipSystemGrid;
 import net.dhleong.acl.world.ArtemisObject;
@@ -250,8 +251,10 @@ public class TestRunner {
 //                            i, plr.getTubeCountdown(i), plr.getTubeContents(i)));
 //                    }
 //
-                    up.debugPrint();
-                    System.out.println("Player: " + plr);
+                    if (up instanceof WeapPlayerUpdatePacket) 
+                        up.debugPrint();
+//                    System.out.println("Player: " + plr);
+                    
 //                    for (SystemType s : SystemType.values()) {
 //                        float heat = plr.getSystemHeat(s);
 //                        float energy = plr.getSystemEnergy(s);
@@ -264,9 +267,10 @@ public class TestRunner {
 //                    System.out.println("Be=" + plr.getBearing());
 //                    System.out.println("St=" + plr.getSteering());
 //                    System.out.println("Mn=" + plr.getSystemEnergy(SystemType.MANEUVER));
-                    System.out.println("--> " + up);
+                    if (up instanceof WeapPlayerUpdatePacket) 
+                        System.out.println("--> " + up);
 //                    net.stop();
-//                    return;
+                    return;
 
                 } else if (pkt instanceof CommsIncomingPacket) {
                     CommsIncomingPacket comms = (CommsIncomingPacket) pkt;
@@ -376,7 +380,7 @@ public class TestRunner {
 ////        PacketParser.putLendInt(0, data, 8);
 ////        PacketParser.putNameString(name, data, 12);
 //////        PacketParser.putLendInt(0, data, 12);
-//        BaseArtemisPacket pkt = new BaseArtemisPacket(0x02, 0x26, 0x4C821D3C, data);
+//        BaseArtemisPacket pkt = new BaseArtemisPacket(0x02, 0x26, ArtemisPacket.SHIP_ACTION_TYPE, data);
 //        net.send(pkt);
 //        net.send(new SetShipPacket(SetShipPacket.SHIP_1_ARTEMIS));
         
@@ -384,12 +388,14 @@ public class TestRunner {
         net.send(new ReadyPacket2());
         net.send(new ReadyPacket2());
         
-        net.send(new SetStationPacket(StationType.ENGINEERING, true));
+        net.send(new SetStationPacket(StationType.WEAPONS, true));
         //net.send(new SetShipSettingsPacket(DriveType.JUMP, 1, "USS Awesome"));
         net.send(new ReadyPacket());
         
         
-        net.send(new EngSetEnergyPacket(SystemType.TORPEDOS, 10));
+//        net.send(new EngSetEnergyPacket(SystemType.TORPEDOS, 100));
+        net.send(new LoadTubePacket(1, LoadTubePacket.TORP_MINE));
+//        net.send(new UnloadTubePacket(0));
         
 //        net.send(new ToggleShieldsPacket());
         

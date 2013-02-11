@@ -1,17 +1,11 @@
 package net.dhleong.acl.net.weap;
 
-import net.dhleong.acl.net.BaseArtemisPacket;
-import net.dhleong.acl.net.PacketParser;
+import net.dhleong.acl.net.ShipActionPacket;
 
-public class UnloadTubePacket extends BaseArtemisPacket {
+public class UnloadTubePacket extends ShipActionPacket {
 
     private static final int FLAGS = 0x0c;
-    private static final int TYPE = 0x4C821D3C;
-
     public UnloadTubePacket(int tube) {
-        super(0x02, FLAGS, TYPE, new byte[8]);
-        
-        PacketParser.putLendInt(0x07, mData);
-        PacketParser.putLendInt(tube, mData, 4);
+        super(FLAGS, TYPE_UNLOAD_TUBE, tube);
     }
 }

@@ -1,7 +1,6 @@
 package net.dhleong.acl.net.weap;
 
-import net.dhleong.acl.net.BaseArtemisPacket;
-import net.dhleong.acl.net.PacketParser;
+import net.dhleong.acl.net.ShipActionPacket;
 import net.dhleong.acl.world.ArtemisObject;
 
 /**
@@ -10,15 +9,10 @@ import net.dhleong.acl.world.ArtemisObject;
  * @author dhleong
  *
  */
-public class SetWeaponsTargetPacket extends BaseArtemisPacket {
+public class SetWeaponsTargetPacket extends ShipActionPacket {
 
     private static final int FLAGS = 0x0c;
-    private static final int TYPE = 0x4C821D3C;
-
     public SetWeaponsTargetPacket(ArtemisObject target) {
-        super(0x02, FLAGS, TYPE, new byte[8]);
-        
-        PacketParser.putLendInt(0x02, mData);
-        PacketParser.putLendInt(target == null ? 1 : target.getId(), mData, 4);
+        super(FLAGS, TYPE_SET_TARGET, target == null ? 1 : target.getId());
     }
 }

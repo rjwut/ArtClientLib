@@ -1,7 +1,6 @@
 package net.dhleong.acl.net.helm;
 
-import net.dhleong.acl.net.BaseArtemisPacket;
-import net.dhleong.acl.net.PacketParser;
+import net.dhleong.acl.net.ShipActionPacket;
 
 /**
  * Request to dock. There must be some ACK when it 
@@ -9,16 +8,11 @@ import net.dhleong.acl.net.PacketParser;
  * @author dhleong
  *
  */
-public class HelmRequestDockPacket extends BaseArtemisPacket {
-    
-    public static final int TYPE = 0x4C821D3C;
+public class HelmRequestDockPacket extends ShipActionPacket {
     
     private static final int FLAGS = 0x0c;
     
     public HelmRequestDockPacket() {
-        super(0x02, FLAGS, TYPE, new byte[8]);
-        
-        PacketParser.putLendInt(0x05, mData);
-        PacketParser.putLendInt(0, mData, 4);
+        super(FLAGS, TYPE_REQUEST_DOCK, 0);
     }
 }

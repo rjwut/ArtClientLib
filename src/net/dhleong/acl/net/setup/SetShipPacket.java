@@ -1,7 +1,6 @@
 package net.dhleong.acl.net.setup;
 
-import net.dhleong.acl.net.BaseArtemisPacket;
-import net.dhleong.acl.net.PacketParser;
+import net.dhleong.acl.net.ShipActionPacket;
 
 
 /**
@@ -10,7 +9,7 @@ import net.dhleong.acl.net.PacketParser;
  * @author dhleong
  *
  */
-public class SetShipPacket extends BaseArtemisPacket {
+public class SetShipPacket extends ShipActionPacket {
     
     public static final int TOTAL_SHIPS = 6;
     
@@ -22,8 +21,6 @@ public class SetShipPacket extends BaseArtemisPacket {
     public static final int SHIP_6_HERA     = 5;
     
     private static final int FLAGS = 0x0c;
-    private static final int TYPE = 0x4C821D3C;
-
     /**
      * 
      * @param ship Index, from zero, of the ship
@@ -32,10 +29,6 @@ public class SetShipPacket extends BaseArtemisPacket {
      *  can, of course, be changed 
      */
     public SetShipPacket(int ship) {
-        super(0x2, FLAGS, TYPE, new byte[8]);
-        
-        // ??
-        PacketParser.putLendInt(0x0b, mData, 0);
-        PacketParser.putLendInt(ship, mData, 4);
+        super(FLAGS, TYPE_SET_SHIP, ship);
     }
 }

@@ -73,8 +73,8 @@ public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
                     
         try {
             
-            int shortArgs = p.readShort();
-            p.setArgs(shortArgs);
+            // these packets have 3 bytes, so action+2
+            p.setArgs(p.readShort());
         
             for (int i=0; i<torps.length; i++) {
                 torps[i] = ((byte)0xff & p.readByte(TORPEDOS[i], (byte)-1));
@@ -144,7 +144,7 @@ public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
     public void debugPrint() {
         System.out.println(String.format("-------Torp Cnts: %d:%d:%d:%d", 
             torps[0], torps[1], torps[2], torps[3]));
-        for (int i=0; i<TUBE_TIMES_BYTE.length; i++) {
+        for (int i=0; i<ArtemisPlayer.MAX_TUBES; i++) {
             System.out.println(String.format("Tube#%d: (%f) %d", 
                 i, tubeTimes[i], tubeContents[i]));
         }

@@ -48,9 +48,8 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
     private static final int ELITE       = 0x00004000; // just a guess
     private static final int ELITE_STATE = 0x00008000; // ?
     
-    private static final int DUNNO_NEW_3 = 0x00010000;
-
-    private static final int SCANNED     = 0x00020000; // I think?
+    private static final int SCANNED     = 0x00010000; // I think?
+    private static final int DUNNO_NEW_3 = 0x00020000;
 
     private static final int UNUSED_1    = 0x00040000;
     private static final int UNUSED_2    = 0x00080000;
@@ -142,9 +141,9 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
                 // what abilities are active?
                 eliteState = p.readInt(ELITE_STATE);
 
-                p.readInt(DUNNO_NEW_3);
-                
                 scanned = p.readByte(SCANNED, (byte) -1);
+                
+                p.readInt(DUNNO_NEW_3);
 
                 p.readInt(UNUSED_1);
                 p.readInt(UNUSED_2);

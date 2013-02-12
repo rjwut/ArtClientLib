@@ -22,7 +22,7 @@ import net.dhleong.acl.net.comms.CommsIncomingPacket;
 import net.dhleong.acl.net.comms.IncomingAudioPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
-import net.dhleong.acl.net.player.EngPlayerUpdatePacket;
+import net.dhleong.acl.net.helm.HelmToggleReversePacket;
 import net.dhleong.acl.net.player.PlayerUpdatePacket;
 import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.ReadyPacket2;
@@ -31,7 +31,6 @@ import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
 import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ShipSystemGrid;
-import net.dhleong.acl.world.ArtemisEnemy;
 import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisPlayer;
 import net.dhleong.acl.world.ArtemisPositionable;
@@ -203,19 +202,19 @@ public class TestRunner {
 //                    System.out.println("--> " + create);
                     return;
                 } else if (pkt instanceof EnemyUpdatePacket) {
-                    System.out.println("** Update: ");
-                    ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
-//                    up.debugPrint();
-                    for (ArtemisObject obj : up.getObjects()) {
-                        ArtemisObject full = mgr.getObject(obj.getId());
-                        System.out.println(" + " + obj + " scan: " + ((ArtemisEnemy) obj).getScanLevel()
-                                + " ; " + ((ArtemisEnemy) full).getScanLevel());
-//                        System.out.println(" + " + obj + " vel=" +
-//                                ((ArtemisBearable)full)
-//                                    .getVelocity());
-                    }
-                    
-                    System.out.println("--> " + up);
+//                    System.out.println("** Update: ");
+//                    ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
+////                    up.debugPrint();
+//                    for (ArtemisObject obj : up.getObjects()) {
+//                        ArtemisObject full = mgr.getObject(obj.getId());
+//                        System.out.println(" + " + obj + " scan: " + ((ArtemisEnemy) obj).getScanLevel()
+//                                + " ; " + ((ArtemisEnemy) full).getScanLevel());
+////                        System.out.println(" + " + obj + " vel=" +
+////                                ((ArtemisBearable)full)
+////                                    .getVelocity());
+//                    }
+//                    
+//                    System.out.println("--> " + up);
                     
                     return;
                 } else if (pkt instanceof OtherShipUpdatePacket) {
@@ -263,15 +262,17 @@ public class TestRunner {
 //                                coolant + " / " + energy + " :: " + heat);
 //                    }
 //
+                    System.out.println("Drive: " + plr.getDriveType());
+                    System.out.println("Revrs: " + plr.getReverseState());
 
-                    if (up instanceof EngPlayerUpdatePacket) {
-                        SystemType s = SystemType.MANEUVER;
-                        float energy = plr.getSystemEnergy(s);
-                        int coolant = plr.getSystemCoolant(s);
-                        System.out.println("    \\_> " + s + ": " +
-                                coolant + " / " + energy);// + " :: " + heat);
-                    }
-                    System.out.println("TR=" + plr.getTurnRate());
+//                    if (up instanceof EngPlayerUpdatePacket) {
+//                        SystemType s = SystemType.MANEUVER;
+//                        float energy = plr.getSystemEnergy(s);
+//                        int coolant = plr.getSystemCoolant(s);
+//                        System.out.println("    \\_> " + s + ": " +
+//                                coolant + " / " + energy);// + " :: " + heat);
+//                    }
+//                    System.out.println("TR=" + plr.getTurnRate());
                     
                     
 //                    System.out.println("Be=" + plr.getBearing());
@@ -398,9 +399,11 @@ public class TestRunner {
         net.send(new ReadyPacket2());
         net.send(new ReadyPacket2());
         
-        net.send(new SetStationPacket(StationType.ENGINEERING, true));
+        net.send(new SetStationPacket(StationType.HELM, true));
         //net.send(new SetShipSettingsPacket(DriveType.JUMP, 1, "USS Awesome"));
         net.send(new ReadyPacket());
+        
+        net.send(new HelmToggleReversePacket());
         
         
 //        net.send(new EngSetEnergyPacket(SystemType.TORPEDOS, 100));

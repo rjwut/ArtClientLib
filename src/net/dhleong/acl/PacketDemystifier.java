@@ -31,7 +31,7 @@ public abstract class PacketDemystifier implements OnPacketListener {
      * The Demystifier we want to use for this run
      */
     private static final OnPacketListener THIS_DEMYSITIFIER = 
-            new UserWeapPacketDemystifier();
+            new UserPacketDemystifier();
 
     static class UserPacketDemystifier extends WorldPacketDemystifier {
         
@@ -430,8 +430,8 @@ public abstract class PacketDemystifier implements OnPacketListener {
     /* Runner */
 
     public static final void main(String[] args) {
-        demystTest();
-//        demystNetwork();
+//        demystTest();
+        demystNetwork();
     }
     
     private static void demystTest() {
@@ -472,7 +472,7 @@ public abstract class PacketDemystifier implements OnPacketListener {
         net.send(new ReadyPacket2());
         net.send(new ReadyPacket2());
         
-        net.send(new SetStationPacket(StationType.WEAPONS, true));
+        net.send(new SetStationPacket(StationType.HELM, true));
         net.send(new ReadyPacket());
         
         //net.send(new EngSetEnergyPacket(SystemType.IMPULSE, 300));

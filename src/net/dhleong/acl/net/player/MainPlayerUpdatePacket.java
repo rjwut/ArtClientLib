@@ -53,6 +53,9 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
     private static final int UNKNOWN_9     = 0x00400000;
     private static final int UNKNOWN_10    = 0x00800000;
     private static final int DRIVE_TYPE    = 0x01000000;
+    private static final int UNKNOWN_11    = 0x02000000;
+    private static final int UNKNOWN_12    = 0x04000000;
+    private static final int REVERSE_STATE = 0x08000000;
     
     
     //
@@ -62,7 +65,7 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
     int shipNumber, hullId;
     float energy;
     float x, y, z, bearing;
-    BoolState mRedAlert, mShields;
+    BoolState mRedAlert, mShields, mReverse;
     MainScreen mainScreen;
     
     float shieldsFront, shieldsFrontMax;
@@ -148,11 +151,7 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
             //  this value when we undock...
             dockingStation = p.readInt(DOCKING_STATION, 0);
 
-            if (p.has(RED_ALERT)) {
-                mRedAlert = (p.readByte() != 0) ? BoolState.TRUE : BoolState.FALSE;
-            } else {
-                mRedAlert = BoolState.UNKNOWN;
-            }
+            mRedAlert = p.readBoolByte(RED_ALERT);
             
             p.readInt(UNKNOWN_FLT_0);
 
@@ -174,8 +173,13 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
             //p.readByte(UNKNOWN_10, (byte)-1); 
             //p.readShort(UNKNOWN_10);
             p.readInt(UNKNOWN_10);
-
+            
             driveType = p.readByte(DRIVE_TYPE, (byte)-1); 
+            
+            p.readInt(UNKNOWN_11);
+            p.readInt(UNKNOWN_12);
+            
+            mReverse = p.readBoolByte(REVERSE_STATE);
 
             mPlayer = new ArtemisPlayer(p.getTargetId(), name, hullId, 
                 shipNumber, mRedAlert, mShields);
@@ -201,6 +205,7 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
             mPlayer.setDriveType(driveType == -1
                     ? null
                     : DriveType.values()[driveType]);
+            mPlayer.setReverse(mReverse);
             
                  
         } catch (RuntimeException e) {

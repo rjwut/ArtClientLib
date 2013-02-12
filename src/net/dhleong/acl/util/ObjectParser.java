@@ -223,8 +223,8 @@ public class ObjectParser {
         return defaultValue;
     }
 
-    public byte readByte(int ifArgsByte, byte defaultValue) {
-        if ((args & ifArgsByte) != 0) {
+    public byte readByte(int ifArgs, byte defaultValue) {
+        if ((args & ifArgs) != 0) {
             return readByte();
         }
         
@@ -237,6 +237,22 @@ public class ObjectParser {
         }
         
         return defaultValue;
+    }
+
+    /**
+     * Convenience; if we have the arg, parse it
+     *  as {@link BoolState#TRUE} if non-zero, else
+     *  {@link BoolState#FALSE}; if we don't have
+     *  the arg, just return {@link BoolState#UNKNOWN}
+     * @param ifArgs
+     * @return
+     */
+    public BoolState readBoolByte(int ifArgs) {
+        if (has(ifArgs)) {
+            return (readByte() != 0) ? BoolState.TRUE : BoolState.FALSE;
+        } else {
+            return BoolState.UNKNOWN;
+        }
     }
 
     public int getTargetId() {

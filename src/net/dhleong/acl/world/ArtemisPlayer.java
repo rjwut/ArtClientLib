@@ -66,6 +66,8 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
     /** can probably go into BaseShip eventually */
     private float mTopSpeed=-1, mTurnRate=-1;
+
+    private BoolState mReverse;
     
     /**
      * Special constructor for a very incomplete ArtemisPlayer
@@ -323,11 +325,19 @@ public class ArtemisPlayer extends BaseArtemisShip {
             if (plr.mMainScreen != null) {
                 mMainScreen = plr.mMainScreen;
             }
+            
+            if (BoolState.isKnown(plr.mReverse)) {
+                mReverse = plr.mReverse;
+            }
         }
     }
 
     public BoolState getRedAlertState() {
         return mRedAlert;
+    }
+    
+    public BoolState getReverseState() {
+        return mReverse;
     }
     
     public BoolState getShieldsState() {
@@ -417,5 +427,9 @@ public class ArtemisPlayer extends BaseArtemisShip {
     
     public float getTurnRate() {
         return mTurnRate;
+    }
+
+    public void setReverse(BoolState reverse) {
+        mReverse = reverse;
     }
 }

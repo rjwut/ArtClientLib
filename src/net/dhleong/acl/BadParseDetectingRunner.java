@@ -6,6 +6,8 @@ import java.net.UnknownHostException;
 import net.dhleong.acl.net.ObjectUpdatingPacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.player.PlayerUpdatePacket;
+import net.dhleong.acl.net.setup.ReadyPacket;
+import net.dhleong.acl.net.setup.ReadyPacket2;
 import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
 import net.dhleong.acl.net.weap.LoadTubePacket;
@@ -25,7 +27,7 @@ public class BadParseDetectingRunner {
 
     public static void main(String[] args) {
         //        String tgtIp = "10.211.55.4";
-        final String tgtIp = "192.168.1.11";
+        final String tgtIp = "192.168.1.30";
         final int tgtPort = 2010;
 
         final ThreadedArtemisNetworkInterface net; 
@@ -97,8 +99,13 @@ public class BadParseDetectingRunner {
 
         net.start();
 
+        net.send(new ReadyPacket2());
+        net.send(new ReadyPacket2());
+        
         net.send(new SetStationPacket(StationType.SCIENCE, true));
-
+        
+        net.send(new ReadyPacket());
+        net.send(new ReadyPacket2());
     }
 
     public static void testPlayer(ArtemisPlayer p) {
@@ -135,6 +142,10 @@ public class BadParseDetectingRunner {
         assertNotEqual(0, p.getShieldsRearMax(), "shieldRearMax");
         assertRange(-50, 1000, p.getShieldsFront(), "shieldFront");
         assertRange(-50, 1000, p.getShieldsRear(), "shieldRear");
+        
+        for (int i=0; i<5; i++) {
+            assertRange(-1, 1f, p.getShieldFreq(i), "shieldFreq("+i+")");
+        }
     }
 
     private static void assertNotEqual(float expected, float actual, String label) {

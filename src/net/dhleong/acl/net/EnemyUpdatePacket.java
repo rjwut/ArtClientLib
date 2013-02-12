@@ -143,7 +143,7 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
 
                 scanned = p.readByte(SCANNED, (byte) -1);
                 
-                p.readInt(DUNNO_NEW_3);
+                p.readShort(DUNNO_NEW_3);
 
                 p.readInt(UNUSED_1);
                 p.readInt(UNUSED_2);

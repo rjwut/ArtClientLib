@@ -98,7 +98,7 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
             try {
                 p.start();
                 
-                if (p.getTargetType() != 0x03) {
+                if (p.getTargetType() != 0x05) {
                     System.err.println("Type: " + Integer.toHexString(p.getTargetType()));
                     System.err.println("  id: " + Integer.toHexString(p.getTargetId()));
                     throw new RuntimeException("Not type 0x03...?!");

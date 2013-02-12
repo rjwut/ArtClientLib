@@ -8,6 +8,7 @@ import java.util.List;
 import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.util.ObjectParser;
 import net.dhleong.acl.util.TextUtil;
+import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisOtherShip;
 import net.dhleong.acl.world.ArtemisPositionable;
 
@@ -98,10 +99,10 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
             try {
                 p.start();
                 
-                if (p.getTargetType() != 0x05) {
+                if (p.getTargetType() != ArtemisObject.TYPE_OTHER) {
                     System.err.println("Type: " + Integer.toHexString(p.getTargetType()));
                     System.err.println("  id: " + Integer.toHexString(p.getTargetId()));
-                    throw new RuntimeException("Not type 0x03...?!");
+                    throw new RuntimeException("Not type " + ArtemisObject.TYPE_OTHER + " ...?!");
                 }
                 
                 name = p.readName(ACTION_NAME_BYTE);

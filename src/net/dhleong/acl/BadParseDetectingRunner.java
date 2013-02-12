@@ -157,7 +157,7 @@ public class BadParseDetectingRunner {
 
     public static void testPositionable(ArtemisPositionable p) {
         assertRange(-1, 100020, p.getX(), "x");
-        assertRange(-100, 100, p.getY(), "y");
+        assertRange(-200, 200, p.getY(), "y");
         assertRange(-1, 100020, p.getZ(), "z");
     }
 

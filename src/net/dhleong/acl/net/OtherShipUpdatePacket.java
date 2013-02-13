@@ -107,15 +107,13 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
                 
                 name = p.readName(ACTION_NAME_BYTE);
                 
-                // no idea what these are
+                // these are floats, probably max speed,
+                //  turn rate, steering, etc.
                 p.readInt(ACTION_SKIP_BYTES_1);
                 p.readInt(ACTION_SKIP_BYTES_2);
                 
-//                 wild guessing, but 2 floats each?
                 p.readFloat(ACTION_SKIP_BYTES_3, -1);
-//                p.readFloat(ACTION_SKIP_BYTES_3, -1);
                 p.readFloat(ACTION_SKIP_BYTES_4, -1);
-//                p.readFloat(ACTION_SKIP_BYTES_4, -1);
                 
                 // ?
                 p.readInt(ACTION_FLEET_MAYBE);
@@ -142,6 +140,7 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
 ////                    p.readInt(DUNNO_SKIP_4);
 //                p.readInt(DUNNO_SKIP_4);
 
+                /*
                 // hax?
                 if (p.has(DUNNO_SKIP_3)) {
                     p.readByte(DUNNO_SKIP_3, (byte) 0);
@@ -153,6 +152,9 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
                     if (dunno0 != 0)
                         p.readInt(DUNNO_SKIP_4);
                 }
+                */
+                p.readByte(DUNNO_SKIP_3, (byte) -1);
+                p.readByte(DUNNO_SKIP_4, (byte) -1);
 
                 // WTF?!?! WHY!?!
                 if (p.has(SHLD_FRNT_MX) && !p.has(SHLD_FRNT))
@@ -170,12 +172,14 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
                 
 //                System.out.println(">> " + shieldsFront + " / " + shieldsRearMax);
 
-                p.readInt(DUNNO_NEW_0);
+                p.readShort(DUNNO_NEW_0);
                 
-                // ???
+                /*
                 p.readByte(DUNNO_NEW_1, (byte)0);
                 p.readByte(DUNNO_NEW_1, (byte)0);
                 p.readByte(DUNNO_NEW_1, (byte)0);
+                */
+                p.readShort(DUNNO_NEW_1);
 
                 p.readInt(UNKNOWN_1);
                 p.readInt(UNKNOWN_2);

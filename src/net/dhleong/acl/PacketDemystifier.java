@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.EnemyUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
+import net.dhleong.acl.net.StationPacket;
 import net.dhleong.acl.net.player.MainPlayerUpdatePacket;
 import net.dhleong.acl.net.player.WeapPlayerUpdatePacket;
 import net.dhleong.acl.net.setup.ReadyPacket;
@@ -31,49 +32,52 @@ public abstract class PacketDemystifier implements OnPacketListener {
      * The Demystifier we want to use for this run
      */
     private static final OnPacketListener THIS_DEMYSITIFIER = 
-            new UserPacketDemystifier();
+            new SimpleWorldPacketDemystifier(StationPacket.class, ArtemisObject.TYPE_STATION);
 
-    static class UserPacketDemystifier extends WorldPacketDemystifier {
+    static class UserPacketDemystifier extends SimpleWorldPacketDemystifier {
         
-        @Override
-        protected Class<?> getPacketClass() {
-            return MainPlayerUpdatePacket.class;
-        }
-
-        @Override
-        protected int getWorldType() {
-            return ArtemisObject.TYPE_PLAYER_MAIN;
+        public UserPacketDemystifier() {
+            super( MainPlayerUpdatePacket.class, ArtemisObject.TYPE_PLAYER_MAIN);
         }
     }
     
-    static class UserWeapPacketDemystifier extends WorldPacketDemystifier {
+    static class UserWeapPacketDemystifier extends SimpleWorldPacketDemystifier {
         
-        @Override
-        protected Class<?> getPacketClass() {
-            return WeapPlayerUpdatePacket.class;
-        }
-
-        @Override
-        protected int getWorldType() {
-            return ArtemisObject.TYPE_PLAYER_WEAP;
+        public UserWeapPacketDemystifier() {
+            super(WeapPlayerUpdatePacket.class,  ArtemisObject.TYPE_PLAYER_WEAP);
         }
     }
-    static class EnemyPacketDemystifier extends WorldPacketDemystifier {
+    static class EnemyPacketDemystifier extends SimpleWorldPacketDemystifier {
 
-        @Override
-        protected Class<?> getPacketClass() {
-            return EnemyUpdatePacket.class;
+        public EnemyPacketDemystifier() {
+            super(EnemyUpdatePacket.class, ArtemisObject.TYPE_ENEMY);
         }
-        
-        @Override
-        protected int getWorldType() {
-            return ArtemisObject.TYPE_ENEMY;
-        }
-
         
     }
     
     /* Utility implementations */
+    
+    static class SimpleWorldPacketDemystifier extends WorldPacketDemystifier {
+        
+        private final Class<?> mClass;
+        private final int mType;
+
+        public SimpleWorldPacketDemystifier(Class<?> packetClass, int worldType) {
+            mClass = packetClass;
+            mType = worldType;
+        }
+
+        @Override
+        protected Class<?> getPacketClass() {
+            return mClass;
+        }
+
+        @Override
+        protected int getWorldType() {
+            return mType;
+        }
+        
+    }
     
     static abstract class WorldPacketDemystifier extends SimplePacketDemystifier {
         

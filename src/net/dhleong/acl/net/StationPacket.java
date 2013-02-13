@@ -24,10 +24,12 @@ public class StationPacket implements ObjectUpdatingPacket {
     private static final byte POS_Z   = (byte)0x80;
     
     private static final byte[] UNKNOWN_INTS = new byte[] {
-        0x01, 0x02, 0x04, 0x08, 0x01
+        0x01, 0x02, 0x04, 0x08
     };
     
-    private static final byte UNKNOWN_BYTE  = 0x20;
+    private static final byte[] UNKNOWN_BYTES  = new byte[] {
+        0x10, 0x20
+    };
     
 
 //    private static final byte ACTION_CREATE = (byte) 0xf0;
@@ -66,7 +68,7 @@ public class StationPacket implements ObjectUpdatingPacket {
             shieldsRear = p.readFloat(SHIELDS_REAR, -1);
 
             p.readInt(SKIP_1);
-            p.readInt(SKIP_2); 
+            p.readInt(SKIP_2);  // hull ID or something?
 
             x = p.readFloat(POS_X, -1);
             y = p.readFloat(POS_Y, -1);
@@ -78,7 +80,8 @@ public class StationPacket implements ObjectUpdatingPacket {
             for (byte arg : UNKNOWN_INTS)
                 p.readInt(arg);
 
-            p.readByte(UNKNOWN_BYTE, (byte)-1);
+            for (byte arg : UNKNOWN_BYTES)
+                p.readByte(arg, (byte)-1);
             
             // create the obj!
             ArtemisStation station = new ArtemisStation(p.getTargetId(), name);
@@ -127,6 +130,7 @@ public class StationPacket implements ObjectUpdatingPacket {
         return TextUtil.byteArrayToHexString(mData); 
     }
 
+    @Override
     public void debugPrint() {
         System.out.println("** CREATE:");
         for (ArtemisObject obj : mCreatedObjs)

@@ -3,6 +3,7 @@ package net.dhleong.acl.net;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 
 import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.ArtemisPacketException;
@@ -283,7 +284,11 @@ public class PacketParser {
                 break;
             }
         }
-        return new String(bytes, offset, realNameLen);
+        try {
+            return new String(bytes, offset, realNameLen, "UTF16LE");
+        } catch (UnsupportedEncodingException e) {
+            return new String(bytes, offset, realNameLen);
+        }
     }
 
     public static void putLendInt(int value, byte[] bytes) {

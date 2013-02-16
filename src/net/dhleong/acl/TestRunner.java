@@ -201,7 +201,7 @@ public class TestRunner {
                     return;
                 } else if (pkt instanceof EnemyUpdatePacket) {
 //                    System.out.println("** Update: ");
-                    ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
+//                    ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
 ////                    up.debugPrint();
 //                    for (ArtemisObject obj : up.getObjects()) {
 //                        ArtemisObject full = mgr.getObject(obj.getId());
@@ -212,13 +212,6 @@ public class TestRunner {
 ////                                    .getVelocity());
 //                    }
 //                    
-                    
-                    for (ArtemisObject obj : up.getObjects()) {
-                        if ("B89".equals(mgr.getObject(obj.getId()).getName())) {
-                            System.out.println("--> " + up);
-                            break;
-                        }
-                    }
                     
                     return;
                 } else if (pkt instanceof OtherShipUpdatePacket) {
@@ -246,7 +239,7 @@ public class TestRunner {
 //                    return;
 
                 } else if (pkt instanceof PlayerUpdatePacket) {
-//                    PlayerUpdatePacket up = (PlayerUpdatePacket) pkt;
+                    PlayerUpdatePacket up = (PlayerUpdatePacket) pkt;
 //                    ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
                     
 //                    for (int i=0; i<ArtemisPlayer.MAX_TUBES; i++) {
@@ -283,7 +276,7 @@ public class TestRunner {
 //                    System.out.println("St=" + plr.getSteering());
 //                    System.out.println("Mn=" + plr.getSystemEnergy(SystemType.MANEUVER));
 //                    if (up instanceof WeapPlayerUpdatePacket) 
-//                        System.out.println("--> " + up);
+                        System.out.println("--> " + up);
 //                    net.stop();
                     return;
 

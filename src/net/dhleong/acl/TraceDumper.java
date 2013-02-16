@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import net.dhleong.acl.net.PacketParser;
+import net.dhleong.acl.net.player.MainPlayerUpdatePacket;
 import net.dhleong.acl.util.TextUtil;
 
 public class TraceDumper {
@@ -22,12 +23,15 @@ public class TraceDumper {
 
         @Override
         public int read() throws IOException {
-            char read1 = (char) mWrapped.read();
-            char read2 = (char) mWrapped.read();
-            if (read1 == -1 || read2 == -1)
+            int read1 = mWrapped.read();
+            if (read1 == -1)
                 return -1;
-            //System.out.println(read1+read2 + " -> " + TextUtil.hexToInt(read1, read2));
-            return TextUtil.hexToInt(read1, read2);
+            
+            int read2 = mWrapped.read();
+            if (read2 == -1)
+                return -1;
+            //System.out.println(read1+":"+read2 + " -> " + TextUtil.hexToInt((char)read1, (char)read2));
+            return TextUtil.hexToInt((char) read1, (char) read2);
         }
 
     }
@@ -35,12 +39,14 @@ public class TraceDumper {
     public TraceDumper(String filePath) {
         try {
             System.out.println("Tracing: " + filePath);
-            InputStream is = new HexDecodingIS(new BufferedInputStream(new FileInputStream(new File(filePath))));
+            InputStream baseIs = new BufferedInputStream(new FileInputStream(new File(filePath)));
+            InputStream is = new HexDecodingIS(baseIs);
             PacketParser parser = new PacketParser();
             
             while (true) {
                 final ArtemisPacket pkt = parser.readPacket(is);
-                System.out.println("--> " + pkt);
+                if (pkt != null && filter(pkt))
+                    System.out.println("--> " + pkt);
             }
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
@@ -52,6 +58,10 @@ public class TraceDumper {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    private boolean filter(ArtemisPacket pkt) {
+        return (pkt instanceof MainPlayerUpdatePacket);
     }
 
     public static void main(String[] args) {

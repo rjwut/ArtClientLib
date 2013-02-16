@@ -68,6 +68,10 @@ public class ArtemisPlayer extends BaseArtemisShip {
     private float mTopSpeed=-1, mTurnRate=-1;
 
     private BoolState mReverse;
+
+    private int mScanTarget;
+
+    private float mScanProgress;
     
     /**
      * Special constructor for a very incomplete ArtemisPlayer
@@ -329,6 +333,14 @@ public class ArtemisPlayer extends BaseArtemisShip {
             if (BoolState.isKnown(plr.mReverse)) {
                 mReverse = plr.mReverse;
             }
+            
+            if (plr.mScanTarget != Integer.MIN_VALUE) {
+                mScanTarget = plr.mScanTarget;
+            }
+                
+            if (plr.mScanProgress != -1) {
+                mScanProgress = plr.mScanProgress;
+            }
         }
     }
 
@@ -431,5 +443,33 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
     public void setReverse(BoolState reverse) {
         mReverse = reverse;
+    }
+
+    public void setScanTarget(int scanTarget) {
+        mScanTarget = scanTarget;
+    }
+
+    public void setScanProgress(float scanProgress) {
+        mScanProgress = scanProgress;
+    }
+    
+    /**
+     * Get the current science scanning target
+     *  
+     * @return The id of the target, 1 if
+     *  no target, or {@link Integer#MIN_VALUE}
+     *  if unknown
+     */
+    public int getScanTarget() {
+        return mScanTarget;
+    }
+    
+    /**
+     * The progress of scanning as a percentage,
+     *  or -1 if unknown
+     * @return
+     */
+    public float getScanProgress() {
+        return mScanProgress;
     }
 }

@@ -51,7 +51,7 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
     private static final int UNKNOWN_7     = 0x00100000;
     private static final int AVAILABLE_COOLANT     = 0x00200000;
     private static final int SCI_TARGET    = 0x00400000; 
-    private static final int UNKNOWN_10    = 0x00800000;
+    private static final int CAPTAIN_TARGET= 0x00800000;
     private static final int DRIVE_TYPE    = 0x01000000;
     private static final int UNKNOWN_11    = 0x02000000;
     private static final int SCAN_PROGRESS = 0x04000000; 
@@ -87,6 +87,8 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
     private float scanProgress;
 
     private int scanTarget;
+
+    private int captainTarget;
 
 //    public PlayerUpdatePacket(final SystemInfoPacket pkt) {
 //        this(pkt.mData);
@@ -172,11 +174,7 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
             availableCoolant = p.readByte(AVAILABLE_COOLANT, (byte)-1); // MUST
 
             scanTarget = p.readInt(SCI_TARGET, Integer.MIN_VALUE); // 1 means no target
-            //p.readShort(UNKNOWN_9);
-
-            //p.readByte(UNKNOWN_10, (byte)-1); 
-            //p.readShort(UNKNOWN_10);
-            p.readInt(UNKNOWN_10);
+            captainTarget = p.readInt(CAPTAIN_TARGET, Integer.MIN_VALUE);
             
             driveType = p.readByte(DRIVE_TYPE, (byte)-1); 
             
@@ -202,6 +200,7 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
             mPlayer.setAvailableCoolant(availableCoolant);
             
             mPlayer.setScanTarget(scanTarget);
+            mPlayer.setCaptainTarget(captainTarget);
             mPlayer.setScanProgress(scanProgress);
             
             mPlayer.setShieldsFront(shieldsFront);

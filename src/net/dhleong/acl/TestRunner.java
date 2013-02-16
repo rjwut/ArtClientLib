@@ -22,7 +22,6 @@ import net.dhleong.acl.net.comms.CommsIncomingPacket;
 import net.dhleong.acl.net.comms.IncomingAudioPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
-import net.dhleong.acl.net.helm.HelmToggleReversePacket;
 import net.dhleong.acl.net.player.PlayerUpdatePacket;
 import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.ReadyPacket2;
@@ -32,7 +31,6 @@ import net.dhleong.acl.net.setup.SetStationPacket.StationType;
 import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ShipSystemGrid;
 import net.dhleong.acl.world.ArtemisObject;
-import net.dhleong.acl.world.ArtemisPlayer;
 import net.dhleong.acl.world.ArtemisPositionable;
 import net.dhleong.acl.world.BaseArtemisShip;
 
@@ -203,7 +201,7 @@ public class TestRunner {
                     return;
                 } else if (pkt instanceof EnemyUpdatePacket) {
 //                    System.out.println("** Update: ");
-//                    ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
+                    ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
 ////                    up.debugPrint();
 //                    for (ArtemisObject obj : up.getObjects()) {
 //                        ArtemisObject full = mgr.getObject(obj.getId());
@@ -214,7 +212,13 @@ public class TestRunner {
 ////                                    .getVelocity());
 //                    }
 //                    
-//                    System.out.println("--> " + up);
+                    
+                    for (ArtemisObject obj : up.getObjects()) {
+                        if ("B89".equals(mgr.getObject(obj.getId()).getName())) {
+                            System.out.println("--> " + up);
+                            break;
+                        }
+                    }
                     
                     return;
                 } else if (pkt instanceof OtherShipUpdatePacket) {
@@ -239,11 +243,11 @@ public class TestRunner {
 //                    for (ArtemisObject obj : up.mObjects)
 //                        System.out.println(" + " + mgr.getObject(obj.getId()));
 //                    System.out.println("--> " + up);
-                    return;
+//                    return;
 
                 } else if (pkt instanceof PlayerUpdatePacket) {
-                    PlayerUpdatePacket up = (PlayerUpdatePacket) pkt;
-                    ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
+//                    PlayerUpdatePacket up = (PlayerUpdatePacket) pkt;
+//                    ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
                     
 //                    for (int i=0; i<ArtemisPlayer.MAX_TUBES; i++) {
 //                        System.out.println(String.format("Tube#%d: (%f) %d", 
@@ -262,8 +266,8 @@ public class TestRunner {
 //                                coolant + " / " + energy + " :: " + heat);
 //                    }
 //
-                    System.out.println("Drive: " + plr.getDriveType());
-                    System.out.println("Revrs: " + plr.getReverseState());
+//                    System.out.println("Drive: " + plr.getDriveType());
+//                    System.out.println("Revrs: " + plr.getReverseState());
 
 //                    if (up instanceof EngPlayerUpdatePacket) {
 //                        SystemType s = SystemType.MANEUVER;
@@ -279,7 +283,7 @@ public class TestRunner {
 //                    System.out.println("St=" + plr.getSteering());
 //                    System.out.println("Mn=" + plr.getSystemEnergy(SystemType.MANEUVER));
 //                    if (up instanceof WeapPlayerUpdatePacket) 
-                        System.out.println("--> " + up);
+//                        System.out.println("--> " + up);
 //                    net.stop();
                     return;
 
@@ -300,7 +304,7 @@ public class TestRunner {
                     }
                     return;
                 } else if (pkt instanceof EngGridUpdatePacket) {
-//                    EngGridUpdatePacket dmg = (EngGridUpdatePacket) pkt;
+                    EngGridUpdatePacket dmg = (EngGridUpdatePacket) pkt;
 //                    System.out.println("** GRID UPDATE: ");
 //                    dmg.debugPrint();
 //                    System.out.println("Overall healths: ");
@@ -308,7 +312,7 @@ public class TestRunner {
 //                        System.out.println("- " + sys + ": " + 
 //                                mgr.getHealthOfSystem(sys));
 //                    }
-//                    System.out.println("--> " + dmg);
+                    System.out.println("--> eng " + dmg);
                     return;
                 } else if (pkt instanceof GameMessagePacket) {
                     GameMessagePacket msg = (GameMessagePacket) pkt;
@@ -399,11 +403,13 @@ public class TestRunner {
         net.send(new ReadyPacket2());
         net.send(new ReadyPacket2());
         
-        net.send(new SetStationPacket(StationType.HELM, true));
+        net.send(new SetStationPacket(StationType.SCIENCE, true));
         //net.send(new SetShipSettingsPacket(DriveType.JUMP, 1, "USS Awesome"));
         net.send(new ReadyPacket());
         
-        net.send(new HelmToggleReversePacket());
+        net.send(new ReadyPacket2());
+        
+//        net.send(new HelmToggleReversePacket());
         
         
 //        net.send(new EngSetEnergyPacket(SystemType.TORPEDOS, 100));

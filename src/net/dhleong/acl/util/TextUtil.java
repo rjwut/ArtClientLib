@@ -45,4 +45,8 @@ public class TextUtil {
             return String.format("%8s", hex).replace(' ', '0');
     }
 
+    public static int hexToInt(char byte1, char byte2) {
+        return Integer.parseInt(String.format("%c%c", byte1, byte2), 16);
+    }
+
 }

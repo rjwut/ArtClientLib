@@ -23,6 +23,7 @@ public class ShipActionPacket extends BaseArtemisPacket {
     protected static final int TYPE_READY          = 0x0F; 
     
     protected static final int TYPE_SCI_SELECT     = 0x10; 
+    protected static final int TYPE_CAPTAIN_SELECT = 0x11; 
     protected static final int TYPE_SCI_SCAN       = 0x13; 
     protected static final int TYPE_SHIP_SETUP     = 0x16; 
     

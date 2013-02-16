@@ -7,7 +7,6 @@ import java.util.LinkedList;
 
 import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.EnemyUpdatePacket;
-import net.dhleong.acl.net.OtherShipUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.net.player.MainPlayerUpdatePacket;
 import net.dhleong.acl.net.player.WeapPlayerUpdatePacket;
@@ -32,7 +31,8 @@ public abstract class PacketDemystifier implements OnPacketListener {
      * The Demystifier we want to use for this run
      */
     private static final OnPacketListener THIS_DEMYSITIFIER = 
-            new SimpleWorldPacketDemystifier(OtherShipUpdatePacket.class, ArtemisObject.TYPE_OTHER);
+            new EnemyPacketDemystifier();
+            //new SimpleWorldPacketDemystifier(OtherShipUpdatePacket.class, ArtemisObject.TYPE_OTHER);
 
     static class UserPacketDemystifier extends SimpleWorldPacketDemystifier {
         

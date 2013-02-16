@@ -53,7 +53,7 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
     private static final int SCI_TARGET    = 0x00400000; 
     private static final int CAPTAIN_TARGET= 0x00800000;
     private static final int DRIVE_TYPE    = 0x01000000;
-    private static final int UNKNOWN_11    = 0x02000000;
+    private static final int SCAN_OBJECT_ID= 0x02000000;
     private static final int SCAN_PROGRESS = 0x04000000; 
     private static final int REVERSE_STATE = 0x08000000;
     
@@ -89,6 +89,8 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
     private int scanTarget;
 
     private int captainTarget;
+
+    private int scanningId;
 
 //    public PlayerUpdatePacket(final SystemInfoPacket pkt) {
 //        this(pkt.mData);
@@ -178,7 +180,7 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
             
             driveType = p.readByte(DRIVE_TYPE, (byte)-1); 
             
-            p.readInt(UNKNOWN_11);
+            scanningId = p.readInt(SCAN_OBJECT_ID);
             scanProgress = p.readFloat(SCAN_PROGRESS, -1);
             
             mReverse = p.readBoolByte(REVERSE_STATE);
@@ -201,6 +203,7 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
             
             mPlayer.setScanTarget(scanTarget);
             mPlayer.setCaptainTarget(captainTarget);
+            mPlayer.setScanObjectId(scanningId);
             mPlayer.setScanProgress(scanProgress);
             
             mPlayer.setShieldsFront(shieldsFront);
@@ -247,4 +250,11 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
     public ArtemisPlayer getPlayer() {
         return mPlayer;
     }
+    
+    /*
+    @Override
+    public String toString() {
+        return String.format("%8d : %s", scanningId, super.toString());
+    }
+    */
 }

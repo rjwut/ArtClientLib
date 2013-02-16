@@ -74,6 +74,8 @@ public class ArtemisPlayer extends BaseArtemisShip {
     private float mScanProgress;
 
     private int mCaptainTarget;
+
+    private int mScanningId;
     
     /**
      * Special constructor for a very incomplete ArtemisPlayer
@@ -347,6 +349,10 @@ public class ArtemisPlayer extends BaseArtemisShip {
             if (plr.mCaptainTarget != Integer.MIN_VALUE) {
                 mCaptainTarget = plr.mCaptainTarget;
             }
+            
+            if (plr.mScanningId != -1) {
+                mScanningId = plr.mScanningId;
+            }
         }
     }
 
@@ -490,5 +496,18 @@ public class ArtemisPlayer extends BaseArtemisShip {
      */
     public int getCaptainTarget() {
         return mCaptainTarget;
+    }
+
+    /**
+     * Set the ID of the object being scanned
+     * 
+     * @param scanningId
+     */
+    public void setScanObjectId(int scanningId) {
+        mScanningId = scanningId;
+    }
+    
+    public int getScanObjectId() {
+        return mScanningId;
     }
 }

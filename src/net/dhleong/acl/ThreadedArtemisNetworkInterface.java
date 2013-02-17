@@ -14,6 +14,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.net.setup.ReadyPacket2;
+import net.dhleong.acl.util.Util;
 
 public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface {
     
@@ -112,7 +113,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                 byte[] data = base.getData();
                 float version = PacketParser.getLendFloat(data, 4);
                 
-                if (version != ArtemisNetworkInterface.TARGET_VERSION) {
+                if (Util.findInArray(ArtemisNetworkInterface.SUPPORTED_VERSIONS, version) == -1) {
                     System.err.println(String
                             .format("Unsupported Artemis server version (%f)", version));
                     if (mOnConnectedListener != null) {

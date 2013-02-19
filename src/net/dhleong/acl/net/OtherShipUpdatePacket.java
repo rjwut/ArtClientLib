@@ -172,15 +172,16 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
                 
 //                System.out.println(">> " + shieldsFront + " / " + shieldsRearMax);
 
-                p.readShort(DUNNO_NEW_0);
-                
                 /*
-                p.readByte(DUNNO_NEW_1, (byte)0);
-                p.readByte(DUNNO_NEW_1, (byte)0);
-                p.readByte(DUNNO_NEW_1, (byte)0);
-                */
+                p.readShort(DUNNO_NEW_0);
                 p.readShort(DUNNO_NEW_1);
+                */
+                // MUST be, I think... 
+                p.readByte(DUNNO_NEW_0, (byte)-1);
+                p.readByte(DUNNO_NEW_1, (byte)-1);
 
+                // but bytes above make this weird
+                p.readShort(UNKNOWN_1); // TODO wtf? cannot be correct...
                 p.readInt(UNKNOWN_1);
                 p.readInt(UNKNOWN_2);
                 p.readInt(UNKNOWN_3);

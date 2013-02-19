@@ -23,4 +23,14 @@ public enum BoolState {
     public static boolean isKnown(BoolState state) {
         return state == TRUE || state == FALSE;
     }
+
+    /**
+     * Safely get the value, handling null or
+     *  "unknown" as false
+     * @param reverseState
+     * @return
+     */
+    public static boolean safeValue(BoolState reverseState) {
+        return reverseState == TRUE;
+    }
 }

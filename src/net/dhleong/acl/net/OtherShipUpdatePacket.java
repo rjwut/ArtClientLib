@@ -102,7 +102,7 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
                 if (p.getTargetType() != ArtemisObject.TYPE_OTHER) {
                     System.err.println("Type: " + Integer.toHexString(p.getTargetType()));
                     System.err.println("  id: " + Integer.toHexString(p.getTargetId()));
-                    throw new RuntimeException("Not type " + ArtemisObject.TYPE_OTHER + " ...?!");
+                    throw new RuntimeException("Not type " + ArtemisObject.TYPE_OTHER + " ...?! Raw=" + this);
                 }
                 
                 name = p.readName(ACTION_NAME_BYTE);

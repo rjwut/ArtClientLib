@@ -121,6 +121,9 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                                 OnConnectedListener.ERROR_VERSION);
                     }
                     
+                    // go ahead and end the receive thread NOW
+                    mInterface.errorCode = OnConnectedListener.ERROR_VERSION;
+                    mInterface.mReceiveThread.end();
                     end();
                 }
                 
@@ -184,7 +187,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                     //  they are just keepalive (I guess) for 
                     //  indicating that the server aliveness
                     //  and perhaps calculating latency
-                    if (pkt != null) {
+                    if (pkt != null && mRunning) {
                         // notify listeners
                         for (OnPacketListener listener : mListeners) {
                             listener.onPacket(pkt);

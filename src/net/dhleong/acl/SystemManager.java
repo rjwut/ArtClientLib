@@ -264,10 +264,13 @@ public class SystemManager implements OnPacketListener {
      * Get the overall health of the given system
      * @param sys
      * @return A float [0, 1] indicating percentage health
+     * @throws IllegalStateException if the SystemManager doesn't
+     *  yet have a ShipSystemGrid
      */
     public float getHealthOfSystem(SystemType sys) {
-        if (mGrid == null)
+        if (mGrid == null) {
             throw new IllegalStateException("SystemManager must have a ShipSystemGrid");
+        }
         
         final float total = mGrid.getSystemCount(sys);
         float current = total;

@@ -42,6 +42,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         }
         
         public boolean offer(ArtemisPacket pkt) {
+            //System.out.println(">> sending: " + pkt);
             return mQueue.offer(pkt);
         }
 
@@ -58,7 +59,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                 if (!mConnected )
                     continue;
                 
-                if (mCurrentPacket == null || (mCurrentPacket = mQueue.poll()) == null) {
+                if (mCurrentPacket == null && (mCurrentPacket = mQueue.poll()) == null) {
                     // empty queue; loop back to wait
                     continue;
                 }

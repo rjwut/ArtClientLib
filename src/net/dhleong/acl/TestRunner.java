@@ -25,7 +25,6 @@ import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.player.PlayerUpdatePacket;
 import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.ReadyPacket2;
-import net.dhleong.acl.net.setup.SetShipPacket;
 import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
 import net.dhleong.acl.util.GridCoord;
@@ -193,6 +192,10 @@ public class TestRunner {
                 
 //                if (pkt instanceof SystemInfoPacket)
 //                    return; // ignore system info packets for now
+                if (pkt.getType() == 0xe548e74a) {
+                    System.out.println("GOT SERVER VERSION");
+                    net.send(new ReadyPacket2());
+                }
                     
                 if (pkt instanceof StationPacket) {
 //                    StationPacket create = (StationPacket) pkt;
@@ -341,7 +344,7 @@ public class TestRunner {
         });
         
         net.start();
-        net.send(new SetShipPacket(SetShipPacket.SHIP_1_ARTEMIS));
+        //net.send(new SetShipPacket(SetShipPacket.SHIP_1_ARTEMIS));
 //        net.send(new SetShipPacket(SetShipPacket.SHIP_2_INTREPID));
 //        net.send(new SetShipPacket(SetShipPacket.SHIP_3_AEGIS));
         

@@ -56,9 +56,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                 if (!mConnected )
                     continue;
                 
-                if (mCurrentPacket == null && mQueue.size() > 0) {
-                    mCurrentPacket = mQueue.remove();
-                } else if (mCurrentPacket == null) {
+                if (mCurrentPacket == null || (mCurrentPacket = mQueue.poll()) == null) {
                     // empty queue; loop back to wait
                     continue;
                 }

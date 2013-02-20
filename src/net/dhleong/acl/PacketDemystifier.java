@@ -7,6 +7,7 @@ import java.util.LinkedList;
 
 import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.EnemyUpdatePacket;
+import net.dhleong.acl.net.OtherShipUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.net.player.MainPlayerUpdatePacket;
 import net.dhleong.acl.net.player.WeapPlayerUpdatePacket;
@@ -31,8 +32,8 @@ public abstract class PacketDemystifier implements OnPacketListener {
      * The Demystifier we want to use for this run
      */
     private static final OnPacketListener THIS_DEMYSITIFIER = 
-            new EnemyPacketDemystifier();
-            //new SimpleWorldPacketDemystifier(OtherShipUpdatePacket.class, ArtemisObject.TYPE_OTHER);
+//            new EnemyPacketDemystifier();
+            new SimpleWorldPacketDemystifier(OtherShipUpdatePacket.class, ArtemisObject.TYPE_OTHER);
 
     static class UserPacketDemystifier extends SimpleWorldPacketDemystifier {
         
@@ -434,15 +435,16 @@ public abstract class PacketDemystifier implements OnPacketListener {
     /* Runner */
 
     public static final void main(String[] args) {
-//        demystTest();
-        demystNetwork();
+        demystTest();
+//        demystNetwork();
     }
     
     private static void demystTest() {
         
         //String raw = "01f8030000bc2af924000000003f9a99193f6f12833b0179007a440100000019184e4776c44a47db0f49400800000041007200740065006d006900730000000000a0420000a0420000a0420000a042005043480800000000";
         //String raw = "0475040000fb3a5f007c0400000049003400340000000000803f9a99993e6f12033b01000000d107000050896d472650c3474215013ed0ccccbd9a99993e0000a0420000a0420000a0420000a042010030000000a8a9203ff0bbc43e6c5b363fe644263fe234243f0476040000fb3a5f007c0400000058003100350000000000803f9a99993e6f12033b01000000d0070000501f6e472650c3474215013ed0ccccbd9a99993e000020420000204200002042000020420100060000005c18943e04d01b3f9d539b3e4495553ffacb163f00000000";
-        String raw = "0279060000ef075408020604030012000200000069640003150015002002f70079002e0001f6ce00000000";
+//        String raw = "0279060000ef075408020604030012000200000069640003150015002002f70079002e0001f6ce00000000";
+        String raw = "058c050000ffffffff0705000000540072003200340000000000803ff201003f9a99993e6f12033b00000000dc050000e266644700000000d6248147000000008eb247b77280d2bf9a99993e010000002042000020420000204200002042010000000000000000000000000000000000000000000000000000000000000000000000e256a43e4482bb3ebeaf5e3f88f9103f90b1143f058d050000ffffffff0705000000540072003700390000000000803f30f8ff3e9a99993e6f12033b00000000dc05000018aa344700000000be4d924700000000d08bc737608b03409a99993e0000000020420000204200002042000020420100000000000000000000000000000000000000000000000000000000000000000000004a0f253f3a666a3fd0741b3f3bb9503fd790d13e058e050000ffffffff0705000000440065003100360000000000803f1cfcff3e3333333f6f12033b00000000dd050000f6da2d4700000000f50e8e470000000068c7473704e8f9bf3333333f01000000a0420000a0420000a0420000a042010000000000000000000000000000000000000000000000000000000000000000000000eef4293fedb0293f2b87153f9680b13e74a3393f00000000";
         byte[] bytes = ObjectParsingTests.hexStringToByteArray(raw);
         BaseArtemisPacket pkt = new BaseArtemisPacket(0, 0, ArtemisPacket.WORLD_TYPE, bytes);
         THIS_DEMYSITIFIER.onPacket(pkt);

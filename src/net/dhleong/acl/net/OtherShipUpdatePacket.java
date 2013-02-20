@@ -140,6 +140,7 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
 ////                    p.readInt(DUNNO_SKIP_4);
 //                p.readInt(DUNNO_SKIP_4);
 
+                /*
                 // hax?
                 if (p.has(DUNNO_SKIP_3)) {
                     p.readByte(DUNNO_SKIP_3, (byte) 0);
@@ -151,10 +152,17 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
                     if (dunno0 != 0)
                         p.readInt(DUNNO_SKIP_4);
                 }
-                /*
-                p.readByte(DUNNO_SKIP_3, (byte) -1);
-                p.readByte(DUNNO_SKIP_4, (byte) -1);
                 */
+                
+                // doesn't really make sense, but
+                //  works, and makes MORE sense than above
+                if (name != null) {
+                    p.readByte(DUNNO_SKIP_3, (byte) -1);
+                    p.readByte(DUNNO_SKIP_4, (byte) -1);
+                } else {
+                    p.readShort(DUNNO_SKIP_3);
+                    p.readInt(DUNNO_SKIP_4);
+                }
 
                 // WTF?!?! WHY!?!
                 if (p.has(SHLD_FRNT_MX) && !p.has(SHLD_FRNT))

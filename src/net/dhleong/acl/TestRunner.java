@@ -194,7 +194,7 @@ public class TestRunner {
 //                    return; // ignore system info packets for now
                 if (pkt.getType() == 0xe548e74a) {
                     System.out.println("GOT SERVER VERSION");
-                    net.send(new ReadyPacket2());
+//                    net.send(new ReadyPacket2());
                 }
                     
                 if (pkt instanceof StationPacket) {

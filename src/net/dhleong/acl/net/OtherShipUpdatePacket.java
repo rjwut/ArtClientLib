@@ -189,11 +189,11 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
                 p.readByte(DUNNO_NEW_1, (byte)-1);
 
                 // but bytes above make this weird
-                p.readShort(UNKNOWN_1); // TODO wtf? cannot be correct...
                 p.readInt(UNKNOWN_1);
                 p.readInt(UNKNOWN_2);
                 p.readInt(UNKNOWN_3);
                 p.readInt(UNKNOWN_4);
+                p.readShort(UNKNOWN_4); // TODO wtf? cannot be correct...
 
                 p.readInt(UNUSED_1);
                 p.readInt(UNUSED_2);

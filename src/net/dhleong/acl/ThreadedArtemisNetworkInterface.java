@@ -12,7 +12,9 @@ import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.dhleong.acl.net.BaseArtemisPacket;
+import net.dhleong.acl.net.GameMessagePacket;
 import net.dhleong.acl.net.PacketParser;
+import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.ReadyPacket2;
 import net.dhleong.acl.util.Util;
 
@@ -138,6 +140,10 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                 if (!wasConnected && mOnConnectedListener != null) 
                     mOnConnectedListener.onConnected();
                 
+            } else if (pkt instanceof GameMessagePacket) {
+                if (((GameMessagePacket) pkt).isGameOver()) {
+                    offer(new ReadyPacket());
+                }
             }
         }
     }

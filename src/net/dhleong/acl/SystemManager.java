@@ -283,11 +283,14 @@ public class SystemManager implements OnPacketListener {
     /**
      * Get the first object with the given name
      * @param type
-     * @return
+     * @return null if no such object or if name is null
      */
-    public synchronized ArtemisObject getObjectByName(String name) {
+    public synchronized ArtemisObject getObjectByName(final String name) {
+        if (name == null)
+            return null;
+        
         for (ArtemisObject obj : mObjects.values()) {
-            if (obj.getName().equals(name))
+            if (name.equals(obj.getName()))
                 return obj;
         }
         

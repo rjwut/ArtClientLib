@@ -311,7 +311,7 @@ public class TestRunner {
                     GameMessagePacket msg = (GameMessagePacket) pkt;
                     if (msg.isGameOver()) {
                         System.out.println("*** GAME OVER!!! ***");
-                        net.send(new ReadyPacket());
+//                        net.send(new ReadyPacket());
                     } else if (msg.hasMessage()){
                         System.out.println("\nvvv MESSAGE vvv");
                         System.out.println(msg.getMessage());

@@ -241,10 +241,13 @@ public class SystemManager implements OnPacketListener {
     }
     
     public GridEntry getGridAt(int x, int y, int z) {
-        return mGrid.getGridAt(GridCoord.getInstance(x, y, z));
+        return getGridAt(GridCoord.getInstance(x, y, z));
     }
 
     public GridEntry getGridAt(GridCoord key) {
+        if (mGrid == null)
+            throw new IllegalStateException("SystemManager must have a ShipSystemGrid");
+        
         return mGrid.getGridAt(key);
     }
 

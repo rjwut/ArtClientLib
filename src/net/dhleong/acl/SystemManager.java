@@ -274,8 +274,11 @@ public class SystemManager implements OnPacketListener {
         
         final float total = mGrid.getSystemCount(sys);
         float current = total;
-        for (GridCoord c : mGrid.getCoordsFor(sys))
-            current -= mGridDamage.get(c);
+        for (GridCoord c : mGrid.getCoordsFor(sys)) {
+            final float damage = getGridDamageAt(c);
+            if (damage != -1)
+                current -= damage;
+        }
         
         return current / total;
     }
@@ -312,6 +315,9 @@ public class SystemManager implements OnPacketListener {
      *  if we don't have the any entry for the coord
      */
     public float getGridDamageAt(GridCoord coord) {
+        if (mGridDamage == null)
+            return -1f;
+        
         if (mGridDamage.containsKey(coord))
             return mGridDamage.get(coord);
         

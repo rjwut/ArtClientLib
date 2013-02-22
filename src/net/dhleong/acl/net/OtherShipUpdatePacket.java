@@ -187,13 +187,16 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
                 // MUST be, I think... 
                 p.readByte(DUNNO_NEW_0, (byte)-1);
                 p.readByte(DUNNO_NEW_1, (byte)-1);
+                
+                // total crap, and yet...
+                if (name != null && p.has(DUNNO_NEW_0) && p.has(DUNNO_NEW_1))
+                    p.readShort();
 
                 // but bytes above make this weird
                 p.readInt(UNKNOWN_1);
                 p.readInt(UNKNOWN_2);
                 p.readInt(UNKNOWN_3);
                 p.readInt(UNKNOWN_4);
-                p.readShort(UNKNOWN_4); // TODO wtf? cannot be correct...
 
                 p.readInt(UNUSED_1);
                 p.readInt(UNUSED_2);

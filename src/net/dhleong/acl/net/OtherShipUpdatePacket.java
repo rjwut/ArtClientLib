@@ -37,10 +37,10 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
     private static final int DUNNO_SKIP_3= 0x00000040; // wtf?
     private static final int DUNNO_SKIP_4= 0x00000080; // wtf?
 
-    private static final int SHLD_FRNT   = 0x00000100; 
-    private static final int SHLD_FRNT_MX= 0x00000200; 
-    private static final int SHLD_REAR   = 0x00000400; 
-    private static final int SHLD_REAR_MX= 0x00000800; 
+    private static final int SHLD_FRNT_MX= 0x00000100; 
+    private static final int SHLD_FRNT   = 0x00000200; 
+    private static final int SHLD_REAR_MX= 0x00000400; 
+    private static final int SHLD_REAR   = 0x00000800; 
     private static final int DUNNO_NEW_0 = 0x00001000; // ?
     private static final int DUNNO_NEW_1 = 0x00002000; // ?
 
@@ -124,7 +124,7 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
                 y = p.readFloat(POS_Y, -1);
                 z = p.readFloat(POS_Z, -1);
                 
-                float dunno0 = p.readFloat(DUNNO_SKIP_0, -1);
+                p.readFloat(DUNNO_SKIP_0, -1);
 
                 steering = p.readFloat(STEERING, Float.MIN_VALUE); // I *think* so
                 bearing = p.readFloat(BEARING, Float.MIN_VALUE);
@@ -165,18 +165,18 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
                 }
 
                 // WTF?!?! WHY!?!
-                if (p.has(SHLD_FRNT_MX) && !p.has(SHLD_FRNT))
-                    shieldsFront = p.readFloat();
-                else
-                    shieldsFront = p.readFloat(SHLD_FRNT, -1);
+//                if (p.has(SHLD_FRNT_MX) && !p.has(SHLD_FRNT))
+//                    shieldsFront = p.readFloat();
+//                else
                 shieldsFrontMax = p.readFloat(SHLD_FRNT_MX, -1);
+                shieldsFront = p.readFloat(SHLD_FRNT, -1);
                 
                 
-                if (p.has(SHLD_REAR_MX) && !p.has(SHLD_REAR))
-                    shieldsRear  = p.readFloat();
-                else
-                    shieldsRear = p.readFloat(SHLD_REAR, -1);
+//                if (p.has(SHLD_REAR_MX) && !p.has(SHLD_REAR))
+//                    shieldsRear  = p.readFloat();
+//                else
                 shieldsRearMax = p.readFloat(SHLD_REAR_MX, -1);
+                shieldsRear = p.readFloat(SHLD_REAR, -1);
                 
 //                System.out.println(">> " + shieldsFront + " / " + shieldsRearMax);
 
@@ -189,7 +189,9 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
                 p.readByte(DUNNO_NEW_1, (byte)-1);
                 
                 // total crap, and yet...
-                if (name != null && p.has(DUNNO_NEW_0) && p.has(DUNNO_NEW_1))
+//                if (name != null && p.has(DUNNO_NEW_0) && p.has(DUNNO_NEW_1))
+                if (p.has(SHLD_FRNT_MX) && p.has(SHLD_FRNT) 
+                        && p.has(SHLD_REAR_MX) && p.has(SHLD_REAR))
                     p.readShort();
 
                 // but bytes above make this weird

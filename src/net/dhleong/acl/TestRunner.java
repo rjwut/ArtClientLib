@@ -219,7 +219,7 @@ public class TestRunner {
                     return;
                 } else if (pkt instanceof OtherShipUpdatePacket) {
 //                  System.out.println("** Update: ");
-//                  ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
+                  ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
 //                  up.debugPrint();
 //                  for (ArtemisObject obj : up.mObjects) {
 //                      ArtemisObject full = mgr.getObject(obj.getId());
@@ -228,7 +228,7 @@ public class TestRunner {
 //                                  .getVelocity());
 //                  }
                   
-//                  System.out.println("--> " + up);
+                  System.out.println("--> " + up);
                   
                   return;
 

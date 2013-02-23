@@ -466,13 +466,15 @@ public class ArtemisPlayer extends BaseArtemisShip {
     }
     
     /**
-     * Get the current science scanning target
+     * Get the id of the current science target,
+     *  that is, whatever object Science
+     *  has selected
      *  
      * @return The id of the target, 1 if
      *  no target, or {@link Integer#MIN_VALUE}
      *  if unknown
      */
-    public int getScanTarget() {
+    public int getScienceTarget() {
         return mScanTarget;
     }
     
@@ -490,7 +492,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
     }
     
     /**
-     * Like {@link #getScanTarget()}, but for
+     * Like {@link #getScienceTarget()}, but for
      *  the captain's map selection
      * @return
      */

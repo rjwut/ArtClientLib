@@ -145,6 +145,7 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
                 
                 p.readShort(DUNNO_NEW_3);
 
+                // TODO These must be system damages!
                 p.readInt(UNUSED_1);
                 p.readInt(UNUSED_2);
                 p.readInt(UNUSED_3);

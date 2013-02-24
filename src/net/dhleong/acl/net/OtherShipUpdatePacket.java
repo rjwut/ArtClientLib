@@ -156,10 +156,10 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
                 
                 // doesn't really make sense, but
                 //  works, and makes MORE sense than above
-                if (name != null) {
+                if (name != null && p.has(DUNNO_SKIP_3)) {
                     p.readByte(DUNNO_SKIP_3, (byte) -1);
                     p.readByte(DUNNO_SKIP_4, (byte) -1);
-                } else {
+                } else if (name == null) {
                     p.readShort(DUNNO_SKIP_3);
                     p.readInt(DUNNO_SKIP_4);
                 }
@@ -194,12 +194,11 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
                         && p.has(SHLD_REAR_MX) && p.has(SHLD_REAR))
                     p.readShort();
 
-                // but bytes above make this weird
+                // TODO These must be system damages!
                 p.readInt(UNKNOWN_1);
                 p.readInt(UNKNOWN_2);
                 p.readInt(UNKNOWN_3);
                 p.readInt(UNKNOWN_4);
-
                 p.readInt(UNUSED_1);
                 p.readInt(UNUSED_2);
                 p.readInt(UNUSED_3);

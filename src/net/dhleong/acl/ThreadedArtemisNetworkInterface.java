@@ -34,14 +34,14 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         private OnConnectedListener mOnConnectedListener;
         private boolean mStarted;
 
-        public SenderThread(ThreadedArtemisNetworkInterface net, Socket skt) throws IOException {
+        public SenderThread(final ThreadedArtemisNetworkInterface net, final Socket skt) throws IOException {
             mInterface = net;
             mSkt = skt;
             
             mOutput = new BufferedOutputStream(mSkt.getOutputStream());
         }
         
-        public boolean offer(ArtemisPacket pkt) {
+        public boolean offer(final ArtemisPacket pkt) {
             //System.out.println(">> sending: " + pkt);
             return mQueue.offer(pkt);
         }
@@ -54,7 +54,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                 
                 try {
                     Thread.sleep(5);
-                } catch (InterruptedException e) {}
+                } catch (final InterruptedException e) {}
                 
                 if (!mConnected )
                     continue;
@@ -74,7 +74,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                         mCurrentPacket = null;
                         mOutput.flush();
                     }
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     if (mRunning) {
                         e.printStackTrace();
                         mInterface.errorCode = OnConnectedListener.ERROR_IO;
@@ -92,7 +92,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
             //  down the pipes
             try {
                 mSkt.close();
-            } catch (IOException e) {}
+            } catch (final IOException e) {}
             
             if (mOnConnectedListener != null) {
                 mOnConnectedListener.onDisconnected(mInterface.errorCode);
@@ -107,12 +107,12 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         }
 
         @Override
-        public void onPacket(ArtemisPacket pkt) {
+        public void onPacket(final ArtemisPacket pkt) {
             if (pkt.getType() == 0xe548e74a) { // server version
 
-                BaseArtemisPacket base = (BaseArtemisPacket) pkt;
-                byte[] data = base.getData();
-                float version = PacketParser.getLendFloat(data, 4);
+                final BaseArtemisPacket base = (BaseArtemisPacket) pkt;
+                final byte[] data = base.getData();
+                final float version = PacketParser.getLendFloat(data, 4);
                 
                 if (Util.findInArray(ArtemisNetworkInterface.SUPPORTED_VERSIONS, version) == -1) {
                     System.err.println(String
@@ -161,7 +161,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         private PacketParser mParser;
         private boolean mStarted;
         
-        public ReceiverThread(ThreadedArtemisNetworkInterface net, Socket skt) throws IOException {
+        public ReceiverThread(final ThreadedArtemisNetworkInterface net, final Socket skt) throws IOException {
             mInterface = net;
             mInput = new BufferedInputStream(skt.getInputStream());
             mParser = new PacketParser();
@@ -186,7 +186,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                     
                 try {
                     // read packet
-                    ArtemisPacket pkt = mParser.readPacket(mInput);
+                    final ArtemisPacket pkt = mParser.readPacket(mInput);
 
                     // only bother with non-null packets; else,
                     //  they are just keepalive (I guess) for 
@@ -194,11 +194,11 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                     //  and perhaps calculating latency
                     if (pkt != null && mRunning) {
                         // notify listeners
-                        for (OnPacketListener listener : mListeners) {
+                        for (final OnPacketListener listener : mListeners) {
                             listener.onPacket(pkt);
                         }
                     }
-                } catch (ArtemisPacketException e) {
+                } catch (final ArtemisPacketException e) {
                     // TODO ?
                     if (mRunning) {
                         System.err.println("Exitting due to parseException");
@@ -206,7 +206,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                         mInterface.errorCode = OnConnectedListener.ERROR_PARSE;
                     }
                     break;
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     if (mRunning) {
                         System.err.println("Exitting due to IOException");
                         e.printStackTrace();
@@ -228,7 +228,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
             }
         }
 
-        public void addOnPacketListener(OnPacketListener listener) {
+        public void addOnPacketListener(final OnPacketListener listener) {
             mListeners.add(listener);
         }
     }
@@ -243,7 +243,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
 
     public ThreadedArtemisNetworkInterface(final String tgtIp, final int tgtPort) 
             throws UnknownHostException, IOException {
-        Socket skt = new Socket(tgtIp, tgtPort);
+        final Socket skt = new Socket(tgtIp, tgtPort);
         skt.setKeepAlive(true);
         
         mSendThread = new SenderThread(this, skt);
@@ -252,7 +252,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
     }
 
     @Override
-    public void addOnPacketListener(OnPacketListener listener) {
+    public void addOnPacketListener(final OnPacketListener listener) {
         mReceiveThread.addOnPacketListener(listener);
     }
     
@@ -261,7 +261,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
     }
 
     @Override
-    public void send(ArtemisPacket pkt) {
+    public void send(final ArtemisPacket pkt) {
         mSendThread.offer(pkt);
     }
     
@@ -279,11 +279,11 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
             mSendThread.start();
     }
 
-    public void setOnConnectedListener(OnConnectedListener listener) {
+    public void setOnConnectedListener(final OnConnectedListener listener) {
         mSendThread.mOnConnectedListener = listener;
     }
     
-    public void setPacketParser(PacketParser parser) {
+    public void setPacketParser(final PacketParser parser) {
         mReceiveThread.mParser = parser;
     }
 

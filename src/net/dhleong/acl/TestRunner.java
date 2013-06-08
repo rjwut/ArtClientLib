@@ -35,29 +35,29 @@ import net.dhleong.acl.world.BaseArtemisShip;
 
 public class TestRunner {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
         
         // configs
 //        final String tgtIp = "localhost";
-        String tgtIp = "10.211.55.3";
+        final String tgtIp = "10.211.55.4";
         final int tgtPort = 2010;
         
         // quick test
-        int value = 1424;
-        byte[] bytes = new byte[4];
+        final int value = 1424;
+        final byte[] bytes = new byte[4];
         PacketParser.putLendInt(value, bytes);
         if (value != PacketParser.getLendInt(bytes))
             throw new Exception("putLendInt fails; got" + PacketParser.getLendInt(bytes));
         
         // test grid; also used with testing system damage later
-        String sntFile = "/Users/dhleong/Documents/workspace/" +
+        final String sntFile = "/Users/dhleong/Documents/workspace/" +
                 "ArtemisClient/res/raw/artemis";
         System.out.println("- Reading grid: " + sntFile);
-        InputStream is = new FileInputStream(sntFile);
+        final InputStream is = new FileInputStream(sntFile);
         final ShipSystemGrid grid = new ShipSystemGrid(is);
-        for (SystemType type : SystemType.values()) {
+        for (final SystemType type : SystemType.values()) {
             System.out.println("--+ " + type +": " + grid.getSystemCount(type));
-            for (GridCoord c : grid.getCoordsFor(type))
+            for (final GridCoord c : grid.getCoordsFor(type))
                 System.out.println("--+--+" + c);
         }
         
@@ -66,12 +66,12 @@ public class TestRunner {
 //        GridCoord.getInstance(99, 99, 99);
         
         
-        PipedInputStream in = new PipedInputStream(100);
-        PipedOutputStream out = new PipedOutputStream(in);
+        final PipedInputStream in = new PipedInputStream(100);
+        final PipedOutputStream out = new PipedOutputStream(in);
         
-        SetStationPacket srcPkt = new SetStationPacket(StationType.ENGINEERING, true);
+        final SetStationPacket srcPkt = new SetStationPacket(StationType.ENGINEERING, true);
         srcPkt.write(out);
-        ArtemisPacket destPkt = new PacketParser().readPacket(in);
+        final ArtemisPacket destPkt = new PacketParser().readPacket(in);
         if (destPkt.getMode() != 0x02)
             throw new Exception("Wrong mode: " + destPkt.getMode());
         if (destPkt.getType() != SetStationPacket.TYPE)
@@ -80,10 +80,10 @@ public class TestRunner {
         final ArtemisNetworkInterface net; 
         try {
             net = new ThreadedArtemisNetworkInterface(tgtIp, tgtPort);
-        } catch (UnknownHostException e) {
+        } catch (final UnknownHostException e) {
             e.printStackTrace();
             return;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
             return;
         }
@@ -97,17 +97,17 @@ public class TestRunner {
             private int noHull = -1;
 
             @Override
-            public void onPacket(ArtemisPacket pkt) {
+            public void onPacket(final ArtemisPacket pkt) {
                 if (pkt instanceof ObjectUpdatingPacket) {
-                    ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
+                    final ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
 //                    up.debugPrint();
                     boolean created = false;
-                    for (ArtemisObject obj : up.getObjects()) {
+                    for (final ArtemisObject obj : up.getObjects()) {
 //                        ArtemisObject full = mgr.getObject(obj.getId());
 //                        System.out.println(" + " + obj + " vel=" +
 //                                ((ArtemisBearable)full)
 //                                    .getVelocity());
-                        ArtemisObject old = mgr.getObject(obj.getId());
+                        final ArtemisObject old = mgr.getObject(obj.getId());
                         if (old == null) {
                             
                             if (obj.getType() == ArtemisObject.TYPE_ENEMY) {
@@ -124,7 +124,7 @@ public class TestRunner {
                                     + " " + obj);
                             }
                         } else if (old instanceof BaseArtemisShip) {
-                            BaseArtemisShip ship = (BaseArtemisShip) old;
+                            final BaseArtemisShip ship = (BaseArtemisShip) old;
                             if (ship.getName() == null && ((BaseArtemisShip)obj).getName() != null)
                                 System.out.println("** Update to missing name: " + obj);
                         }
@@ -138,9 +138,9 @@ public class TestRunner {
                 }
                 
                 if (pkt instanceof EnemyUpdatePacket) {
-                    EnemyUpdatePacket up = (EnemyUpdatePacket) pkt;
+                    final EnemyUpdatePacket up = (EnemyUpdatePacket) pkt;
                     
-                    for (ArtemisPositionable obj : up.getObjects()) {
+                    for (final ArtemisPositionable obj : up.getObjects()) {
                         if (obj.getName() != null) {
 
 //                            System.out.println("** Update: ");
@@ -148,10 +148,10 @@ public class TestRunner {
 //                            System.out.println("--> " + up);
                             
                             if (obj instanceof BaseArtemisShip) {
-                                BaseArtemisShip ship = (BaseArtemisShip) obj;
+                                final BaseArtemisShip ship = (BaseArtemisShip) obj;
                                 if (ship.getHullId() == -1 && noHull == -1) {
                                     noHull = ship.getId();
-                                    BaseArtemisShip filled = (BaseArtemisShip) mgr
+                                    final BaseArtemisShip filled = (BaseArtemisShip) mgr
                                             .getObject(ship.getId());
                                     if (filled == null || filled.getHullId() == -1) {
                                         System.out.println("\n---------");
@@ -172,7 +172,7 @@ public class TestRunner {
                         }
                     }
                 } else if (pkt instanceof DestroyObjectPacket) {
-                    DestroyObjectPacket destroy = (DestroyObjectPacket) pkt;
+                    final DestroyObjectPacket destroy = (DestroyObjectPacket) pkt;
                     System.out.println("** " + destroy 
                             +":" +
                             mgr.getObject(destroy.getTarget()));
@@ -188,7 +188,7 @@ public class TestRunner {
             protected int destroyedEnemies = 0;
 
             @Override
-            public void onPacket(ArtemisPacket pkt) {
+            public void onPacket(final ArtemisPacket pkt) {
                 
 //                if (pkt instanceof SystemInfoPacket)
 //                    return; // ignore system info packets for now
@@ -219,7 +219,7 @@ public class TestRunner {
                     return;
                 } else if (pkt instanceof OtherShipUpdatePacket) {
 //                  System.out.println("** Update: ");
-                  ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
+                  final ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
 //                  up.debugPrint();
 //                  for (ArtemisObject obj : up.mObjects) {
 //                      ArtemisObject full = mgr.getObject(obj.getId());
@@ -242,7 +242,7 @@ public class TestRunner {
 //                    return;
 
                 } else if (pkt instanceof PlayerUpdatePacket) {
-                    PlayerUpdatePacket up = (PlayerUpdatePacket) pkt;
+                    final PlayerUpdatePacket up = (PlayerUpdatePacket) pkt;
 //                    ArtemisPlayer plr = (ArtemisPlayer) mgr.getObject(up.getPlayer().getId());
                     
 //                    for (int i=0; i<ArtemisPlayer.MAX_TUBES; i++) {
@@ -284,13 +284,13 @@ public class TestRunner {
                     return;
 
                 } else if (pkt instanceof CommsIncomingPacket) {
-                    CommsIncomingPacket comms = (CommsIncomingPacket) pkt;
+                    final CommsIncomingPacket comms = (CommsIncomingPacket) pkt;
                     System.out.println("** From ``"+comms.getFrom()+"'': " + 
                             comms.getMessage());
                     System.out.println("--> " + comms);
                     return;
                 } else if (pkt instanceof IncomingAudioPacket) {
-                    IncomingAudioPacket audio = (IncomingAudioPacket) pkt;
+                    final IncomingAudioPacket audio = (IncomingAudioPacket) pkt;
                     System.out.println(String.format("** Incoming[%d]: %s", 
                             audio.getAudioId(),
                             audio.getTitle()));
@@ -300,7 +300,7 @@ public class TestRunner {
                     }
                     return;
                 } else if (pkt instanceof EngGridUpdatePacket) {
-                    EngGridUpdatePacket dmg = (EngGridUpdatePacket) pkt;
+                    final EngGridUpdatePacket dmg = (EngGridUpdatePacket) pkt;
 //                    System.out.println("** GRID UPDATE: ");
 //                    dmg.debugPrint();
 //                    System.out.println("Overall healths: ");
@@ -311,7 +311,7 @@ public class TestRunner {
                     System.out.println("--> eng " + dmg);
                     return;
                 } else if (pkt instanceof GameMessagePacket) {
-                    GameMessagePacket msg = (GameMessagePacket) pkt;
+                    final GameMessagePacket msg = (GameMessagePacket) pkt;
                     if (msg.isGameOver()) {
                         System.out.println("*** GAME OVER!!! ***");
 //                        net.send(new ReadyPacket());
@@ -332,7 +332,7 @@ public class TestRunner {
                     }
                     return;
                 } else if (pkt instanceof GameStartPacket) {
-                    GameStartPacket start = (GameStartPacket) pkt;
+                    final GameStartPacket start = (GameStartPacket) pkt;
                     start.debugPrint();
 //                    net.stop();
                     return;

@@ -25,18 +25,18 @@ import net.dhleong.acl.world.BaseArtemisShip;
  */
 public class BadParseDetectingRunner {
 
-    public static void main(String[] args) {
-        //        String tgtIp = "10.211.55.4";
-        final String tgtIp = "192.168.1.30";
+    public static void main(final String[] args) {
+                final String tgtIp = "10.211.55.4";
+//        final String tgtIp = "192.168.1.30";
         final int tgtPort = 2010;
 
         final ThreadedArtemisNetworkInterface net; 
         try {
             net = new ThreadedArtemisNetworkInterface(tgtIp, tgtPort);
-        } catch (UnknownHostException e) {
+        } catch (final UnknownHostException e) {
             e.printStackTrace();
             return;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
             return;
         }
@@ -51,7 +51,7 @@ public class BadParseDetectingRunner {
             }
 
             @Override
-            public void onDisconnected(int errorCode) {
+            public void onDisconnected(final int errorCode) {
                 System.out.println("Disconnected: " + errorCode);
             }
         });
@@ -59,34 +59,34 @@ public class BadParseDetectingRunner {
         net.addOnPacketListener(new OnPacketListener() {
 
             @Override
-            public void onPacket(ArtemisPacket pkt) {
+            public void onPacket(final ArtemisPacket pkt) {
 
                 if (pkt instanceof PlayerUpdatePacket) {
 
-                    PlayerUpdatePacket up = (PlayerUpdatePacket) pkt;
+                    final PlayerUpdatePacket up = (PlayerUpdatePacket) pkt;
                     try {
 
-                        ArtemisPlayer p = up.getPlayer();
+                        final ArtemisPlayer p = up.getPlayer();
                         testPlayer(p);
 
-                    } catch (RuntimeException e) {
+                    } catch (final RuntimeException e) {
                         up.debugPrint();
                         System.out.println("--> " + up);
                         net.stop();
                         throw e;
                     }
                 } else if (pkt instanceof ObjectUpdatingPacket) {
-                    ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
+                    final ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
                     try {
 
-                        for (ArtemisPositionable p : up.getObjects()) {
+                        for (final ArtemisPositionable p : up.getObjects()) {
                             if (p instanceof BaseArtemisShip)
                                 testShip((BaseArtemisShip)p);
                             else
                                 testPositionable(p);
                         }
 
-                    } catch (RuntimeException e) {
+                    } catch (final RuntimeException e) {
                         up.debugPrint();
                         System.out.println("--> " + up);
                         net.stop();
@@ -108,14 +108,14 @@ public class BadParseDetectingRunner {
         net.send(new ReadyPacket2());
     }
 
-    public static void testPlayer(ArtemisPlayer p) {
+    public static void testPlayer(final ArtemisPlayer p) {
         testShip(p);
 
         assertRange(-1, 5000, p.getEnergy(), "energy");
         assertRange(-1, 6, p.getShipIndex(), "shipIndex");
         assertRange(-1, 32, p.getAvailableCoolant(), "maxCoolant");
 
-        for (SystemType sys : SystemType.values()) {
+        for (final SystemType sys : SystemType.values()) {
             if (p.getSystemEnergy(sys) != -1)
                 assertRange(0, 1, p.getSystemEnergy(sys), sys + "energy");
             assertRange(-1, 1, p.getSystemHeat(sys), sys + "heat");
@@ -127,7 +127,7 @@ public class BadParseDetectingRunner {
         }
     }
 
-    public static void testShip(BaseArtemisShip p) {
+    public static void testShip(final BaseArtemisShip p) {
         testPositionable(p);
 
         assertRange(-1, 10000, p.getHullId(), "hullId");
@@ -148,20 +148,20 @@ public class BadParseDetectingRunner {
         }
     }
 
-    private static void assertNotEqual(float expected, float actual, String label) {
+    private static void assertNotEqual(final float expected, final float actual, final String label) {
         if (Math.abs(expected - actual) < 0.001)
             throw new RuntimeException(
                     String.format("Value ``%s'' is illegal value (%f)", 
                             label, expected));
     }
 
-    public static void testPositionable(ArtemisPositionable p) {
+    public static void testPositionable(final ArtemisPositionable p) {
         assertRange(-1, 100020, p.getX(), "x");
         assertRange(-200, 200, p.getY(), "y");
         assertRange(-1, 100020, p.getZ(), "z");
     }
 
-    private static void assertRange(float low, float high, float value, String label) {
+    private static void assertRange(final float low, final float high, final float value, final String label) {
         if (value < low || value > high) {
             throw new RuntimeException(
                     String.format("Value ``%s'' (%f) out of range [%f,%f]",

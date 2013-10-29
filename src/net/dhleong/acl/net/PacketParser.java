@@ -285,7 +285,7 @@ public class PacketParser {
             }
         }
         try {
-            return new String(bytes, offset, realNameLen, "UTF16LE");
+            return new String(bytes, offset, realNameLen, "UTF-16LE");
         } catch (UnsupportedEncodingException e) {
             return new String(bytes, offset, realNameLen);
         }

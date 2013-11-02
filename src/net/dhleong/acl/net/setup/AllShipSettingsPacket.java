@@ -45,6 +45,8 @@ public class AllShipSettingsPacket extends BaseArtemisPacket {
         for (int i=0; i<SetShipPacket.TOTAL_SHIPS; i++) {
             drives[i] = p.readInt();
             shipTypes[i] = p.readInt();
+            p.readInt();	// RJW: UNKNOWN INT (always seems to be 1 0 0 0)
+            // TODO Figure out what this int is.
             shipNames[i] = p.readName();
         }
     }

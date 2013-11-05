@@ -97,6 +97,9 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
         while (p.hasMore()) {
             try {
                 p.start();
+
+                p.readByte(); // RJW: This seems to fix a problem with EnemyUpdatePacket
+                // TODO Figure out what this byte is that we're skipping.
                 
                 name = p.readName(ACTION_NAME_BYTE);
                 

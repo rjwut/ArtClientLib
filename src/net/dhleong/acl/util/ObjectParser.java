@@ -284,9 +284,6 @@ public class ObjectParser {
             args = PacketParser.getLendInt(mData, offset+5);
             offset += 9;
         }
-
-        offset++;	// RJW: This seems to fix a problem with EnemyUpdatePacket
-        // TODO Figure out what this byte is that we're skipping.
     }
 
     /**

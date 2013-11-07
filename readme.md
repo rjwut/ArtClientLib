@@ -1,36 +1,42 @@
 ArtClientLib
 ============
 
-ArtClientLib is an UNOFFICIAL Java library for developing clients to interact
+ArtClientLib is an **unofficial** Java library for developing clients to interact 
 with [Artemis SBS](http://www.artemis.eochu.com/). It was originally developed
-by Daniel Leong to power his (also UNOFFICIAL) 
-[Android Client](http://www.artemis.eochu.com/?page_id=28#/20121018/unofficial-android-client-for-artemis-1988927/), created due to the lack (at the time) of a mobile
-client. It is released here with permission of the developer of Artemis,
-Thom Robertson.
+by Daniel Leong to power his (also **unofficial**) 
+[Android Client](http://www.artemis.eochu.com/?page_id=28#/20121018/unofficial-android-client-for-artemis-1988927/),
+created due to the lack (at the time) of an official mobile client. It was
+released here on GitHub with permission of the developer of Artemis, Thom
+Robertson.
+
+This fork of the ArtClientLib project was created in order to update the project
+to be compatible with Artemis 2.0. It is not intended that this branch will be
+compatible with older versions of Artemis. If you need support for Artemis 1.x,
+please use
+[the original version of the library](https://github.com/dhleong/ArtClientLib).
+
 
 # Disclaimers
 
-ArtClientLib started as an experiment and proof-of-concept, so much of the 
-code is rough, and in a constant state of flux. If I return to actively
-working on this, I will try to keep a separate branch that I work out of
-(and which may change rapidly to accomodate the needs of the Android
-app), and leave a slightly more stable version in master. But, no promises!
-
-As stated above, ArtClientLib is completely UNOFFICIAL and UNSUPPORTED, 
-with all packet structures derived through experiment, observation, 
-educated guesses, and luck. Because of this, new releases of the official
-Artemis game are likely to break this library until I (or some enterprising
-member of the community) can figure out what changes were made and update
-things accordingly.
+ArtClientLib is completely **unofficial** and **unsupported**,with all packet
+structures derived through experiment, observation, educated guesses, and luck.
+Because of this, new releases of the official Artemis game are likely to break
+this library until I (or some enterprising member of the community) can figure
+out what changes were made and update things accordingly.
 
 This library is made available for use on an as-is basis. I make no guarantee
 of anything, and whatever you may choose to do with it is entirely your
 responsibility. I request that you respect Thom Robertson and the Artemis
 brand/product, and if you make something cool from this, I'd love to know.
-Crediting my library would be appreciated, as would sharing any improvements
-you make, to potentially include upstream contributions in the form of
-pull requests. 
+Crediting this library would be appreciated, as would sharing any improvements
+you make, to potentially include upstream contributions in the form of pull
+requests. 
+
 If you do something evil with this, though, I want no part of it!
+
+
+`The remainder of this document is Daniel Leong's original instructions.`
+
 
 # Getting Started
 
@@ -40,7 +46,7 @@ As mentioned below, all the objects in the world are implemented in the
 `net.dhleong.acl.world` package. Just read the javadoc. The packets
 which are sent and received are all somewhere under the 
 `net.dhleong.acl.net` package, with the sub-packages used to group
-station-specific packets. 
+station-specific packets.
 
 If a packet class has only constructors which take `byte[]`s, they're
 probably only "incoming" packets---that is, the client should not send them,
@@ -48,6 +54,7 @@ though in my experience the server will silently ignore packets it doesn't
 understand. Sendable packets should have constructors with 
 human-understandable arguments, or a factory method. Some packets may be
 both sent and received, so be careful.
+
 
 ### Key classes/interfaces
 
@@ -67,6 +74,7 @@ game world (Check out the `net.dhleong.acl.world` package)
 `TestRunner` - Not really a public-facing class (at all) but it has a 
 lot of simple examples of how to interact with an Artemis server; I use it
 for quick testing and experimenting. 
+
 
 ## Contributing
 
@@ -110,7 +118,7 @@ and you just want the hex.
 to simplify the process of extrapolating what types of fields (IE: int, byte,
 float, etc.) are where in a packet. Not perfect, and not very fancy (sorry,
 no machine learning here!) but proved quite helpful in the transition from
-1.661 to 1.700. 
+1.661 to 1.700.
 
 `test.ObjectParsingTests` - A JUnit test to make sure the 
 packet parsing works as expected for all packets seen so far. If you get
@@ -123,7 +131,7 @@ data into actual usable stuff. It's not very well-documented, and some of the
 terminology may be strange or misleading---it's based off my initial
 assumptions, and I never felt a need to change the terms after I got a better
 grasp of the packet structures---so check out the many many usages in just
-about any of the incoming packets. 
+about any of the incoming packets.
 
 `net.PacketParser` - Reads in raw bytes and spits out `ArtemisPacket`s. If
 you create a new packet type, you'll have to parse it out in here. This is
@@ -131,4 +139,4 @@ one of those bits of code that's very legacy and not pretty, but I haven't
 had the time or drive to make it better; it works well enough for now. 
 This class also has a bunch of static util methods for extracting 
 little-endian (Lend) numbers from raw bytes, as well as going the other way.
-For reading, though, you will probably want to be using `ObjectParser`
+For reading, though, you will probably want to be using `ObjectParser`.

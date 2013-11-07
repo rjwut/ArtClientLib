@@ -35,7 +35,7 @@ requests.
 If you do something evil with this, though, I want no part of it!
 
 
-`The remainder of this document is Daniel Leong's original instructions.`
+**The remainder of this document is Daniel Leong's original instructions.**
 
 
 # Getting Started

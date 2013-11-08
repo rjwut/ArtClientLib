@@ -1,9 +1,9 @@
 ArtClientLib
 ============
 
-ArtClientLib is an **unofficial** Java library for developing clients to interact 
+**ArtClientLib** is an _unofficial_ Java library for developing clients to interact 
 with [Artemis SBS](http://www.artemis.eochu.com/). It was originally developed
-by Daniel Leong to power his (also **unofficial**) 
+by Daniel Leong to power his (also _unofficial_) 
 [Android Client](http://www.artemis.eochu.com/?page_id=28#/20121018/unofficial-android-client-for-artemis-1988927/),
 created due to the lack (at the time) of an official mobile client. It was
 released here on GitHub with permission of the developer of Artemis, Thom
@@ -14,6 +14,8 @@ to be compatible with Artemis 2.0. It is not intended that this branch will be
 compatible with older versions of Artemis. If you need support for Artemis 1.x,
 please use
 [the original version of the library](https://github.com/dhleong/ArtClientLib).
+
+[Wiki](https://github.com/rjwut/ArtClientLib/wiki)
 
 
 # Disclaimers

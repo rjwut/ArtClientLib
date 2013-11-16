@@ -12,9 +12,6 @@ import net.dhleong.acl.util.ObjectParser;
  *  "pushed" out, but we get it in response
  *  to a SetStationPacket or SetShipPacket.
  *  
- * This only describes actually "take-able"
- *  stations: helm, weapons, and engineering
- *  
  * @author dhleong
  *
  */
@@ -50,21 +47,22 @@ public class StationStatusPacket implements ArtemisPacket {
      */
     public final int shipNumber;
     
-    public final Status helm, weapons, engineer;
+    public final Status mainScreen, helm, weapons, engineer, science, comms, observer,
+    	captainsMap, gameMaster;
     
     public StationStatusPacket(byte[] bucket) {
-        
         ObjectParser p = new ObjectParser(bucket, 0);
         shipNumber = p.readInt();
-        
-        // ?
-        p.readByte();
-        
         final Status[] values = Status.values();
-        
+        mainScreen = values[ p.readByte() ];
         helm = values[ p.readByte() ];
         weapons = values[ p.readByte() ];
         engineer = values[ p.readByte() ];
+        science = values[ p.readByte() ];
+        comms = values[ p.readByte() ];
+        observer = values[ p.readByte() ];
+        captainsMap = values[ p.readByte() ];
+        gameMaster = values[ p.readByte() ];
     }
 
     @Override
@@ -78,19 +76,31 @@ public class StationStatusPacket implements ArtemisPacket {
      * @return
      */
     public Status get(StationType station) {
-        if (station == null)
+        if (station == null) {
             throw new IllegalArgumentException("Null station");
+        }
+
         switch (station) {
+        case MAINSCREEN:
+        	return mainScreen;
         case HELM:
             return helm;
         case WEAPONS:
             return weapons;
         case ENGINEERING:
             return engineer;
-            
+        case SCIENCE:
+        	return science;
+        case COMMS:
+        	return comms;
+        case OBSERVER:
+        	return observer;
+        case CAPTAINS_MAP:
+        	return captainsMap;
+        case GAME_MASTER:
+        	return gameMaster;
         default:
-            // the rest are always open
-            return Status.OPEN;
+        	return Status.OPEN;
         }
     }
 
@@ -108,10 +118,16 @@ public class StationStatusPacket implements ArtemisPacket {
     @Override
     public String toString() {
         return String.format("[Ship #%d:%s%s%s]",
-                shipNumber,
+                Integer.valueOf(shipNumber),
+                (mainScreen != Status.OPEN) ? " MAINSCR=" + mainScreen : "",
                 (helm != Status.OPEN) ? " HELM=" + helm : "",
-                (weapons  != Status.OPEN) ? " WEAP=" + weapons : "",
-                (engineer  != Status.OPEN) ? " ENG=" + engineer : ""
-                );
+                (weapons != Status.OPEN) ? " WEAP=" + weapons : "",
+                (engineer != Status.OPEN) ? " ENG=" + engineer : "",
+                (science != Status.OPEN) ? " SCI=" + science : "",
+                (comms != Status.OPEN) ? " COMMS=" + comms : "",
+                (observer != Status.OPEN) ? " OBSRV=" + observer : "",
+                (captainsMap != Status.OPEN) ? " CPTNMAP=" + captainsMap : "",
+                (gameMaster != Status.OPEN) ? " GAMEMSTR=" + gameMaster : ""
+        );
     }
 }

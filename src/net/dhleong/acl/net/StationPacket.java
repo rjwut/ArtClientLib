@@ -13,7 +13,25 @@ import net.dhleong.acl.world.ArtemisPositionable;
 import net.dhleong.acl.world.ArtemisStation;
 
 public class StationPacket implements ObjectUpdatingPacket {
+	private enum Bit {
+		NAME,
+		FORE_SHIELDS,
+		AFT_SHIELDS,
+		UNK_0,
+		UNK_1,
+		X,
+		Y,
+		Z,
 
+		UNK_2,
+		UNK_3,
+		UNK_4,
+		UNK_5,
+		UNK_6,
+		UNK_7
+	}
+
+	/*
     private static final byte NAME    = 0x01;
     private static final byte SHIELDS_FRONT = 0x02;
     private static final byte SHIELDS_REAR  = 0x04;
@@ -30,80 +48,55 @@ public class StationPacket implements ObjectUpdatingPacket {
     private static final byte[] UNKNOWN_BYTES  = new byte[] {
         0x10, 0x20
     };
-    
-
-//    private static final byte ACTION_CREATE = (byte) 0xf0;
+    */
 
     private final byte[] mData;
-
     private final List<ArtemisPositionable> mCreatedObjs = new ArrayList<ArtemisPositionable>();
 
     public StationPacket(byte[] data) {
         mData = data;
-        
         String name;
         float x, y, z;
         float shieldsFront, shieldsRear;
-
         ObjectParser p = new ObjectParser(data, 0);
+
         while (p.hasMore()) {
-            p.startNoArgs();
-            
-            // grab the secondary action
-            byte secondaryAction = p.readByte();
+            p.start(Bit.values());
             
             try {
-                name = p.readName(NAME);
+                name = p.readName(Bit.NAME);
             } catch (StringIndexOutOfBoundsException e) {
                 debugPrint();
-//                System.out.println("DEBUG: subpLen = " + args);
-//                System.out.println("DEBUG: objId   = " + objId);
-//                System.out.println("DEBUG: nameLen = " + nameLen);
-//                System.out.println("DEBUG: offset = " + offset);
                 System.out.println("DEBUG: Packet = " + this);
                 throw e;
             }
 
-            shieldsFront = p.readFloat(SHIELDS_FRONT, -1);
-            shieldsRear = p.readFloat(SHIELDS_REAR, -1);
+            shieldsFront = p.readFloat(Bit.FORE_SHIELDS, -1);
+            shieldsRear = p.readFloat(Bit.AFT_SHIELDS, -1);
 
-            p.readInt(SKIP_1);
-            p.readInt(SKIP_2);  // hull ID or something?
+            p.readInt(Bit.UNK_0);
+            p.readInt(Bit.UNK_1);  // hull ID or something?
 
-            x = p.readFloat(POS_X, -1);
-            y = p.readFloat(POS_Y, -1);
-            z = p.readFloat(POS_Z, -1);
-            
-            // secondary action... unknown purpose
-            p.setAction(secondaryAction);
-            
-            for (byte arg : UNKNOWN_INTS)
-                p.readInt(arg);
+            x = p.readFloat(Bit.X, -1);
+            y = p.readFloat(Bit.Y, -1);
+            z = p.readFloat(Bit.Z, -1);
 
-            for (byte arg : UNKNOWN_BYTES)
-                p.readByte(arg, (byte)-1);
+            p.readInt(Bit.UNK_2);
+            p.readInt(Bit.UNK_3);
+            p.readInt(Bit.UNK_4);
+            p.readInt(Bit.UNK_5);
+            p.readByte(Bit.UNK_6, (byte) -1);
+            p.readByte(Bit.UNK_7, (byte) -1);
             
             // create the obj!
             ArtemisStation station = new ArtemisStation(p.getTargetId(), name);
             station.setX(x);
             station.setY(y);
             station.setZ(z);
-            
             station.setShieldsFront(shieldsFront);
             station.setShieldsRear(shieldsRear);
-            
             mCreatedObjs.add(station);
-
-//            // for some reason, station packets are sometimes retarded
-//            //  and have lots of 0 padding at the end.
-//            while (offset+1 < mData.length && 
-//                    mData[offset] != ArtemisObject.TYPE_STATION)
-//                offset++;
         }
-
-        //            debugPrint();
-        //            System.out.println("DEBUG: Packet = " + this);
-
     }
 
     public List<ArtemisPositionable> getCreatedObjects() {
@@ -137,14 +130,6 @@ public class StationPacket implements ObjectUpdatingPacket {
             System.out.println("**  + " + obj);
     }
 
-//    public static boolean isExtensionOf(SystemInfoPacket pkt) {
-//        //        return pkt.getAction() == SystemInfoPacket.ACTION_CREATE;
-//        // new crazy is temporary as we transition to merged packet
-//        return (pkt.getAction() & SystemInfoPacket.ACTION_MASK) 
-//                == ACTION_CREATE 
-//                //                && (pkt.getTargetType() == ArtemisObject.TYPE_PLAYER 
-//                && (pkt.getTargetType() == ArtemisObject.TYPE_STATION);
-//    }
     public static final boolean handlesType(int type) {
         return type == ArtemisObject.TYPE_STATION;
     }

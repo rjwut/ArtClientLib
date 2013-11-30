@@ -1,5 +1,7 @@
 package net.dhleong.acl.net.player;
 
+import java.util.Arrays;
+
 import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.util.ObjectParser;
 import net.dhleong.acl.world.ArtemisPlayer;
@@ -7,10 +9,39 @@ import net.dhleong.acl.world.ArtemisPlayer;
 /**
  * Packet with player data related to the engineering subystems
  * @author dhleong
- *
  */
 public class EngPlayerUpdatePacket extends PlayerUpdatePacket {
-    private static final int HEAT_BEAMS    = 0x00000001;
+	private enum Bit {
+		HEAT_BEAMS,
+		HEAT_TORPEDOES,
+		HEAT_SENSORS,
+		HEAT_MANEUVERING,
+		HEAT_IMPULSE,
+		HEAT_WARP_OR_JUMP,
+		HEAT_FORE_SHIELDS,
+		HEAT_AFT_SHEILDS,
+
+		ENERGY_BEAMS,
+		ENERGY_TORPEDOES,
+		ENERGY_SENSORS,
+		ENERGY_MANEUVERING,
+		ENERGY_IMPULSE,
+		ENERGY_WARP_OR_JUMP,
+		ENERGY_FORE_SHIELDS,
+		ENERGY_AFT_SHIELDS,
+
+		COOLANT_BEAMS,
+		COOLANT_TORPEDOES,
+		COOLANT_SENSORS,
+		COOLANT_MANEUVERING,
+		COOLANT_IMPULSE,
+		COOLANT_WARP_OR_JUMP,
+		COOLANT_FORE_SHIELDS,
+		COOLANT_AFT_SHIELDS
+	}
+
+	/*
+	private static final int HEAT_BEAMS    = 0x00000001;
     private static final int HEAT_TORPS    = 0x00000002;
     private static final int HEAT_SENSR    = 0x00000004;
     private static final int HEAT_MANEU    = 0x00000008;
@@ -19,7 +50,7 @@ public class EngPlayerUpdatePacket extends PlayerUpdatePacket {
     private static final int HEAT_SFRNT    = 0x00000040;
     private static final int HEAT_SREAR    = 0x00000080;
     
-    /** energy allocation from engineering */
+    // energy allocation from engineering
     private static final int ENRG_BEAMS    = 0x00000100;
     private static final int ENRG_TORPS    = 0x00000200;
     private static final int ENRG_SENSR    = 0x00000400;
@@ -37,51 +68,46 @@ public class EngPlayerUpdatePacket extends PlayerUpdatePacket {
     private static final int COOLANT_JUMPS = 0x00200000;
     private static final int COOLANT_SFRNT = 0x00400000;
     private static final int COOLANT_SREAR = 0x00800000;
+    */
 
-    private static final int[] SYSTEMS_HEAT = {
-        HEAT_BEAMS, HEAT_TORPS, HEAT_SENSR,
-        HEAT_MANEU, HEAT_IMPLS, HEAT_JUMPS,
-        HEAT_SFRNT, HEAT_SREAR
-    };
-    private static final int[] SYSTEMS_ENRG = {
-        ENRG_BEAMS, ENRG_TORPS, ENRG_SENSR,
-        ENRG_MANEU, ENRG_IMPLS, ENRG_JUMPS,
-        ENRG_SFRNT, ENRG_SREAR
-    };
-    private static final int[] COOLANTS = {
-        COOLANT_BEAMS, COOLANT_TORPS, COOLANT_SENSR,
-        COOLANT_MANEU, COOLANT_IMPLS, COOLANT_JUMPS,
-        COOLANT_SFRNT, COOLANT_SREAR
-    };
-    
-    float[] heat = new float[ SYSTEMS_HEAT.length ];
-    float[] sysEnergy = new float[ SYSTEMS_ENRG.length ];
-    int[] coolant = new int[ COOLANTS.length ];
+	private static final int SYSTEM_COUNT = 8;
+	private static final Bit[] HEAT;
+	private static final Bit[] ENERGY;
+	private static final Bit[] COOLANT;
+
+	static {
+		Bit[] values = Bit.values();
+		HEAT = Arrays.copyOfRange(values, 0, SYSTEM_COUNT);
+		ENERGY = Arrays.copyOfRange(values, SYSTEM_COUNT, SYSTEM_COUNT * 2);
+		COOLANT = Arrays.copyOfRange(values, SYSTEM_COUNT * 2, SYSTEM_COUNT * 3);
+	}
+
+    float[] heat = new float[ HEAT.length ];
+    float[] sysEnergy = new float[ ENERGY.length ];
+    int[] coolant = new int[ COOLANT.length ];
     private ArtemisPlayer mPlayer;
     
     public EngPlayerUpdatePacket(byte[] data) {
         super(data);
-        
         ObjectParser p = new ObjectParser(mData, 0);
-        p.startNoAction();
+        p.start(Bit.values());
                     
         try {
-            for (int i=0; i<heat.length; i++) {
-                heat[i] = p.readFloat(SYSTEMS_HEAT[i], -1);
+            for (int i = 0; i < heat.length; i++) {
+                heat[i] = p.readFloat(HEAT[i], -1);
             }
 
-            for (int i=0; i<sysEnergy.length; i++) {
-                sysEnergy[i] = p.readFloat(SYSTEMS_ENRG[i], -1);
+            for (int i = 0; i < sysEnergy.length; i++) {
+                sysEnergy[i] = p.readFloat(ENERGY[i], -1);
             }
 
-            for (int i=0; i<coolant.length; i++) {
-                coolant[i] = p.readByte(COOLANTS[i], (byte)-1);
+            for (int i = 0; i < coolant.length; i++) {
+                coolant[i] = p.readByte(COOLANT[i], (byte) -1);
             }
-            
             
             mPlayer = new ArtemisPlayer(p.getTargetId());
             
-            for (int i=0; i<SYSTEMS_HEAT.length; i++) {
+            for (int i = 0; i < HEAT.length; i++) {
                 SystemType sys = SystemType.values()[i];
                 mPlayer.setSystemHeat(sys, heat[i]);
                 mPlayer.setSystemEnergy(sys, sysEnergy[i]);
@@ -111,5 +137,4 @@ public class EngPlayerUpdatePacket extends PlayerUpdatePacket {
     public ArtemisPlayer getPlayer() {
         return mPlayer;
     }
-
 }

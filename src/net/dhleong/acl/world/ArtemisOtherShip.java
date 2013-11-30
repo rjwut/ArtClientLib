@@ -1,5 +1,8 @@
 package net.dhleong.acl.world;
 
+/**
+ * Now unused? 
+ */
 public class ArtemisOtherShip extends BaseArtemisShip {
 
     public ArtemisOtherShip(int objId, String name, int hullId) {
@@ -8,7 +11,7 @@ public class ArtemisOtherShip extends BaseArtemisShip {
 
     @Override
     public int getType() {
-        return TYPE_OTHER;
+        return -1;
     }
 
     @Override

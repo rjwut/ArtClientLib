@@ -58,11 +58,12 @@ public class BaseArtemisPacket implements ArtemisPacket {
 
     @Override
     public String toString() {
-        if (mData == null) return "(No Data)";
-        return String.format("[%-16s~%s]", 
-                String.format("%1d:%-5s:%s", mMode,
-                    Integer.toHexString(mFlags),
-                    Integer.toHexString(mType)),
-                TextUtil.byteArrayToHexString(mData));
+    	StringBuilder b = new StringBuilder();
+    	b.append('[').append(mMode == 1 ? "SERVER" : "CLIENT").append(':')
+    	.append(getClass().getSimpleName()).append('|')
+    	.append(TextUtil.intToHex(mType))
+    	.append("] ")
+    	.append(TextUtil.byteArrayToHexString(mData));
+    	return b.toString();
     }
 }

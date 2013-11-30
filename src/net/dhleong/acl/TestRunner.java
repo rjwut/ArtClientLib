@@ -110,9 +110,9 @@ public class TestRunner {
                         final ArtemisObject old = mgr.getObject(obj.getId());
                         if (old == null) {
                             
-                            if (obj.getType() == ArtemisObject.TYPE_ENEMY) {
+                            if (obj.getType() == ArtemisObject.TYPE_OTHER_SHIP) {
                                 System.out.println("Total created enemies=" + 
-                                        (mgr.getObjects(ArtemisObject.TYPE_ENEMY).size()+1));
+                                        (mgr.getObjects(ArtemisObject.TYPE_OTHER_SHIP).size()+1));
                                 created = true;
                             }
                             
@@ -190,8 +190,6 @@ public class TestRunner {
             @Override
             public void onPacket(final ArtemisPacket pkt) {
                 
-//                if (pkt instanceof SystemInfoPacket)
-//                    return; // ignore system info packets for now
                 if (pkt.getType() == 0xe548e74a) {
                     System.out.println("GOT SERVER VERSION");
 //                    net.send(new ReadyPacket2());
@@ -326,7 +324,7 @@ public class TestRunner {
                     return;
                 } else if (pkt instanceof DestroyObjectPacket) {
                     if (((DestroyObjectPacket)pkt).getTargetType() 
-                            == ArtemisObject.TYPE_ENEMY) {
+                            == ArtemisObject.TYPE_OTHER_SHIP) {
                         destroyedEnemies++;
                         System.out.println("Total enemies destroyed=" + destroyedEnemies);
                     }

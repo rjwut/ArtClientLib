@@ -174,11 +174,13 @@ public class PacketParser {
             case ArtemisObject.TYPE_PLAYER_ENG:
                 return new EngPlayerUpdatePacket(bucket);
                 
-            case ArtemisObject.TYPE_ENEMY:
+            case ArtemisObject.TYPE_OTHER_SHIP:
                 return new EnemyUpdatePacket(bucket);
-                
+
+            /*
             case ArtemisObject.TYPE_OTHER:
                 return new OtherShipUpdatePacket(bucket);
+            */
                 
             case ArtemisObject.TYPE_STATION:
                 return new StationPacket(bucket);

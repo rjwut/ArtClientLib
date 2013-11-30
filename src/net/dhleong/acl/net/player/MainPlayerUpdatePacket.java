@@ -8,8 +8,50 @@ import net.dhleong.acl.world.ArtemisPlayer;
 import net.dhleong.acl.world.ArtemisPlayer.MainScreen;
 
 public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
-    
-    private static final byte ACTION_DUNNO_0    = (byte) 0x01;
+    private enum Bit {
+    	UNK_0,
+    	IMPULSE,
+    	RUDDER,
+    	TOP_SPEED,
+    	TURN_RATE,
+    	UNK_1,
+    	UNK_2,	// warp speed?
+    	ENERGY,
+
+    	SHIELD_STATE,
+    	SHIP_NUMBER,
+    	SHIP_TYPE,
+    	X,
+    	Y,
+    	Z,
+    	UNK_3,
+    	UNK_4,
+
+    	HEADING,
+    	VELOCITY,
+    	UNK_5,
+    	NAME,
+    	FORE_SHIELDS,
+    	FORE_SHIELDS_MAX,
+    	AFT_SHIELDS,
+    	AFT_SHIELDS_MAX,
+
+    	DOCKING_STATION,
+    	RED_ALERT,
+    	UNK_6,
+    	MAIN_SCREEN,
+    	UNK_7,
+    	AVAILABLE_COOLANT,
+    	SCIENCE_TARGET,
+    	CAPTAIN_TARGET,
+    	DRIVE_TYPE,
+    	SCAN_OBJECT_ID,
+    	SCAN_PROGRESS,
+    	REVERSE_STATE
+    }
+
+    /*
+	private static final byte ACTION_DUNNO_0    = (byte) 0x01;
     
     private static final byte IMPULSE_SLIDER    = (byte) 0x02;
     private static final byte STEERING_SLIDER   = (byte) 0x04;
@@ -24,7 +66,7 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
     
     private static final int SHIELD_STATE  = 0x00000001;
     private static final int SHIP_NUMBER   = 0x00000002;
-    /* I think so? */
+    // I think so?
     private static final int HULL_ID       = 0x00000004;
     private static final int POS_X         = 0x00000008;
     private static final int POS_Y         = 0x00000010;
@@ -56,134 +98,96 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
     private static final int SCAN_OBJECT_ID= 0x02000000;
     private static final int SCAN_PROGRESS = 0x04000000; 
     private static final int REVERSE_STATE = 0x08000000;
-    
-    
-    //
+    */
+
     ArtemisPlayer mPlayer;
-    
     String name;
     int shipNumber, hullId;
     float energy;
     float x, y, z, bearing;
     BoolState mRedAlert, mShields, mReverse;
     MainScreen mainScreen;
-    
     float shieldsFront, shieldsFrontMax;
     float shieldsRear, shieldsRearMax;
     int dockingStation;
     int availableCoolant;
     public float velocity;
-
     private float impulseSlider;
-
     public float steeringSlider;
-
     byte driveType;
-
     private float topSpeed;
-
     private float turnRate;
-
     private float scanProgress;
-
     private int scanTarget;
-
     private int captainTarget;
-
     private int scanningId;
-
-//    public PlayerUpdatePacket(final SystemInfoPacket pkt) {
-//        this(pkt.mData);
-//    }
 
     public MainPlayerUpdatePacket(byte[] data) {
         super(data);
-        
         ObjectParser p = new ObjectParser(mData, 0);
-        p.start();
+        p.start(Bit.values());
         
         try {
-            //int extraArgs = p.readShort();
+            p.readInt(Bit.UNK_0);
 
-            p.readInt(ACTION_DUNNO_0);
+            impulseSlider = p.readFloat(Bit.IMPULSE, -1); 
+            steeringSlider = p.readFloat(Bit.RUDDER, Float.MIN_VALUE);
+            topSpeed = p.readFloat(Bit.TOP_SPEED, -1);
+            turnRate = p.readFloat(Bit.TURN_RATE, -1);
 
-            impulseSlider = p.readFloat(IMPULSE_SLIDER, -1); 
-            steeringSlider = p.readFloat(STEERING_SLIDER, Float.MIN_VALUE);
+            p.readByte(Bit.UNK_1, (byte)0); // ???
+            p.readByte(Bit.UNK_2, (byte)-1); // warp speed?
+
+            energy = p.readFloat(Bit.ENERGY, -1);
             
-            topSpeed = p.readFloat(TOP_SPEED, -1);
-            turnRate = p.readFloat(TURN_RATE, -1);
-
-            // ???
-            p.readByte(ACTION_DUNNO_5, (byte)0);
-
-            // warp speed?
-            p.readByte(ACTION_DUNNO_6, (byte)-1);
-
-            energy = p.readFloat(ACTION_ENERGY, -1);
-            
-            if (p.has(SHIELD_STATE)) {
+            if (p.has(Bit.SHIELD_STATE)) {
                 mShields = BoolState.from(p.readShort() != 0);
             } else {
                 mShields = BoolState.UNKNOWN;
             }
 
-            shipNumber = p.readInt(SHIP_NUMBER);
-            hullId = p.readInt(HULL_ID);
+            shipNumber = p.readInt(Bit.SHIP_NUMBER);
+            hullId = p.readInt(Bit.SHIP_TYPE);
+            x = p.readFloat(Bit.X, -1);
+            y = p.readFloat(Bit.Y, -1);
+            z = p.readFloat(Bit.Z, -1);
 
-            x = p.readFloat(POS_X, -1);
-            y = p.readFloat(POS_Y, -1);
-            z = p.readFloat(POS_Z, -1);
+            p.readInt(Bit.UNK_3);
+            p.readInt(Bit.UNK_4);
 
-            p.readInt(DUNNO_SKIP_3);
-            p.readInt(DUNNO_SKIP_4);
+            bearing = p.readFloat(Bit.HEADING, Float.MIN_VALUE);
+            velocity = p.readFloat(Bit.VELOCITY, -1);
 
-            bearing = p.readFloat(BEARING, Float.MIN_VALUE);
-            velocity = p.readFloat(VELOCITY, -1);
+            p.readShort(Bit.UNK_5);
 
-            p.readByte(UNKNOWN_2, (byte)0); 
-            p.readByte(UNKNOWN_2, (byte)0); 
-
-//            // wtf? hax!?
-//            if (p.has(VELOCITY) && p.has(UNKNOWN_2))
-//                //p.readShort(SHIP_NAME);
-//                p.readByte(SHIP_NAME, (byte)0);
-            
-            name = p.readName(SHIP_NAME);
-
-            shieldsFront = p.readFloat(SHLD_FRONT, -1);
-            shieldsFrontMax = p.readFloat(SHLD_FRONT_MAX, -1);
-            shieldsRear = p.readFloat(SHLD_REAR, -1);
-            shieldsRearMax = p.readFloat(SHLD_REAR_MAX, -1);
+            name = p.readName(Bit.NAME);
+            shieldsFront = p.readFloat(Bit.FORE_SHIELDS, -1);
+            shieldsFrontMax = p.readFloat(Bit.FORE_SHIELDS_MAX, -1);
+            shieldsRear = p.readFloat(Bit.AFT_SHIELDS, -1);
+            shieldsRearMax = p.readFloat(Bit.AFT_SHIELDS_MAX, -1);
 
             // I don't *think* the server sends us
             //  this value when we undock...
-            dockingStation = p.readInt(DOCKING_STATION, 0);
-
-            mRedAlert = p.readBoolByte(RED_ALERT);
+            dockingStation = p.readInt(Bit.DOCKING_STATION, 0);
+            mRedAlert = p.readBoolByte(Bit.RED_ALERT);
             
-            p.readInt(UNKNOWN_FLT_0);
+            p.readInt(Bit.UNK_6);
 
-            if (p.has(MAIN_SCREEN))
+            if (p.has(Bit.MAIN_SCREEN))
                 mainScreen = MainScreen.values()[p.readByte()];
             else
                 mainScreen = null;
 
-            //p.readShort(UNKNOWN_7);
-            p.readByte(UNKNOWN_7, (byte)0);
-            //p.readInt(UNKNOWN_7);
+            p.readByte(Bit.UNK_7, (byte)0);
 
             // total available coolant?
-            availableCoolant = p.readByte(AVAILABLE_COOLANT, (byte)-1); // MUST
-
-            scanTarget = p.readInt(SCI_TARGET, Integer.MIN_VALUE); // 1 means no target
-            captainTarget = p.readInt(CAPTAIN_TARGET, Integer.MIN_VALUE);
-            
-            driveType = p.readByte(DRIVE_TYPE, (byte)-1); 
-            
-            scanningId = p.readInt(SCAN_OBJECT_ID);
-            scanProgress = p.readFloat(SCAN_PROGRESS, -1);
-            
-            mReverse = p.readBoolByte(REVERSE_STATE);
+            availableCoolant = p.readByte(Bit.AVAILABLE_COOLANT, (byte)-1); // MUST
+            scanTarget = p.readInt(Bit.SCIENCE_TARGET, Integer.MIN_VALUE); // 1 means no target
+            captainTarget = p.readInt(Bit.CAPTAIN_TARGET, Integer.MIN_VALUE);
+            driveType = p.readByte(Bit.DRIVE_TYPE, (byte)-1);
+            scanningId = p.readInt(Bit.SCAN_OBJECT_ID);
+            scanProgress = p.readFloat(Bit.SCAN_PROGRESS, -1);
+            mReverse = p.readBoolByte(Bit.REVERSE_STATE);
 
             mPlayer = new ArtemisPlayer(p.getTargetId(), name, hullId, 
                 shipNumber, mRedAlert, mShields);
@@ -215,8 +219,6 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
                     ? null
                     : DriveType.values()[driveType]);
             mPlayer.setReverse(mReverse);
-            
-                 
         } catch (RuntimeException e) {
             System.out.println("!!! Error!");
             debugPrint();
@@ -241,20 +243,14 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
 
     }
 
-
-//    public static boolean isExtensionOf(SystemInfoPacket pkt) {
-//        return (pkt.getTargetType() == ArtemisObject.TYPE_PLAYER);
-//    }
-
     @Override
     public ArtemisPlayer getPlayer() {
         return mPlayer;
     }
     
-    /*
     @Override
     public String toString() {
-        return String.format("%8d : %s", scanningId, super.toString());
+        return "[" + name + "(" + hullId + ")] energy=" + energy + " coords=(" + x + "," + y +
+        		"," + z + ") heading=" + bearing + " alert=" + mRedAlert + " shieldsUp=" + mShields;
     }
-    */
 }

@@ -19,8 +19,34 @@ import net.dhleong.acl.world.ArtemisPositionable;
  *
  */
 public class GenericUpdatePacket implements ObjectUpdatingPacket {
-    
+	private enum Bit {
+    	X,
+    	Y,
+    	Z,
+    	NAME,
+    	UNK_0,
+    	UNK_1,
+    	UNK_2,
+    	UNK_3
+    }
 
+    private enum WhaleBit {
+    	NAME,
+    	UNK_0,
+    	UNK_1,
+    	X,
+    	Y,
+    	Z,
+    	UNK_2,
+    	UNK_3,
+    	HEADING,
+    	UNK_4,
+    	UNK_5,
+    	UNK_6,
+    	UNK_7
+    }
+
+    /*
     private static final byte GEN_ACTION_X = 0x01;
     private static final byte GEN_ACTION_Y = 0x02;
     private static final byte GEN_ACTION_Z = 0x04;
@@ -47,11 +73,11 @@ public class GenericUpdatePacket implements ObjectUpdatingPacket {
         0x02, 0x04, 0x08,
         0x10
     };
+    */
     
     public final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
     private byte[] mData;
-    
-    
+
     public GenericUpdatePacket(byte[] data) {
         init(data);
     }
@@ -60,84 +86,72 @@ public class GenericUpdatePacket implements ObjectUpdatingPacket {
         mData = data;
         
         try {
-            
             ObjectParser p = new ObjectParser(mData, 0);
-
             float x, y, z, bearing;
             String name;
             
             while (p.hasMore()) {
-                p.startNoArgs();
-                
+                p.start();
                 Type type = Type.fromInt(p.getTargetType());
-                
                 final ArtemisGenericObject obj;
+
                 if (type == Type.WHALE) {
+                	p.readBitField(WhaleBit.values());
                     // why are whales so different?
-                    byte whaleArgs = 0;
-                    whaleArgs = p.readByte();
+                    name = p.readName(WhaleBit.NAME);
+
+                    p.readInt(WhaleBit.UNK_0);
+                    p.readInt(WhaleBit.UNK_1);
                     
-                    name = p.readName(WHALE_ACTION_NAME);
+                    x = p.readFloat(WhaleBit.X, -1);
+                    y = p.readFloat(WhaleBit.Y, -1);
+                    z = p.readFloat(WhaleBit.Z, -1);
                     
-                    p.readInt(WHALE_ACTION_DUNNO_1);
-                    p.readInt(WHALE_ACTION_DUNNO_2);
-                    
-                    x = p.readFloat(WHALE_ACTION_X, -1);
-                    y = p.readFloat(WHALE_ACTION_Y, -1);
-                    z = p.readFloat(WHALE_ACTION_Z, -1);
-                    
-                    p.readInt(WHALE_ACTION_DUNNO_3);
-                    p.readInt(WHALE_ACTION_DUNNO_4);
-                    
-                    if ((whaleArgs & WHALE_ARG_BEARING) != 0)
-                        bearing = p.readFloat();
-                    else
-                        bearing = Float.MIN_VALUE;
-                    
-                    // read off extra args that I dunno what they are
-                    for (int arg : WHALE_ARGS) {
-                        if ((whaleArgs & arg) != 0)
-                            p.readInt();
-                    }
+                    p.readInt(WhaleBit.UNK_2);
+                    p.readInt(WhaleBit.UNK_3);
+
+                    bearing = p.readFloat(WhaleBit.HEADING, Float.MIN_VALUE);
+
+                    p.readInt(WhaleBit.UNK_4);
+                    p.readInt(WhaleBit.UNK_5);
+                    p.readInt(WhaleBit.UNK_6);
+                    p.readInt(WhaleBit.UNK_7);
                     
                     ArtemisCreature c = new ArtemisCreature(
                             p.getTargetId(), name, type);
                     c.setBearing(bearing);
                     obj = c;
                 } else {
-                    
-//                    byte torpedoExtra = 0;
-                    if (type == Type.TORPEDO)
-                        p.readByte();
+                	p.readBitField(Bit.values());
 
-                    x = p.readFloat(GEN_ACTION_X, -1);
-                    y = p.readFloat(GEN_ACTION_Y, -1);
-                    z = p.readFloat(GEN_ACTION_Z, -1);
+                	if (type == Type.TORPEDO) {
+                        p.readByte();
+                    }
+
+                    x = p.readFloat(Bit.X, -1);
+                    y = p.readFloat(Bit.Y, -1);
+                    z = p.readFloat(Bit.Z, -1);
                     bearing = -1;
     
                     if (type.hasName) {
-                        name = p.readName(GEN_ACTION_NAME);
+                        name = p.readName(Bit.NAME);
                     } else {
                         name = null;
-                        p.readInt(GEN_ACTION_NAME);
+                        p.readInt(Bit.NAME);
                     }
-                    p.readInt(GEN_ACTION_DUNNO_2);
-                    p.readInt(GEN_ACTION_DUNNO_3);
+
+                    p.readInt(Bit.UNK_0);
+                    p.readInt(Bit.UNK_1);
+                    p.readInt(Bit.UNK_2);
+                    p.readInt(Bit.UNK_3);
                     
-                    p.readInt(TORP_ACTION_DUNNO_1);
-                    p.readInt(TORP_ACTION_DUNNO_2);
-                    
-                    obj = new ArtemisGenericObject(
-                            p.getTargetId(), name, type);
+                    obj = new ArtemisGenericObject(p.getTargetId(), name, type);
                 }
 
-                
                 obj.setX(x);
                 obj.setY(y);
                 obj.setZ(z);
-
                 mObjects.add(obj);
-
             }
         } catch (RuntimeException e) {
             debugPrint();
@@ -146,6 +160,7 @@ public class GenericUpdatePacket implements ObjectUpdatingPacket {
         }
     }
     
+    @Override
     public void debugPrint() {
         for (ArtemisPositionable u : mObjects) {
             System.out.println("- DEBUG: " + u);
@@ -171,15 +186,9 @@ public class GenericUpdatePacket implements ObjectUpdatingPacket {
     public String toString() {
         return TextUtil.byteArrayToHexString(mData);
     }
-    
-//    public static boolean isExtensionOf(SystemInfoPacket pkt) {
-//        // any generic object
-//        return ArtemisGenericObject.Type.fromInt(pkt.getTargetType()) != null;
-//    }
 
     @Override
     public List<ArtemisPositionable> getObjects() {
         return mObjects;
     }
-
 }

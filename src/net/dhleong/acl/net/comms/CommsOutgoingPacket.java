@@ -7,9 +7,9 @@ import net.dhleong.acl.world.ArtemisObject;
 public class CommsOutgoingPacket extends BaseArtemisPacket {
     public enum Mode {
         TO_PLAYER(ArtemisObject.TYPE_PLAYER_MAIN),
-        TO_ENEMY(ArtemisObject.TYPE_ENEMY),
+        TO_ENEMY(ArtemisObject.TYPE_OTHER_SHIP),
         TO_STATION(ArtemisObject.TYPE_STATION),
-        TO_OTHER(ArtemisObject.TYPE_OTHER);
+        TO_OTHER(ArtemisObject.TYPE_OTHER_SHIP);	// TODO fromObjType won't work now
         
         public final byte objType;
 

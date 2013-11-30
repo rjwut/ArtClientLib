@@ -12,12 +12,67 @@ import net.dhleong.acl.world.ArtemisEnemy;
 import net.dhleong.acl.world.ArtemisPositionable;
 
 public class EnemyUpdatePacket implements ObjectUpdatingPacket {
+	public enum Bit {
+		NAME,
+		UNK_0,
+		UNK_1,
+		UNK_2,
+		UNK_3,
+		UNK_4,
+		SHIP_TYPE,
+		X,
 
+		Y,
+		Z,
+		UNK_5,
+		RUDDER,
+		HEADING,
+		VELOCITY,
+		UNK_6,
+		UNK_7,
+
+		FORE_SHIELD,
+		FORE_SHIELD_MAX,
+		AFT_SHIELD,
+		AFT_SHIELD_MAX,
+		UNK_8,
+		UNK_9,
+		UNK_10,
+
+		UNK_11,
+		UNK_12,
+		UNK_13,
+		UNK_14,
+		UNK_15,
+		UNK_16,
+		UNK_17,
+		UNK_18,
+
+		UNK_19,
+		UNK_20,
+		UNK_21,
+		SHIELD_FREQUENCY_A,
+		SHIELD_FREQUENCY_B,
+		SHIELD_FREQUENCY_C,
+		SHIELD_FREQUENCY_D,
+		SHIELD_FREQUENCY_E,
+
+		UNK_22,
+		UNK_23,
+		UNK_24,
+		UNK_25,
+		UNK_26,
+		UNK_27,
+		UNK_28,
+		UNK_29
+	}
+
+	/*
     private static final byte ACTION_NAME_BYTE    = (byte) 0x01;
     private static final byte ACTION_SKIP_BYTES_1 = (byte) 0x02;
     private static final byte ACTION_SKIP_BYTES_2 = (byte) 0x04;
     
-    /* shield frequencies? */
+    // shield frequencies?
     private static final byte ACTION_SKIP_BYTES_3 = (byte) 0x08;
     private static final byte ACTION_SKIP_BYTES_4 = (byte) 0x10;
     private static final byte ACTION_FLEET_MAYBE  = (byte) 0x20;
@@ -41,10 +96,8 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
     private static final int DUNNO_NEW_0 = 0x00001000; // ?
     private static final int DUNNO_NEW_1 = 0x00002000; // ?
 
-    /* 
-     * I think the bits 0x003FC000 represent system 
-     * damage for neutral ships....
-     */
+    // I think the bits 0x003FC000 represent system 
+    // damage for neutral ships....
     private static final int ELITE       = 0x00004000; // just a guess
     private static final int ELITE_STATE = 0x00008000; // ?
     
@@ -65,11 +118,14 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
     private static final int SHLD_FREQ_C = 0x10000000;
     private static final int SHLD_FREQ_D = 0x20000000;
     private static final int SHLD_FREQ_E = 0x40000000;
-    private static final int[] SHLD_FREQS = new int[] {
-        SHLD_FREQ_A, SHLD_FREQ_B, SHLD_FREQ_C,
-        SHLD_FREQ_D, SHLD_FREQ_E
+    */
+    private static final Bit[] SHLD_FREQS = new Bit[] {
+		Bit.SHIELD_FREQUENCY_A,
+		Bit.SHIELD_FREQUENCY_B,
+		Bit.SHIELD_FREQUENCY_C,
+		Bit.SHIELD_FREQUENCY_D,
+		Bit.SHIELD_FREQUENCY_E
     };
-
 
     private final byte[] mData;
 
@@ -83,7 +139,7 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
 
         float x, y, z, bearing, steering;
         float[] freqs = new float[SHLD_FREQS.length];
-        byte scanned = -1;
+        int scanned = -1;
         String name = null;
         int hullId = -1;
         int elite = -1;
@@ -94,78 +150,88 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
 
 //        int base = 0;
         ObjectParser p = new ObjectParser(mData, 0);
+
         while (p.hasMore()) {
             try {
-                p.start();
-
-                p.readByte(); // RJW: This seems to fix a problem with EnemyUpdatePacket
-                // TODO Figure out what this byte is that we're skipping.
-                
-                name = p.readName(ACTION_NAME_BYTE);
+                p.start(Bit.values());
+                name = p.readName(Bit.NAME);
                 
                 // no idea what these are
-                p.readInt(ACTION_SKIP_BYTES_1);
-                p.readInt(ACTION_SKIP_BYTES_2);
-                
-                p.readFloat(ACTION_SKIP_BYTES_3, -1);
-                p.readFloat(ACTION_SKIP_BYTES_4, -1);
+                p.readInt(Bit.UNK_0);
+                p.readInt(Bit.UNK_1);
+                p.readFloat(Bit.UNK_2, -1);
+                p.readFloat(Bit.UNK_3, -1);
                 
                 // ?
-                p.readInt(ACTION_FLEET_MAYBE);
+                p.readInt(Bit.UNK_4);
                 
-                hullId = p.readInt(ACTION_HULL_ID);
+                hullId = p.readInt(Bit.SHIP_TYPE);
 
-                x = p.readFloat(POS_X, -1);
-                y = p.readFloat(POS_Y, -1);
-                z = p.readFloat(POS_Z, -1);
+                x = p.readFloat(Bit.X, -1);
+                y = p.readFloat(Bit.Y, -1);
+                z = p.readFloat(Bit.Z, -1);
                 
-                p.readFloat(DUNNO_SKIP_0, -1);
+                p.readFloat(Bit.UNK_5, -1);
 
-                steering = p.readFloat(STEERING, Float.MIN_VALUE); // I *think* so
-                bearing = p.readFloat(BEARING, Float.MIN_VALUE);
-                velocity = p.readFloat(VELOCITY, -1);
+                steering = p.readFloat(Bit.RUDDER, Float.MIN_VALUE); // I *think* so
+                bearing = p.readFloat(Bit.HEADING, Float.MIN_VALUE);
+                velocity = p.readFloat(Bit.VELOCITY, -1);
 
-                p.readByte(DUNNO_SKIP_3, (byte)0); 
-                p.readShort(DUNNO_SKIP_4);
+                p.readByte(Bit.UNK_6, (byte)0); 
+                p.readShort(Bit.UNK_7);
 
-                shieldsFront = p.readFloat(SHLD_FRNT, -1);
-                shieldsFrontMax = p.readFloat(SHLD_FRNT_MX, -1);
-                shieldsRear = p.readFloat(SHLD_REAR, -1);
-                shieldsRearMax = p.readFloat(SHLD_REAR_MX, -1);
+                shieldsFront = p.readFloat(Bit.FORE_SHIELD, -1);
+                shieldsFrontMax = p.readFloat(Bit.FORE_SHIELD_MAX, -1);
+                shieldsRear = p.readFloat(Bit.AFT_SHIELD, -1);
+                shieldsRearMax = p.readFloat(Bit.AFT_SHIELD_MAX, -1);
 
-                p.readShort(DUNNO_NEW_0);
+                p.readShort(Bit.UNK_8);
                 
                 // ????
-                //p.readShort(DUNNO_NEW_1);
-                p.readByte(DUNNO_NEW_1, (byte)0);
+                p.readByte(Bit.UNK_9, (byte) 0);
 
-                elite = p.readInt(ELITE);
+                elite = p.readInt(Bit.UNK_10);
+                eliteState = p.readInt(Bit.UNK_11); // what abilities are active?
 
-                // what abilities are active?
-                eliteState = p.readInt(ELITE_STATE);
+                scanned = p.readInt(Bit.UNK_12);  // confirmed
 
-                scanned = p.readByte(SCANNED, (byte) -1);
-                
-                p.readShort(DUNNO_NEW_3);
+                p.readInt(Bit.UNK_13); // confirmed
 
                 // TODO These must be system damages!
-                p.readInt(UNUSED_1);
-                p.readInt(UNUSED_2);
-                p.readInt(UNUSED_3);
-                p.readInt(UNUSED_4);
-                p.readInt(UNUSED_5);
-                p.readInt(UNUSED_6);
-                p.readInt(UNUSED_7);
-                p.readInt(UNUSED_8);
-                
+                p.readInt(Bit.UNK_14); // confirmed
+                p.readInt(Bit.UNK_15);
+                p.readInt(Bit.UNK_16);
+                p.readInt(Bit.UNK_17);
+                p.readInt(Bit.UNK_18);
+                p.readInt(Bit.UNK_19);
+                p.readInt(Bit.UNK_20);
+                p.readInt(Bit.UNK_21);
+
                 // shield frequencies
-                for (int i=0; i<SHLD_FREQS.length; i++) {
+                for (int i = 0; i < SHLD_FREQS.length; i++) {
                     freqs[i] = p.readFloat(SHLD_FREQS[i], -1);
                 }
-                
-                
+
+                p.readByte(Bit.UNK_22, (byte) -1);
+                p.readByte(Bit.UNK_23, (byte) -1);
+                p.readFloat(Bit.UNK_24, -1);
+                p.readFloat(Bit.UNK_25, -1);
+                p.readFloat(Bit.UNK_26, -1);
+
+                if (p.has(Bit.UNK_27) && p.hasMore()) {
+                	p.readFloat(Bit.UNK_27, -1);
+                }
+
+                if (p.has(Bit.UNK_28) && p.hasMore()) {
+                	p.readFloat();
+                }
+
+                if (p.has(Bit.UNK_29) && p.hasMore()) {
+                	p.readInt();
+                }
+
                 ArtemisEnemy enemy = new ArtemisEnemy(p.getTargetId(), name, hullId);
-                enemy.setScanned(scanned);
+                enemy.setScanned((byte) scanned);
                 enemy.setEliteBits(elite);
                 enemy.setEliteState(eliteState);
 
@@ -218,7 +284,13 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
 
     @Override
     public String toString() {
-        return TextUtil.byteArrayToHexString(mData); 
+    	StringBuilder b = new StringBuilder();
+
+    	for (ArtemisPositionable obj : mObjects) {
+    		b.append(obj).append('\n');
+    	}
+
+    	return b.toString();
     }
 
     @Override
@@ -230,15 +302,4 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
     public List<ArtemisPositionable> getObjects() {
         return mObjects;
     }
-
-    /*
-    public static boolean isExtensionOf(SystemInfoPacket pkt) {
-        // this may be a wrong assumption, but I'd think they're the same
-        return (pkt.getTargetType() == ArtemisObject.TYPE_ENEMY ||
-                pkt.getTargetType() == ArtemisObject.TYPE_OTHER);
-//                && 
-//                ((pkt.getAction() & SystemInfoPacket.ACTION_MASK) == ACTION_UPDATE_BYTE);
-    }
-    */
-
 }

@@ -35,7 +35,7 @@ public class ArtemisEnemy extends BaseArtemisShip {
     
     @Override
     public int getType() {
-        return TYPE_ENEMY;
+        return TYPE_OTHER_SHIP;
     }
     
     public boolean hasEliteAbility(int ability) {

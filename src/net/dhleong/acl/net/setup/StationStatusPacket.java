@@ -117,7 +117,7 @@ public class StationStatusPacket implements ArtemisPacket {
     
     @Override
     public String toString() {
-        return String.format("[Ship #%d:%s%s%s]",
+        return String.format("[Ship #%d:%s%s%s%s%s%s%s%s%s]",
                 Integer.valueOf(shipNumber),
                 (mainScreen != Status.OPEN) ? " MAINSCR=" + mainScreen : "",
                 (helm != Status.OPEN) ? " HELM=" + helm : "",

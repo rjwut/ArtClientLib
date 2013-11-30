@@ -17,7 +17,38 @@ import net.dhleong.acl.world.ArtemisPositionable;
  *
  */
 public class GenericMeshPacket implements ObjectUpdatingPacket {
+	private enum Bit {
+		X,
+		Y,
+		Z,
+		UNK_0,
+		UNK_1,
+		UNK_2,
+		UNK_3,
+		UNK_4,
 
+		UNK_5,
+		UNK_6,
+		NAME,
+		MESH_PATH,
+		TEXTURE_PATH,
+		UNK_7,
+		UNK_8,
+		UNK_9,
+
+		UNK_10,
+		UNK_11,
+		COLOR,
+		FORE_SHIELDS,
+		AFT_SHIELDS,
+		UNK_12,
+		UNK_13,
+		UNK_14,
+
+		UNK_15,
+		UNK_16
+	}
+	/*
     private static final int POS_X       = 0x00000001; 
     private static final int POS_Y       = 0x00000002; 
     private static final int POS_Z       = 0x00000004; // huh? 
@@ -53,60 +84,47 @@ public class GenericMeshPacket implements ObjectUpdatingPacket {
     private static final int UNKNOWN_INT_2  = 0x00800000;
     private static final int UNKNOWN_INT_3  = 0x01000000;
     private static final int UNKNOWN_INT_4  = 0x02000000;
-    
-
+    */
 
     private final byte[] mData;
-
     public final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
-
     float r, g, b;
 
     public GenericMeshPacket(byte[] data) {
-
         mData = data;
-
         float x, y, z;//, bearing;
-        
         String name = null, mesh = null, texture = null;
-
         float shieldsFront, shieldsRear;
-
-//        int base = 0;
         ObjectParser p = new ObjectParser(mData, 0);
+
         while (p.hasMore()) {
             try {
-                p.startNoAction();
+            	p.start(Bit.values());
                 
-                x = p.readFloat(POS_X, -1);
-                y = p.readFloat(POS_Y, -1);
-                z = p.readFloat(POS_Z, -1);
+                x = p.readFloat(Bit.X, -1);
+                y = p.readFloat(Bit.Y, -1);
+                z = p.readFloat(Bit.Z, -1);
 
-                p.readInt(q1);
-                p.readInt(q2);
-                p.readLong(q3);
-                p.readInt(q4);
-                p.readInt(q5);
-                p.readInt(q6);
-                p.readLong(q7);
+                p.readInt(Bit.UNK_0);
+                p.readInt(Bit.UNK_1);
+                p.readLong(Bit.UNK_2);
+                p.readInt(Bit.UNK_3);
+                p.readInt(Bit.UNK_4);
+                p.readInt(Bit.UNK_5);
+                p.readLong(Bit.UNK_6);
                 
-                name = p.readName(NAME);
-                mesh = p.readName(PATH_TEXTURE); // wtf?!
-                texture = p.readName(PATH_TEXTURE);
+                name = p.readName(Bit.NAME);
+                mesh = p.readName(Bit.TEXTURE_PATH); // wtf?!
+                texture = p.readName(Bit.TEXTURE_PATH);
                 
-//                if (p.has(PATH_MESH))
-//                    p.readShort(UNKNOWN_FLT);
-                p.readInt(UNKNOWN_FLT);
-                
-                p.readShort(UNKNOWN_SHORT);
-                p.readByte(UNKNOWN_FLT_1, (byte)-1);
-                p.readByte(COLOR_R, (byte)-1);
-                p.readByte(COLOR_G, (byte)-1);
+                p.readInt(Bit.UNK_7);
+                p.readShort(Bit.UNK_8);
+                p.readByte(Bit.UNK_9, (byte)-1);
+                p.readByte(Bit.UNK_10, (byte)-1);
+                p.readByte(Bit.UNK_11, (byte)-1);
                 
                 // color
-                boolean hasColor = p.has(COLOR);
-                
-                if (hasColor) {
+                if (p.has(Bit.COLOR)) {
                     r = p.readFloat();
                     g = p.readFloat();
                     b = p.readFloat();
@@ -114,14 +132,14 @@ public class GenericMeshPacket implements ObjectUpdatingPacket {
                     r = g = b = -1;
                 }
                 
-                shieldsFront = p.readFloat(FAKE_SHIELDS_FRONT, -1);
-                shieldsRear  = p.readFloat(FAKE_SHIELDS_REAR, -1);
+                shieldsFront = p.readFloat(Bit.FORE_SHIELDS, -1);
+                shieldsRear  = p.readFloat(Bit.AFT_SHIELDS, -1);
                 
-                p.readByte(UNKNOWN_BYTE, (byte)0xff);
-                p.readInt(UNKNOWN_INT_1);
-                p.readInt(UNKNOWN_INT_2);
-                p.readInt(UNKNOWN_INT_3);
-                p.readInt(UNKNOWN_INT_4);
+                p.readByte(Bit.UNK_12, (byte) 0xff);
+                p.readInt(Bit.UNK_11);
+                p.readInt(Bit.UNK_12);
+                p.readInt(Bit.UNK_13);
+                p.readInt(Bit.UNK_14);
                 
                 final ArtemisMesh newObj = new ArtemisMesh(p.getTargetId(), name);
                 
@@ -163,6 +181,7 @@ public class GenericMeshPacket implements ObjectUpdatingPacket {
         }
     }
 
+    @Override
     public void debugPrint() {
         for (ArtemisPositionable u : mObjects) {
             System.out.println("- DEBUG: " + u);
@@ -193,10 +212,4 @@ public class GenericMeshPacket implements ObjectUpdatingPacket {
     public List<ArtemisPositionable> getObjects() {
         return mObjects;
     }
-
-//    public static boolean isExtensionOf(SystemInfoPacket pkt) {
-//        // this may be a wrong assumption, but I'd think they're the same
-//        return (pkt.getTargetType() == ArtemisObject.TYPE_MESH);
-//    }
-
 }

@@ -3,14 +3,10 @@ package net.dhleong.acl.util;
 import net.dhleong.acl.net.PacketParser;
 
 public class ObjectParser {
-    
     private int offset;
     private final byte[] mData;
-    
-    private byte action;
-    private int args;
-    private long longArgs;
-    
+    private BitField bitField;
+
     // per-object stuff
     byte targetType;
     int targetId;
@@ -19,29 +15,19 @@ public class ObjectParser {
         mData = data;
         offset = initialOffset;
     }
-    
-    public byte getAction() {
-        return action;
-    }
-    
-    public void setAction(byte newAction) {
-        action = newAction;
+
+    public boolean has(Enum<?> bit) {
+    	return bitField.get(bit);
     }
 
-    public void setArgs(int newArgs) {
-        args = newArgs;
-    }
-    
-    public boolean has(byte ifActionByte) {
-        return (action & ifActionByte) != 0;
-    }
+    public boolean has(Enum<?>... bits) {
+    	for (Enum<?> bit : bits) {
+    		if (!bitField.get(bit)) {
+    			return false;
+    		}
+    	}
 
-    public boolean has(int ifArgsByte) {
-        return (args & ifArgsByte) != 0;
-    }
-
-    public boolean has(long ifArgsLong) {
-        return (longArgs & ifArgsLong) != 0;
+    	return true;
     }
 
     public boolean hasMore() {
@@ -61,41 +47,16 @@ public class ObjectParser {
         return value;
     }
     
-    public int readInt(byte ifActionByte) {
-        if ((action & ifActionByte) != 0) {
-            return readInt();
-        }
-        
-        return -1;
+    public int readInt(Enum<?> bit) {
+    	return readInt(bit, -1);
     }
     
-    public int readInt(int ifArgsByte) {
-        return readInt(ifArgsByte, -1);
-    }
-    
-    public int readInt(int ifArgsByte, int defaultValue) {
-        if ((args & ifArgsByte) != 0) {
-            return readInt();
-        }
-        
-        return defaultValue;
+    public int readInt(Enum<?> bit, int defaultValue) {
+    	return has(bit) ? readInt() : defaultValue;
     }
 
-    public int readInt(long ifArgsLong) {
-        return readInt(ifArgsLong, -1);
-    }
-
-    public int readInt(long ifArgsLong, int defaultValue) {
-        if ((longArgs & ifArgsLong) != 0) {
-            return readInt();
-        }
-        
-        return defaultValue;
-    }
     /**
-     * If you do your own checking, then 
-     *  read a float manually with this
-     * @return
+     * If you do your own checking, then read a float manually with this.
      */
     public float readFloat() {
         float value = PacketParser.getLendFloat(mData, offset); 
@@ -103,82 +64,30 @@ public class ObjectParser {
         return value;
     }
 
-    public float readFloat(byte ifActionByte, float defaultValue) {
-        if ((action & ifActionByte) != 0) {
-            return readFloat();
-        } 
-
-        return defaultValue;
+    public float readFloat(Enum<?> bit, float defaultValue) {
+    	return has(bit) ? readFloat() : defaultValue;
     }
     
-    public float readFloat(int ifArgByte, float defaultValue) {
-        if ((args & ifArgByte) != 0) {
-            return readFloat();
-        } 
-
-        return defaultValue;
-    }
-    
-    public float readFloat(long ifArgLong, float defaultValue) {
-        if ((longArgs & ifArgLong) != 0) {
-            return readFloat();
-        } 
-
-        return defaultValue;
-    }
-
     public long readLong() {
         long value = PacketParser.getLendLong(mData, offset); 
         offset += 8; 
         return value;
     }
     
-    public long readLong(int ifArgsByte) {
-        if ((args & ifArgsByte) != 0) {
-            return readLong();
-        }
-        
-        return -1;
+    public long readLong(Enum<?> bit) {
+    	return has(bit) ? readLong() : -1;
     }
 
-    public long readLong(long ifArgLong) {
-        if ((longArgs & ifArgLong) != 0) {
-            return readLong();
-        }
-
-        return -1L;
-    }
-    
     public int readShort() {
         int value = PacketParser.getLendShort(mData, offset); 
         offset += 2; 
         return value;
     }
     
-    public int readShort(byte ifActionByte) {
-        if ((action & ifActionByte) != 0) {
-            return readShort();
-        }
-        
-        return -1;
+    public int readShort(Enum<?> bit) {
+    	return has(bit) ? readShort() : -1;
     }
     
-    public int readShort(int ifArgsByte) {
-        if ((args & ifArgsByte) != 0) {
-            return readShort();
-        }
-        
-        return -1;
-    }
-
-    public int readShort(long ifArgsLong) {
-        if ((longArgs & ifArgsLong) != 0) {
-            return readShort();
-        }
-        
-        return -1;
-    }
-
     public String readName() {
         int nameLen = PacketParser.getNameLengthBytes(mData, offset);
         String name = PacketParser.getNameString(mData, offset+4, nameLen);
@@ -188,55 +97,16 @@ public class ObjectParser {
         return name;
     }
 
-    public String readName(byte ifActionByte) {
-        if ((action & ifActionByte) != 0) {
-            return readName();
-        }
-        return null;
+    public String readName(Enum<?> bit) {
+    	return has(bit) ? readName() : null;
     }
     
-    public String readName(int ifArgs) {
-        if ((args & ifArgs) != 0) {
-            return readName();
-        }
-
-        return null;
-    }
-
-    public String readName(long ifArgLong) {
-        if ((longArgs & ifArgLong) != 0) {
-            return readName();
-        }
-
-        return null;
-    }
-
     public byte readByte() {
         return mData[offset++];
     }
 
-    public byte readByte(byte ifActionByte, byte defaultValue) {
-        if ((action & ifActionByte) != 0) {
-            return readByte();
-        }
-
-        return defaultValue;
-    }
-
-    public byte readByte(int ifArgs, byte defaultValue) {
-        if ((args & ifArgs) != 0) {
-            return readByte();
-        }
-        
-        return defaultValue;
-    }
-    
-    public byte readByte(long ifArgsLong, byte defaultValue) {
-        if ((longArgs & ifArgsLong) != 0) {
-            return readByte();
-        }
-        
-        return defaultValue;
+    public byte readByte(Enum<?> bit, byte defaultValue) {
+    	return has(bit) ? readByte() : defaultValue;
     }
 
     /**
@@ -247,12 +117,12 @@ public class ObjectParser {
      * @param ifArgs
      * @return
      */
-    public BoolState readBoolByte(int ifArgs) {
-        if (has(ifArgs)) {
+    public BoolState readBoolByte(Enum<?> bit) {
+        if (has(bit)) {
             return (readByte() != 0) ? BoolState.TRUE : BoolState.FALSE;
-        } else {
-            return BoolState.UNKNOWN;
         }
+
+        return BoolState.UNKNOWN;
     }
 
     public int getTargetId() {
@@ -268,44 +138,21 @@ public class ObjectParser {
     }
 
     public void start() {
-        start(false);
+        start(null);
     }
 
-    public void start(boolean useLong) {
-        targetType = mData[offset++];
+    public void start(Enum<?>[] bits) {
+    	targetType = mData[offset++];
         targetId = PacketParser.getLendInt(mData, offset);
-        
-        action = mData[offset+4];
-        
-        if (useLong) {
-            longArgs = PacketParser.getLendLong(mData, offset+5);
-            offset += 13;
-        } else {
-            args = PacketParser.getLendInt(mData, offset+5);
-            offset += 9;
+        offset += 4;
+
+        if (bits != null) {
+        	readBitField(bits);
         }
     }
 
-    /**
-     * If your packet only has action and no args
-     */
-    public void startNoArgs() {
-        targetType = mData[offset++];
-        targetId = PacketParser.getLendInt(mData, offset);
-        
-        action = mData[offset+4];
-        offset += 5;
-    }
-    
-    /**
-     * If your packet only has args (int) and no action
-     */
-    public void startNoAction() {
-        targetType = mData[offset++];
-        targetId = PacketParser.getLendInt(mData, offset);
-        
-        action = 0;
-        args = PacketParser.getLendInt(mData, offset+4);
-        offset += 8;
+    public void readBitField(Enum<?>[] bits) {
+        bitField = new BitField(bits, mData, offset);
+        offset += bitField.getByteCount();
     }
 }

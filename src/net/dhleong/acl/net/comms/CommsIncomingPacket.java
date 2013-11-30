@@ -42,4 +42,9 @@ public class CommsIncomingPacket extends BaseArtemisPacket {
     public String getMessage() {
         return mMessage;
     }
+
+    @Override
+    public String toString() {
+    	return "[INCOMING MESSAGE from " + mFrom + ", priority " + mPriority + "] " + mMessage;
+    }
 }

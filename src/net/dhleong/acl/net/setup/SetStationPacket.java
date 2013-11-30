@@ -35,9 +35,4 @@ public class SetStationPacket extends ShipActionPacket {
         PacketParser.putLendInt(station.ordinal(), mData, 4);
         PacketParser.putLendInt(isSelected ? 1 : 0, mData, 8);
     }
-    
-    @Override
-    public String toString() {
-        return super.toString();
-    }
 }

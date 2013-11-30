@@ -49,4 +49,22 @@ public class TextUtil {
         return Integer.parseInt(String.format("%c%c", byte1, byte2), 16);
     }
 
+    public static byte[] hexToByteArray(String hex) {
+    	int len = hex.length();
+
+    	if (len % 2 == 1) {
+    		throw new IllegalArgumentException(
+    				"Hex strings must contain two characters per byte"
+    		);
+    	}
+
+    	byte[] bytes = new byte[len / 2];
+
+    	for (int i = 0; i < len; i += 2) {
+    		String hexByte = hex.substring(i, i + 2);
+    		bytes[i / 2] = (byte) Integer.parseInt(hexByte, 16);
+    	}
+
+    	return bytes;
+    }
 }

@@ -16,7 +16,7 @@ public class LoadTubePacket extends BaseArtemisPacket {
     public static final int TORP_HOMING = 0;
     public static final int TORP_NUKE = 1;
     public static final int TORP_MINE = 2;
-    public static final int TORP_ECM = 3;
+    public static final int TORP_EMP = 3;
     
     private static final int FLAGS = 0x18;
     private static final int TYPE = 0x69CC01D9;

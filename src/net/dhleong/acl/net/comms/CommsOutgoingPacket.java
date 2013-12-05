@@ -54,7 +54,7 @@ public class CommsOutgoingPacket extends BaseArtemisPacket {
         Build_Type_1_Homing_ordnance(0x02),
         Build_Type_4_LR_Nuke_ordnance(0x03),
         Build_Type_6_Mine_ordnance(0x04),
-        Build_Type_9_ECM_ordnance(0x05),
+        Build_Type_9_EMP_ordnance(0x05),
 
         // for other ships
         Please_report_status(0x00),

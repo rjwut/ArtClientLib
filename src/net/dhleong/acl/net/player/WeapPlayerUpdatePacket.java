@@ -13,7 +13,7 @@ public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
 		TORP_HOMING,
 		TORP_NUKES,
 		TORP_MINES,
-		TORP_ECMS,
+		TORP_EMPS,
 		UNK_0,
 		TUBE_TIME_1,
 		TUBE_TIME_2,
@@ -39,7 +39,7 @@ public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
     private static final byte TORP_HOMING   = 0x01;
     private static final byte TORP_NUKES    = 0x02;
     private static final byte TORP_MINES    = 0x04;
-    private static final byte TORP_ECMS     = 0x08;
+    private static final byte TORP_EMPS     = 0x08;
 
     private static final byte UNKNOWN_BYTE  = 0x10;
 
@@ -68,7 +68,7 @@ public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
     */
 
     private static final Bit[] TORPEDOS = {
-        Bit.TORP_HOMING, Bit.TORP_NUKES, Bit.TORP_MINES, Bit.TORP_ECMS
+        Bit.TORP_HOMING, Bit.TORP_NUKES, Bit.TORP_MINES, Bit.TORP_EMPS
     };
 
     static final Bit[] TUBE_TIMES = {

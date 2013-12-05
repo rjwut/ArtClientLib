@@ -176,7 +176,7 @@ public class OtherShipUpdatePacket implements ObjectUpdatingPacket {
                 p.readByte(Bit.UNK_9, (byte)-1);
                 
                 // total crap, and yet...
-                if (p.has(Bit.FORE_SHIELD_MAX, Bit.FORE_SHIELD,
+                if (p.hasAll(Bit.FORE_SHIELD_MAX, Bit.FORE_SHIELD,
                 		Bit.AFT_SHIELD_MAX, Bit.AFT_SHIELD)) {
                     p.readShort();
                 }

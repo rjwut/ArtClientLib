@@ -20,7 +20,17 @@ public class ObjectParser {
     	return bitField.get(bit);
     }
 
-    public boolean has(Enum<?>... bits) {
+    public boolean hasAny(Enum<?>... bits) {
+    	for (Enum<?> bit : bits) {
+    		if (bitField.get(bit)) {
+    			return true;
+    		}
+    	}
+
+    	return false;
+    }
+
+    public boolean hasAll(Enum<?>... bits) {
     	for (Enum<?> bit : bits) {
     		if (!bitField.get(bit)) {
     			return false;

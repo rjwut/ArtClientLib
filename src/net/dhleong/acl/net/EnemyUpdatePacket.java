@@ -38,8 +38,8 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
 		UNK_8,
 		UNK_9,
 		UNK_10,
-
 		UNK_11,
+
 		UNK_12,
 		UNK_13,
 		UNK_14,
@@ -47,8 +47,8 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
 		UNK_16,
 		UNK_17,
 		UNK_18,
-
 		UNK_19,
+
 		UNK_20,
 		UNK_21,
 		SHIELD_FREQUENCY_A,
@@ -56,8 +56,8 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
 		SHIELD_FREQUENCY_C,
 		SHIELD_FREQUENCY_D,
 		SHIELD_FREQUENCY_E,
-
 		UNK_22,
+
 		UNK_23,
 		UNK_24,
 		UNK_25,
@@ -212,8 +212,8 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
                     freqs[i] = p.readFloat(SHLD_FREQS[i], -1);
                 }
 
-                p.readByte(Bit.UNK_22, (byte) -1);
-                p.readByte(Bit.UNK_23, (byte) -1);
+                p.readFloat(Bit.UNK_22, -1);
+                p.readFloat(Bit.UNK_23, -1);
                 p.readFloat(Bit.UNK_24, -1);
                 p.readFloat(Bit.UNK_25, -1);
                 p.readFloat(Bit.UNK_26, -1);

@@ -42,7 +42,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
     
     private static final int SYS_COUNT = SystemType.values().length;
 
-    private BoolState mRedAlert, mShields;
+    private BoolState mAutoBeams, mRedAlert, mShields;
     private int mShipNumber;
     private final float[] mHeat = new float[SYS_COUNT];
     private final float[] mSystems = new float[SYS_COUNT];
@@ -61,6 +61,8 @@ public class ArtemisPlayer extends BaseArtemisShip {
     private int mAvailableCoolant = DEFAULT_COOLANT;
 
     private float mImpulse;
+    private byte mWarp;
+    private byte mBeamFreq;
 
     private DriveType mDriveType;
 
@@ -277,9 +279,17 @@ public class ArtemisPlayer extends BaseArtemisShip {
             if (plr.mTurnRate != -1) {
                 mTurnRate = plr.mTurnRate;
             }
-            
+            if (plr.mAutoBeams != BoolState.UNKNOWN) {
+            	mAutoBeams = plr.mAutoBeams;
+            }
             if (plr.mImpulse != -1)
                 mImpulse = plr.mImpulse;
+
+            if (plr.mWarp != -1)
+            	mWarp = plr.mWarp;
+
+            if (plr.mBeamFreq != -1)
+            	mBeamFreq = plr.mBeamFreq;
 
             if (plr.mDockingStation != 0)
                 mDockingStation = plr.mDockingStation;
@@ -414,7 +424,15 @@ public class ArtemisPlayer extends BaseArtemisShip {
     public MainScreen getMainScreen() {
         return mMainScreen;
     }
-    
+
+    public byte getBeamFrequency() {
+    	return mBeamFreq;
+    }
+
+    public void setBeamFrequency(byte beamFreq) {
+    	mBeamFreq = beamFreq;
+	}
+
     /** Get the value of the impulse slider */
     public float getImpulse() {
         return mImpulse;
@@ -444,7 +462,15 @@ public class ArtemisPlayer extends BaseArtemisShip {
     public void setTurnRate(float turnRate) {
         mTurnRate = turnRate;
     }
-    
+
+    public BoolState getAutoBeams() {
+    	return mAutoBeams;
+    }
+
+    public void setAutoBeams(BoolState autoBeams) {
+    	mAutoBeams = autoBeams;
+    }
+
     public float getTopSpeed() {
         return mTopSpeed;
     }
@@ -512,4 +538,12 @@ public class ArtemisPlayer extends BaseArtemisShip {
     public int getScanObjectId() {
         return mScanningId;
     }
+
+    public byte getWarp() {
+    	return mWarp;
+    }
+
+    public void setWarp(byte warp) {
+		mWarp = warp;
+	}
 }

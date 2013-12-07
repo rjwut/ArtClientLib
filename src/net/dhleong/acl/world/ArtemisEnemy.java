@@ -1,5 +1,7 @@
 package net.dhleong.acl.world;
 
+import net.dhleong.acl.util.BoolState;
+
 /**
  * An enemy ship; they may have special
  *  abilities, and can be scanned.
@@ -27,12 +29,20 @@ public class ArtemisEnemy extends BaseArtemisShip {
     
     private byte mScannedLevel = -1;
     private int mElite, mEliteState;
-    
+    private BoolState mEnemy;
+
     public ArtemisEnemy(int objId, String name, int hullId) {
         super(objId, name, hullId);
-        
     }
-    
+
+    public BoolState isEnemy() {
+    	return mEnemy;
+    }
+
+    public void setEnemy(BoolState enemy) {
+    	mEnemy = enemy;
+    }
+
     @Override
     public int getType() {
         return TYPE_OTHER_SHIP;
@@ -68,17 +78,25 @@ public class ArtemisEnemy extends BaseArtemisShip {
         
         // it SHOULD be an ArtemisEnemy
         if (eng instanceof ArtemisEnemy) {
-            ArtemisEnemy cast = (ArtemisEnemy)eng;
-            if (cast.mScannedLevel != -1)
-                setScanned(cast.mScannedLevel);
-            
-            if (cast.mElite != -1)
-                setEliteBits(cast.mElite);
+            ArtemisEnemy cast = (ArtemisEnemy) eng;
+            BoolState enemy = cast.isEnemy();
 
-            if (cast.mEliteState != -1)
+            if (BoolState.isKnown(enemy)) {
+            	mEnemy = enemy;
+            }
+
+            if (cast.mScannedLevel != -1) {
+                setScanned(cast.mScannedLevel);
+            }
+            
+            if (cast.mElite != -1) {
+                setEliteBits(cast.mElite);
+            }
+
+            if (cast.mEliteState != -1) {
                 setEliteState(cast.mEliteState);
+            }
         }
-        
     }
 
     @Override

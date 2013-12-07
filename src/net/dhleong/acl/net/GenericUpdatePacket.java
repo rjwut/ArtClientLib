@@ -100,22 +100,22 @@ public class GenericUpdatePacket implements ObjectUpdatingPacket {
                     // why are whales so different?
                     name = p.readName(WhaleBit.NAME);
 
-                    p.readInt(WhaleBit.UNK_0);
-                    p.readInt(WhaleBit.UNK_1);
+                    p.readUnknown(WhaleBit.UNK_0, 4);
+                    p.readUnknown(WhaleBit.UNK_1, 4);
                     
                     x = p.readFloat(WhaleBit.X, -1);
                     y = p.readFloat(WhaleBit.Y, -1);
                     z = p.readFloat(WhaleBit.Z, -1);
                     
-                    p.readInt(WhaleBit.UNK_2);
-                    p.readInt(WhaleBit.UNK_3);
+                    p.readUnknown(WhaleBit.UNK_2, 4);
+                    p.readUnknown(WhaleBit.UNK_3, 4);
 
                     bearing = p.readFloat(WhaleBit.HEADING, Float.MIN_VALUE);
 
-                    p.readInt(WhaleBit.UNK_4);
-                    p.readInt(WhaleBit.UNK_5);
-                    p.readInt(WhaleBit.UNK_6);
-                    p.readInt(WhaleBit.UNK_7);
+                    p.readUnknown(WhaleBit.UNK_4, 4);
+                    p.readUnknown(WhaleBit.UNK_5, 4);
+                    p.readUnknown(WhaleBit.UNK_6, 4);
+                    p.readUnknown(WhaleBit.UNK_7, 4);
                     
                     ArtemisCreature c = new ArtemisCreature(
                             p.getTargetId(), name, type);
@@ -125,7 +125,7 @@ public class GenericUpdatePacket implements ObjectUpdatingPacket {
                 	p.readBitField(Bit.values());
 
                 	if (type == Type.TORPEDO) {
-                        p.readByte();
+                        p.readUnknown("UNK_TORPEDO", 1);
                     }
 
                     x = p.readFloat(Bit.X, -1);
@@ -140,10 +140,10 @@ public class GenericUpdatePacket implements ObjectUpdatingPacket {
                         p.readInt(Bit.NAME);
                     }
 
-                    p.readInt(Bit.UNK_0);
-                    p.readInt(Bit.UNK_1);
-                    p.readInt(Bit.UNK_2);
-                    p.readInt(Bit.UNK_3);
+                    p.readUnknown(Bit.UNK_0, 4);
+                    p.readUnknown(Bit.UNK_1, 4);
+                    p.readUnknown(Bit.UNK_2, 4);
+                    p.readUnknown(Bit.UNK_3, 4);
                     
                     obj = new ArtemisGenericObject(p.getTargetId(), name, type);
                 }
@@ -151,6 +151,7 @@ public class GenericUpdatePacket implements ObjectUpdatingPacket {
                 obj.setX(x);
                 obj.setY(y);
                 obj.setZ(z);
+                obj.setUnknownFields(p.getUnknownFields());
                 mObjects.add(obj);
             }
         } catch (RuntimeException e) {

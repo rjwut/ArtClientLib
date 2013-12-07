@@ -1,5 +1,9 @@
 package net.dhleong.acl.util;
 
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import net.dhleong.acl.net.PacketParser;
 
 public class ObjectParser {
@@ -135,16 +139,42 @@ public class ObjectParser {
         return BoolState.UNKNOWN;
     }
 
+    public void readBitField(Enum<?>[] bits) {
+        bitField = new BitField(bits, mData, offset);
+        offset += bitField.getByteCount();
+    }
+
+    public void readUnknown(String name, int length) {
+    	byte[] bytes = Arrays.copyOfRange(mData, offset, offset + length);
+    	offset += length;
+
+    	if (Util.debug) {
+	    	if (unknownFields == null) {
+	    		unknownFields = new LinkedHashMap<String, byte[]>();
+	    	}
+	
+	    	unknownFields.put(name, bytes);
+    	}
+    }
+
+    public void readUnknown(Enum<?> bit, int length) {
+    	if (has(bit)) {
+    		readUnknown(bit.name(), length);
+    	}
+    }
+
+    public Map<String, byte[]> getUnknownFields() {
+    	return unknownFields;
+    }
+
+    private Map<String, byte[]> unknownFields;
+
     public int getTargetId() {
         return targetId;
     }
 
     public byte getTargetType() {
         return targetType;
-    }
-    
-    public void skip(int bytes) {
-        offset += bytes;
     }
 
     public void start() {
@@ -159,10 +189,7 @@ public class ObjectParser {
         if (bits != null) {
         	readBitField(bits);
         }
-    }
 
-    public void readBitField(Enum<?>[] bits) {
-        bitField = new BitField(bits, mData, offset);
-        offset += bitField.getByteCount();
+        unknownFields = null;
     }
 }

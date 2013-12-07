@@ -105,23 +105,23 @@ public class GenericMeshPacket implements ObjectUpdatingPacket {
                 y = p.readFloat(Bit.Y, -1);
                 z = p.readFloat(Bit.Z, -1);
 
-                p.readInt(Bit.UNK_0);
-                p.readInt(Bit.UNK_1);
-                p.readLong(Bit.UNK_2);
-                p.readInt(Bit.UNK_3);
-                p.readInt(Bit.UNK_4);
-                p.readInt(Bit.UNK_5);
-                p.readLong(Bit.UNK_6);
+                p.readUnknown(Bit.UNK_0, 4);
+                p.readUnknown(Bit.UNK_1, 4);
+                p.readUnknown(Bit.UNK_2, 8);
+                p.readUnknown(Bit.UNK_3, 4);
+                p.readUnknown(Bit.UNK_4, 4);
+                p.readUnknown(Bit.UNK_5, 4);
+                p.readUnknown(Bit.UNK_6, 8);
                 
                 name = p.readName(Bit.NAME);
                 mesh = p.readName(Bit.TEXTURE_PATH); // wtf?!
                 texture = p.readName(Bit.TEXTURE_PATH);
                 
-                p.readInt(Bit.UNK_7);
-                p.readShort(Bit.UNK_8);
-                p.readByte(Bit.UNK_9, (byte)-1);
-                p.readByte(Bit.UNK_10, (byte)-1);
-                p.readByte(Bit.UNK_11, (byte)-1);
+                p.readUnknown(Bit.UNK_7, 4);
+                p.readUnknown(Bit.UNK_8, 2);
+                p.readUnknown(Bit.UNK_9, 1);
+                p.readUnknown(Bit.UNK_10, 1);
+                p.readUnknown(Bit.UNK_11, 1);
                 
                 // color
                 if (p.has(Bit.COLOR)) {
@@ -135,43 +135,24 @@ public class GenericMeshPacket implements ObjectUpdatingPacket {
                 shieldsFront = p.readFloat(Bit.FORE_SHIELDS, -1);
                 shieldsRear  = p.readFloat(Bit.AFT_SHIELDS, -1);
                 
-                p.readByte(Bit.UNK_12, (byte) 0xff);
-                p.readInt(Bit.UNK_11);
-                p.readInt(Bit.UNK_12);
-                p.readInt(Bit.UNK_13);
-                p.readInt(Bit.UNK_14);
-                
+                p.readUnknown(Bit.UNK_12, 1);
+                p.readUnknown(Bit.UNK_13, 4);
+                p.readUnknown(Bit.UNK_14, 4);
+                p.readUnknown(Bit.UNK_15, 4);
+                p.readUnknown(Bit.UNK_16, 4);
+
                 final ArtemisMesh newObj = new ArtemisMesh(p.getTargetId(), name);
                 
                 // shared updates
                 newObj.setX(x);
                 newObj.setY(y);
                 newObj.setZ(z);
-                
                 newObj.setMesh(mesh);
                 newObj.setTexture(texture);
-                
                 newObj.setARGB(1.0f, r, g, b);
-                
                 newObj.setFakeShields(shieldsFront, shieldsRear);
-                
-                // may have fake shields?
-//                if (newObj instanceof BaseArtemisShip) {
-//                    BaseArtemisShip ship = (BaseArtemisShip) newObj;
-//                    ship.setBearing(bearing);
-//                    
-//                    ship.setShieldsFront(shieldsFront);
-//                    ship.setShieldsFrontMax(shieldsFrontMax);
-//                    ship.setShieldsRear(shieldsRear);
-//                    ship.setShieldsRearMax(shieldsRearMax);
-//                    
-//                    for (int i=0; i<freqs.length; i++) {
-//                        ship.setShieldFreq(i, freqs[i]);
-//                    }
-//                }
-
+                newObj.setUnknownFields(p.getUnknownFields());
                 mObjects.add(newObj);
-//                base = offset;
             } catch (RuntimeException e) {
                 debugPrint();
                 System.out.println("!! DEBUG this = " + 

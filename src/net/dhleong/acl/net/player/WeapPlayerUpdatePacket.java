@@ -95,8 +95,8 @@ public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
             for (int i = 0; i < torps.length; i++) {
                 torps[i] = ((byte) 0xff & p.readByte(TORPEDOS[i], (byte)-1));
             }
-            
-            p.readByte(Bit.UNK_0, (byte)-1); // I guess?
+
+            p.readUnknown(Bit.UNK_0, 1);
                
             for (int i = 0; i < TUBE_TIMES.length; i++) {
                 tubeTimes[i] = p.readFloat(TUBE_TIMES[i], -1);

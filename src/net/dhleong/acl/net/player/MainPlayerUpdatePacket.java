@@ -14,8 +14,8 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
     	RUDDER,
     	TOP_SPEED,
     	TURN_RATE,
-    	UNK_1,
-    	UNK_2,	// warp speed?
+    	AUTO_BEAMS,
+    	WARP,
     	ENERGY,
 
     	SHIELD_STATE,
@@ -40,7 +40,7 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
     	RED_ALERT,
     	UNK_6,
     	MAIN_SCREEN,
-    	UNK_7,
+    	BEAM_FREQUENCY,
     	AVAILABLE_COOLANT,
     	SCIENCE_TARGET,
     	CAPTAIN_TARGET,
@@ -105,7 +105,7 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
     int shipNumber, hullId;
     float energy;
     float x, y, z, bearing;
-    BoolState mRedAlert, mShields, mReverse;
+    BoolState mAutoBeams, mRedAlert, mShields, mReverse;
     MainScreen mainScreen;
     float shieldsFront, shieldsFrontMax;
     float shieldsRear, shieldsRearMax;
@@ -114,9 +114,10 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
     public float velocity;
     private float impulseSlider;
     public float steeringSlider;
-    byte driveType;
+    byte driveType, beamFreq;
     private float topSpeed;
     private float turnRate;
+    private byte warp;
     private float scanProgress;
     private int scanTarget;
     private int captainTarget;
@@ -134,10 +135,8 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
             steeringSlider = p.readFloat(Bit.RUDDER, Float.MIN_VALUE);
             topSpeed = p.readFloat(Bit.TOP_SPEED, -1);
             turnRate = p.readFloat(Bit.TURN_RATE, -1);
-
-            p.readByte(Bit.UNK_1, (byte)0); // ???
-            p.readByte(Bit.UNK_2, (byte)-1); // warp speed?
-
+            mAutoBeams = p.readBoolByte(Bit.AUTO_BEAMS);
+            warp = p.readByte(Bit.WARP, (byte) -1);
             energy = p.readFloat(Bit.ENERGY, -1);
             
             if (p.has(Bit.SHIELD_STATE)) {
@@ -152,13 +151,13 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
             y = p.readFloat(Bit.Y, -1);
             z = p.readFloat(Bit.Z, -1);
 
-            p.readInt(Bit.UNK_3);
-            p.readInt(Bit.UNK_4);
+            p.readUnknown(Bit.UNK_3, 4);
+            p.readUnknown(Bit.UNK_4, 4);
 
             bearing = p.readFloat(Bit.HEADING, Float.MIN_VALUE);
             velocity = p.readFloat(Bit.VELOCITY, -1);
 
-            p.readShort(Bit.UNK_5);
+            p.readUnknown(Bit.UNK_5, 2);
 
             name = p.readName(Bit.NAME);
             shieldsFront = p.readFloat(Bit.FORE_SHIELDS, -1);
@@ -171,14 +170,14 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
             dockingStation = p.readInt(Bit.DOCKING_STATION, 0);
             mRedAlert = p.readBoolByte(Bit.RED_ALERT);
             
-            p.readInt(Bit.UNK_6);
+            p.readUnknown(Bit.UNK_6, 4);
 
             if (p.has(Bit.MAIN_SCREEN))
                 mainScreen = MainScreen.values()[p.readByte()];
             else
                 mainScreen = null;
 
-            p.readByte(Bit.UNK_7, (byte)0);
+            beamFreq = p.readByte(Bit.BEAM_FREQUENCY, (byte) -1);
 
             // total available coolant?
             availableCoolant = p.readByte(Bit.AVAILABLE_COOLANT, (byte)-1); // MUST
@@ -193,6 +192,8 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
                 shipNumber, mRedAlert, mShields);
             mPlayer.setTopSpeed(topSpeed);
             mPlayer.setTurnRate(turnRate);
+            mPlayer.setAutoBeams(mAutoBeams);
+            mPlayer.setWarp(warp);
             mPlayer.setImpulse(impulseSlider);
             mPlayer.setSteering(steeringSlider);
             mPlayer.setX(x);
@@ -203,6 +204,7 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
             mPlayer.setShipEnergy(energy);
             mPlayer.setDockingStation(dockingStation);
             mPlayer.setMainScreen(mainScreen);
+            mPlayer.setBeamFrequency(beamFreq);
             mPlayer.setAvailableCoolant(availableCoolant);
             
             mPlayer.setScanTarget(scanTarget);
@@ -219,6 +221,7 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
                     ? null
                     : DriveType.values()[driveType]);
             mPlayer.setReverse(mReverse);
+            mPlayer.setUnknownFields(p.getUnknownFields());
         } catch (RuntimeException e) {
             System.out.println("!!! Error!");
             debugPrint();

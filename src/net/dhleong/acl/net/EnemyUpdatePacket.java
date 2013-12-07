@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.dhleong.acl.ArtemisPacket;
+import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.util.ObjectParser;
 import net.dhleong.acl.util.TextUtil;
 import net.dhleong.acl.world.ArtemisEnemy;
@@ -18,7 +19,7 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
 		UNK_1,
 		UNK_2,
 		UNK_3,
-		UNK_4,
+		IS_ENEMY,
 		SHIP_TYPE,
 		X,
 
@@ -141,6 +142,7 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
         float[] freqs = new float[SHLD_FREQS.length];
         int scanned = -1;
         String name = null;
+        BoolState enemy;
         int hullId = -1;
         int elite = -1;
         int eliteState = -1;
@@ -155,106 +157,107 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
             try {
                 p.start(Bit.values());
                 name = p.readName(Bit.NAME);
-                
-                // no idea what these are
-                p.readInt(Bit.UNK_0);
-                p.readInt(Bit.UNK_1);
-                p.readFloat(Bit.UNK_2, -1);
-                p.readFloat(Bit.UNK_3, -1);
-                
-                // ?
-                p.readInt(Bit.UNK_4);
-                
-                hullId = p.readInt(Bit.SHIP_TYPE);
 
+                // no idea what these are
+                p.readUnknown(Bit.UNK_0, 4);
+                p.readUnknown(Bit.UNK_1, 4);
+                p.readUnknown(Bit.UNK_2, 4);
+                p.readUnknown(Bit.UNK_3, 4);
+
+                if (p.has(Bit.IS_ENEMY)) {
+                    enemy = BoolState.from(p.readInt() == 1);
+                } else {
+                	enemy = BoolState.UNKNOWN;
+                }
+
+                hullId = p.readInt(Bit.SHIP_TYPE);
                 x = p.readFloat(Bit.X, -1);
                 y = p.readFloat(Bit.Y, -1);
                 z = p.readFloat(Bit.Z, -1);
                 
-                p.readFloat(Bit.UNK_5, -1);
+                p.readUnknown(Bit.UNK_5, 4);
 
                 steering = p.readFloat(Bit.RUDDER, Float.MIN_VALUE); // I *think* so
                 bearing = p.readFloat(Bit.HEADING, Float.MIN_VALUE);
                 velocity = p.readFloat(Bit.VELOCITY, -1);
 
-                p.readByte(Bit.UNK_6, (byte)0); 
-                p.readShort(Bit.UNK_7);
+                p.readUnknown(Bit.UNK_6, 1);
+                p.readUnknown(Bit.UNK_7, 2);
 
                 shieldsFront = p.readFloat(Bit.FORE_SHIELD, -1);
                 shieldsFrontMax = p.readFloat(Bit.FORE_SHIELD_MAX, -1);
                 shieldsRear = p.readFloat(Bit.AFT_SHIELD, -1);
                 shieldsRearMax = p.readFloat(Bit.AFT_SHIELD_MAX, -1);
 
-                p.readShort(Bit.UNK_8);
-                
-                // ????
-                p.readByte(Bit.UNK_9, (byte) 0);
+                p.readUnknown(Bit.UNK_8, 2);
+                p.readUnknown(Bit.UNK_9, 1);
 
                 elite = p.readInt(Bit.UNK_10);
                 eliteState = p.readInt(Bit.UNK_11); // what abilities are active?
+                scanned = p.readInt(Bit.UNK_12);
 
-                scanned = p.readInt(Bit.UNK_12);  // confirmed
-
-                p.readInt(Bit.UNK_13); // confirmed
+                p.readUnknown(Bit.UNK_13, 4);
 
                 // TODO These must be system damages!
-                p.readInt(Bit.UNK_14); // confirmed
-                p.readInt(Bit.UNK_15);
-                p.readInt(Bit.UNK_16);
-                p.readInt(Bit.UNK_17);
-                p.readInt(Bit.UNK_18);
-                p.readInt(Bit.UNK_19);
-                p.readInt(Bit.UNK_20);
-                p.readInt(Bit.UNK_21);
+                p.readUnknown(Bit.UNK_14, 4);
+                p.readUnknown(Bit.UNK_15, 4);
+                p.readUnknown(Bit.UNK_16, 4);
+                p.readUnknown(Bit.UNK_17, 4);
+                p.readUnknown(Bit.UNK_18, 4);
+                p.readUnknown(Bit.UNK_19, 4);
+                p.readUnknown(Bit.UNK_20, 4);
+                p.readUnknown(Bit.UNK_21, 4);
 
                 // shield frequencies
                 for (int i = 0; i < SHLD_FREQS.length; i++) {
                     freqs[i] = p.readFloat(SHLD_FREQS[i], -1);
                 }
 
-                p.readFloat(Bit.UNK_22, -1);
-                p.readFloat(Bit.UNK_23, -1);
-                p.readFloat(Bit.UNK_24, -1);
-                p.readFloat(Bit.UNK_25, -1);
-                p.readFloat(Bit.UNK_26, -1);
+                p.readUnknown(Bit.UNK_22, 4);
+                p.readUnknown(Bit.UNK_23, 4);
+                p.readUnknown(Bit.UNK_24, 4);
+                p.readUnknown(Bit.UNK_25, 4);
+                p.readUnknown(Bit.UNK_26, 4);
 
-                if (p.has(Bit.UNK_27) && p.hasMore()) {
-                	p.readFloat(Bit.UNK_27, -1);
+                if (p.hasMore()) {
+                	p.readUnknown(Bit.UNK_27, 4);
+
+                    if (p.hasMore()) {
+                    	p.readUnknown(Bit.UNK_28, 4);
+
+                        if (p.hasMore()) {
+                        	p.readUnknown(Bit.UNK_29, 4);
+                        }
+                    }
                 }
 
-                if (p.has(Bit.UNK_28) && p.hasMore()) {
-                	p.readFloat();
-                }
-
-                if (p.has(Bit.UNK_29) && p.hasMore()) {
-                	p.readInt();
-                }
-
-                ArtemisEnemy enemy = new ArtemisEnemy(p.getTargetId(), name, hullId);
-                enemy.setScanned((byte) scanned);
-                enemy.setEliteBits(elite);
-                enemy.setEliteState(eliteState);
+                ArtemisEnemy obj = new ArtemisEnemy(p.getTargetId(), name, hullId);
+                obj.setScanned((byte) scanned);
+                obj.setEnemy(enemy);
+                obj.setEliteBits(elite);
+                obj.setEliteState(eliteState);
 
                 
                 // shared updates
-                enemy.setX(x);
-                enemy.setY(y);
-                enemy.setZ(z);
+                obj.setX(x);
+                obj.setY(y);
+                obj.setZ(z);
                 
-                enemy.setSteering(steering);
-                enemy.setBearing(bearing);
-                enemy.setVelocity(velocity);
+                obj.setSteering(steering);
+                obj.setBearing(bearing);
+                obj.setVelocity(velocity);
                 
-                enemy.setShieldsFront(shieldsFront);
-                enemy.setShieldsFrontMax(shieldsFrontMax);
-                enemy.setShieldsRear(shieldsRear);
-                enemy.setShieldsRearMax(shieldsRearMax);
+                obj.setShieldsFront(shieldsFront);
+                obj.setShieldsFrontMax(shieldsFrontMax);
+                obj.setShieldsRear(shieldsRear);
+                obj.setShieldsRearMax(shieldsRearMax);
                 
                 for (int i=0; i<freqs.length; i++) {
-                    enemy.setShieldFreq(i, freqs[i]);
+                    obj.setShieldFreq(i, freqs[i]);
                 }
-                
-                mObjects.add(enemy);
+
+                obj.setUnknownFields(p.getUnknownFields());
+                mObjects.add(obj);
 //                base = offset;
             } catch (RuntimeException e) {
                 debugPrint();

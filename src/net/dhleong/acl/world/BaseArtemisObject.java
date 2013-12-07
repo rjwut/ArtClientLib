@@ -1,13 +1,15 @@
 package net.dhleong.acl.world;
 
-public abstract class BaseArtemisObject implements ArtemisPositionable {
+import java.util.LinkedHashMap;
+import java.util.Map;
 
+public abstract class BaseArtemisObject implements ArtemisPositionable {
     protected final int mId;
     public String mName;
-    
     private float mX = -1;
     private float mY = -1;
     private float mZ = -1;
+    private Map<String, byte[]> unknownFields;
 
     public BaseArtemisObject(int objId, String name) {
         mId = objId;
@@ -81,6 +83,24 @@ public abstract class BaseArtemisObject implements ArtemisPositionable {
         if (eng.getX() != -1) setX(eng.getX());
         if (eng.getY() != -1) setY(eng.getY());
         if (eng.getZ() != -1) setZ(eng.getZ());
+
+        BaseArtemisObject cast = (BaseArtemisObject) eng;
+        Map<String, byte[]> unknown = cast.getUnknownFields();
+
+        if (unknown != null) {
+        	if (unknownFields == null) {
+        		unknownFields = new LinkedHashMap<String, byte[]>();
+        	}
+
+        	unknownFields.putAll(unknown);
+        }
     }
 
+    public Map<String, byte[]> getUnknownFields() {
+    	return unknownFields;
+    }
+
+    public void setUnknownFields(Map<String, byte[]> unknownFields) {
+    	this.unknownFields = unknownFields;
+    }
 }

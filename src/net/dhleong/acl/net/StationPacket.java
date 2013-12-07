@@ -74,27 +74,27 @@ public class StationPacket implements ObjectUpdatingPacket {
             shieldsFront = p.readFloat(Bit.FORE_SHIELDS, -1);
             shieldsRear = p.readFloat(Bit.AFT_SHIELDS, -1);
 
-            p.readInt(Bit.UNK_0);
-            p.readInt(Bit.UNK_1);  // hull ID or something?
+            p.readUnknown(Bit.UNK_0, 4);
+            p.readUnknown(Bit.UNK_1, 4); // hull ID?
 
             x = p.readFloat(Bit.X, -1);
             y = p.readFloat(Bit.Y, -1);
             z = p.readFloat(Bit.Z, -1);
 
-            p.readInt(Bit.UNK_2);
-            p.readInt(Bit.UNK_3);
-            p.readInt(Bit.UNK_4);
-            p.readInt(Bit.UNK_5);
-            p.readByte(Bit.UNK_6, (byte) -1);
-            p.readByte(Bit.UNK_7, (byte) -1);
+            p.readUnknown(Bit.UNK_2, 4);
+            p.readUnknown(Bit.UNK_3, 4);
+            p.readUnknown(Bit.UNK_4, 4);
+            p.readUnknown(Bit.UNK_5, 4);
+            p.readUnknown(Bit.UNK_6, 1);
+            p.readUnknown(Bit.UNK_7, 1);
             
-            // create the obj!
             ArtemisStation station = new ArtemisStation(p.getTargetId(), name);
             station.setX(x);
             station.setY(y);
             station.setZ(z);
             station.setShieldsFront(shieldsFront);
             station.setShieldsRear(shieldsRear);
+            station.setUnknownFields(p.getUnknownFields());
             mCreatedObjs.add(station);
         }
     }

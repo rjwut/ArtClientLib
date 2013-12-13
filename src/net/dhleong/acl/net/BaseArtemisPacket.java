@@ -11,16 +11,14 @@ public class BaseArtemisPacket implements ArtemisPacket {
     protected final byte[] mData;
     protected final int mMode;
     protected final int mType;
-    protected final int mFlags;
     private final byte[] mIntBuffer = new byte[4];
 
     protected BaseArtemisPacket() {
-        this(0, 0, 0, null);
+        this(0, 0, null);
     }
 
-    public BaseArtemisPacket(int mode, int flags, int packetType, byte[] bucket) {
+    public BaseArtemisPacket(int mode, int packetType, byte[] bucket) {
         mMode = mode;
-        mFlags = flags;
         mType = packetType;
         mData = bucket;
     }
@@ -45,7 +43,7 @@ public class BaseArtemisPacket implements ArtemisPacket {
         writeLendInt(os, 24 + mData.length);
         writeLendInt(os, mMode);
         writeLendInt(os, 0);
-        writeLendInt(os, mFlags);
+        writeLendInt(os, 4 + mData.length);
         writeLendInt(os, mType);
         os.write(mData);
         return true;

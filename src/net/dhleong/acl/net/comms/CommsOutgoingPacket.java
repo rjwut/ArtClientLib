@@ -78,7 +78,6 @@ public class CommsOutgoingPacket extends BaseArtemisPacket {
         }
     }
 
-    private static final int FLAGS = 0x18;
     private static final int TYPE = 0x574C4C4B;
 
     
@@ -103,8 +102,7 @@ public class CommsOutgoingPacket extends BaseArtemisPacket {
     /** So far not used...? */
     private CommsOutgoingPacket(Mode mode, ArtemisObject target, Message msg,
             int arg1, int arg2) {
-        super(0x2, FLAGS, TYPE, new byte[20]);
-        
+        super(0x2, TYPE, new byte[20]);
         PacketParser.putLendInt(mode.ordinal(), mData, 0); // ?
         PacketParser.putLendInt(target.getId(), mData, 4);
         PacketParser.putLendInt(msg.value, mData, 8);

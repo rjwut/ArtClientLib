@@ -9,10 +9,7 @@ import net.dhleong.acl.net.ShipActionPacket;
  *
  */
 public class HelmToggleReversePacket extends ShipActionPacket {
-    
-    private static final int FLAGS = 0x0c;
-    
     public HelmToggleReversePacket() {
-        super(FLAGS, TYPE_REVERSE_ENGINES, 0);
+        super(TYPE_REVERSE_ENGINES, 0);
     }
 }

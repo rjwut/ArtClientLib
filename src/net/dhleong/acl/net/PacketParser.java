@@ -65,7 +65,18 @@ public class PacketParser {
             throw new ArtemisPacketException("No empty padding after 4-byte mode?");
         }
         
-        final int flags = readInt(is);
+        final int remainingBytes = readInt(is);
+        final int expectedRemainingBytes = len - 20;
+
+        if (remainingBytes != expectedRemainingBytes) {
+        	throw new ArtemisPacketException(
+        			"Packet length discrepancy: total length = " + len +
+        			"; expected " + expectedRemainingBytes +
+        			" for remaining bytes field, but got " +
+        			remainingBytes
+        	);
+        }
+
         final int packetType = readInt(is);
         
         // for now, just shove it in a byte[]
@@ -85,9 +96,7 @@ public class PacketParser {
         }
         
         try {
-        
-            return buildPacket(packetType, mode, flags, bucket);
-        
+            return buildPacket(packetType, mode, bucket);
         } catch (RuntimeException e) {
             System.err.println("Unable to parse packet of type " 
                     + Integer.toHexString(packetType));
@@ -127,23 +136,23 @@ public class PacketParser {
     }
 
     public static ArtemisPacket buildPacket(int packetType, int mode, 
-            int flags, byte[] bucket) throws ArtemisPacketException {
+            byte[] bucket) throws ArtemisPacketException {
         
         if (mNoParse)
-            return new BaseArtemisPacket(mode, flags, packetType, bucket);
+            return new BaseArtemisPacket(mode, packetType, bucket);
         
         switch (packetType) {            
         case EngGridUpdatePacket.TYPE:
-            return new EngGridUpdatePacket(flags, bucket);
+            return new EngGridUpdatePacket(bucket);
             
         case CommsIncomingPacket.TYPE:
-            return new CommsIncomingPacket(flags, bucket);
+            return new CommsIncomingPacket(bucket);
             
         case IncomingAudioPacket.TYPE:
             return new IncomingAudioPacket(bucket);
             
         case DestroyObjectPacket.TYPE:
-            return new DestroyObjectPacket(flags, bucket);
+            return new DestroyObjectPacket(bucket);
             
         case GameMessagePacket.TYPE:
             // this is another generic type; a few other 
@@ -155,9 +164,9 @@ public class PacketParser {
             case JumpStatusPacket.MSG_TYPE_END:
                 return new JumpStatusPacket(bucket);
             case GameStartPacket.MSG_TYPE:
-                return new GameStartPacket(flags, bucket);
+                return new GameStartPacket(bucket);
             default:
-                return new GameMessagePacket(flags, bucket);
+                return new GameMessagePacket(bucket);
             }
             
         case StationStatusPacket.TYPE:
@@ -202,10 +211,10 @@ public class PacketParser {
                 return null;
             }
             
-            // unhandled? fall through for generic
-        
-        default:
-            return new BaseArtemisPacket(mode, flags, packetType, bucket);
+            // Unhandled? Fall back on base packet class
+            // $FALL-THROUGH$
+		default:
+            return new BaseArtemisPacket(mode, packetType, bucket);
         }       
     }
 

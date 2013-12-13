@@ -14,7 +14,6 @@ import net.dhleong.acl.util.ObjectParser;
  *
  */
 public class EngGridUpdatePacket extends BaseArtemisPacket {
-    
     public static final class GridDamage {
         public final GridCoord coord;
         public final float damage;
@@ -120,16 +119,14 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
     }
 
     public static final int TYPE = 0x77e9f3c;
-
     private static final List<GridDamage> EMPTY_DAMAGE = new ArrayList<GridDamage>();
     private static final List<DamconStatus> EMPTY_DAMCON = new ArrayList<DamconStatus>();
     
     private List<GridDamage> mDamage = null;
-
     private List<DamconStatus> mDamconUpdates = null;
 
-    public EngGridUpdatePacket(int flags, byte[] bucket) {
-        super(0x01, flags, TYPE, bucket); // TODO don't save the byte[]?
+    public EngGridUpdatePacket(byte[] bucket) {
+        super(0x01, TYPE, bucket); // TODO don't save the byte[]?
         
 //        int offset = 1;
 //        while (offset < bucket.length && bucket[offset] >= 0) {

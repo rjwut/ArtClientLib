@@ -1,15 +1,13 @@
 package net.dhleong.acl.net;
 
 public class DestroyObjectPacket extends BaseArtemisPacket {
-
     public static final int TYPE = 0xcc5a3e30;
     
     private final byte mTargetType;
     private final int mTarget;
 
-    public DestroyObjectPacket(int flags, byte[] bucket) {
-        super(0x01, flags, TYPE, null);
-        
+    public DestroyObjectPacket(byte[] bucket) {
+        super(0x01, TYPE, null);
         mTargetType = bucket[0];
         mTarget = PacketParser.getLendInt(bucket, 1);
     }
@@ -24,9 +22,8 @@ public class DestroyObjectPacket extends BaseArtemisPacket {
     
     @Override
     public String toString() {
-        return String.format("[DESTROY(%s): %d:%s|%s]",
-                Integer.toHexString(mFlags),
-                mTargetType, 
+        return String.format("[DESTROY: %d:%s|%s]",
+                mTargetType,
                 Integer.toHexString(mTarget),
                 mTarget);
     }

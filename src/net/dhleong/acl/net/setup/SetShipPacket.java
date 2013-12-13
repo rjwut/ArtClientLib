@@ -10,9 +10,7 @@ import net.dhleong.acl.net.ShipActionPacket;
  *
  */
 public class SetShipPacket extends ShipActionPacket {
-    
     public static final int TOTAL_SHIPS = 6;
-    
     public static final int SHIP_1_ARTEMIS  = 0;
     public static final int SHIP_2_INTREPID = 1;
     public static final int SHIP_3_AEGIS    = 2;
@@ -20,7 +18,6 @@ public class SetShipPacket extends ShipActionPacket {
     public static final int SHIP_5_EXCALIBUR= 4;
     public static final int SHIP_6_HERA     = 5;
     
-    private static final int FLAGS = 0x0c;
     /**
      * 
      * @param ship Index, from zero, of the ship
@@ -29,6 +26,6 @@ public class SetShipPacket extends ShipActionPacket {
      *  can, of course, be changed 
      */
     public SetShipPacket(int ship) {
-        super(FLAGS, TYPE_SET_SHIP, ship);
+        super(TYPE_SET_SHIP, ship);
     }
 }

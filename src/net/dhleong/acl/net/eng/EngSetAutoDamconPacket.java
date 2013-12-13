@@ -11,9 +11,7 @@ import net.dhleong.acl.net.ShipActionPacket;
  *
  */
 public class EngSetAutoDamconPacket extends ShipActionPacket {
-    private static final int FLAGS = 0x0c;
-    
     public EngSetAutoDamconPacket(boolean useAutonomous) {
-        super(FLAGS, TYPE_AUTO_DAMCON, useAutonomous ? 1 : 0);
+        super(TYPE_AUTO_DAMCON, useAutonomous ? 1 : 0);
     }
 }

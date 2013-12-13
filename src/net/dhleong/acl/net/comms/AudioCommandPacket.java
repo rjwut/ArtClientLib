@@ -4,7 +4,6 @@ import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.PacketParser;
 
 public class AudioCommandPacket extends BaseArtemisPacket {
-    
     public enum Command {
         PLAY(0),
         DELETE(1);
@@ -17,11 +16,9 @@ public class AudioCommandPacket extends BaseArtemisPacket {
     }
     
     private static final int TYPE = 0x6AADC57F;
-    private static final int FLAGS = 0x0c;
 
     public AudioCommandPacket(int audioId, Command cmd) {
-        super(0x2, FLAGS, TYPE, new byte[8]);
-        
+        super(0x2, TYPE, new byte[8]);
         PacketParser.putLendInt(audioId, mData);
         PacketParser.putLendInt(cmd.value, mData, 4);
     }

@@ -1,16 +1,13 @@
 package net.dhleong.acl.net;
 
 public class GameStartPacket extends BaseArtemisPacket {
-    
-    public static final int MSG_TYPE = 0x0;
-
     public static final int TYPE = 0xf754c8fe;
+    public static final int MSG_TYPE = 0x0;
     
     private final int mNumber, mOffset;
     
-    public GameStartPacket(int flags, byte[] bucket) {
-        super(0x01, flags, TYPE, bucket); // TODO don't save the byte[]?
-     
+    public GameStartPacket(byte[] bucket) {
+        super(0x01, TYPE, bucket); // TODO don't save the byte[]?
         mNumber = PacketParser.getLendInt(bucket, 4);
         mOffset = PacketParser.getLendInt(bucket, 8);
     }

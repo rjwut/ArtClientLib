@@ -10,9 +10,6 @@ import net.dhleong.acl.net.BaseArtemisPacket;
  *
  */
 public class JumpStatusPacket extends BaseArtemisPacket {
-    
-    private static final int FLAGS = 0x08;
-    
     public static final int TYPE = 0xf754c8fe;
     
     /**
@@ -29,8 +26,7 @@ public class JumpStatusPacket extends BaseArtemisPacket {
 
     
     public JumpStatusPacket(byte[] bucket) {
-        super(0x01, FLAGS, TYPE, bucket);
-        
+        super(0x01, TYPE, bucket);
         isBegin = bucket[0] == MSG_TYPE_BEGIN;
     }
     

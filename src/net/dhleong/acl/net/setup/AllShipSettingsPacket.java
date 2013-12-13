@@ -13,11 +13,7 @@ import net.dhleong.acl.util.ObjectParser;
  *
  */
 public class AllShipSettingsPacket extends BaseArtemisPacket {
-    
-    private static final int FLAGS = 0xac;
-    
     public static final int TYPE = 0xf754c8fe;
-    
     public static final byte MSG_TYPE = 0x0f;
     
     /* These values are only instantiated on recv */
@@ -25,15 +21,13 @@ public class AllShipSettingsPacket extends BaseArtemisPacket {
     public final String[] shipNames;
 
     private AllShipSettingsPacket(int len) {
-        super(0x01, FLAGS, TYPE, new byte[len]);
-        
+        super(0x01, TYPE, new byte[len]);
         drives = shipTypes = null;
         shipNames = null;
     }
     
     public AllShipSettingsPacket(byte[] bucket) throws ArtemisPacketException {
-        super(0x01, FLAGS, TYPE, bucket);
-        
+        super(0x01, TYPE, bucket);
         drives = new int[SetShipPacket.TOTAL_SHIPS];
         shipTypes = new int[SetShipPacket.TOTAL_SHIPS];
         shipNames = new String[SetShipPacket.TOTAL_SHIPS];

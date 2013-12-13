@@ -4,17 +4,14 @@ import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.PacketParser;
 
 public class CommsIncomingPacket extends BaseArtemisPacket {
-
     public static final int TYPE = 0xD672C35F;
     
     private final int mPriority;
-
     private final String mFrom;
     private final String mMessage;
 
-    public CommsIncomingPacket(int flags, byte[] bucket) {
-        super(0x01, flags, TYPE, bucket); // TODO don't save the byte[]?
-        
+    public CommsIncomingPacket(byte[] bucket) {
+        super(0x01, TYPE, bucket); // TODO don't save the byte[]?
         mPriority = PacketParser.getLendInt(bucket);
         int nameLen = PacketParser.getNameLengthBytes(bucket, 4);
         mFrom = PacketParser.getNameString(bucket, 8, nameLen);
@@ -23,7 +20,7 @@ public class CommsIncomingPacket extends BaseArtemisPacket {
         mMessage = PacketParser.getNameString(bucket, nameLen + 14, msgLen)
                 .replace('^', '\n');
     }
-    
+
     /**
      * Get the priority of the message, with
      *  lower values having higher priority

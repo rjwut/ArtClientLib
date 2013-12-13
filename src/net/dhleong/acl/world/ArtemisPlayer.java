@@ -288,6 +288,9 @@ public class ArtemisPlayer extends BaseArtemisShip {
             if (plr.mWarp != -1)
             	mWarp = plr.mWarp;
 
+            if (plr.mImpulse != -1 || plr.mWarp != -1)
+            	mDockingStation = 0;
+
             if (plr.mBeamFreq != -1)
             	mBeamFreq = plr.mBeamFreq;
 

@@ -13,8 +13,6 @@ import net.dhleong.acl.net.PacketParser;
 public class HelmJumpPacket extends BaseArtemisPacket {
     public static final int TYPE = 0x0351A5AC;
     
-    private static final int FLAGS = 0x10;
-    
     /**
      * 
      * @param bearing Bearing as a percentage of 360
@@ -22,8 +20,7 @@ public class HelmJumpPacket extends BaseArtemisPacket {
      *  max possible jump distance, 50K
      */
     public HelmJumpPacket(float bearing, float distance) {
-        super(0x02, FLAGS, TYPE, new byte[12]);
-        
+        super(0x02, TYPE, new byte[12]);
         PacketParser.putLendInt(5, mData);
         PacketParser.putLendFloat(bearing, mData, 4);
         PacketParser.putLendFloat(distance, mData, 8);

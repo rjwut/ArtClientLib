@@ -10,7 +10,6 @@ import net.dhleong.acl.net.ShipActionPacket;
  *
  */
 public class SetStationPacket extends ShipActionPacket {
-
     public enum StationType {
         MAINSCREEN,
         HELM,
@@ -28,10 +27,8 @@ public class SetStationPacket extends ShipActionPacket {
         }
     }
     
-    private static final int FLAGS = 0x10;
     public SetStationPacket(StationType station, boolean isSelected) {
-        super(FLAGS, TYPE_SET_STATION, new byte[12]);
-        
+        super(TYPE_SET_STATION, new byte[12]);
         PacketParser.putLendInt(station.ordinal(), mData, 4);
         PacketParser.putLendInt(isSelected ? 1 : 0, mData, 8);
     }

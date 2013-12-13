@@ -27,7 +27,7 @@ public class EngGridTests extends TestCase {
         for (int i=0; i<len; i++) {
             String raw = tests[i];
             byte[] bytes = ObjectParsingTests.hexStringToByteArray(raw);
-            EngGridUpdatePacket pkt = new EngGridUpdatePacket(0, bytes);
+            EngGridUpdatePacket pkt = new EngGridUpdatePacket(bytes);
             
             pkt.debugPrint();
             

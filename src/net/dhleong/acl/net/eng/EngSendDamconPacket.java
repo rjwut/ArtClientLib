@@ -11,7 +11,6 @@ import net.dhleong.acl.util.GridCoord;
  *
  */
 public class EngSendDamconPacket extends BaseArtemisPacket {
-    private static final int FLAGS = 0x18;
     private static final int TYPE = 0x69CC01D9;
 
     /**
@@ -25,9 +24,8 @@ public class EngSendDamconPacket extends BaseArtemisPacket {
      * @param z
      */
     public EngSendDamconPacket(int teamNumber, int x, int y, int z) {
-        super(0x2, FLAGS, TYPE, new byte[20]);
-        
-        PacketParser.putLendInt(0x04, mData, 0); // the command?
+        super(0x2, TYPE, new byte[20]);
+        PacketParser.putLendInt(0x04, mData, 0);
         PacketParser.putLendInt(teamNumber, mData, 4);
         PacketParser.putLendInt(x, mData, 8);
         PacketParser.putLendInt(y, mData, 12);

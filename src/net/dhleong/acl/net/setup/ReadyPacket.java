@@ -15,8 +15,7 @@ import net.dhleong.acl.net.ShipActionPacket;
  *
  */
 public class ReadyPacket extends ShipActionPacket {
-    private static final int FLAGS = 0x0c;
     public ReadyPacket() {
-        super(FLAGS, TYPE_READY, 0);
+        super(TYPE_READY, 0);
     }
 }

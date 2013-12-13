@@ -9,26 +9,22 @@ import net.dhleong.acl.net.PacketParser;
  *
  */
 public class LoadTubePacket extends BaseArtemisPacket {
+    private static final int TYPE = 0x69CC01D9;
 
     /** Total num of types of torpedos */
     public static final int TORPEDO_COUNT = 4;
-    
     public static final int TORP_HOMING = 0;
     public static final int TORP_NUKE = 1;
     public static final int TORP_MINE = 2;
     public static final int TORP_EMP = 3;
     
-    private static final int FLAGS = 0x18;
-    private static final int TYPE = 0x69CC01D9;
-
     /**
      * 
      * @param tube Indexed from 0
      * @param torpedoType one of the TORP_* constants
      */
     public LoadTubePacket(int tube, int torpedoType) {
-        super(0x02, FLAGS, TYPE, new byte[20]);
-        
+        super(0x02, TYPE, new byte[20]);
         PacketParser.putLendInt(2, mData);
         PacketParser.putLendInt(tube, mData, 4);
         PacketParser.putLendInt(torpedoType, mData, 8);

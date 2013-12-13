@@ -8,10 +8,7 @@ import net.dhleong.acl.world.ArtemisPlayer.MainScreen;
  *
  */
 public class SetMainScreenPacket extends ShipActionPacket {
-    
-    private static final int FLAGS = 0x0c;
-
     public SetMainScreenPacket(MainScreen screen) {
-        super(FLAGS, TYPE_MAINSCREEN, screen.ordinal());
+        super(TYPE_MAINSCREEN, screen.ordinal());
     }
 }

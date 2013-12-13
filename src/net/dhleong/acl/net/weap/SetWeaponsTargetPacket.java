@@ -10,9 +10,7 @@ import net.dhleong.acl.world.ArtemisObject;
  *
  */
 public class SetWeaponsTargetPacket extends ShipActionPacket {
-
-    private static final int FLAGS = 0x0c;
     public SetWeaponsTargetPacket(ArtemisObject target) {
-        super(FLAGS, TYPE_SET_TARGET, target == null ? 1 : target.getId());
+        super(TYPE_SET_TARGET, target == null ? 1 : target.getId());
     }
 }

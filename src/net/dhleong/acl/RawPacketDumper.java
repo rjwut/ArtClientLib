@@ -57,7 +57,11 @@ public class RawPacketDumper {
                 
                     try {
                         dummy.setNoParseMode(false);
-                        ArtemisPacket parsed = PacketParser.buildPacket(base.getType(), (int) base.getMode(), 0, base.getData());
+                        ArtemisPacket parsed = PacketParser.buildPacket(
+                        		base.getType(),
+                        		(int) base.getMode(),
+                        		base.getData()
+                        );
                         dummy.setNoParseMode(true);
                         System.out.println(parsed.toString());
                         if (parsed instanceof EnemyUpdatePacket) {

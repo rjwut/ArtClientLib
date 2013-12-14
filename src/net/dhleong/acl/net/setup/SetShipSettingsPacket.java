@@ -23,6 +23,7 @@ public class SetShipSettingsPacket extends ShipActionPacket {
         super(TYPE_SHIP_SETUP, new byte[12 + PacketParser.getNameLengthBytes(name)]);
         PacketParser.putLendInt(drive, mData, 4);
         PacketParser.putLendInt(shipHullId, mData, 8);
-        PacketParser.putNameString(name, mData, 12);
+        PacketParser.putLendInt(1, mData, 12); // ?
+        PacketParser.putNameString(name, mData, 16);
     }
 }

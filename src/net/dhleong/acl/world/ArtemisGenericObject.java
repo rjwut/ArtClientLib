@@ -12,6 +12,7 @@ public class ArtemisGenericObject extends BaseArtemisObject {
     public enum Type {
         MINE(ArtemisObject.TYPE_MINE, false),
         ANOMALY(ArtemisObject.TYPE_ANOMALY, true),
+        DRONE(ArtemisObject.TYPE_DRONE, false),
         NEBULA(ArtemisObject.TYPE_NEBULA, false),
         TORPEDO(ArtemisObject.TYPE_TORPEDO, false),
         BLACK_HOLE(ArtemisObject.TYPE_BLACK_HOLE, true),
@@ -39,6 +40,8 @@ public class ArtemisGenericObject extends BaseArtemisObject {
                 return MINE;
             case ArtemisObject.TYPE_ANOMALY:
                 return ANOMALY;
+            case ArtemisObject.TYPE_DRONE:
+                return DRONE;
             case ArtemisObject.TYPE_NEBULA:
                 return NEBULA;
             case ArtemisObject.TYPE_TORPEDO:

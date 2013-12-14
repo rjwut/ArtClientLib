@@ -9,6 +9,7 @@ import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.util.ObjectParser;
 import net.dhleong.acl.util.TextUtil;
 import net.dhleong.acl.world.ArtemisCreature;
+import net.dhleong.acl.world.ArtemisDrone;
 import net.dhleong.acl.world.ArtemisGenericObject;
 import net.dhleong.acl.world.ArtemisGenericObject.Type;
 import net.dhleong.acl.world.ArtemisPositionable;
@@ -39,11 +40,32 @@ public class GenericUpdatePacket implements ObjectUpdatingPacket {
     	Z,
     	UNK_2,
     	UNK_3,
+
     	HEADING,
     	UNK_4,
     	UNK_5,
     	UNK_6,
     	UNK_7
+    }
+
+    public enum DroneBit {
+    	UNK_0,
+    	X,
+    	UNK_2,
+    	Z,
+    	UNK_4,
+    	Y,
+    	HEADING,
+    	UNK_7,
+
+    	UNK_8,
+    	UNK_9,
+    	UNK_10,
+    	UNK_11,
+    	UNK_12,
+    	UNK_13,
+    	UNK_14,
+    	UNK_15
     }
 
     /*
@@ -121,6 +143,27 @@ public class GenericUpdatePacket implements ObjectUpdatingPacket {
                             p.getTargetId(), name, type);
                     c.setBearing(bearing);
                     obj = c;
+                } else if (type == Type.DRONE) {
+                	p.readBitField(DroneBit.values());
+                	p.readUnknown(DroneBit.UNK_0, 4);
+                	x = p.readFloat(DroneBit.X, -1);
+                	p.readUnknown(DroneBit.UNK_2, 4);
+                	z = p.readFloat(DroneBit.Z, -1);
+                	p.readUnknown(DroneBit.UNK_4, 4);
+                	y = p.readFloat(DroneBit.Y, -1);
+                	bearing = p.readFloat(DroneBit.HEADING, -1);
+                	p.readUnknown(DroneBit.UNK_7, 4);
+                	p.readUnknown(DroneBit.UNK_8, 4);
+                	p.readUnknown(DroneBit.UNK_9, 4);
+                	p.readUnknown(DroneBit.UNK_10, 4);
+                	p.readUnknown(DroneBit.UNK_11, 4);
+                	p.readUnknown(DroneBit.UNK_12, 4);
+                	p.readUnknown(DroneBit.UNK_13, 4);
+                	p.readUnknown(DroneBit.UNK_14, 4);
+                	p.readUnknown(DroneBit.UNK_15, 4);
+                    ArtemisDrone d = new ArtemisDrone(p.getTargetId());
+                    d.setBearing(bearing);
+                    obj = d;
                 } else {
                 	p.readBitField(Bit.values());
 

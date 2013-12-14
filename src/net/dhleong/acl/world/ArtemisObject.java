@@ -24,7 +24,8 @@ public interface ArtemisObject {
     public static final byte TYPE_MESH			= 0x0d;
     public static final byte TYPE_MONSTER		= 0x0e;
     public static final byte TYPE_WHALE			= 0x0f;
-    
+    public static final byte TYPE_DRONE			= 0x10; // ?
+
     public int getType();
     
     public String getName();

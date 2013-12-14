@@ -28,7 +28,6 @@ import net.dhleong.acl.world.ArtemisObject;
  *
  */
 public class PacketParser {
-    
     private static boolean mNoParse;
     private final byte[] mIntBuffer = new byte[4];
 
@@ -200,6 +199,7 @@ public class PacketParser {
             case ArtemisObject.TYPE_MINE:
             case ArtemisObject.TYPE_ANOMALY:
             case ArtemisObject.TYPE_NEBULA:
+            case ArtemisObject.TYPE_DRONE:
             case ArtemisObject.TYPE_TORPEDO:
             case ArtemisObject.TYPE_BLACK_HOLE:
             case ArtemisObject.TYPE_ASTEROID:

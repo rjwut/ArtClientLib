@@ -4,21 +4,21 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import net.dhleong.acl.ArtemisPacket;
+import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.util.TextUtil;
 
 public class BaseArtemisPacket implements ArtemisPacket {
-
     protected final byte[] mData;
-    protected final int mMode;
+    protected final ConnectionType mConnectionType;
     protected final int mType;
     private final byte[] mIntBuffer = new byte[4];
 
-    protected BaseArtemisPacket() {
-        this(0, 0, null);
+    public BaseArtemisPacket(ConnectionType connectionType) {
+    	this(connectionType, 0, null);
     }
 
-    public BaseArtemisPacket(int mode, int packetType, byte[] bucket) {
-        mMode = mode;
+    public BaseArtemisPacket(ConnectionType connectionType, int packetType, byte[] bucket) {
+        mConnectionType = connectionType;
         mType = packetType;
         mData = bucket;
     }
@@ -28,8 +28,8 @@ public class BaseArtemisPacket implements ArtemisPacket {
     }
 
     @Override
-    public long getMode() {
-        return mMode;
+    public ConnectionType getConnectionType() {
+        return mConnectionType;
     }
     
     @Override
@@ -39,9 +39,9 @@ public class BaseArtemisPacket implements ArtemisPacket {
 
     @Override
     public boolean write(OutputStream os) throws IOException {
-        writeLendInt(os, 0xdeadbeef);
+        writeLendInt(os, ArtemisPacket.HEADER);
         writeLendInt(os, 24 + mData.length);
-        writeLendInt(os, mMode);
+        writeLendInt(os, mConnectionType.toInt());
         writeLendInt(os, 0);
         writeLendInt(os, 4 + mData.length);
         writeLendInt(os, mType);
@@ -57,7 +57,7 @@ public class BaseArtemisPacket implements ArtemisPacket {
     @Override
     public String toString() {
     	StringBuilder b = new StringBuilder();
-    	b.append('[').append(mMode == 1 ? "SERVER" : "CLIENT").append(':')
+    	b.append('[').append(mConnectionType).append(':')
     	.append(getClass().getSimpleName()).append('|')
     	.append(TextUtil.intToHex(mType))
     	.append("] ")

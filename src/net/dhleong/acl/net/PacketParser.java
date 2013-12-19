@@ -7,17 +7,15 @@ import java.io.UnsupportedEncodingException;
 
 import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.ArtemisPacketException;
+import net.dhleong.acl.enums.ConnectionType;
+import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.net.comms.CommsIncomingPacket;
 import net.dhleong.acl.net.comms.IncomingAudioPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
 import net.dhleong.acl.net.helm.JumpStatusPacket;
-import net.dhleong.acl.net.player.EngPlayerUpdatePacket;
-import net.dhleong.acl.net.player.MainPlayerUpdatePacket;
-import net.dhleong.acl.net.player.WeapPlayerUpdatePacket;
 import net.dhleong.acl.net.setup.AllShipSettingsPacket;
 import net.dhleong.acl.net.setup.StationStatusPacket;
 import net.dhleong.acl.util.TextUtil;
-import net.dhleong.acl.world.ArtemisObject;
 
 /**
  * Reads packets from a stream, and provides 
@@ -45,23 +43,28 @@ public class PacketParser {
      */
     public ArtemisPacket readPacket(InputStream is) throws IOException, ArtemisPacketException {
         int header = readInt(is);
-        if (header != 0xdeadbeef) {
+
+        if (header != ArtemisPacket.HEADER) {
             throw new ArtemisPacketException("Illegal packet header: " + Integer.toHexString(header));
         }
         
         final int len = readInt(is);
+
         if (len <= 8) {
-            return new BaseArtemisPacket();
+            return new BaseArtemisPacket(ConnectionType.SERVER);
         }
         
-        final int mode = readInt(is);
-        if (mode != 1 && mode != 2) {
-            throw new ArtemisPacketException("Unknown packet mode: " + mode);
+        final int connectionTypeValue = readInt(is);
+        final ConnectionType connectionType = ConnectionType.fromInt(connectionTypeValue);
+
+        if (connectionType == null) {
+            throw new ArtemisPacketException("Unknown connection type: " + connectionTypeValue);
         }
-        
-        final int modeIsh = readInt(is);
-        if (modeIsh != 0) {
-            throw new ArtemisPacketException("No empty padding after 4-byte mode?");
+
+        final int padding = readInt(is);
+
+        if (padding != 0) {
+            throw new ArtemisPacketException("No empty padding after connection type?");
         }
         
         final int remainingBytes = readInt(is);
@@ -95,7 +98,7 @@ public class PacketParser {
         }
         
         try {
-            return buildPacket(packetType, mode, bucket);
+            return buildPacket(packetType, connectionType, bucket);
         } catch (RuntimeException e) {
             System.err.println("Unable to parse packet of type " 
                     + Integer.toHexString(packetType));
@@ -134,11 +137,13 @@ public class PacketParser {
         return getLendInt(mIntBuffer);
     }
 
-    public static ArtemisPacket buildPacket(int packetType, int mode, 
-            byte[] bucket) throws ArtemisPacketException {
+    public static ArtemisPacket buildPacket(int packetType,
+    		ConnectionType connectionType, byte[] bucket)
+  			throws ArtemisPacketException {
         
-        if (mNoParse)
-            return new BaseArtemisPacket(mode, packetType, bucket);
+        if (mNoParse) {
+            return new BaseArtemisPacket(connectionType, packetType, bucket);
+        }
         
         switch (packetType) {            
         case EngGridUpdatePacket.TYPE:
@@ -173,48 +178,23 @@ public class PacketParser {
             
         case ArtemisPacket.WORLD_TYPE:
             // ooh, crazy world type; switch for kid types
-            final int type = bucket[0];
-            switch (type) {
-            case ArtemisObject.TYPE_PLAYER_MAIN:
-                return new MainPlayerUpdatePacket(bucket);
-            case ArtemisObject.TYPE_PLAYER_WEAP:
-                return new WeapPlayerUpdatePacket(bucket);
-            case ArtemisObject.TYPE_PLAYER_ENG:
-                return new EngPlayerUpdatePacket(bucket);
-                
-            case ArtemisObject.TYPE_OTHER_SHIP:
-                return new EnemyUpdatePacket(bucket);
+            final int typeVal = bucket[0];
 
-            /*
-            case ArtemisObject.TYPE_OTHER:
-                return new OtherShipUpdatePacket(bucket);
-            */
-                
-            case ArtemisObject.TYPE_STATION:
-                return new StationPacket(bucket);
+            if (typeVal == 0) {
+            	// some sort of empty packet... possibly keepalive?
+            	return null;
+            }
 
-            case ArtemisObject.TYPE_MESH:
-                return new GenericMeshPacket(bucket);
+            ObjectType type = ObjectType.fromId(typeVal);
 
-            case ArtemisObject.TYPE_MINE:
-            case ArtemisObject.TYPE_ANOMALY:
-            case ArtemisObject.TYPE_NEBULA:
-            case ArtemisObject.TYPE_DRONE:
-            case ArtemisObject.TYPE_TORPEDO:
-            case ArtemisObject.TYPE_BLACK_HOLE:
-            case ArtemisObject.TYPE_ASTEROID:
-            case ArtemisObject.TYPE_MONSTER:
-            case ArtemisObject.TYPE_WHALE:
-                return new GenericUpdatePacket(bucket);
-                
-            case 0: // some sort of empty packet... possibly keepalive?
-                return null;
+            if (type != null) {
+                return type.buildPacket(bucket);
             }
             
             // Unhandled? Fall back on base packet class
             // $FALL-THROUGH$
 		default:
-            return new BaseArtemisPacket(mode, packetType, bucket);
+            return new BaseArtemisPacket(connectionType, packetType, bucket);
         }       
     }
 

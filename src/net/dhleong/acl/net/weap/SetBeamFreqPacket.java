@@ -1,13 +1,10 @@
 package net.dhleong.acl.net.weap;
 
+import net.dhleong.acl.enums.BeamFrequency;
 import net.dhleong.acl.net.ShipActionPacket;
 
 public class SetBeamFreqPacket extends ShipActionPacket {
-    /**
-     * 
-     * @param freq [0, 4] representing [A...E]
-     */
-    public SetBeamFreqPacket(int freq) {
-        super(TYPE_SET_BEAMFREQ, freq);
+    public SetBeamFreqPacket(BeamFrequency frequency) {
+        super(TYPE_SET_BEAMFREQ, frequency.ordinal());
     }
 }

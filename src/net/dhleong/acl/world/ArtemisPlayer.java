@@ -2,7 +2,10 @@ package net.dhleong.acl.world;
 
 import java.util.Arrays;
 
-import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
+import net.dhleong.acl.enums.MainScreenView;
+import net.dhleong.acl.enums.ObjectType;
+import net.dhleong.acl.enums.OrdnanceType;
+import net.dhleong.acl.enums.ShipSystem;
 import net.dhleong.acl.net.setup.SetShipSettingsPacket.DriveType;
 import net.dhleong.acl.net.weap.LoadTubePacket;
 import net.dhleong.acl.util.BoolState;
@@ -30,17 +33,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
     /** constant result of getTubeContents(), means we DON'T KNOW */
     public static final int TUBE_UNKNOWN = Integer.MIN_VALUE;
     
-    public enum MainScreen {
-        FRONT,
-        LEFT,
-        RIGHT,
-        REAR,
-        TACTICAL,
-        LONG_RANGE,
-        STATUS
-    }
-    
-    private static final int SYS_COUNT = SystemType.values().length;
+    private static final int SYS_COUNT = ShipSystem.values().length;
 
     private BoolState mAutoBeams, mRedAlert, mShields;
     private int mShipNumber;
@@ -48,7 +41,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
     private final float[] mSystems = new float[SYS_COUNT];
     private final int[] mCoolant = new int[SYS_COUNT];
 
-    private final int[] mTorpedos = new int[LoadTubePacket.TORPEDO_COUNT];
+    private final int[] mTorpedos = new int[OrdnanceType.COUNT];
     private final float[] mTubeTimes = new float[MAX_TUBES]; 
     private final int[] mTubeTypes = new int[MAX_TUBES];
 
@@ -56,7 +49,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
     private int mDockingStation = 0;
 
-    private MainScreen mMainScreen;
+    private MainScreenView mMainScreen;
 
     private int mAvailableCoolant = DEFAULT_COOLANT;
 
@@ -135,7 +128,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
      * @param sys
      * @return The setting as an int [0, 8], or -1 if we don't know
      */
-    public int getSystemCoolant(SystemType sys) {
+    public int getSystemCoolant(ShipSystem sys) {
 //        return mCoolant.containsKey(sys)
 //                ? mCoolant.get(sys)
 //                : -1;
@@ -158,14 +151,14 @@ public class ArtemisPlayer extends BaseArtemisShip {
      * @return The setting as a float [0, 1] where 1f == 300%,
      *  or -1 if we don't know
      */
-    public float getSystemEnergy(SystemType sys) {
+    public float getSystemEnergy(ShipSystem sys) {
 //        return mSystems.containsKey(sys) 
 //                ? mSystems.get(sys) 
 //                : -1f;
         return mSystems[sys.ordinal()];
     }
     
-    public float getSystemHeat(SystemType sys) {
+    public float getSystemHeat(ShipSystem sys) {
 //      return mSystems.containsKey(sys) 
 //              ? mSystems.get(sys) 
 //              : -1f;
@@ -173,8 +166,8 @@ public class ArtemisPlayer extends BaseArtemisShip {
   }
     
     @Override
-    public int getType() {
-        return TYPE_PLAYER_MAIN;
+    public ObjectType getType() {
+        return ObjectType.PLAYER_SHIP;
     }
     
     public boolean hasShieldsActive() {
@@ -210,7 +203,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
         mShields = BoolState.from(newState);
     }
 
-    public void setSystemCoolant(SystemType sys, int coolant) {
+    public void setSystemCoolant(ShipSystem sys, int coolant) {
         mCoolant[sys.ordinal()] = coolant;
     }
     
@@ -219,18 +212,18 @@ public class ArtemisPlayer extends BaseArtemisShip {
      * @param sys
      * @param energyPercentage
      */
-    public void setSystemEnergy(SystemType sys, int energyPercentage) {
+    public void setSystemEnergy(ShipSystem sys, int energyPercentage) {
         setSystemEnergy(sys, energyPercentage / 300f);
     }
 
-    public void setSystemEnergy(SystemType sys, float energy) {
+    public void setSystemEnergy(ShipSystem sys, float energy) {
         if (energy > 1f) {
             throw new IllegalArgumentException("Illegal energy value: " + energy);
         }
         mSystems[sys.ordinal()] = energy;
     }
 
-    public void setSystemHeat(SystemType sys, float heat) {
+    public void setSystemHeat(ShipSystem sys, float heat) {
         mHeat[sys.ordinal()] = heat;
     }
 
@@ -254,8 +247,8 @@ public class ArtemisPlayer extends BaseArtemisShip {
         mDockingStation = stationId;
     }
 
-    public int getTorpedoCount(int torpType) {
-        return mTorpedos[torpType];
+    public int getTorpedoCount(OrdnanceType type) {
+        return mTorpedos[type.ordinal()];
     }
 
     public void setTorpedoCount(int torpType, int count) {
@@ -323,7 +316,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
                     mCoolant[i] = plr.mCoolant[i];
             }
 
-            for (int i=0; i<LoadTubePacket.TORPEDO_COUNT; i++) {
+            for (int i=0; i < OrdnanceType.COUNT; i++) {
                 if (plr.mTorpedos[i] != -1)
                     mTorpedos[i] = plr.mTorpedos[i];
             }
@@ -409,7 +402,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
      * Sets the current main screen in use
      * @param mainScreen
      */
-    public void setMainScreen(MainScreen screen) {
+    public void setMainScreen(MainScreenView screen) {
         mMainScreen = screen;
     }
     
@@ -424,7 +417,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
         mAvailableCoolant = availableCoolant;
     }
 
-    public MainScreen getMainScreen() {
+    public MainScreenView getMainScreen() {
         return mMainScreen;
     }
 

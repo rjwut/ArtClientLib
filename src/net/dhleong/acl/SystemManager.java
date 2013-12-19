@@ -7,12 +7,13 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import net.dhleong.acl.enums.ObjectType;
+import net.dhleong.acl.enums.ShipSystem;
 import net.dhleong.acl.net.DestroyObjectPacket;
 import net.dhleong.acl.net.ObjectUpdatingPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket.DamconStatus;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket.GridDamage;
-import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.player.PlayerUpdatePacket;
 import net.dhleong.acl.net.setup.SetShipPacket;
 import net.dhleong.acl.util.GridCoord;
@@ -28,7 +29,7 @@ import net.dhleong.acl.world.ArtemisPositionable;
  * @author dhleong
  *
  */
-public class SystemManager implements OnPacketListener {
+public class SystemManager {
     
     public interface OnObjectCountChangeListener {
         void onObjectCountChanged(int count);
@@ -66,7 +67,7 @@ public class SystemManager implements OnPacketListener {
         mListener.onObjectCountChanged(mObjects.size());
     }
 
-    @Override
+    @PacketListener
     public void onPacket(ArtemisPacket pkt) {
         if (pkt instanceof DestroyObjectPacket) {
             synchronized(this) {
@@ -116,9 +117,10 @@ public class SystemManager implements OnPacketListener {
             }
         } else if (pkt instanceof PlayerUpdatePacket) {
             PlayerUpdatePacket e = (PlayerUpdatePacket) pkt;
-            
-            updateOrCreate(e.getPlayer());
-          
+
+            for (ArtemisPlayer player : e.getObjects()) {
+                updateOrCreate(player);
+            }
         } 
     }
     
@@ -179,7 +181,7 @@ public class SystemManager implements OnPacketListener {
      * @param type One of the ArtemisObject#TYPE_* constants
      * @return The number of objects added to "dest"
      */
-    public synchronized int getObjects(List<ArtemisObject> dest, int type) {
+    public synchronized int getObjects(List<ArtemisObject> dest, ObjectType type) {
         int count = 0;
         for (ArtemisObject obj : mObjects.values()) {
             if (obj.getType() == type) {
@@ -198,7 +200,7 @@ public class SystemManager implements OnPacketListener {
      * @return
      * @see #getObjects(List, int)
      */
-    public List<ArtemisObject> getObjects(int type) {
+    public List<ArtemisObject> getObjects(ObjectType type) {
         List<ArtemisObject> objs = new ArrayList<ArtemisObject>();
         getObjects(objs, type);
         return objs;
@@ -259,7 +261,7 @@ public class SystemManager implements OnPacketListener {
      * @param z
      * @return
      */
-    public SystemType getSystemTypeAt(int x, int y, int z) {
+    public ShipSystem getSystemTypeAt(int x, int y, int z) {
         return mGrid.getSystemTypeAt(GridCoord.getInstance(x, y, z));
     }
 
@@ -270,7 +272,7 @@ public class SystemManager implements OnPacketListener {
      * @throws IllegalStateException if the SystemManager doesn't
      *  yet have a ShipSystemGrid
      */
-    public float getHealthOfSystem(SystemType sys) {
+    public float getHealthOfSystem(ShipSystem sys) {
         if (mGrid == null) {
             throw new IllegalStateException("SystemManager must have a ShipSystemGrid");
         }

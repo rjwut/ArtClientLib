@@ -1,5 +1,6 @@
 package net.dhleong.acl.world;
 
+import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.util.BoolState;
 
 /**
@@ -12,7 +13,7 @@ import net.dhleong.acl.util.BoolState;
  * @author dhleong
  *
  */
-public class ArtemisEnemy extends BaseArtemisShip {
+public class ArtemisNpc extends BaseArtemisShip {
     
     // elite enemy bits
     public static final int ELITE_INVIS_TO_MAIN_SCREEN  = 1;
@@ -31,7 +32,7 @@ public class ArtemisEnemy extends BaseArtemisShip {
     private int mElite, mEliteState;
     private BoolState mEnemy;
 
-    public ArtemisEnemy(int objId, String name, int hullId) {
+    public ArtemisNpc(int objId, String name, int hullId) {
         super(objId, name, hullId);
     }
 
@@ -44,8 +45,8 @@ public class ArtemisEnemy extends BaseArtemisShip {
     }
 
     @Override
-    public int getType() {
-        return TYPE_OTHER_SHIP;
+    public ObjectType getType() {
+        return ObjectType.NPC_SHIP;
     }
     
     public boolean hasEliteAbility(int ability) {
@@ -77,8 +78,8 @@ public class ArtemisEnemy extends BaseArtemisShip {
         super.updateFrom(eng);
         
         // it SHOULD be an ArtemisEnemy
-        if (eng instanceof ArtemisEnemy) {
-            ArtemisEnemy cast = (ArtemisEnemy) eng;
+        if (eng instanceof ArtemisNpc) {
+            ArtemisNpc cast = (ArtemisNpc) eng;
             BoolState enemy = cast.isEnemy();
 
             if (BoolState.isKnown(enemy)) {
@@ -124,8 +125,8 @@ public class ArtemisEnemy extends BaseArtemisShip {
      * @return
      */
     public static boolean isScanned(ArtemisObject obj, byte scanLevel) {
-        return !(obj instanceof ArtemisEnemy) 
-                || ((ArtemisEnemy)obj).isScanned(scanLevel);
+        return !(obj instanceof ArtemisNpc) 
+                || ((ArtemisNpc)obj).isScanned(scanLevel);
     }
 
     /**
@@ -146,15 +147,15 @@ public class ArtemisEnemy extends BaseArtemisShip {
      * Use for static abilities like ELITE_INVIS_TO_MAIN_SCREEN
      */
     public static boolean hasEliteAbility(ArtemisObject obj, int ability) {
-        return (obj instanceof ArtemisEnemy) 
-                && ((ArtemisEnemy)obj).hasEliteAbility(ability);
+        return (obj instanceof ArtemisNpc) 
+                && ((ArtemisNpc)obj).hasEliteAbility(ability);
     }
 
     /**
      * Use for dynamic abilities like ELITE_CLOAKING
      */
     public static boolean isUsingEliteAbility(ArtemisObject obj, int ability) {
-        return (obj instanceof ArtemisEnemy) 
-                && ((ArtemisEnemy)obj).isUsingEliteAbiilty(ability);
+        return (obj instanceof ArtemisNpc) 
+                && ((ArtemisNpc)obj).isUsingEliteAbiilty(ability);
     }
 }

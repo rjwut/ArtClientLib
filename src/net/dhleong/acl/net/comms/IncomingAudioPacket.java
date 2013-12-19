@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import net.dhleong.acl.ArtemisPacket;
+import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.util.ObjectParser;
 
 /**
@@ -12,7 +13,6 @@ import net.dhleong.acl.util.ObjectParser;
  *
  */
 public class IncomingAudioPacket implements ArtemisPacket {
-
     public static final int TYPE = 0xae88e058;
     
     /** 
@@ -63,8 +63,8 @@ public class IncomingAudioPacket implements ArtemisPacket {
     }
 
     @Override
-    public long getMode() {
-        return 0x01;
+    public ConnectionType getConnectionType() {
+        return ConnectionType.SERVER;
     }
     
     /**

@@ -1,8 +1,10 @@
 package net.dhleong.acl.world;
 
+import net.dhleong.acl.enums.ObjectType;
+
 public class ArtemisDrone extends ArtemisGenericObject implements ArtemisBearable {
 	public ArtemisDrone(int objId) {
-		super(objId, null, ArtemisGenericObject.Type.DRONE);
+		super(objId, null, ObjectType.DRONE);
 	}
 
 	private float bearing;

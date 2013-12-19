@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import net.dhleong.acl.ArtemisPacket;
+import net.dhleong.acl.enums.BridgeStation;
+import net.dhleong.acl.enums.BridgeStationStatus;
+import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
 import net.dhleong.acl.util.ObjectParser;
 
@@ -16,29 +19,6 @@ import net.dhleong.acl.util.ObjectParser;
  *
  */
 public class StationStatusPacket implements ArtemisPacket {
-    
-    /**
-     * Describes the status of a station
-     * @author dhleong
-     *
-     */
-    public enum Status {
-        /**
-         * Un-taken; available
-         */
-        OPEN,
-        
-        /**
-         * *I* Have taken it for myself
-         */
-        MINE,
-        
-        /**
-         * Someone else has taken it; unavailable
-         */
-        OTHER
-    }
-    
     public static final int TYPE = 0x19c6e2d4;
     
     /**
@@ -46,28 +26,23 @@ public class StationStatusPacket implements ArtemisPacket {
      *  starting from 1 (Artemis)
      */
     public final int shipNumber;
-    
-    public final Status mainScreen, helm, weapons, engineer, science, comms, observer,
-    	captainsMap, gameMaster;
+    public final BridgeStationStatus[] statuses;
     
     public StationStatusPacket(byte[] bucket) {
         ObjectParser p = new ObjectParser(bucket, 0);
         shipNumber = p.readInt();
-        final Status[] values = Status.values();
-        mainScreen = values[ p.readByte() ];
-        helm = values[ p.readByte() ];
-        weapons = values[ p.readByte() ];
-        engineer = values[ p.readByte() ];
-        science = values[ p.readByte() ];
-        comms = values[ p.readByte() ];
-        observer = values[ p.readByte() ];
-        captainsMap = values[ p.readByte() ];
-        gameMaster = values[ p.readByte() ];
+        final BridgeStation[] stationValues = BridgeStation.values();
+        final BridgeStationStatus[] statusValues = BridgeStationStatus.values();
+        statuses = new BridgeStationStatus[stationValues.length];
+
+        for (BridgeStation station : stationValues) {
+        	statuses[station.ordinal()] = statusValues[p.readByte()];
+        }
     }
 
     @Override
-    public long getMode() {
-        return 0x01;
+    public ConnectionType getConnectionType() {
+        return ConnectionType.SERVER;
     }
     
     /**
@@ -75,33 +50,12 @@ public class StationStatusPacket implements ArtemisPacket {
      * @param station
      * @return
      */
-    public Status get(StationType station) {
-        if (station == null) {
+    public BridgeStationStatus get(StationType stationType) {
+        if (stationType == null) {
             throw new IllegalArgumentException("Null station");
         }
 
-        switch (station) {
-        case MAINSCREEN:
-        	return mainScreen;
-        case HELM:
-            return helm;
-        case WEAPONS:
-            return weapons;
-        case ENGINEERING:
-            return engineer;
-        case SCIENCE:
-        	return science;
-        case COMMS:
-        	return comms;
-        case OBSERVER:
-        	return observer;
-        case CAPTAINS_MAP:
-        	return captainsMap;
-        case GAME_MASTER:
-        	return gameMaster;
-        default:
-        	return Status.OPEN;
-        }
+        return statuses[stationType.ordinal()];
     }
 
     @Override
@@ -117,17 +71,18 @@ public class StationStatusPacket implements ArtemisPacket {
     
     @Override
     public String toString() {
-        return String.format("[Ship #%d:%s%s%s%s%s%s%s%s%s]",
-                Integer.valueOf(shipNumber),
-                (mainScreen != Status.OPEN) ? " MAINSCR=" + mainScreen : "",
-                (helm != Status.OPEN) ? " HELM=" + helm : "",
-                (weapons != Status.OPEN) ? " WEAP=" + weapons : "",
-                (engineer != Status.OPEN) ? " ENG=" + engineer : "",
-                (science != Status.OPEN) ? " SCI=" + science : "",
-                (comms != Status.OPEN) ? " COMMS=" + comms : "",
-                (observer != Status.OPEN) ? " OBSRV=" + observer : "",
-                (captainsMap != Status.OPEN) ? " CPTNMAP=" + captainsMap : "",
-                (gameMaster != Status.OPEN) ? " GAMEMSTR=" + gameMaster : ""
-        );
+    	StringBuilder b = new StringBuilder();
+    	b.append("[Ship #").append(shipNumber);
+
+    	for (BridgeStation station : BridgeStation.values()) {
+    		BridgeStationStatus status = statuses[station.ordinal()];
+
+    		if (status != BridgeStationStatus.AVAILABLE) {
+    			b.append(' ').append(station).append('=').append(status);
+    		}
+    	}
+
+    	b.append(']');
+    	return b.toString();
     }
 }

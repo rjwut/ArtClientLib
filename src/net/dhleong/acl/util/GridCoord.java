@@ -12,13 +12,9 @@ import java.util.Queue;
  *
  */
 public final class GridCoord implements Comparable<GridCoord> {
-
     private static final int CACHE_SIZE = 50;
-
     private static final boolean DEBUG = false;
-
     private static final Queue<GridCoord> sCache = new ArrayDeque<GridCoord>(CACHE_SIZE);
-
     public final int x, y, z;
 
     private GridCoord(int x, int y, int z) {
@@ -29,20 +25,20 @@ public final class GridCoord implements Comparable<GridCoord> {
 
     @Override
     public final boolean equals(Object other) {
-        if (this == other) 
+        if (this == other) {
             return true;
-        if (other == null || !(other instanceof GridCoord)) 
+        }
+
+        if (!(other instanceof GridCoord)) {
             return false;
+        }
 
         GridCoord cast = (GridCoord) other;
-
         return equals(cast.x, cast.y, cast.z);
     }
 
-    public final boolean equals(int x, int y, int z) {
-        return (x == this.x 
-                && y == this.y 
-                && z == this.z);
+    public final boolean equals(int ox, int oy, int oz) {
+        return (x == ox && y == oy && z == oz);
     }
 
     @Override

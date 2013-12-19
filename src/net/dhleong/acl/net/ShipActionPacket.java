@@ -1,6 +1,7 @@
 package net.dhleong.acl.net;
 
 import net.dhleong.acl.ArtemisPacket;
+import net.dhleong.acl.enums.ConnectionType;
 
 public class ShipActionPacket extends BaseArtemisPacket {
     public static final int TYPE = ArtemisPacket.SHIP_ACTION_TYPE;
@@ -32,13 +33,13 @@ public class ShipActionPacket extends BaseArtemisPacket {
     protected static final int TYPE_TOGGLE_PERSPECTIVE = 0x1A;
 
     public ShipActionPacket(int subType, int arg) {
-        super(0x02, TYPE, new byte[8]);
+        super(ConnectionType.CLIENT, TYPE, new byte[8]);
         PacketParser.putLendInt(subType, mData);
         PacketParser.putLendInt(arg, mData, 4);
     }
 
     public ShipActionPacket(int subType, byte[] bytes) {
-        super(0x02, TYPE, bytes);
+        super(ConnectionType.CLIENT, TYPE, bytes);
         PacketParser.putLendInt(subType, mData);
     }
 }

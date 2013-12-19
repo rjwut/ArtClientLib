@@ -1,5 +1,7 @@
 package net.dhleong.acl.world;
 
+import net.dhleong.acl.enums.ObjectType;
+
 /**
  * This is some "generic mesh" in the world
  * 
@@ -19,8 +21,8 @@ public class ArtemisMesh extends BaseArtemisObject {
     }
 
     @Override
-    public int getType() {
-        return ArtemisObject.TYPE_MESH;
+    public ObjectType getType() {
+        return ObjectType.GENERIC_MESH;
     }
     
     public String getMesh() {

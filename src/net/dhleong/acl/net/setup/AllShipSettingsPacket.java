@@ -1,6 +1,7 @@
 package net.dhleong.acl.net.setup;
 
 import net.dhleong.acl.ArtemisPacketException;
+import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.util.ObjectParser;
@@ -21,13 +22,13 @@ public class AllShipSettingsPacket extends BaseArtemisPacket {
     public final String[] shipNames;
 
     private AllShipSettingsPacket(int len) {
-        super(0x01, TYPE, new byte[len]);
+        super(ConnectionType.SERVER, TYPE, new byte[len]);
         drives = shipTypes = null;
         shipNames = null;
     }
     
     public AllShipSettingsPacket(byte[] bucket) throws ArtemisPacketException {
-        super(0x01, TYPE, bucket);
+        super(ConnectionType.SERVER, TYPE, bucket);
         drives = new int[SetShipPacket.TOTAL_SHIPS];
         shipTypes = new int[SetShipPacket.TOTAL_SHIPS];
         shipNames = new String[SetShipPacket.TOTAL_SHIPS];
@@ -58,10 +59,10 @@ public class AllShipSettingsPacket extends BaseArtemisPacket {
         
         for (String name : shipNames)
             len += name.length() * 2 + 2; // 2 bytes each char, plus null bytes
-        
+
         AllShipSettingsPacket pkt = new AllShipSettingsPacket(len);
         PacketParser.putLendInt(0x0f, pkt.mData);
-        
+
         int offset = 4;
         for (int i=0; i<SetShipPacket.TOTAL_SHIPS; i++) {
             PacketParser.putLendInt(drives[i], pkt.mData, offset);

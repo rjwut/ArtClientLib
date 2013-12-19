@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import net.dhleong.acl.enums.ShipSystem;
 import net.dhleong.acl.net.PacketParser;
-import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 
 /**
  * Some basic management of the internal systems
@@ -26,21 +26,20 @@ import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
  *
  */
 public class ShipSystemGrid {
-    
     public static class GridEntry {
-        public final SystemType type;
+        public final ShipSystem system;
         
         /** The index of this system among its types, [0,N) */
         public final int index;
         
-        private GridEntry(SystemType type, int index) {
-            this.type = type;
+        private GridEntry(ShipSystem system, int index) {
+            this.system = system;
             this.index = index;
         }
     }
     
     private final HashMap<GridCoord, GridEntry> mSystems = new HashMap<GridCoord, GridEntry>();
-    private final int[] mSystemCounts = new int[SystemType.values().length];
+    private final int[] mSystemCounts = new int[ShipSystem.values().length];
 
     /**
      * Load the Grid from an InputStream of a .snt file.
@@ -77,7 +76,7 @@ public class ShipSystemGrid {
             int system = PacketParser.getLendInt(row, 12);
             if (system >= 0) {
                 mSystems.put(GridCoord.getInstance(x, y, z), 
-                        new GridEntry(SystemType.values()[system],
+                        new GridEntry(ShipSystem.values()[system],
                                 mSystemCounts[system]));
                 mSystemCounts[system]++;
             }
@@ -92,7 +91,7 @@ public class ShipSystemGrid {
      * @param sys
      * @return
      */
-    public int getSystemCount(SystemType sys) {
+    public int getSystemCount(ShipSystem sys) {
         return mSystemCounts[sys.ordinal()];
     }
     
@@ -100,8 +99,8 @@ public class ShipSystemGrid {
         return mSystems.get(coord);
     }
     
-    public SystemType getSystemTypeAt(GridCoord coord) {
-        return mSystems.get(coord).type;
+    public ShipSystem getSystemTypeAt(GridCoord coord) {
+        return mSystems.get(coord).system;
     }
 
     /**
@@ -112,10 +111,10 @@ public class ShipSystemGrid {
         return mSystems.keySet();
     }
     
-    public Collection<GridCoord> getCoordsFor(SystemType sys) {
+    public Collection<GridCoord> getCoordsFor(ShipSystem sys) {
         List<GridCoord> coords = new ArrayList<GridCoord>(); 
         for (Entry<GridCoord, GridEntry> e : mSystems.entrySet()) {
-            if (e.getValue().type == sys)
+            if (e.getValue().system == sys)
                 coords.add(e.getKey());
         }
         return coords;

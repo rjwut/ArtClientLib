@@ -7,13 +7,15 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.net.UnknownHostException;
 
+import net.dhleong.acl.enums.ConnectionType;
+import net.dhleong.acl.enums.ObjectType;
+import net.dhleong.acl.enums.ShipSystem;
 import net.dhleong.acl.net.DestroyObjectPacket;
-import net.dhleong.acl.net.EnemyUpdatePacket;
+import net.dhleong.acl.net.NpcUpdatePacket;
 import net.dhleong.acl.net.GameMessagePacket;
 import net.dhleong.acl.net.GameStartPacket;
 import net.dhleong.acl.net.GenericUpdatePacket;
 import net.dhleong.acl.net.ObjectUpdatingPacket;
-import net.dhleong.acl.net.OtherShipUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.net.StationPacket;
 import net.dhleong.acl.net.comms.AudioCommandPacket;
@@ -21,7 +23,6 @@ import net.dhleong.acl.net.comms.AudioCommandPacket.Command;
 import net.dhleong.acl.net.comms.CommsIncomingPacket;
 import net.dhleong.acl.net.comms.IncomingAudioPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
-import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.player.PlayerUpdatePacket;
 import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.ReadyPacket2;
@@ -55,9 +56,9 @@ public class TestRunner {
         System.out.println("- Reading grid: " + sntFile);
         final InputStream is = new FileInputStream(sntFile);
         final ShipSystemGrid grid = new ShipSystemGrid(is);
-        for (final SystemType type : SystemType.values()) {
-            System.out.println("--+ " + type +": " + grid.getSystemCount(type));
-            for (final GridCoord c : grid.getCoordsFor(type))
+        for (final ShipSystem system : ShipSystem.values()) {
+            System.out.println("--+ " + system +": " + grid.getSystemCount(system));
+            for (final GridCoord c : grid.getCoordsFor(system))
                 System.out.println("--+--+" + c);
         }
         
@@ -72,10 +73,14 @@ public class TestRunner {
         final SetStationPacket srcPkt = new SetStationPacket(StationType.ENGINEERING, true);
         srcPkt.write(out);
         final ArtemisPacket destPkt = new PacketParser().readPacket(in);
-        if (destPkt.getMode() != 0x02)
-            throw new Exception("Wrong mode: " + destPkt.getMode());
-        if (destPkt.getType() != SetStationPacket.TYPE)
+
+        if (destPkt.getConnectionType() != ConnectionType.CLIENT) {
+            throw new Exception("Wrong connection type: " + destPkt.getConnectionType());
+        }
+
+        if (destPkt.getType() != SetStationPacket.TYPE) {
             throw new Exception("Wrong type: " + Integer.toHexString(destPkt.getType()));
+        }
          
         final ArtemisNetworkInterface net; 
         try {
@@ -92,11 +97,10 @@ public class TestRunner {
         mgr.setSystemGrid(grid);
         
         // this will be BEFORE the mgr updates
-        net.addOnPacketListener(new OnPacketListener() {
-            
+        net.addPacketListener(new Object() {
             private int noHull = -1;
 
-            @Override
+            @PacketListener
             public void onPacket(final ArtemisPacket pkt) {
                 if (pkt instanceof ObjectUpdatingPacket) {
                     final ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
@@ -110,9 +114,9 @@ public class TestRunner {
                         final ArtemisObject old = mgr.getObject(obj.getId());
                         if (old == null) {
                             
-                            if (obj.getType() == ArtemisObject.TYPE_OTHER_SHIP) {
+                            if (obj.getType() == ObjectType.NPC_SHIP) {
                                 System.out.println("Total created enemies=" + 
-                                        (mgr.getObjects(ArtemisObject.TYPE_OTHER_SHIP).size()+1));
+                                        (mgr.getObjects(ObjectType.NPC_SHIP).size()+1));
                                 created = true;
                             }
                             
@@ -137,8 +141,8 @@ public class TestRunner {
                     }
                 }
                 
-                if (pkt instanceof EnemyUpdatePacket) {
-                    final EnemyUpdatePacket up = (EnemyUpdatePacket) pkt;
+                if (pkt instanceof NpcUpdatePacket) {
+                    final NpcUpdatePacket up = (NpcUpdatePacket) pkt;
                     
                     for (final ArtemisPositionable obj : up.getObjects()) {
                         if (obj.getName() != null) {
@@ -181,13 +185,12 @@ public class TestRunner {
             }
         });
         
-        net.addOnPacketListener(mgr);
+        net.addPacketListener(mgr);
         
-        net.addOnPacketListener(new OnPacketListener() {
-
+        net.addPacketListener(new Object() {
             protected int destroyedEnemies = 0;
 
-            @Override
+            @PacketListener
             public void onPacket(final ArtemisPacket pkt) {
                 
                 if (pkt.getType() == 0xe548e74a) {
@@ -200,7 +203,7 @@ public class TestRunner {
 //                    create.debugPrint();
 //                    System.out.println("--> " + create);
                     return;
-                } else if (pkt instanceof EnemyUpdatePacket) {
+                } else if (pkt instanceof NpcUpdatePacket) {
 //                    System.out.println("** Update: ");
 //                    ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
 ////                    up.debugPrint();
@@ -215,21 +218,6 @@ public class TestRunner {
 //                    
                     
                     return;
-                } else if (pkt instanceof OtherShipUpdatePacket) {
-//                  System.out.println("** Update: ");
-                  final ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
-//                  up.debugPrint();
-//                  for (ArtemisObject obj : up.mObjects) {
-//                      ArtemisObject full = mgr.getObject(obj.getId());
-//                      System.out.println(" + " + obj + " vel=" +
-//                              ((ArtemisBearable)full)
-//                                  .getVelocity());
-//                  }
-                  
-                  System.out.println("--> " + up);
-                  
-                  return;
-
                 } else if (pkt instanceof GenericUpdatePacket) {
 //                    System.out.println("** Update: ");
 //                    GenericUpdatePacket up = new GenericUpdatePacket(sys);
@@ -324,7 +312,7 @@ public class TestRunner {
                     return;
                 } else if (pkt instanceof DestroyObjectPacket) {
                     if (((DestroyObjectPacket)pkt).getTargetType() 
-                            == ArtemisObject.TYPE_OTHER_SHIP) {
+                            == ObjectType.NPC_SHIP) {
                         destroyedEnemies++;
                         System.out.println("Total enemies destroyed=" + destroyedEnemies);
                     }

@@ -1,15 +1,16 @@
 package net.dhleong.acl.world;
 
+import net.dhleong.acl.enums.ObjectType;
+
 
 public class ArtemisStation extends BaseArtemisShielded {
-    
     public ArtemisStation(int objId, String name) {
         super(objId, name);
     }
 
     @Override
-    public int getType() {
-        return TYPE_STATION;
+    public ObjectType getType() {
+        return ObjectType.SPACE_STATION;
     }
 
     @Override

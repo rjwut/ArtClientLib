@@ -5,9 +5,7 @@ import net.dhleong.acl.world.ArtemisObject;
 
 /**
  * Set the target for our weapons
- * 
  * @author dhleong
- *
  */
 public class SetWeaponsTargetPacket extends ShipActionPacket {
     public SetWeaponsTargetPacket(ArtemisObject target) {

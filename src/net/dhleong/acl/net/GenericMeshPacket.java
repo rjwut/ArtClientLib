@@ -6,15 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.dhleong.acl.ArtemisPacket;
+import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.util.ObjectParser;
 import net.dhleong.acl.util.TextUtil;
 import net.dhleong.acl.world.ArtemisMesh;
 import net.dhleong.acl.world.ArtemisPositionable;
 
 /**
- * 
  * @author dhleong
- *
  */
 public class GenericMeshPacket implements ObjectUpdatingPacket {
 	private enum Bit {
@@ -48,43 +47,6 @@ public class GenericMeshPacket implements ObjectUpdatingPacket {
 		UNK_15,
 		UNK_16
 	}
-	/*
-    private static final int POS_X       = 0x00000001; 
-    private static final int POS_Y       = 0x00000002; 
-    private static final int POS_Z       = 0x00000004; // huh? 
-    
-    private static final int q1  = 0x00000008; 
-    private static final int q2= 0x00000010; 
-    private static final int q3= 0x00000020; 
-    private static final int q4= 0x00000040; 
-    private static final int q5 = 0x00000080;
-    private static final int q6   = 0x00000100; 
-    private static final int q7= 0x00000200;
-    
-    private static final int NAME         = 0x00000400; 
-    @SuppressWarnings("unused")
-    private static final int PATH_MESH    = 0x00000800; 
-    private static final int PATH_TEXTURE = 0x00001000; // ?
-    
-    private static final int UNKNOWN_FLT = 0x00002000; // ?
-
-    private static final int UNKNOWN_SHORT = 0x00004000; // just a guess
-    private static final int UNKNOWN_FLT_1 = 0x00008000; // ?
-    
-    private static final int COLOR_R    = 0x00010000;
-    private static final int COLOR_G    = 0x00020000;
-    
-    private static final int COLOR    = 0x00040000;
-    
-    private static final int FAKE_SHIELDS_FRONT = 0x00080000;
-    private static final int FAKE_SHIELDS_REAR  = 0x00100000;
-    
-    private static final int UNKNOWN_BYTE   = 0x00200000;
-    private static final int UNKNOWN_INT_1  = 0x00400000;
-    private static final int UNKNOWN_INT_2  = 0x00800000;
-    private static final int UNKNOWN_INT_3  = 0x01000000;
-    private static final int UNKNOWN_INT_4  = 0x02000000;
-    */
 
     private final byte[] mData;
     public final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
@@ -170,8 +132,8 @@ public class GenericMeshPacket implements ObjectUpdatingPacket {
     }
 
     @Override
-    public long getMode() {
-        return 0x01;
+    public ConnectionType getConnectionType() {
+        return ConnectionType.SERVER;
     }
 
     @Override

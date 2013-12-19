@@ -1,5 +1,7 @@
 package net.dhleong.acl.world;
 
+import net.dhleong.acl.enums.ObjectType;
+
 public class ArtemisCreature extends ArtemisGenericObject implements ArtemisBearable {
 
     private float mBearing, mVelocity;
@@ -7,7 +9,7 @@ public class ArtemisCreature extends ArtemisGenericObject implements ArtemisBear
     // default to "straight ahead"
     private float mSteering = 0.5f;
 
-    public ArtemisCreature(int objId, String name, ArtemisGenericObject.Type type) {
+    public ArtemisCreature(int objId, String name, ObjectType type) {
         super(objId, name, type);
     }
 

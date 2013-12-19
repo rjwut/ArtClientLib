@@ -6,13 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.dhleong.acl.ArtemisPacket;
+import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.util.ObjectParser;
 import net.dhleong.acl.util.TextUtil;
-import net.dhleong.acl.world.ArtemisEnemy;
+import net.dhleong.acl.world.ArtemisNpc;
 import net.dhleong.acl.world.ArtemisPositionable;
 
-public class EnemyUpdatePacket implements ObjectUpdatingPacket {
+public class NpcUpdatePacket implements ObjectUpdatingPacket {
 	public enum Bit {
 		NAME,
 		UNK_0,
@@ -134,7 +135,7 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
 
     private float velocity;
 
-    public EnemyUpdatePacket(byte[] data) {
+    public NpcUpdatePacket(byte[] data) {
 
         mData = data;
 
@@ -231,7 +232,7 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
                     }
                 }
 
-                ArtemisEnemy obj = new ArtemisEnemy(p.getTargetId(), name, hullId);
+                ArtemisNpc obj = new ArtemisNpc(p.getTargetId(), name, hullId);
                 obj.setScanned((byte) scanned);
                 obj.setEnemy(enemy);
                 obj.setEliteBits(elite);
@@ -276,8 +277,8 @@ public class EnemyUpdatePacket implements ObjectUpdatingPacket {
     }
 
     @Override
-    public long getMode() {
-        return 0x01;
+    public ConnectionType getConnectionType() {
+        return ConnectionType.SERVER;
     }
 
     @Override

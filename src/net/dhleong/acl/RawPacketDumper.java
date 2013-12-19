@@ -3,18 +3,18 @@ package net.dhleong.acl;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+import net.dhleong.acl.enums.ShipSystem;
 import net.dhleong.acl.net.BaseArtemisPacket;
-import net.dhleong.acl.net.EnemyUpdatePacket;
+import net.dhleong.acl.net.NpcUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.net.eng.EngSetEnergyPacket;
-import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.sci.SciScanPacket;
 import net.dhleong.acl.net.sci.SciSelectPacket;
 import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.ReadyPacket2;
 import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
-import net.dhleong.acl.world.ArtemisEnemy;
+import net.dhleong.acl.world.ArtemisNpc;
 
 public class RawPacketDumper {
     
@@ -41,11 +41,10 @@ public class RawPacketDumper {
         
         net.setPacketParser(dummy);
         
-        net.addOnPacketListener(new OnPacketListener() {
-            
-            private ArtemisEnemy mSelectedPkt;
+        net.addPacketListener(new Object() {
+            private ArtemisNpc mSelectedPkt;
 
-            @Override
+            @PacketListener
             public void onPacket(ArtemisPacket pkt) {
                 // filter out noise
                 BaseArtemisPacket base = (BaseArtemisPacket) pkt;
@@ -59,13 +58,13 @@ public class RawPacketDumper {
                         dummy.setNoParseMode(false);
                         ArtemisPacket parsed = PacketParser.buildPacket(
                         		base.getType(),
-                        		(int) base.getMode(),
+                        		base.getConnectionType(),
                         		base.getData()
                         );
                         dummy.setNoParseMode(true);
                         System.out.println(parsed.toString());
-                        if (parsed instanceof EnemyUpdatePacket) {
-                            ArtemisEnemy e = (ArtemisEnemy) ((EnemyUpdatePacket) parsed).getObjects().get(0);
+                        if (parsed instanceof NpcUpdatePacket) {
+                            ArtemisNpc e = (ArtemisNpc) ((NpcUpdatePacket) parsed).getObjects().get(0);
                             if (e.equals(mSelectedPkt)) {
                                 System.out.println("unknown = " + e);
                                 //((EnemyUpdatePacket) parsed).debugPrint();
@@ -100,7 +99,7 @@ public class RawPacketDumper {
         
         net.send(new ReadyPacket2());
         
-        net.send(new EngSetEnergyPacket(SystemType.SENSORS, 10));
+        net.send(new EngSetEnergyPacket(ShipSystem.SENSORS, 10));
 //        net.send(new ReadyPacket2());
     }
 }

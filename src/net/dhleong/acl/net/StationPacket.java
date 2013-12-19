@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.dhleong.acl.ArtemisPacket;
+import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.util.ObjectParser;
 import net.dhleong.acl.util.TextUtil;
 import net.dhleong.acl.world.ArtemisObject;
@@ -104,8 +105,8 @@ public class StationPacket implements ObjectUpdatingPacket {
     }
 
     @Override
-    public long getMode() {
-        return 0x01;
+    public ConnectionType getConnectionType() {
+        return ConnectionType.SERVER;
     }
 
     @Override
@@ -128,10 +129,6 @@ public class StationPacket implements ObjectUpdatingPacket {
         System.out.println("** CREATE:");
         for (ArtemisObject obj : mCreatedObjs)
             System.out.println("**  + " + obj);
-    }
-
-    public static final boolean handlesType(int type) {
-        return type == ArtemisObject.TYPE_STATION;
     }
 
     @Override

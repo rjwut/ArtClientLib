@@ -3,6 +3,7 @@ package net.dhleong.acl.net.eng;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ObjectParser;
@@ -11,7 +12,6 @@ import net.dhleong.acl.util.ObjectParser;
  * Updates damage to the various system grids on the
  *  ship, as well as (I think!) DamCon team status/location
  * @author dhleong
- *
  */
 public class EngGridUpdatePacket extends BaseArtemisPacket {
     public static final class GridDamage {
@@ -30,13 +30,22 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
 
         @Override
         public boolean equals(Object other) {
-            if (other == null || !(other instanceof GridDamage))
-                return false;
-            
+        	if (this == other) {
+        		return true;
+        	}
+
+        	if (!(other instanceof GridDamage)) {
+        		return false;
+        	}
+
             GridDamage cast = (GridDamage) other;
-            return coord.equals(cast.coord) 
-                    && (Math.abs(damage - cast.damage)) < 0.01f;
+            return coord.equals(cast.coord);
         }
+
+		@Override
+		public int hashCode() {
+			return coord.hashCode();
+		}
     }
     
     /**
@@ -45,7 +54,6 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
      *
      */
     public static final class DamconStatus {
-
         int teamNumber, members;
         int xGoal, yGoal, zGoal;
         int x, y, z;
@@ -126,27 +134,9 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
     private List<DamconStatus> mDamconUpdates = null;
 
     public EngGridUpdatePacket(byte[] bucket) {
-        super(0x01, TYPE, bucket); // TODO don't save the byte[]?
-        
-//        int offset = 1;
-//        while (offset < bucket.length && bucket[offset] >= 0) {
-//            try {
-//                GridCoord coord = GridCoord.getInstance(
-//                        bucket[offset], 
-//                        bucket[offset+1], 
-//                        bucket[offset+2]);
-//                float damage = PacketParser.getLendFloat(bucket, offset+3);
-//                mDamage.add(new GridDamage(coord, damage));
-//                
-//                offset += 7;
-//            } catch (ArrayIndexOutOfBoundsException e) {
-//                debugPrint();
-//                System.out.println("DEBUG: offset = " + offset);
-//                System.out.println("DEBUG: Packet = " + this);
-//                throw e;
-//            }
-//        }
+        super(ConnectionType.SERVER, TYPE, bucket); // TODO don't save the byte[]?
         ObjectParser p =  new ObjectParser(bucket, 1);
+
         while (p.peekByte() != (byte)0xff) {
             GridCoord coord = GridCoord.getInstance(
                     p.readByte(), 

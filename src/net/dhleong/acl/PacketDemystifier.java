@@ -5,9 +5,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.net.BaseArtemisPacket;
-import net.dhleong.acl.net.EnemyUpdatePacket;
-import net.dhleong.acl.net.OtherShipUpdatePacket;
+import net.dhleong.acl.net.NpcUpdatePacket;
 import net.dhleong.acl.net.PacketParser;
 import net.dhleong.acl.net.player.MainPlayerUpdatePacket;
 import net.dhleong.acl.net.player.WeapPlayerUpdatePacket;
@@ -15,9 +15,7 @@ import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.ReadyPacket2;
 import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
-import net.dhleong.acl.test.ObjectParsingTests;
 import net.dhleong.acl.util.TextUtil;
-import net.dhleong.acl.world.ArtemisObject;
 
 /**
  * This is kind of a (huge) mess, but it won't be used in
@@ -26,31 +24,31 @@ import net.dhleong.acl.world.ArtemisObject;
  * @author dhleong
  *
  */
-public abstract class PacketDemystifier implements OnPacketListener {
+public abstract class PacketDemystifier {
     
     /**
      * The Demystifier we want to use for this run
      */
-    private static final OnPacketListener THIS_DEMYSITIFIER = 
+    private static final PacketDemystifier THIS_DEMYSITIFIER = 
             new EnemyPacketDemystifier();
 
     static class UserPacketDemystifier extends SimpleWorldPacketDemystifier {
         
         public UserPacketDemystifier() {
-            super( MainPlayerUpdatePacket.class, ArtemisObject.TYPE_PLAYER_MAIN);
+            super(MainPlayerUpdatePacket.class, ObjectType.PLAYER_SHIP);
         }
     }
     
     static class UserWeapPacketDemystifier extends SimpleWorldPacketDemystifier {
         
         public UserWeapPacketDemystifier() {
-            super(WeapPlayerUpdatePacket.class,  ArtemisObject.TYPE_PLAYER_WEAP);
+            super(WeapPlayerUpdatePacket.class, ObjectType.WEAPONS_BRIDGE_STATION);
         }
     }
     static class EnemyPacketDemystifier extends SimpleWorldPacketDemystifier {
 
         public EnemyPacketDemystifier() {
-            super(EnemyUpdatePacket.class, ArtemisObject.TYPE_OTHER_SHIP);
+            super(NpcUpdatePacket.class, ObjectType.NPC_SHIP);
         }
         
     }
@@ -60,9 +58,9 @@ public abstract class PacketDemystifier implements OnPacketListener {
     static class SimpleWorldPacketDemystifier extends WorldPacketDemystifier {
         
         private final Class<?> mClass;
-        private final int mType;
+        private final ObjectType mType;
 
-        public SimpleWorldPacketDemystifier(Class<?> packetClass, int worldType) {
+        public SimpleWorldPacketDemystifier(Class<?> packetClass, ObjectType worldType) {
             mClass = packetClass;
             mType = worldType;
         }
@@ -74,7 +72,7 @@ public abstract class PacketDemystifier implements OnPacketListener {
 
         @Override
         protected int getWorldType() {
-            return mType;
+            return mType.getId();
         }
         
     }
@@ -228,7 +226,7 @@ public abstract class PacketDemystifier implements OnPacketListener {
     
     /* Passes to implementation stuff */
 
-    @Override
+    @PacketListener
     public void onPacket(ArtemisPacket pkt) {
         if (isHandled(pkt)) {
             System.out.println("<< " + pkt);
@@ -432,24 +430,6 @@ public abstract class PacketDemystifier implements OnPacketListener {
     protected abstract boolean isHandled(ArtemisPacket pkt);
     
     /* Runner */
-
-    public static final void main(String[] args) {
-        demystTest();
-//        demystNetwork();
-    }
-    
-    private static void demystTest() {
-        
-        //String raw = "01f8030000bc2af924000000003f9a99193f6f12833b0179007a440100000019184e4776c44a47db0f49400800000041007200740065006d006900730000000000a0420000a0420000a0420000a042005043480800000000";
-        //String raw = "0475040000fb3a5f007c0400000049003400340000000000803f9a99993e6f12033b01000000d107000050896d472650c3474215013ed0ccccbd9a99993e0000a0420000a0420000a0420000a042010030000000a8a9203ff0bbc43e6c5b363fe644263fe234243f0476040000fb3a5f007c0400000058003100350000000000803f9a99993e6f12033b01000000d0070000501f6e472650c3474215013ed0ccccbd9a99993e000020420000204200002042000020420100060000005c18943e04d01b3f9d539b3e4495553ffacb163f00000000";
-//        String raw = "0279060000ef075408020604030012000200000069640003150015002002f70079002e0001f6ce00000000";
-        //String raw = "058c050000ffffffff0705000000540072003200340000000000803ff201003f9a99993e6f12033b00000000dc050000e266644700000000d6248147000000008eb247b77280d2bf9a99993e010000002042000020420000204200002042010000000000000000000000000000000000000000000000000000000000000000000000e256a43e4482bb3ebeaf5e3f88f9103f90b1143f058d050000ffffffff0705000000540072003700390000000000803f30f8ff3e9a99993e6f12033b00000000dc05000018aa344700000000be4d924700000000d08bc737608b03409a99993e0000000020420000204200002042000020420100000000000000000000000000000000000000000000000000000000000000000000004a0f253f3a666a3fd0741b3f3bb9503fd790d13e058e050000ffffffff0705000000440065003100360000000000803f1cfcff3e3333333f6f12033b00000000dd050000f6da2d4700000000f50e8e470000000068c7473704e8f9bf3333333f01000000a0420000a0420000a0420000a042010000000000000000000000000000000000000000000000000000000000000000000000eef4293fedb0293f2b87153f9680b13e74a3393f00000000";
-    	String raw = "044f040000f9105fdf007c0400000059003600300000009a99993e6f12033b01000000d1070000feff954301964c3f0000a0420000a0420000a0420000a04201000f0600000200000002000000ffffffff01fe010050c3c77f20593ffac2633f958d173fee97103f3f2cec3e0450040000fd127ff8007c040000005400300037000000285e503f9a99993e6f12033b01000000d1070000975a0d470050c3477ae446c00000d0420000d0420000d0420000d04201000138060000010202010050c3c7e665f23e68d1003fa25aea3ece6b003fb0a5d73e00000000";
-        byte[] bytes = ObjectParsingTests.hexStringToByteArray(raw);
-        BaseArtemisPacket pkt = new BaseArtemisPacket(0, ArtemisPacket.WORLD_TYPE, bytes);
-        THIS_DEMYSITIFIER.onPacket(pkt);
-    }
-     
     @SuppressWarnings("unused")
     private static void demystNetwork() {
         String tgtIp = "10.211.55.3";
@@ -471,7 +451,7 @@ public abstract class PacketDemystifier implements OnPacketListener {
         
         net.setPacketParser(dummy);
         
-        net.addOnPacketListener(THIS_DEMYSITIFIER);
+        net.addPacketListener(THIS_DEMYSITIFIER);
         
         net.start();
         

@@ -3,14 +3,14 @@ package net.dhleong.acl;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+import net.dhleong.acl.enums.OrdnanceType;
+import net.dhleong.acl.enums.ShipSystem;
 import net.dhleong.acl.net.ObjectUpdatingPacket;
-import net.dhleong.acl.net.eng.EngSetEnergyPacket.SystemType;
 import net.dhleong.acl.net.player.PlayerUpdatePacket;
 import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.ReadyPacket2;
 import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.net.setup.SetStationPacket.StationType;
-import net.dhleong.acl.net.weap.LoadTubePacket;
 import net.dhleong.acl.world.ArtemisPlayer;
 import net.dhleong.acl.world.ArtemisPositionable;
 import net.dhleong.acl.world.BaseArtemisShip;
@@ -42,7 +42,7 @@ public class BadParseDetectingRunner {
         }
 
         final SystemManager mgr = new SystemManager();
-        net.addOnPacketListener(mgr);
+        net.addPacketListener(mgr);
         net.setOnConnectedListener(new OnConnectedListener() {
 
             @Override
@@ -56,24 +56,21 @@ public class BadParseDetectingRunner {
             }
         });
 
-        net.addOnPacketListener(new OnPacketListener() {
-
-            @Override
+        net.addPacketListener(new Object() {
+            @PacketListener
             public void onPacket(final ArtemisPacket pkt) {
-
                 if (pkt instanceof PlayerUpdatePacket) {
-
                     final PlayerUpdatePacket up = (PlayerUpdatePacket) pkt;
-                    try {
 
-                        final ArtemisPlayer p = up.getPlayer();
-                        testPlayer(p);
-
-                    } catch (final RuntimeException e) {
-                        up.debugPrint();
-                        System.out.println("--> " + up);
-                        net.stop();
-                        throw e;
+                    for (ArtemisPlayer p : up.getObjects()) {
+                        try {
+                            testPlayer(p);
+                        } catch (final RuntimeException e) {
+                            up.debugPrint();
+                            System.out.println("--> " + up);
+                            net.stop();
+                            throw e;
+                        }
                     }
                 } else if (pkt instanceof ObjectUpdatingPacket) {
                     final ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
@@ -115,15 +112,15 @@ public class BadParseDetectingRunner {
         assertRange(-1, 6, p.getShipIndex(), "shipIndex");
         assertRange(-1, 32, p.getAvailableCoolant(), "maxCoolant");
 
-        for (final SystemType sys : SystemType.values()) {
+        for (final ShipSystem sys : ShipSystem.values()) {
             if (p.getSystemEnergy(sys) != -1)
                 assertRange(0, 1, p.getSystemEnergy(sys), sys + "energy");
             assertRange(-1, 1, p.getSystemHeat(sys), sys + "heat");
             assertRange(-1, 16, p.getSystemCoolant(sys), sys + "coolant");
         }
 
-        for (int i=0; i<LoadTubePacket.TORPEDO_COUNT; i++) {
-            assertRange(-1, 99, p.getTorpedoCount(i), "Torp Type#" + i);
+        for (OrdnanceType type : OrdnanceType.values()) {
+            assertRange(-1, 99, p.getTorpedoCount(type), type.toString());
         }
     }
 

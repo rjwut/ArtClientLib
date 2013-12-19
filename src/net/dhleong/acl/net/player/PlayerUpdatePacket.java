@@ -2,8 +2,11 @@ package net.dhleong.acl.net.player;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.LinkedList;
+import java.util.List;
 
 import net.dhleong.acl.ArtemisPacket;
+import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.util.TextUtil;
 import net.dhleong.acl.world.ArtemisPlayer;
 
@@ -15,16 +18,20 @@ import net.dhleong.acl.world.ArtemisPlayer;
  *
  */
 public abstract class PlayerUpdatePacket implements ArtemisPacket {
-
     final byte[] mData;
+    List<ArtemisPlayer> mObjects = new LinkedList<ArtemisPlayer>();
+
+    public List<ArtemisPlayer> getObjects() {
+    	return mObjects;
+    }
 
     public PlayerUpdatePacket(byte[] data) {
         mData = data;
     }
 
     @Override
-    public long getMode() {
-        return 0x01;
+    public ConnectionType getConnectionType() {
+        return ConnectionType.SERVER;
     }
 
     @Override
@@ -43,6 +50,4 @@ public abstract class PlayerUpdatePacket implements ArtemisPacket {
     }
 
     public abstract void debugPrint();
-    public abstract ArtemisPlayer getPlayer();
-
 }

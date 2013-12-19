@@ -1,5 +1,7 @@
 package net.dhleong.acl.net;
 
+import net.dhleong.acl.enums.ConnectionType;
+
 public class GameMessagePacket extends BaseArtemisPacket {
     public static final int TYPE = 0xf754c8fe;
     private static final int TYPE_GAMEOVER = 0x00000006;
@@ -9,7 +11,7 @@ public class GameMessagePacket extends BaseArtemisPacket {
     private final String mMessage;
     
     public GameMessagePacket(byte[] bucket) {
-        super(0x01, TYPE, bucket); // TODO don't save the byte[]?
+        super(ConnectionType.SERVER, TYPE, bucket); // TODO don't save the byte[]?
         
         mMsgType = PacketParser.getLendInt(bucket);
         if (mMsgType == TYPE_MESSAGE) {

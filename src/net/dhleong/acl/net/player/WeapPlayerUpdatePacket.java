@@ -1,5 +1,6 @@
 package net.dhleong.acl.net.player;
 
+import net.dhleong.acl.enums.OrdnanceType;
 import net.dhleong.acl.util.ObjectParser;
 import net.dhleong.acl.world.ArtemisPlayer;
 
@@ -35,38 +36,6 @@ public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
 		TUBE_TYPE_6
 	}
 
-	/*
-    private static final byte TORP_HOMING   = 0x01;
-    private static final byte TORP_NUKES    = 0x02;
-    private static final byte TORP_MINES    = 0x04;
-    private static final byte TORP_EMPS     = 0x08;
-
-    private static final byte UNKNOWN_BYTE  = 0x10;
-
-    private static final byte TUBE_TIME_1   = 0x20;
-    private static final byte TUBE_TIME_2   = 0x40;
-    private static final byte TUBE_TIME_3   = (byte) 0x80;
-    private static final int TUBE_TIME_4   = 0x00000001;
-    private static final int TUBE_TIME_5   = 0x00000002;
-    private static final int TUBE_TIME_6   = 0x00000004;
-
-    // IE: is this tube in use?
-    private static final int TUBE_USE_1    = 0x00000008;
-    private static final int TUBE_USE_2    = 0x00000010;
-    private static final int TUBE_USE_3    = 0x00000020;
-    private static final int TUBE_USE_4    = 0x00000040;
-
-    private static final int TUBE_USE_5    = 0x00000080;
-    private static final int TUBE_USE_6    = 0x00000100;
-
-    private static final int TUBE_TYPE_1   = 0x00000200;
-    private static final int TUBE_TYPE_2   = 0x00000400;
-    private static final int TUBE_TYPE_3   = 0x00000800;
-    private static final int TUBE_TYPE_4   = 0x00001000;
-    private static final int TUBE_TYPE_5   = 0x00002000;
-    private static final int TUBE_TYPE_6   = 0x00004000;
-    */
-
     private static final Bit[] TORPEDOS = {
         Bit.TORP_HOMING, Bit.TORP_NUKES, Bit.TORP_MINES, Bit.TORP_EMPS
     };
@@ -81,67 +50,71 @@ public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
         Bit.TUBE_TYPE_4, Bit.TUBE_TYPE_5, Bit.TUBE_TYPE_6
     };
     
-    int[] torps = new int[ TORPEDOS.length ];
-    float[] tubeTimes = new float[ArtemisPlayer.MAX_TUBES];
-    int[] tubeContents = new int[ArtemisPlayer.MAX_TUBES];
-    private ArtemisPlayer mPlayer;
-
     public WeapPlayerUpdatePacket(byte[] data) {
         super(data);
         ObjectParser p = new ObjectParser(mData, 0);
-        p.start(Bit.values());
-                    
+
         try {
-            for (int i = 0; i < torps.length; i++) {
-                torps[i] = ((byte) 0xff & p.readByte(TORPEDOS[i], (byte)-1));
-            }
+            while (p.hasMore()) {
+                int[] torps = new int[ TORPEDOS.length ];
+                float[] tubeTimes = new float[ArtemisPlayer.MAX_TUBES];
+                int[] tubeContents = new int[ArtemisPlayer.MAX_TUBES];
 
-            p.readUnknown(Bit.UNK_0, 1);
-               
-            for (int i = 0; i < TUBE_TIMES.length; i++) {
-                tubeTimes[i] = p.readFloat(TUBE_TIMES[i], -1);
-            }
+                p.start(Bit.values());
 
-            // after this, tubeContents[i]...
-            // = 0 means that tube is EMPTY; 
-            // > 0 means that tube is IN USE;
-            // < 0  means we DON'T KNOW
-            tubeContents[0] = p.readByte(Bit.TUBE_USE_1, (byte)-1);
-            tubeContents[1] = p.readByte(Bit.TUBE_USE_2, (byte)-1);
-            tubeContents[2] = p.readByte(Bit.TUBE_USE_3, (byte)-1);
-            tubeContents[3] = p.readByte(Bit.TUBE_USE_4, (byte)-1);
-            tubeContents[4] = p.readByte(Bit.TUBE_USE_5, (byte)-1);
-            tubeContents[5] = p.readByte(Bit.TUBE_USE_6, (byte)-1);
-
-            // after this, tubeContents[i]...
-            // = -1 means EMPTY;
-            // = Integer.MIN_VALUE means we DON'T KNOW
-            // else the type of torpedo there
-            for (int i = 0; i < TUBE_TYPES.length; i++) {
-                byte torpType = p.readByte(TUBE_TYPES[i], (byte)-1);
-
-                if (tubeContents[i] == 0) {
-                    tubeContents[i] = ArtemisPlayer.TUBE_EMPTY; // empty tube
-                } else if (tubeContents[i] < 0) {
-                    // what's there? I don't even know
-                    tubeContents[i] = ArtemisPlayer.TUBE_UNKNOWN;
-                } else if (tubeContents[i] > 0 && torpType != (byte) -1) {
-                    tubeContents[i] = torpType;
-                } else {
-                    // IE: it's "in use" but type is unspecified/changed
-                    //  DO we need another constant for this?
-                    tubeContents[i] = ArtemisPlayer.TUBE_UNKNOWN;
+                for (int i = 0; i < torps.length; i++) {
+                    torps[i] = ((byte) 0xff & p.readByte(TORPEDOS[i], (byte)-1));
                 }
-            }
 
-            mPlayer = new ArtemisPlayer(p.getTargetId());
+                p.readUnknown(Bit.UNK_0, 1);
+                   
+                for (int i = 0; i < TUBE_TIMES.length; i++) {
+                    tubeTimes[i] = p.readFloat(TUBE_TIMES[i], -1);
+                }
 
-            for (int i = 0; i < TORPEDOS.length; i++) {
-                mPlayer.setTorpedoCount(i, torps[i]);
-            }
+                // after this, tubeContents[i]...
+                // = 0 means that tube is EMPTY; 
+                // > 0 means that tube is IN USE;
+                // < 0  means we DON'T KNOW
+                tubeContents[0] = p.readByte(Bit.TUBE_USE_1, (byte)-1);
+                tubeContents[1] = p.readByte(Bit.TUBE_USE_2, (byte)-1);
+                tubeContents[2] = p.readByte(Bit.TUBE_USE_3, (byte)-1);
+                tubeContents[3] = p.readByte(Bit.TUBE_USE_4, (byte)-1);
+                tubeContents[4] = p.readByte(Bit.TUBE_USE_5, (byte)-1);
+                tubeContents[5] = p.readByte(Bit.TUBE_USE_6, (byte)-1);
 
-            for (int i = 0; i < TUBE_TIMES.length; i++) {
-                mPlayer.setTubeStatus(i, tubeTimes[i], tubeContents[i]);
+                // after this, tubeContents[i]...
+                // = -1 means EMPTY;
+                // = Integer.MIN_VALUE means we DON'T KNOW
+                // else the type of torpedo there
+                for (int i = 0; i < TUBE_TYPES.length; i++) {
+                    byte torpType = p.readByte(TUBE_TYPES[i], (byte)-1);
+
+                    if (tubeContents[i] == 0) {
+                        tubeContents[i] = ArtemisPlayer.TUBE_EMPTY; // empty tube
+                    } else if (tubeContents[i] < 0) {
+                        // what's there? I don't even know
+                        tubeContents[i] = ArtemisPlayer.TUBE_UNKNOWN;
+                    } else if (tubeContents[i] > 0 && torpType != (byte) -1) {
+                        tubeContents[i] = torpType;
+                    } else {
+                        // IE: it's "in use" but type is unspecified/changed
+                        //  DO we need another constant for this?
+                        tubeContents[i] = ArtemisPlayer.TUBE_UNKNOWN;
+                    }
+                }
+
+                ArtemisPlayer player = new ArtemisPlayer(p.getTargetId());
+
+                for (int i = 0; i < TORPEDOS.length; i++) {
+                	player.setTorpedoCount(i, torps[i]);
+                }
+
+                for (int i = 0; i < TUBE_TIMES.length; i++) {
+                	player.setTubeStatus(i, tubeTimes[i], tubeContents[i]);
+                }
+
+                mObjects.add(player);
             }
         } catch (RuntimeException e) {
             System.out.println("!!! Error!");
@@ -153,16 +126,25 @@ public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
 
     @Override
     public void debugPrint() {
-        System.out.println(String.format("-------Torp Cnts: %d:%d:%d:%d", 
-            torps[0], torps[1], torps[2], torps[3]));
-        for (int i=0; i<ArtemisPlayer.MAX_TUBES; i++) {
-            System.out.println(String.format("Tube#%d: (%f) %d", 
-                i, tubeTimes[i], tubeContents[i]));
-        }
-    }
+    	for (ArtemisPlayer player : mObjects) {
+    		System.out.print("-------Torp Cnts:");
 
-    @Override
-    public ArtemisPlayer getPlayer() {
-        return mPlayer;
+    		for (OrdnanceType type : OrdnanceType.values()) {
+    			System.out.print(" " + type + "=" + player.getTorpedoCount(type));
+    		}
+
+    		System.out.println();
+
+    		for (int i = 0; i < ArtemisPlayer.MAX_TUBES; i++) {
+                System.out.println(
+                		String.format(
+                				"Tube#%d: (%f) %d",
+                				i,
+                				player.getTubeCountdown(i),
+                				player.getTubeContents(i)
+                		)
+                );
+            }
+    	}
     }
 }

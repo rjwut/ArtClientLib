@@ -1,5 +1,6 @@
 package net.dhleong.acl.net.comms;
 
+import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.PacketParser;
 
@@ -11,7 +12,7 @@ public class CommsIncomingPacket extends BaseArtemisPacket {
     private final String mMessage;
 
     public CommsIncomingPacket(byte[] bucket) {
-        super(0x01, TYPE, bucket); // TODO don't save the byte[]?
+        super(ConnectionType.SERVER, TYPE, bucket); // TODO don't save the byte[]?
         mPriority = PacketParser.getLendInt(bucket);
         int nameLen = PacketParser.getNameLengthBytes(bucket, 4);
         mFrom = PacketParser.getNameString(bucket, 8, nameLen);

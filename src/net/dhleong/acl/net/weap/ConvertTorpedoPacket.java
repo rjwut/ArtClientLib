@@ -1,5 +1,6 @@
 package net.dhleong.acl.net.weap;
 
+import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.PacketParser;
 
@@ -17,7 +18,7 @@ public class ConvertTorpedoPacket extends BaseArtemisPacket {
      *  or {@link #TO_ENERGY}
      */
     public ConvertTorpedoPacket(final float mode) {
-        super(0x02, TYPE, new byte[20]);
+        super(ConnectionType.CLIENT, TYPE, new byte[20]);
         PacketParser.putLendInt(0x03, mData);
         PacketParser.putLendFloat(mode, mData, 4);
         // the rest are zero...?

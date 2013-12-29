@@ -3,14 +3,12 @@ package net.dhleong.acl.net;
 import net.dhleong.acl.ArtemisPacketException;
 import net.dhleong.acl.enums.ConnectionType;
 
-public class GameMessagePacket extends BaseArtemisPacket {
+public class GameOverPacket extends BaseArtemisPacket {
     public static final int TYPE = 0xf754c8fe;
-    public static final int MSG_TYPE = 0x0a;
+    public static final int MSG_TYPE = 0x06;
 
-    private final String mMessage;
-
-    public GameMessagePacket(PacketReader reader) throws ArtemisPacketException {
-        super(ConnectionType.SERVER, TYPE);
+    public GameOverPacket(PacketReader reader) throws ArtemisPacketException {
+    	super(ConnectionType.SERVER, TYPE);
         int subtype = reader.readInt();
 
         if (subtype != MSG_TYPE) {
@@ -18,16 +16,10 @@ public class GameMessagePacket extends BaseArtemisPacket {
         			"Expected subtype " + MSG_TYPE + ", got " + subtype
         	);
         }
-
-        mMessage = reader.readString();
-    }
-    
-    public String getMessage() {
-        return mMessage;
     }
 
 	@Override
 	protected void appendPacketDetail(StringBuilder b) {
-		b.append(mMessage);
+		// do nothing
 	}
 }

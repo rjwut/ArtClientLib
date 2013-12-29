@@ -1,6 +1,9 @@
 package net.dhleong.acl.world;
 
+import java.util.SortedMap;
+
 import net.dhleong.acl.enums.ObjectType;
+import net.dhleong.acl.util.TextUtil;
 
 /**
  * This is some "generic mesh" in the world
@@ -9,12 +12,11 @@ import net.dhleong.acl.enums.ObjectType;
  *
  */
 public class ArtemisMesh extends BaseArtemisObject {
-
     private String mMesh;
     private String mTex;
     private int mColor;
-    private float mShieldsFront;
-    private float mShieldsRear;
+    private float mShieldsFront = Float.MIN_VALUE;
+    private float mShieldsRear = Float.MIN_VALUE;
 
     public ArtemisMesh(int objId, String name) {
         super(objId, name);
@@ -75,24 +77,27 @@ public class ArtemisMesh extends BaseArtemisObject {
         super.updateFrom(other);
         
         ArtemisMesh m = (ArtemisMesh) other;
-        if (m.mShieldsFront != -1)
+        if (m.mShieldsFront != Float.MIN_VALUE) {
             mShieldsFront = m.mShieldsFront;
+        }
         
-        if (m.mShieldsRear != -1)
+        if (m.mShieldsRear != Float.MIN_VALUE) {
             mShieldsRear = m.mShieldsRear;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("%s%s[%s]<%.2f, %.2f>\n{%s}{%s}", 
-                getName(), super.toString(),
-                Integer.toHexString(mColor),
-                mShieldsFront, mShieldsRear,
-                mMesh, mTex);
+        }
     }
 
     public void setFakeShields(float shieldsFront, float shieldsRear) {
         mShieldsFront = shieldsFront;
         mShieldsRear = shieldsRear;
+    }
+
+    @Override
+	public void appendObjectProps(SortedMap<String, Object> props, boolean includeUnspecified) {
+    	super.appendObjectProps(props, includeUnspecified);
+    	putProp(props, "Mesh", mMesh, includeUnspecified);
+    	putProp(props, "Texture", mTex, includeUnspecified);
+    	putProp(props, "Color", mColor, 0, includeUnspecified);
+    	putProp(props, "Shields: fore", mShieldsFront, Float.MIN_VALUE, includeUnspecified);
+    	putProp(props, "Shields: aft", mShieldsRear, Float.MIN_VALUE, includeUnspecified);
     }
 }

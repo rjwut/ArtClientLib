@@ -1,13 +1,11 @@
 package net.dhleong.acl.world;
 
+import java.util.SortedMap;
+
 import net.dhleong.acl.enums.ObjectType;
 
 public class ArtemisCreature extends ArtemisGenericObject implements ArtemisBearable {
-
-    private float mBearing, mVelocity;
-    
-    // default to "straight ahead"
-    private float mSteering = 0.5f;
+    private float mBearing = -1, mVelocity = -1, mSteering = -1;
 
     public ArtemisCreature(int objId, String name, ObjectType type) {
         super(objId, name, type);
@@ -29,17 +27,15 @@ public class ArtemisCreature extends ArtemisGenericObject implements ArtemisBear
         
         if (eng instanceof ArtemisCreature) {
             ArtemisCreature cast = (ArtemisCreature) eng;
-            if (cast.getBearing() != Float.MIN_VALUE) 
-                setBearing(cast.getBearing());
-            
-            if (cast.getSteering() != Float.MIN_VALUE)
-                setSteering(cast.getSteering());
-        }
-    }
 
-    @Override
-    public String toString() {
-        return super.toString() + String.format("<%.2f>", mBearing);
+            if (cast.getBearing() != Float.MIN_VALUE) { 
+                setBearing(cast.getBearing());
+            }
+            
+            if (cast.getSteering() != Float.MIN_VALUE) {
+                setSteering(cast.getSteering());
+            }
+        }
     }
 
     @Override
@@ -60,5 +56,13 @@ public class ArtemisCreature extends ArtemisGenericObject implements ArtemisBear
     @Override
     public void setSteering(float steering) {
         mSteering = steering;
+    }
+
+    @Override
+	public void appendObjectProps(SortedMap<String, Object> props, boolean includeUnspecified) {
+    	super.appendObjectProps(props, includeUnspecified);
+    	putProp(props, "Heading", mBearing, -1, includeUnspecified);
+    	putProp(props, "Velocity", mVelocity, -1, includeUnspecified);
+    	putProp(props, "Rudder", mSteering, -1, includeUnspecified);
     }
 }

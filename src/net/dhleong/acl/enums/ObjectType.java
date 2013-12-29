@@ -5,6 +5,7 @@ import net.dhleong.acl.net.DroneUpdatePacket;
 import net.dhleong.acl.net.NpcUpdatePacket;
 import net.dhleong.acl.net.GenericMeshPacket;
 import net.dhleong.acl.net.GenericUpdatePacket;
+import net.dhleong.acl.net.PacketReader;
 import net.dhleong.acl.net.StationPacket;
 import net.dhleong.acl.net.WhaleUpdatePacket;
 import net.dhleong.acl.net.player.EngPlayerUpdatePacket;
@@ -18,32 +19,32 @@ import net.dhleong.acl.net.player.WeapPlayerUpdatePacket;
 public enum ObjectType {
 	PLAYER_SHIP(1, true) {
 		@Override
-		public ArtemisPacket buildPacket(byte[] bucket) {
-            return new MainPlayerUpdatePacket(bucket);
+		public ArtemisPacket buildPacket(PacketReader reader) {
+            return new MainPlayerUpdatePacket(reader);
 		}
 	},
 	WEAPONS_BRIDGE_STATION(2, false) {
 		@Override
-		public ArtemisPacket buildPacket(byte[] bucket) {
-            return new WeapPlayerUpdatePacket(bucket);
+		public ArtemisPacket buildPacket(PacketReader reader) {
+            return new WeapPlayerUpdatePacket(reader);
 		}
 	},
 	ENGINEERING_BRIDGE_STATION(3, false) {
 		@Override
-		public ArtemisPacket buildPacket(byte[] bucket) {
-            return new EngPlayerUpdatePacket(bucket);
+		public ArtemisPacket buildPacket(PacketReader reader) {
+            return new EngPlayerUpdatePacket(reader);
 		}
 	},
 	NPC_SHIP(4, true) {
 		@Override
-		public ArtemisPacket buildPacket(byte[] bucket) {
-            return new NpcUpdatePacket(bucket);
+		public ArtemisPacket buildPacket(PacketReader reader) {
+            return new NpcUpdatePacket(reader);
 		}
 	},
 	SPACE_STATION(5, true) {
 		@Override
-		public ArtemisPacket buildPacket(byte[] bucket) {
-            return new StationPacket(bucket);
+		public ArtemisPacket buildPacket(PacketReader reader) {
+            return new StationPacket(reader);
 		}
 	},
 	MINE(6, false),
@@ -54,21 +55,21 @@ public enum ObjectType {
 	ASTEROID(12, false),
 	GENERIC_MESH(13, true) {
 		@Override
-		public ArtemisPacket buildPacket(byte[] bucket) {
-            return new GenericMeshPacket(bucket);
+		public ArtemisPacket buildPacket(PacketReader reader) {
+            return new GenericMeshPacket(reader);
 		}
 	},
 	MONSTER(14, true),
 	WHALE(15, true) {
 		@Override
-		public ArtemisPacket buildPacket(byte[] bucket) {
-        	return new WhaleUpdatePacket(bucket);
+		public ArtemisPacket buildPacket(PacketReader reader) {
+        	return new WhaleUpdatePacket(reader);
 		}
 	},
 	DRONE(16, false) {
 		@Override
-		public ArtemisPacket buildPacket(byte[] bucket) {
-        	return new DroneUpdatePacket(bucket);
+		public ArtemisPacket buildPacket(PacketReader reader) {
+        	return new DroneUpdatePacket(reader);
 		}
 	};
 
@@ -108,7 +109,7 @@ public enum ObjectType {
 	 * Converts the given byte array into the ArtemisPacket subtype that
 	 * corresponds to this object type.
 	 */
-	public ArtemisPacket buildPacket(byte[] bucket) {
-        return new GenericUpdatePacket(bucket);
+	public ArtemisPacket buildPacket(PacketReader reader) {
+        return new GenericUpdatePacket(reader);
 	}
 }

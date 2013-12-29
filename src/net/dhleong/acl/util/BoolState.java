@@ -1,9 +1,7 @@
 package net.dhleong.acl.util;
 
 public enum BoolState {
-    TRUE, FALSE,
-    /** Not specified in packet */
-    UNKNOWN;
+    TRUE, FALSE, UNKNOWN;
 
     public boolean getBooleanValue() {
         // hacks? meh

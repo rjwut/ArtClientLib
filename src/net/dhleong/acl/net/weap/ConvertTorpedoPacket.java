@@ -1,26 +1,42 @@
 package net.dhleong.acl.net.weap;
 
+import java.io.IOException;
+
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.net.BaseArtemisPacket;
-import net.dhleong.acl.net.PacketParser;
+import net.dhleong.acl.net.PacketWriter;
 
 public class ConvertTorpedoPacket extends BaseArtemisPacket {
-    /** IE: ENE TO TORP */
-    public static final float FROM_ENERGY = 1f;
-    
-    /** IE: TORP TO ENE */
-    public static final float TO_ENERGY   = 0f;
-    
+	public enum Direction {
+		TORPEDO_TO_ENERGY, ENERGY_TO_TORPEDO
+	}
+
     public static final int TYPE = 0x69CC01D9;
-    
-    /**
-     * @param mode Either {@link #FROM_ENERGY} 
-     *  or {@link #TO_ENERGY}
-     */
-    public ConvertTorpedoPacket(final float mode) {
-        super(ConnectionType.CLIENT, TYPE, new byte[20]);
-        PacketParser.putLendInt(0x03, mData);
-        PacketParser.putLendFloat(mode, mData, 4);
-        // the rest are zero...?
+    public static final int SUBTYPE = 0x03;
+
+    private Direction mDirection;
+
+    public ConvertTorpedoPacket(final Direction direction) {
+        super(ConnectionType.CLIENT, TYPE);
+
+        if (direction == null) {
+        	throw new IllegalArgumentException("You must specify a direction");
+        }
+
+        mDirection = direction;
     }
+
+	@Override
+    public void write(PacketWriter writer) throws IOException {
+    	writer	.start(TYPE)
+    			.writeInt(TYPE)
+    			.writeInt(SUBTYPE)
+    			.writeInt(mDirection.ordinal());
+    	// Old code indicated the payload supposed to be 20 bytes. Is this true?
+    }
+
+	@Override
+	protected void appendPacketDetail(StringBuilder b) {
+		b.append(mDirection);
+	}
 }

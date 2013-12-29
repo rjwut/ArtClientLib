@@ -1,24 +1,45 @@
 package net.dhleong.acl.world;
 
+import java.util.SortedMap;
+
 import net.dhleong.acl.enums.ObjectType;
 
-
 public class ArtemisStation extends BaseArtemisShielded {
-    public ArtemisStation(int objId, String name) {
+	private int mIndex = -1;
+
+	public ArtemisStation(int objId, String name) {
         super(objId, name);
     }
 
-    @Override
+	public int getIndex() {
+		return mIndex;
+	}
+
+	public void setIndex(int index) {
+		mIndex = index;
+	}
+
+	@Override
     public ObjectType getType() {
         return ObjectType.SPACE_STATION;
     }
 
     @Override
-    public String toString() {
-        return String.format("[STATION:%s <%.1f|%.1f>]@%s", 
-                mName,
-                getShieldsFront(), getShieldsRear(),
-                super.toString());
+    public void updateFrom(ArtemisPositionable eng) {
+        super.updateFrom(eng);
+        
+        if (eng instanceof ArtemisStation) {
+            ArtemisStation station = (ArtemisStation) eng;
+
+            if (station.mIndex != -1) {
+            	mIndex = station.mIndex;
+            }
+        }
     }
 
+    @Override
+	public void appendObjectProps(SortedMap<String, Object> props, boolean includeUnspecified) {
+    	super.appendObjectProps(props, includeUnspecified);
+    	putProp(props, "Station index", mIndex, -1, includeUnspecified);
+    }
 }

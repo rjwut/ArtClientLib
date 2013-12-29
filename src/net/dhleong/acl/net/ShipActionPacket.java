@@ -1,9 +1,11 @@
 package net.dhleong.acl.net;
 
+import java.io.IOException;
+
 import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.enums.ConnectionType;
 
-public class ShipActionPacket extends BaseArtemisPacket {
+public abstract class ShipActionPacket extends BaseArtemisPacket {
     public static final int TYPE = ArtemisPacket.SHIP_ACTION_TYPE;
     
     protected static final int TYPE_WARPSPEED          = 0x00; 
@@ -32,14 +34,23 @@ public class ShipActionPacket extends BaseArtemisPacket {
     protected static final int TYPE_READY2             = 0x19; // maybe "enter" simulation? or explicit info request?
     protected static final int TYPE_TOGGLE_PERSPECTIVE = 0x1A;
 
-    public ShipActionPacket(int subType, int arg) {
-        super(ConnectionType.CLIENT, TYPE, new byte[8]);
-        PacketParser.putLendInt(subType, mData);
-        PacketParser.putLendInt(arg, mData, 4);
+    private int mSubType;
+    protected int mArg = -1;
+
+    public ShipActionPacket(int subType) {
+        super(ConnectionType.CLIENT, TYPE);
+        mSubType = subType;
     }
 
-    public ShipActionPacket(int subType, byte[] bytes) {
-        super(ConnectionType.CLIENT, TYPE, bytes);
-        PacketParser.putLendInt(subType, mData);
+    public ShipActionPacket(int subType, int arg) {
+        this(subType);
+        mArg = arg;
+    }
+
+    @Override
+    public void write(PacketWriter writer) throws IOException {
+    	writer	.start(TYPE)
+    			.writeInt(mSubType)
+				.writeInt(mArg);
     }
 }

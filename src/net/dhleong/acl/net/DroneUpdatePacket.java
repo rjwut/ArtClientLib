@@ -1,19 +1,15 @@
 package net.dhleong.acl.net;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.enums.ObjectType;
-import net.dhleong.acl.util.ObjectParser;
-import net.dhleong.acl.util.TextUtil;
 import net.dhleong.acl.world.ArtemisDrone;
 import net.dhleong.acl.world.ArtemisPositionable;
 
-public class DroneUpdatePacket implements ObjectUpdatingPacket {
+public class DroneUpdatePacket extends BaseArtemisPacket implements ObjectUpdatingPacket {
     public enum Bit {
     	UNK_0,
     	X,
@@ -35,81 +31,61 @@ public class DroneUpdatePacket implements ObjectUpdatingPacket {
     }
 
     public final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
-    private byte[] mData;
 
-    public DroneUpdatePacket(byte[] data) {
-        init(data);
-    }
-   
-    private void init(byte[] data) {
-        mData = data;
-        
-        try {
-            ObjectParser p = new ObjectParser(mData, 0);
+    public DroneUpdatePacket(PacketReader reader) {
+    	super(ConnectionType.SERVER, WORLD_TYPE);
+
+    	try {
             float x, y, z, bearing;
             
-            while (p.hasMore() && p.peekByte() == ObjectType.DRONE.getId()) {
-                p.start(Bit.values());
-            	p.readUnknown(Bit.UNK_0, 4);
-            	x = p.readFloat(Bit.X, -1);
-            	p.readUnknown(Bit.UNK_2, 4);
-            	z = p.readFloat(Bit.Z, -1);
-            	p.readUnknown(Bit.UNK_4, 4);
-            	y = p.readFloat(Bit.Y, -1);
-            	bearing = p.readFloat(Bit.HEADING, -1);
-            	p.readUnknown(Bit.UNK_7, 4);
-            	p.readUnknown(Bit.UNK_8, 4);
-            	p.readUnknown(Bit.UNK_9, 4);
-            	p.readUnknown(Bit.UNK_10, 4);
-            	p.readUnknown(Bit.UNK_11, 4);
-            	p.readUnknown(Bit.UNK_12, 4);
-            	p.readUnknown(Bit.UNK_13, 4);
-            	p.readUnknown(Bit.UNK_14, 4);
-            	p.readUnknown(Bit.UNK_15, 4);
-                final ArtemisDrone obj = new ArtemisDrone(p.getTargetId());
+            while (reader.hasMore() && reader.peekByte() == ObjectType.DRONE.getId()) {
+                reader.startObject(Bit.values());
+            	reader.readObjectUnknown(Bit.UNK_0, 4);
+            	x = reader.readFloat(Bit.X, -1);
+            	reader.readObjectUnknown(Bit.UNK_2, 4);
+            	z = reader.readFloat(Bit.Z, -1);
+            	reader.readObjectUnknown(Bit.UNK_4, 4);
+            	y = reader.readFloat(Bit.Y, -1);
+            	bearing = reader.readFloat(Bit.HEADING, -1);
+            	reader.readObjectUnknown(Bit.UNK_7, 4);
+            	reader.readObjectUnknown(Bit.UNK_8, 4);
+            	reader.readObjectUnknown(Bit.UNK_9, 4);
+            	reader.readObjectUnknown(Bit.UNK_10, 4);
+            	reader.readObjectUnknown(Bit.UNK_11, 4);
+            	reader.readObjectUnknown(Bit.UNK_12, 4);
+            	reader.readObjectUnknown(Bit.UNK_13, 4);
+            	reader.readObjectUnknown(Bit.UNK_14, 4);
+            	reader.readObjectUnknown(Bit.UNK_15, 4);
+                final ArtemisDrone obj = new ArtemisDrone(reader.getObjectId());
                 obj.setX(x);
                 obj.setY(y);
                 obj.setZ(z);
                 obj.setBearing(bearing);
-                obj.setUnknownFields(p.getUnknownFields());
+                obj.setUnknownFields(reader.getUnknownObjectFields());
                 mObjects.add(obj);
             }
         } catch (RuntimeException e) {
-            debugPrint();
             System.out.println("--> " + this);
             throw e;
         }
     }
 
     @Override
-    public void debugPrint() {
-        for (ArtemisPositionable u : mObjects) {
-            System.out.println("- DEBUG: " + u);
-        }
-    }
-
-    @Override
-    public ConnectionType getConnectionType() {
-        return ConnectionType.CLIENT;
-    }
-
-    @Override
-    public int getType() {
-        return ArtemisPacket.WORLD_TYPE;
-    }
-
-    @Override
-    public boolean write(OutputStream os) throws IOException {
-        return false;
-    }
-    
-    @Override
-    public String toString() {
-        return TextUtil.byteArrayToHexString(mData);
+    public void write(PacketWriter writer) throws IOException {
+    	throw new UnsupportedOperationException(
+    			getClass().getSimpleName() + " does not support write()"
+    	);
     }
 
     @Override
     public List<ArtemisPositionable> getObjects() {
         return mObjects;
     }
+
+	@Override
+	protected void appendPacketDetail(StringBuilder b) {
+		for (ArtemisPositionable obj : mObjects) {
+			b.append("\nObject #").append(obj.getId()).append(obj);
+		}
+	}
 }

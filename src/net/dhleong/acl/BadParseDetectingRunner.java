@@ -3,6 +3,7 @@ package net.dhleong.acl;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+import net.dhleong.acl.enums.BridgeStation;
 import net.dhleong.acl.enums.OrdnanceType;
 import net.dhleong.acl.enums.ShipSystem;
 import net.dhleong.acl.net.ObjectUpdatingPacket;
@@ -10,7 +11,6 @@ import net.dhleong.acl.net.player.PlayerUpdatePacket;
 import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.ReadyPacket2;
 import net.dhleong.acl.net.setup.SetStationPacket;
-import net.dhleong.acl.net.setup.SetStationPacket.StationType;
 import net.dhleong.acl.world.ArtemisPlayer;
 import net.dhleong.acl.world.ArtemisPositionable;
 import net.dhleong.acl.world.BaseArtemisShip;
@@ -62,15 +62,12 @@ public class BadParseDetectingRunner {
                 if (pkt instanceof PlayerUpdatePacket) {
                     final PlayerUpdatePacket up = (PlayerUpdatePacket) pkt;
 
-                    for (ArtemisPlayer p : up.getObjects()) {
-                        try {
-                            testPlayer(p);
-                        } catch (final RuntimeException e) {
-                            up.debugPrint();
-                            System.out.println("--> " + up);
-                            net.stop();
-                            throw e;
-                        }
+                    try {
+                        testPlayer(up.getPlayer());
+                    } catch (final RuntimeException e) {
+                        System.out.println("--> " + up);
+                        net.stop();
+                        throw e;
                     }
                 } else if (pkt instanceof ObjectUpdatingPacket) {
                     final ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
@@ -84,7 +81,6 @@ public class BadParseDetectingRunner {
                         }
 
                     } catch (final RuntimeException e) {
-                        up.debugPrint();
                         System.out.println("--> " + up);
                         net.stop();
                         throw e;
@@ -98,9 +94,7 @@ public class BadParseDetectingRunner {
 
         net.send(new ReadyPacket2());
         net.send(new ReadyPacket2());
-        
-        net.send(new SetStationPacket(StationType.SCIENCE, true));
-        
+        net.send(new SetStationPacket(BridgeStation.SCIENCE, true));
         net.send(new ReadyPacket());
         net.send(new ReadyPacket2());
     }

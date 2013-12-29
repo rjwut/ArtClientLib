@@ -1,63 +1,61 @@
 package net.dhleong.acl.net.comms;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
-import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.enums.ConnectionType;
-import net.dhleong.acl.util.ObjectParser;
+import net.dhleong.acl.net.BaseArtemisPacket;
+import net.dhleong.acl.net.PacketReader;
 
 /**
- *  
+ * Received when an incoming COMMs audio message arrives.
  * @author dhleong
- *
  */
-public class IncomingAudioPacket implements ArtemisPacket {
+public class IncomingAudioPacket extends BaseArtemisPacket {
     public static final int TYPE = 0xae88e058;
-    
-    /** 
-     * The server has commenced playback;
-     * {@link #getFileName()} and {@link #getTitle()}
-     * will return NULL for these packets  
-     */
-    public static final int MODE_PLAYING  = 1;
-    
-    /**
-     * Incoming audio; {@link #getFileName()}
-     *  and {@link #getTitle()} will be populated
-     */
-    public static final int MODE_INCOMING = 2;
-    
+
+    public enum Mode {
+    	PLAYING,	// server is playing the message
+    	INCOMING	// message is available
+    }
+
     private final int mId;
     private final String mTitle;
     private final String mFile;
-    private final int mMode;
+    private final Mode mMode;
 
-    public IncomingAudioPacket(byte[] bucket) {
-        ObjectParser p = new ObjectParser(bucket, 0);
+    public IncomingAudioPacket(PacketReader reader) {
+    	super(ConnectionType.SERVER, TYPE);
+        mId = reader.readInt();
+        mMode = Mode.values()[reader.readInt() - 1];
 
-        mId = p.readInt();
-        
-        // what is this?
-        mMode = p.readInt();
-        
-        if (mMode == MODE_INCOMING) {
-            mTitle = p.readName();
-            mFile = p.readName();
+        if (mMode == Mode.INCOMING) {
+            mTitle = reader.readString();
+            mFile = reader.readString();
         } else {
-            mTitle = null;
-            mFile = null;
+        	mTitle = null;
+        	mFile = null;
         }
     }
-    
+
+    /**
+     * The ID assigned to this audio message.
+     */
     public int getAudioId() {
         return mId;
     }
-    
+
+    /**
+     * The file name for this audio message. This will only be populated if
+     * getAudioMode() returns IncomingAudioPacket.Mode.INCOMING; otherwise, it
+     * returns null.
+     */
     public String getFileName() {
         return mFile;
     }
     
+    /**
+     * The title for this audio message. This will only be populated if
+     * getAudioMode() returns IncomingAudioPacket.Mode.INCOMING; otherwise, it
+     * returns null.
+     */
     public String getTitle() {
         return mTitle;
     }
@@ -68,29 +66,26 @@ public class IncomingAudioPacket implements ArtemisPacket {
     }
     
     /**
-     * @see {@link #MODE_INCOMING} and {@link #MODE_PLAYING}
-     * @return
+     * Indicates whether this packet indicates that the message is available or
+     * playing.
      */
-    public int getAudioMode() {
+    public Mode getAudioMode() {
         return mMode;
     }
     
     /**
-     * Convenience to check if this is a "new" message
-     * @return
+     * Convenience to check if this is a new message.
      */
     public boolean isIncoming() {
-        return mMode == MODE_INCOMING;
+        return mMode == Mode.INCOMING;
     }
 
-    @Override
-    public boolean write(OutputStream os) throws IOException {
-        // nop; incoming only
-        return false;
-    }
+	@Override
+	protected void appendPacketDetail(StringBuilder b) {
+		b.append('#').append(mId).append(' ').append(mMode);
 
-    @Override
-    public int getType() {
-        return TYPE;
-    }
+		if (mMode == Mode.INCOMING) {
+			b.append(": ").append(mTitle);
+		}
+	}
 }

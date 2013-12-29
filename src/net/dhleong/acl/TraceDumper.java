@@ -7,7 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.dhleong.acl.net.PacketParser;
+import net.dhleong.acl.net.PacketReader;
 import net.dhleong.acl.net.player.MainPlayerUpdatePacket;
 import net.dhleong.acl.util.TextUtil;
 
@@ -41,17 +41,14 @@ public class TraceDumper {
             System.out.println("Tracing: " + filePath);
             InputStream baseIs = new BufferedInputStream(new FileInputStream(new File(filePath)));
             InputStream is = new HexDecodingIS(baseIs);
-            PacketParser parser = new PacketParser();
+            PacketReader reader = new PacketReader(is);
             
             while (true) {
-                final ArtemisPacket pkt = parser.readPacket(is);
+                final ArtemisPacket pkt = reader.readPacket();
                 if (pkt != null && filter(pkt))
                     System.out.println("--> " + pkt);
             }
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (ArtemisPacketException e) {
@@ -60,7 +57,7 @@ public class TraceDumper {
         }
     }
 
-    private boolean filter(ArtemisPacket pkt) {
+    private static boolean filter(ArtemisPacket pkt) {
         return (pkt instanceof MainPlayerUpdatePacket);
     }
 

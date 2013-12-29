@@ -1,21 +1,18 @@
 package net.dhleong.acl.net;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.enums.ConnectionType;
-import net.dhleong.acl.util.ObjectParser;
-import net.dhleong.acl.util.TextUtil;
 import net.dhleong.acl.world.ArtemisMesh;
 import net.dhleong.acl.world.ArtemisPositionable;
 
 /**
  * @author dhleong
  */
-public class GenericMeshPacket implements ObjectUpdatingPacket {
+public class GenericMeshPacket extends BaseArtemisPacket implements ObjectUpdatingPacket {
 	private enum Bit {
 		X,
 		Y,
@@ -48,86 +45,70 @@ public class GenericMeshPacket implements ObjectUpdatingPacket {
 		UNK_16
 	}
 
-    private final byte[] mData;
     public final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
-    float r, g, b;
+    float red, green, blue;
 
-    public GenericMeshPacket(byte[] data) {
-        mData = data;
+    public GenericMeshPacket(PacketReader reader) {
+    	super(ConnectionType.SERVER, WORLD_TYPE);
         float x, y, z;//, bearing;
         String name = null, mesh = null, texture = null;
         float shieldsFront, shieldsRear;
-        ObjectParser p = new ObjectParser(mData, 0);
 
-        while (p.hasMore()) {
-            try {
-            	p.start(Bit.values());
-                
-                x = p.readFloat(Bit.X, -1);
-                y = p.readFloat(Bit.Y, -1);
-                z = p.readFloat(Bit.Z, -1);
+        while (reader.hasMore()) {
+        	reader.startObject(Bit.values());
+            
+            x = reader.readFloat(Bit.X, -1);
+            y = reader.readFloat(Bit.Y, -1);
+            z = reader.readFloat(Bit.Z, -1);
 
-                p.readUnknown(Bit.UNK_0, 4);
-                p.readUnknown(Bit.UNK_1, 4);
-                p.readUnknown(Bit.UNK_2, 8);
-                p.readUnknown(Bit.UNK_3, 4);
-                p.readUnknown(Bit.UNK_4, 4);
-                p.readUnknown(Bit.UNK_5, 4);
-                p.readUnknown(Bit.UNK_6, 8);
-                
-                name = p.readName(Bit.NAME);
-                mesh = p.readName(Bit.TEXTURE_PATH); // wtf?!
-                texture = p.readName(Bit.TEXTURE_PATH);
-                
-                p.readUnknown(Bit.UNK_7, 4);
-                p.readUnknown(Bit.UNK_8, 2);
-                p.readUnknown(Bit.UNK_9, 1);
-                p.readUnknown(Bit.UNK_10, 1);
-                p.readUnknown(Bit.UNK_11, 1);
-                
-                // color
-                if (p.has(Bit.COLOR)) {
-                    r = p.readFloat();
-                    g = p.readFloat();
-                    b = p.readFloat();
-                } else {
-                    r = g = b = -1;
-                }
-                
-                shieldsFront = p.readFloat(Bit.FORE_SHIELDS, -1);
-                shieldsRear  = p.readFloat(Bit.AFT_SHIELDS, -1);
-                
-                p.readUnknown(Bit.UNK_12, 1);
-                p.readUnknown(Bit.UNK_13, 4);
-                p.readUnknown(Bit.UNK_14, 4);
-                p.readUnknown(Bit.UNK_15, 4);
-                p.readUnknown(Bit.UNK_16, 4);
-
-                final ArtemisMesh newObj = new ArtemisMesh(p.getTargetId(), name);
-                
-                // shared updates
-                newObj.setX(x);
-                newObj.setY(y);
-                newObj.setZ(z);
-                newObj.setMesh(mesh);
-                newObj.setTexture(texture);
-                newObj.setARGB(1.0f, r, g, b);
-                newObj.setFakeShields(shieldsFront, shieldsRear);
-                newObj.setUnknownFields(p.getUnknownFields());
-                mObjects.add(newObj);
-            } catch (RuntimeException e) {
-                debugPrint();
-                System.out.println("!! DEBUG this = " + 
-                        TextUtil.byteArrayToHexString(mData));
-                throw e;
+            reader.readObjectUnknown(Bit.UNK_0, 4);
+            reader.readObjectUnknown(Bit.UNK_1, 4);
+            reader.readObjectUnknown(Bit.UNK_2, 8);
+            reader.readObjectUnknown(Bit.UNK_3, 4);
+            reader.readObjectUnknown(Bit.UNK_4, 4);
+            reader.readObjectUnknown(Bit.UNK_5, 4);
+            reader.readObjectUnknown(Bit.UNK_6, 8);
+            
+            name = reader.readString(Bit.NAME);
+            mesh = reader.readString(Bit.TEXTURE_PATH); // wtf?!
+            texture = reader.readString(Bit.TEXTURE_PATH);
+            
+            reader.readObjectUnknown(Bit.UNK_7, 4);
+            reader.readObjectUnknown(Bit.UNK_8, 2);
+            reader.readObjectUnknown(Bit.UNK_9, 1);
+            reader.readObjectUnknown(Bit.UNK_10, 1);
+            reader.readObjectUnknown(Bit.UNK_11, 1);
+            
+            // color
+            if (reader.has(Bit.COLOR)) {
+                red = reader.readFloat();
+                green = reader.readFloat();
+                blue = reader.readFloat();
+            } else {
+                red = green = blue = -1;
             }
-        }
-    }
+            
+            shieldsFront = reader.readFloat(Bit.FORE_SHIELDS, -1);
+            shieldsRear  = reader.readFloat(Bit.AFT_SHIELDS, -1);
+            
+            reader.readObjectUnknown(Bit.UNK_12, 1);
+            reader.readObjectUnknown(Bit.UNK_13, 4);
+            reader.readObjectUnknown(Bit.UNK_14, 4);
+            reader.readObjectUnknown(Bit.UNK_15, 4);
+            reader.readObjectUnknown(Bit.UNK_16, 4);
 
-    @Override
-    public void debugPrint() {
-        for (ArtemisPositionable u : mObjects) {
-            System.out.println("- DEBUG: " + u);
+            final ArtemisMesh newObj = new ArtemisMesh(reader.getObjectId(), name);
+            
+            // shared updates
+            newObj.setX(x);
+            newObj.setY(y);
+            newObj.setZ(z);
+            newObj.setMesh(mesh);
+            newObj.setTexture(texture);
+            newObj.setARGB(1.0f, red, green, blue);
+            newObj.setFakeShields(shieldsFront, shieldsRear);
+            newObj.setUnknownFields(reader.getUnknownObjectFields());
+            mObjects.add(newObj);
         }
     }
 
@@ -142,17 +123,21 @@ public class GenericMeshPacket implements ObjectUpdatingPacket {
     }
 
     @Override
-    public String toString() {
-        return TextUtil.byteArrayToHexString(mData); 
-    }
-
-    @Override
-    public boolean write(OutputStream os) throws IOException {
-        return true;
+    public void write(PacketWriter writer) throws IOException {
+    	throw new UnsupportedOperationException(
+    			getClass().getSimpleName() + " does not support write()"
+    	);
     }
 
     @Override
     public List<ArtemisPositionable> getObjects() {
         return mObjects;
     }
+
+	@Override
+	protected void appendPacketDetail(StringBuilder b) {
+		for (ArtemisPositionable obj : mObjects) {
+			b.append("\n").append(obj);
+		}
+	}
 }

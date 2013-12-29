@@ -10,4 +10,9 @@ public class HelmRequestDockPacket extends ShipActionPacket {
     public HelmRequestDockPacket() {
         super(TYPE_REQUEST_DOCK, 0);
     }
+
+	@Override
+	protected void appendPacketDetail(StringBuilder b) {
+		// do nothing
+	}
 }

@@ -2,85 +2,62 @@ package net.dhleong.acl.net.setup;
 
 import net.dhleong.acl.ArtemisPacketException;
 import net.dhleong.acl.enums.ConnectionType;
+import net.dhleong.acl.enums.DriveType;
+import net.dhleong.acl.enums.ShipType;
 import net.dhleong.acl.net.BaseArtemisPacket;
-import net.dhleong.acl.net.PacketParser;
-import net.dhleong.acl.util.ObjectParser;
+import net.dhleong.acl.net.PacketReader;
+import net.dhleong.acl.world.Artemis;
 
 /**
- * From the server to share what engines, ship types, 
- *  and ship names will be used
- *  
+ * From the server to share what engines, ship types,  and ship names will be
+ * used.
  * @author dhleong
- *
  */
 public class AllShipSettingsPacket extends BaseArtemisPacket {
     public static final int TYPE = 0xf754c8fe;
     public static final byte MSG_TYPE = 0x0f;
     
     /* These values are only instantiated on recv */
-    public final int[] drives, shipTypes;
+    public final DriveType[] drives;
+    public final int[] shipTypes;
     public final String[] shipNames;
 
-    private AllShipSettingsPacket(int len) {
-        super(ConnectionType.SERVER, TYPE, new byte[len]);
-        drives = shipTypes = null;
-        shipNames = null;
-    }
-    
-    public AllShipSettingsPacket(byte[] bucket) throws ArtemisPacketException {
-        super(ConnectionType.SERVER, TYPE, bucket);
-        drives = new int[SetShipPacket.TOTAL_SHIPS];
-        shipTypes = new int[SetShipPacket.TOTAL_SHIPS];
-        shipNames = new String[SetShipPacket.TOTAL_SHIPS];
+    public AllShipSettingsPacket(PacketReader reader) throws ArtemisPacketException {
+        super(ConnectionType.SERVER, TYPE);
+        drives = new DriveType[Artemis.SHIP_COUNT];
+        shipTypes = new int[Artemis.SHIP_COUNT];
+        shipNames = new String[Artemis.SHIP_COUNT];
+        int subtype = reader.readInt();
+
+        if (subtype != MSG_TYPE) {
+        	throw new ArtemisPacketException(
+        			"Expected subtype " + MSG_TYPE + ", got " + subtype
+        	);
+        }
         
-        ObjectParser p = new ObjectParser(bucket, 0);
-        if (MSG_TYPE != p.readInt())
-            throw new ArtemisPacketException("Packet subtype indicator must = 0x0f");
-        
-        for (int i=0; i<SetShipPacket.TOTAL_SHIPS; i++) {
-            drives[i] = p.readInt();
-            shipTypes[i] = p.readInt();
-            p.readInt();	// RJW: UNKNOWN INT (always seems to be 1 0 0 0)
-            // TODO Figure out what this int is.
-            shipNames[i] = p.readName();
+        for (int i = 0; i < Artemis.SHIP_COUNT; i++) {
+            drives[i] = DriveType.values()[reader.readInt()];
+            shipTypes[i] = reader.readInt();
+            reader.skip(4);	// RJW: UNKNOWN INT (always seems to be 1 0 0 0)
+            				// TODO Figure out what this int is.
+            shipNames[i] = reader.readString();
         }
     }
 
-    /**
-     * 
-     * @param drives array[6] of ints; 0 = warp, 1 = jump
-     * @param shipTypes IE: hullId of the ship
-     * @param shipNames name of the ship
-     * @return
-     */
-    public static AllShipSettingsPacket newInstance(int[] drives, int[] shipTypes, 
-            String...shipNames) {
-        int len = 4 + SetShipPacket.TOTAL_SHIPS * 3 * 4; // header, 3 ints per ship
-        
-        for (String name : shipNames)
-            len += name.length() * 2 + 2; // 2 bytes each char, plus null bytes
+	@Override
+	protected void appendPacketDetail(StringBuilder b) {
+        for (int i = 0; i < Artemis.SHIP_COUNT; i++) {
+        	int shipTypeVal = shipTypes[i];
+        	ShipType shipType = ShipType.fromId(shipTypeVal);
+        	b.append("\n\t").append(shipNames[i]).append(": ");
 
-        AllShipSettingsPacket pkt = new AllShipSettingsPacket(len);
-        PacketParser.putLendInt(0x0f, pkt.mData);
+        	if (shipType != null) {
+            	b.append(shipType.getHullName());
+        	} else {
+            	b.append(shipTypeVal);
+        	}
 
-        int offset = 4;
-        for (int i=0; i<SetShipPacket.TOTAL_SHIPS; i++) {
-            PacketParser.putLendInt(drives[i], pkt.mData, offset);
-            PacketParser.putLendInt(shipTypes[i], pkt.mData, offset+4);
-            PacketParser.putNameString(shipNames[0], pkt.mData, offset+8);
-            
-            offset += 12 + 2 * shipNames[i].length() + 2;
+        	b.append(" [").append(drives[i]).append(']');
         }
-        
-        return pkt;
-    }
-    
-    @Override
-    public String toString() {
-        StringBuilder b = new StringBuilder();
-        for (int i=0; i<SetShipPacket.TOTAL_SHIPS; i++) {
-            b.append(String.format("[%d:%d:%s]", drives[i], shipTypes[i], shipNames[i]));
-        }
-        return b.toString();
-    }
+	}
 }

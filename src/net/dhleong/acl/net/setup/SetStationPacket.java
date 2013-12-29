@@ -1,35 +1,40 @@
 package net.dhleong.acl.net.setup;
 
-import net.dhleong.acl.net.PacketParser;
+import java.io.IOException;
+
+import net.dhleong.acl.enums.BridgeStation;
+import net.dhleong.acl.net.PacketWriter;
 import net.dhleong.acl.net.ShipActionPacket;
 
 /**
- * "Take" or "Untake" a station
- * 
+ * "Take" or "untake" a station.
  * @author dhleong
- *
  */
 public class SetStationPacket extends ShipActionPacket {
-    public enum StationType {
-        MAINSCREEN,
-        HELM,
-        WEAPONS,
-        ENGINEERING,
-        SCIENCE,
-        COMMS,
-        OBSERVER,
-        CAPTAINS_MAP,
-        GAME_MASTER;
-        
-        /** Fancier valueOf; ignores case, replaces space with underscore */
-        public static StationType fromString(String name) {
-            return valueOf(name.replace(' ', '_').toUpperCase());
+	private BridgeStation mStation;
+	private boolean mSelected;
+
+	public SetStationPacket(BridgeStation station, boolean selected) {
+        super(TYPE_SET_STATION);
+
+        if (station == null) {
+        	throw new IllegalArgumentException("You must specify a station");
         }
+
+        mStation = station;
+        mSelected = selected;
     }
-    
-    public SetStationPacket(StationType station, boolean isSelected) {
-        super(TYPE_SET_STATION, new byte[12]);
-        PacketParser.putLendInt(station.ordinal(), mData, 4);
-        PacketParser.putLendInt(isSelected ? 1 : 0, mData, 8);
+
+	@Override
+    public void write(PacketWriter writer) throws IOException {
+    	writer	.start(TYPE)
+    			.writeInt(TYPE_SET_STATION)
+    			.writeInt(mStation.ordinal())
+    			.writeInt(mSelected ? 1 : 0);
     }
+
+	@Override
+	protected void appendPacketDetail(StringBuilder b) {
+		b.append(mStation).append(' ').append(mSelected ? "selected" : "deselected");
+	}
 }

@@ -4,18 +4,21 @@ import net.dhleong.acl.net.ShipActionPacket;
 
 
 /**
- * Ready packets seem to get sent after the client
- *  picks a station and joins. Maybe this will 
- *  hint the server to send all info for objs?
- *   
- * Client also seems to send this in ACK to
- *  a GameOverPacket 
- *   
+ * The ready packet signals to the server that this station is ready to join the
+ * game. If the ReadyPacket is sent before the game has started, the server will
+ * start sending updates when the game starts. If the ReadyPacket is sent after
+ * the game has started, the server sends updates immediately. Once a game has 
+ * ended, the client must send another ReadyPacket before it will be sent
+ * updates again.
  * @author dhleong
- *
  */
 public class ReadyPacket extends ShipActionPacket {
     public ReadyPacket() {
         super(TYPE_READY, 0);
     }
+
+	@Override
+	protected void appendPacketDetail(StringBuilder b) {
+		// do nothing
+	}
 }

@@ -1,22 +1,26 @@
 package net.dhleong.acl.net;
 
+import net.dhleong.acl.ArtemisPacketException;
 import net.dhleong.acl.enums.ConnectionType;
 
 public class GameStartPacket extends BaseArtemisPacket {
     public static final int TYPE = 0xf754c8fe;
-    public static final int MSG_TYPE = 0x0;
+    public static final int MSG_TYPE = 0x00;
+
+    private final int mOffset;
     
-    private final int mNumber, mOffset;
-    
-    public GameStartPacket(byte[] bucket) {
-        super(ConnectionType.SERVER, TYPE, bucket); // TODO don't save the byte[]?
-        mNumber = PacketParser.getLendInt(bucket, 4);
-        mOffset = PacketParser.getLendInt(bucket, 8);
-    }
-    
-    /** No idea what this is */
-    public int getNumber() {
-        return mNumber;
+    public GameStartPacket(PacketReader reader) throws ArtemisPacketException {
+        super(ConnectionType.SERVER, TYPE);
+        int subtype = reader.readInt();
+
+        if (subtype != MSG_TYPE) {
+        	throw new ArtemisPacketException(
+        			"Expected subtype " + MSG_TYPE + ", got " + subtype
+        	);
+        }
+
+        reader.readUnknown("Unknown", 4);
+        mOffset = reader.readInt();
     }
 
     /**
@@ -26,10 +30,9 @@ public class GameStartPacket extends BaseArtemisPacket {
     public int getOffset() {
         return mOffset;
     }
-    
-    public void debugPrint() {
-        System.out.println("\n\n\n\n***\n*** GAME START: " + mNumber + 
-                " / " + mOffset + //Integer.toHexString(mOffset) +
-                "\n***\n\n\n\n");
-    }
+
+	@Override
+	protected void appendPacketDetail(StringBuilder b) {
+		b.append("Object ID offset = ").append(mOffset);
+	}
 }

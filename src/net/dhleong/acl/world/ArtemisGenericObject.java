@@ -1,13 +1,12 @@
 package net.dhleong.acl.world;
 
+import java.util.SortedMap;
+
 import net.dhleong.acl.enums.ObjectType;
 
 /**
- * There are many "generic" objects which
- *  are very similar in implementation
- *  
+ * There are many "generic" objects which are very similar in implementation
  * @author dhleong
- *
  */
 public class ArtemisGenericObject extends BaseArtemisObject {
     private final ObjectType mType;
@@ -23,7 +22,8 @@ public class ArtemisGenericObject extends BaseArtemisObject {
     }
 
     @Override
-    public String toString() {
-        return mType + super.toString();
+	public void appendObjectProps(SortedMap<String, Object> props, boolean includeUnspecified) {
+    	super.appendObjectProps(props, includeUnspecified);
+    	putProp(props, "Type", mType, includeUnspecified);
     }
 }

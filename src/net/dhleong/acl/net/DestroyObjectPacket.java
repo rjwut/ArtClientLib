@@ -9,10 +9,10 @@ public class DestroyObjectPacket extends BaseArtemisPacket {
     private final ObjectType mTargetType;
     private final int mTarget;
 
-    public DestroyObjectPacket(byte[] bucket) {
-        super(ConnectionType.SERVER, TYPE, null);
-        mTargetType = ObjectType.fromId(bucket[0]);
-        mTarget = PacketParser.getLendInt(bucket, 1);
+    public DestroyObjectPacket(PacketReader reader) {
+        super(ConnectionType.SERVER, TYPE);
+        mTargetType = ObjectType.fromId(reader.readByte());
+        mTarget = reader.readInt();
     }
     
     public ObjectType getTargetType() {
@@ -22,12 +22,9 @@ public class DestroyObjectPacket extends BaseArtemisPacket {
     public int getTarget() {
         return mTarget;
     }
-    
-    @Override
-    public String toString() {
-        return String.format("[DESTROY: %d:%s|%s]",
-                mTargetType,
-                Integer.toHexString(mTarget),
-                mTarget);
-    }
+
+	@Override
+	protected void appendPacketDetail(StringBuilder b) {
+		b.append('#').append(mTarget).append(" (").append(mTargetType).append(')');
+	}
 }

@@ -3,7 +3,7 @@ package net.dhleong.acl.net.player;
 import java.util.Arrays;
 
 import net.dhleong.acl.enums.ShipSystem;
-import net.dhleong.acl.util.ObjectParser;
+import net.dhleong.acl.net.PacketReader;
 import net.dhleong.acl.world.ArtemisPlayer;
 
 /**
@@ -40,7 +40,7 @@ public class EngPlayerUpdatePacket extends PlayerUpdatePacket {
 		COOLANT_AFT_SHIELDS
 	}
 
-	private static final int SYSTEM_COUNT = 8;
+	private static final int SYSTEM_COUNT = ShipSystem.values().length;
 	private static final Bit[] HEAT;
 	private static final Bit[] ENERGY;
 	private static final Bit[] COOLANT;
@@ -52,59 +52,47 @@ public class EngPlayerUpdatePacket extends PlayerUpdatePacket {
 		COOLANT = Arrays.copyOfRange(values, SYSTEM_COUNT * 2, SYSTEM_COUNT * 3);
 	}
 
-    public EngPlayerUpdatePacket(byte[] data) {
-        super(data);
-        ObjectParser p = new ObjectParser(mData, 0);
-
+    public EngPlayerUpdatePacket(PacketReader reader) {
         try {
-        	while (p.hasMore()) {
-	            float[] heat = new float[ HEAT.length ];
-	            float[] sysEnergy = new float[ ENERGY.length ];
-	            int[] coolant = new int[ COOLANT.length ];
-	            p.start(Bit.values());
+            float[] heat = new float[ SYSTEM_COUNT ];
+            float[] sysEnergy = new float[ SYSTEM_COUNT ];
+            int[] coolant = new int[ SYSTEM_COUNT ];
+            reader.startObject(Bit.values());
+        
+            for (int i = 0; i < SYSTEM_COUNT; i++) {
+                heat[i] = reader.readFloat(HEAT[i], -1);
+            }
+
+            for (int i = 0; i < SYSTEM_COUNT; i++) {
+                sysEnergy[i] = reader.readFloat(ENERGY[i], -1);
+            }
+
+            for (int i = 0; i < SYSTEM_COUNT; i++) {
+                coolant[i] = reader.readByte(COOLANT[i], (byte) -1);
+            }
             
-                for (int i = 0; i < heat.length; i++) {
-                    heat[i] = p.readFloat(HEAT[i], -1);
-                }
-
-                for (int i = 0; i < sysEnergy.length; i++) {
-                    sysEnergy[i] = p.readFloat(ENERGY[i], -1);
-                }
-
-                for (int i = 0; i < coolant.length; i++) {
-                    coolant[i] = p.readByte(COOLANT[i], (byte) -1);
-                }
-                
-                ArtemisPlayer player = new ArtemisPlayer(p.getTargetId());
-                
-                for (int i = 0; i < HEAT.length; i++) {
-                    ShipSystem sys = ShipSystem.values()[i];
-                    player.setSystemHeat(sys, heat[i]);
-                    player.setSystemEnergy(sys, sysEnergy[i]);
-                    player.setSystemCoolant(sys, coolant[i]);
-                }
-
-                mObjects.add(player);
-        	}
+            mPlayer = new ArtemisPlayer(reader.getObjectId());
+            
+            for (int i = 0; i < SYSTEM_COUNT; i++) {
+                ShipSystem sys = ShipSystem.values()[i];
+                mPlayer.setSystemHeat(sys, heat[i]);
+                mPlayer.setSystemEnergy(sys, sysEnergy[i]);
+                mPlayer.setSystemCoolant(sys, coolant[i]);
+            }
         } catch (RuntimeException e) {
             System.out.println("!!! Error!");
-            debugPrint();
             System.out.println("this -->" + this);
             throw e;
         }
     }
-    
-    @Override
-    public void debugPrint() {
-    	for (ArtemisPlayer player : mObjects) {
-            for (ShipSystem system : ShipSystem.values()) {
-                System.out.println(
-                		system +
-                		": energy=" + player.getSystemEnergy(system) +
-                        ", heat=" + player.getSystemHeat(system) + 
-                        ", coolant=" + player.getSystemCoolant(system)
-                );
-            }
-    	}
-    }
+
+	@Override
+	protected void appendPacketDetail(StringBuilder b) {
+        for (ShipSystem system : ShipSystem.values()) {
+        	b.append(system)
+        	.append(": energy=").append(mPlayer.getSystemEnergy(system))
+        	.append(", heat=").append(mPlayer.getSystemHeat(system))
+        	.append(", coolant=").append(mPlayer.getSystemCoolant(system));
+        }
+	}
 }

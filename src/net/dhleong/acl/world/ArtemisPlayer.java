@@ -1,13 +1,14 @@
 package net.dhleong.acl.world;
 
 import java.util.Arrays;
+import java.util.SortedMap;
 
+import net.dhleong.acl.enums.BeamFrequency;
+import net.dhleong.acl.enums.DriveType;
 import net.dhleong.acl.enums.MainScreenView;
 import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.enums.OrdnanceType;
 import net.dhleong.acl.enums.ShipSystem;
-import net.dhleong.acl.net.setup.SetShipSettingsPacket.DriveType;
-import net.dhleong.acl.net.weap.LoadTubePacket;
 import net.dhleong.acl.util.BoolState;
 
 /**
@@ -17,60 +18,33 @@ import net.dhleong.acl.util.BoolState;
  *
  */
 public class ArtemisPlayer extends BaseArtemisShip {
-    
-    /** default amount of available coolant */
-    public static final int DEFAULT_COOLANT = 8;
-    
-    /** maximum per-system value for coolant allocation */
-    public static final int MAX_COOLANT_PER_SYSTEM = 8;
-
-    /** I guess? Maybe...? */
-    public static final int MAX_TUBES = 6;
-
     /** constant result of getTubeContents(), means NOTHING */
     public static final int TUBE_EMPTY = -1;
 
     /** constant result of getTubeContents(), means we DON'T KNOW */
     public static final int TUBE_UNKNOWN = Integer.MIN_VALUE;
-    
-    private static final int SYS_COUNT = ShipSystem.values().length;
 
     private BoolState mAutoBeams, mRedAlert, mShields;
-    private int mShipNumber;
-    private final float[] mHeat = new float[SYS_COUNT];
-    private final float[] mSystems = new float[SYS_COUNT];
-    private final int[] mCoolant = new int[SYS_COUNT];
-
+    private int mShipNumber = -1;
+    private final float[] mHeat = new float[Artemis.SYSTEM_COUNT];
+    private final float[] mSystems = new float[Artemis.SYSTEM_COUNT];
+    private final int[] mCoolant = new int[Artemis.SYSTEM_COUNT];
     private final int[] mTorpedos = new int[OrdnanceType.COUNT];
-    private final float[] mTubeTimes = new float[MAX_TUBES]; 
-    private final int[] mTubeTypes = new int[MAX_TUBES];
-
+    private final float[] mTubeTimes = new float[Artemis.MAX_TUBES]; 
+    private final int[] mTubeTypes = new int[Artemis.MAX_TUBES];
     private float mEnergy = -1;
-
     private int mDockingStation = 0;
-
     private MainScreenView mMainScreen;
-
-    private int mAvailableCoolant = DEFAULT_COOLANT;
-
-    private float mImpulse;
-    private byte mWarp;
-    private byte mBeamFreq;
-
+    private int mAvailableCoolant = -1;
+    private float mImpulse = -1;
+    private byte mWarp = -1;
+    private BeamFrequency mBeamFreq;
     private DriveType mDriveType;
-
-    /** can probably go into BaseShip eventually */
-    private float mTopSpeed=-1, mTurnRate=-1;
-
     private BoolState mReverse;
-
-    private int mScanTarget;
-
-    private float mScanProgress;
-
-    private int mCaptainTarget;
-
-    private int mScanningId;
+    private int mScanTarget = -1;
+    private float mScanProgress = -1;
+    private int mCaptainTarget = -1;
+    private int mScanningId = 0;
     
     /**
      * Special constructor for a very incomplete ArtemisPlayer
@@ -78,11 +52,6 @@ public class ArtemisPlayer extends BaseArtemisShip {
      */
     public ArtemisPlayer(int objId) {
         this(objId, null, -1, -1, BoolState.UNKNOWN, BoolState.UNKNOWN); // ?
-        
-        mAvailableCoolant = -1;
-        mShipNumber = -1;
-        mImpulse = -1;
-        
         setSteering(Float.MIN_VALUE);
         setBearing(Float.MIN_VALUE);
         setVelocity(Float.MIN_VALUE);
@@ -107,7 +76,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
         mShipNumber = shipNumber;
         
         // pre-fill
-        for (int i=0; i<SYS_COUNT; i++) {
+        for (int i = 0; i < Artemis.SYSTEM_COUNT; i++) {
             mHeat[i] = -1;
             mSystems[i] = -1;
             mCoolant[i] = -1;
@@ -178,23 +147,6 @@ public class ArtemisPlayer extends BaseArtemisShip {
         return mRedAlert == BoolState.TRUE;
     }
 
-    @Override
-    public String toString() {
-        return String.format("[PLAYER#%d:%s:%d:%c:%c]%s\n" +
-        		"Systems[%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f]\n" +
-        		"Heat[%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f]", 
-                mShipNumber,
-                mName,
-                mHullId,
-                isRedAlert() ? 'R' : '_',
-                hasShieldsActive() ? 'S' : '_',
-                        super.toString(),
-                mSystems[0], mSystems[1], mSystems[2], mSystems[3], 
-                mSystems[4], mSystems[5], mSystems[6], mSystems[7],
-                mHeat[0], mHeat[1], mHeat[2], mHeat[3],
-                mHeat[4], mHeat[5], mHeat[6], mHeat[7]);
-    }
-
     public void setRedAlert(boolean newState) {
         mRedAlert = BoolState.from(newState);
     }
@@ -213,7 +165,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
      * @param energyPercentage
      */
     public void setSystemEnergy(ShipSystem sys, int energyPercentage) {
-        setSystemEnergy(sys, energyPercentage / 300f);
+        setSystemEnergy(sys, energyPercentage / (float) Artemis.MAX_ENERGY_ALLOCATION_PERCENT);
     }
 
     public void setSystemEnergy(ShipSystem sys, float energy) {
@@ -263,32 +215,33 @@ public class ArtemisPlayer extends BaseArtemisShip {
         if (eng instanceof ArtemisPlayer) {
             ArtemisPlayer plr = (ArtemisPlayer) eng;
 
-            if (mShipNumber == -1)
+            if (mShipNumber == -1) {
                 mShipNumber = plr.mShipNumber;
+            }
             
-            if (plr.mTopSpeed != -1) {
-                mTopSpeed = plr.mTopSpeed;
-            }
-            if (plr.mTurnRate != -1) {
-                mTurnRate = plr.mTurnRate;
-            }
             if (plr.mAutoBeams != BoolState.UNKNOWN) {
             	mAutoBeams = plr.mAutoBeams;
             }
-            if (plr.mImpulse != -1)
+
+            if (plr.mImpulse != -1) {
                 mImpulse = plr.mImpulse;
+            }
 
-            if (plr.mWarp != -1)
+            if (plr.mWarp != -1) {
             	mWarp = plr.mWarp;
+            }
 
-            if (plr.mImpulse != -1 || plr.mWarp != -1)
+            if (plr.mImpulse != -1 || plr.mWarp != -1) {
             	mDockingStation = 0;
+            }
 
-            if (plr.mBeamFreq != -1)
+            if (plr.mBeamFreq != null) {
             	mBeamFreq = plr.mBeamFreq;
+            }
 
-            if (plr.mDockingStation != 0)
+            if (plr.mDockingStation != 0) {
                 mDockingStation = plr.mDockingStation;
+            }
             
             if (plr.mRedAlert != BoolState.UNKNOWN)
                 mRedAlert = plr.mRedAlert;
@@ -305,7 +258,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
             if (plr.mDriveType != null)
                 mDriveType = plr.mDriveType;
             
-            for (int i=0; i<SYS_COUNT; i++) {
+            for (int i = 0; i < Artemis.SYSTEM_COUNT; i++) {
                 if (plr.mHeat[i] != -1)
                     mHeat[i] = plr.mHeat[i];
                 
@@ -321,7 +274,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
                     mTorpedos[i] = plr.mTorpedos[i];
             }
 
-            for (int i=0; i<ArtemisPlayer.MAX_TUBES; i++) {
+            for (int i = 0; i < Artemis.MAX_TUBES; i++) {
                 // just copy this
                 if (plr.mTubeTimes[i] >= 0) {
                     mTubeTimes[i] = plr.mTubeTimes[i];
@@ -344,7 +297,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
                 mReverse = plr.mReverse;
             }
             
-            if (plr.mScanTarget != Integer.MIN_VALUE) {
+            if (plr.mScanTarget != -1) {
                 mScanTarget = plr.mScanTarget;
             }
                 
@@ -352,7 +305,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
                 mScanProgress = plr.mScanProgress;
             }
             
-            if (plr.mCaptainTarget != Integer.MIN_VALUE) {
+            if (plr.mCaptainTarget != -1) {
                 mCaptainTarget = plr.mCaptainTarget;
             }
             
@@ -421,11 +374,11 @@ public class ArtemisPlayer extends BaseArtemisShip {
         return mMainScreen;
     }
 
-    public byte getBeamFrequency() {
+    public BeamFrequency getBeamFrequency() {
     	return mBeamFreq;
     }
 
-    public void setBeamFrequency(byte beamFreq) {
+    public void setBeamFrequency(BeamFrequency beamFreq) {
     	mBeamFreq = beamFreq;
 	}
 
@@ -451,28 +404,12 @@ public class ArtemisPlayer extends BaseArtemisShip {
         return mDriveType;
     }
 
-    public void setTopSpeed(float topSpeed) {
-        mTopSpeed = topSpeed;
-    }
-    
-    public void setTurnRate(float turnRate) {
-        mTurnRate = turnRate;
-    }
-
     public BoolState getAutoBeams() {
     	return mAutoBeams;
     }
 
     public void setAutoBeams(BoolState autoBeams) {
     	mAutoBeams = autoBeams;
-    }
-
-    public float getTopSpeed() {
-        return mTopSpeed;
-    }
-    
-    public float getTurnRate() {
-        return mTurnRate;
     }
 
     public void setReverse(BoolState reverse) {
@@ -542,4 +479,57 @@ public class ArtemisPlayer extends BaseArtemisShip {
     public void setWarp(byte warp) {
 		mWarp = warp;
 	}
+
+    @Override
+	public void appendObjectProps(SortedMap<String, Object> props, boolean includeUnspecified) {
+    	super.appendObjectProps(props, includeUnspecified);
+    	putProp(props, "Auto beams", mAutoBeams, includeUnspecified);
+    	putProp(props, "Red alert", mRedAlert, includeUnspecified);
+    	putProp(props, "Shield state", mShields, includeUnspecified);
+    	putProp(props, "Player ship number", mShipNumber, -1, includeUnspecified);
+
+    	for (ShipSystem system : ShipSystem.values()) {
+    		int i = system.ordinal();
+    		putProp(props, "System heat: " + system, mHeat[i], -1, includeUnspecified);
+    		putProp(props, "System energy: " + system, mSystems[i], -1, includeUnspecified);
+    		putProp(props, "System coolant: " + system, mCoolant[i], -1, includeUnspecified);
+    	}
+
+    	OrdnanceType[] ordValues = OrdnanceType.values();
+
+    	for (OrdnanceType ordnanceType : ordValues) {
+    		int i = ordnanceType.ordinal();
+    		putProp(props, "Ordnance count: " + ordnanceType, mTorpedos[i], -1, includeUnspecified);
+    	}
+
+    	for (int i = 0; i < Artemis.MAX_TUBES; i++) {
+    		int ordType = mTubeTypes[i];
+    		String ordName;
+
+    		if (ordType == -1) {
+				ordName = "empty";
+			} else if (ordType == TUBE_UNKNOWN) {
+				ordName = null;
+			} else {
+				ordName = ordValues[ordType].toString();
+			}
+
+    		putProp(props, "Tube " + i + " contents", ordName, includeUnspecified);
+    		putProp(props, "Tube " + i + " countdown", mTubeTimes[i], -1, includeUnspecified);
+    	}
+
+    	putProp(props, "Energy", mEnergy, -1, includeUnspecified);
+    	putProp(props, "Docking station", mDockingStation, 0, includeUnspecified);
+    	putProp(props, "Main screen view", mMainScreen, includeUnspecified);
+    	putProp(props, "Coolant", mAvailableCoolant, -1, includeUnspecified);
+    	putProp(props, "Impulse", mImpulse, -1, includeUnspecified);
+    	putProp(props, "Warp", mWarp, -1, includeUnspecified);
+    	putProp(props, "Beam frequency", mBeamFreq, includeUnspecified);
+    	putProp(props, "Drive type", mDriveType, includeUnspecified);
+    	putProp(props, "Reverse", mReverse, includeUnspecified);
+    	putProp(props, "Scan target", mScanTarget, -1, includeUnspecified);
+    	putProp(props, "Scan progress", mScanProgress, -1, includeUnspecified);
+    	putProp(props, "Scan object ID", mScanningId, -1, includeUnspecified);
+    	putProp(props, "Captain target", mCaptainTarget, -1, includeUnspecified);
+    }
 }

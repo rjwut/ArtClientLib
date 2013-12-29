@@ -1,29 +1,59 @@
 package net.dhleong.acl.net.setup;
 
-import net.dhleong.acl.net.PacketParser;
+import java.io.IOException;
+
+import net.dhleong.acl.enums.DriveType;
+import net.dhleong.acl.enums.ShipType;
+import net.dhleong.acl.net.PacketWriter;
 import net.dhleong.acl.net.ShipActionPacket;
 
 
 /**
- * Set the name, drive, and type of ship you want 
- *   
+ * Set the name, drive, and type of ship you want.
  * @author dhleong
- *
  */
 public class SetShipSettingsPacket extends ShipActionPacket {
-    public enum DriveType {
-        WARP, JUMP
-    };
+	private DriveType mDrive;
+	private int mHullId;
+	private String mName;
 
-    public SetShipSettingsPacket(DriveType drive, int shipHullId, String name) {
-        this(drive.ordinal(), shipHullId, name);
+	public SetShipSettingsPacket(DriveType drive, int hullId, String name) {
+        super(TYPE_SHIP_SETUP);
+
+        if (drive == null) {
+        	throw new IllegalArgumentException("You must specify a drive type");
+        }
+
+        if (name == null) {
+        	throw new IllegalArgumentException("You must specify a name");
+        }
+
+        mDrive = drive;
+        mHullId = hullId;
+        mName = name;
     }
 
-    public SetShipSettingsPacket(int drive, int shipHullId, String name) {
-        super(TYPE_SHIP_SETUP, new byte[12 + PacketParser.getNameLengthBytes(name)]);
-        PacketParser.putLendInt(drive, mData, 4);
-        PacketParser.putLendInt(shipHullId, mData, 8);
-        PacketParser.putLendInt(1, mData, 12); // ?
-        PacketParser.putNameString(name, mData, 16);
+    @Override
+    public void write(PacketWriter writer) throws IOException {
+    	writer	.start(TYPE)
+    			.writeInt(TYPE_SHIP_SETUP)
+				.writeInt(mDrive.ordinal())
+				.writeInt(mHullId)
+				.writeInt(1) // ?
+				.writeString(mName);
     }
+
+	@Override
+	protected void appendPacketDetail(StringBuilder b) {
+    	ShipType shipType = ShipType.fromId(mHullId);
+    	b.append(mName).append(": ");
+
+    	if (shipType != null) {
+        	b.append(shipType.getHullName());
+    	} else {
+        	b.append(mHullId);
+    	}
+
+    	b.append(" [").append(mDrive).append(']');
+	}
 }

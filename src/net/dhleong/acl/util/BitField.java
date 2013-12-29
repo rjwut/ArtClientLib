@@ -1,8 +1,8 @@
 package net.dhleong.acl.util;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Arrays;
-
-import net.dhleong.acl.net.EnemyUpdatePacket;
 
 /**
  * Provides easy reading and writing of bits in a bit field. The bit places are
@@ -13,12 +13,11 @@ import net.dhleong.acl.net.EnemyUpdatePacket;
  */
 public class BitField {
 	public static void main(String[] args) {
-		BitField bitField = new BitField(
-				EnemyUpdatePacket.Bit.values(),
-				TextUtil.hexToByteArray(args[0]),
-				0
-		);
-		System.out.println(bitField.listActiveBits(EnemyUpdatePacket.Bit.values()));
+		byte[] bytes = TextUtil.hexToByteArray(args[0]);
+		net.dhleong.acl.net.NpcUpdatePacket.Bit[] bits =
+				net.dhleong.acl.net.NpcUpdatePacket.Bit.values();
+		BitField bitField = new BitField(bits, bytes, 0);
+		System.out.println(bitField.listActiveBits(bits));
 	}
 
 	private byte[] bytes;
@@ -80,10 +79,10 @@ public class BitField {
 	}
 
 	/**
-	 * Returns an array of the bytes composing this BitField.
+	 * Writes this BitField to the given OutputStream.
 	 */
-	public byte[] toByteArray() {
-		return Arrays.copyOf(bytes, bytes.length);
+	public void write(OutputStream out) throws IOException {
+		out.write(bytes);
 	}
 
 	/**

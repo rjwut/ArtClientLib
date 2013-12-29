@@ -1,24 +1,29 @@
 package net.dhleong.acl.world;
 
+import java.util.SortedMap;
+
+import net.dhleong.acl.enums.BeamFrequency;
+import net.dhleong.acl.enums.ShipType;
+
 public abstract class BaseArtemisShip extends BaseArtemisShielded
 implements ArtemisBearable {
-
-    protected int mHullId;
-    
-    private float mBearing, mVelocity;
-
-    private float mShieldsFrontMax, mShieldsRearMax;
-
+    protected int mHullId = -1;
+    private float mBearing = Float.MIN_VALUE;
+    private float mVelocity = -1;
+    private float mShieldsFrontMax = -1;
+    private float mShieldsRearMax = -1;
     private final float[] mShieldFreqs = new float[5];
-    
-    private float mSteering = 0.5f; // default to centered
+    private float mSteering = -1;
+    private float mTopSpeed = -1;
+    private float mTurnRate = -1;
 
     public BaseArtemisShip(int objId, String name, int hullId) {
         super(objId, name);
-        
         mHullId = hullId;
-        
-        mShieldsFrontMax = mShieldsRearMax = -1;
+
+        for (int i = 0; i < 5; i++) {
+        	mShieldFreqs[i] = -1;
+        }
     }
 
     public int getHullId() {
@@ -49,14 +54,31 @@ implements ArtemisBearable {
     public void setVelocity(float velocity) {
         mVelocity = velocity;
     }
-    
+
     @Override
-    public String toString() {
-        return String.format("[%.2f,%.2f,%.2f,%.2f,%.2f]%s<%f>;[%.1f/%.1f  %.1f/%.1f]",
-                mShieldFreqs[0],mShieldFreqs[1],mShieldFreqs[2],
-                mShieldFreqs[3],mShieldFreqs[4],
-                super.toString(), mBearing,
-                getShieldsFront(), getShieldsFrontMax(), getShieldsRear(), getShieldsRearMax());
+    public float getSteering() {
+        return mSteering;
+    }
+
+    @Override
+    public void setSteering(float steeringSlider) {
+        mSteering = steeringSlider;
+    }
+
+    public float getTopSpeed() {
+        return mTopSpeed;
+    }
+
+    public void setTopSpeed(float topSpeed) {
+        mTopSpeed = topSpeed;
+    }
+    
+    public float getTurnRate() {
+        return mTurnRate;
+    }
+    
+    public void setTurnRate(float turnRate) {
+        mTurnRate = turnRate;
     }
 
     public float getShieldsFrontMax() {
@@ -89,37 +111,77 @@ implements ArtemisBearable {
         
         if (eng instanceof BaseArtemisShip) {
             BaseArtemisShip ship = (BaseArtemisShip) eng;
-            if (ship.mHullId != -1)
+
+            if (ship.mHullId != -1) {
                 mHullId = ship.mHullId;
+            }
             
-            if (ship.mBearing != Float.MIN_VALUE) 
+            if (ship.mBearing != Float.MIN_VALUE) { 
                 mBearing = ship.mBearing;
+            }
             
-            if (ship.mSteering != Float.MIN_VALUE)
+            if (ship.mSteering != -1) {
                 mSteering = ship.mSteering;
+            }
             
-            if (ship.mVelocity != -1)
+            if (ship.mVelocity != -1) {
                 mVelocity = ship.mVelocity;
+            }
+
+            if (ship.mTopSpeed != -1) {
+                mTopSpeed = ship.mTopSpeed;
+            }
+
+            if (ship.mTurnRate != -1) {
+                mTurnRate = ship.mTurnRate;
+            }
             
-            if (ship.mShieldsFrontMax != -1)
+            if (ship.mShieldsFrontMax != -1) {
                 mShieldsFrontMax = ship.mShieldsFrontMax;
-            if (ship.mShieldsRearMax != -1)
+            }
+
+            if (ship.mShieldsRearMax != -1) {
                 mShieldsRearMax = ship.mShieldsRearMax;
+            }
             
-            for (int i=0; i<mShieldFreqs.length; i++) {
-                if (ship.mShieldFreqs[i] != -1)
-                    mShieldFreqs[i] = ship.mShieldFreqs[i];
+            for (int i = 0; i < mShieldFreqs.length; i++) {
+            	float value = ship.mShieldFreqs[i];
+
+            	if (value != -1) {
+                    mShieldFreqs[i] = value;
+            	}
             }
         }
     }
 
     @Override
-    public float getSteering() {
-        return mSteering;
-    }
+	public void appendObjectProps(SortedMap<String, Object> props, boolean includeUnspecified) {
+    	super.appendObjectProps(props, includeUnspecified);
+    	putProp(props, "Hull ID", mHullId, -1, includeUnspecified);
 
-    @Override
-    public void setSteering(float steeringSlider) {
-        mSteering = steeringSlider;
+    	if (includeUnspecified || mHullId != -1) {
+        	ShipType shipType = ShipType.fromId(mHullId);
+    		putProp(
+    				props,
+    				"Ship type",
+    				shipType != null ? shipType.getFullName() : null,
+    				includeUnspecified
+    		);
+    	}
+
+    	putProp(props, "Heading", mBearing, Float.MIN_VALUE, includeUnspecified);
+    	putProp(props, "Velocity", mVelocity, -1, includeUnspecified);
+    	putProp(props, "Shields: fore max", mShieldsFrontMax, -1, includeUnspecified);
+    	putProp(props, "Shields: aft max", mShieldsRearMax, -1, includeUnspecified);
+    	BeamFrequency[] freqs = BeamFrequency.values();
+
+    	for (int i = 0; i < mShieldFreqs.length; i++) {
+    		putProp(props, "Shield frequency " + freqs[i], mShieldFreqs[i],
+    				-1, includeUnspecified);
+    	}
+
+    	putProp(props, "Rudder", mSteering, -1, includeUnspecified);
+    	putProp(props, "Top speed", mTopSpeed, -1, includeUnspecified);
+    	putProp(props, "Turn rate", mTurnRate, -1, includeUnspecified);
     }
 }

@@ -10,16 +10,18 @@ import java.util.Set;
 import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.enums.ShipSystem;
 import net.dhleong.acl.net.DestroyObjectPacket;
+import net.dhleong.acl.net.IntelPacket;
 import net.dhleong.acl.net.ObjectUpdatingPacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket.DamconStatus;
 import net.dhleong.acl.net.eng.EngGridUpdatePacket.GridDamage;
 import net.dhleong.acl.net.player.PlayerUpdatePacket;
-import net.dhleong.acl.net.setup.SetShipPacket;
 import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ShipSystemGrid;
 import net.dhleong.acl.util.ShipSystemGrid.GridEntry;
+import net.dhleong.acl.world.Artemis;
 import net.dhleong.acl.world.ArtemisGenericObject;
+import net.dhleong.acl.world.ArtemisNpc;
 import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisPlayer;
 import net.dhleong.acl.world.ArtemisPositionable;
@@ -27,7 +29,6 @@ import net.dhleong.acl.world.ArtemisPositionable;
 /**
  * 
  * @author dhleong
- *
  */
 public class SystemManager {
     
@@ -53,7 +54,7 @@ public class SystemManager {
     private final HashMap<Integer, DamconStatus> mDamcons =
             new HashMap<Integer, DamconStatus>();
     
-    private final ArtemisPlayer[] mPlayers = new ArtemisPlayer[SetShipPacket.TOTAL_SHIPS];
+    private final ArtemisPlayer[] mPlayers = new ArtemisPlayer[Artemis.SHIP_COUNT];
     
     public SystemManager() {
         clear();
@@ -64,69 +65,82 @@ public class SystemManager {
         synchronized(this) {
             mObjects.put(obj.getId(), obj);
         }
+
         mListener.onObjectCountChanged(mObjects.size());
     }
 
     @PacketListener
-    public void onPacket(ArtemisPacket pkt) {
-        if (pkt instanceof DestroyObjectPacket) {
-            synchronized(this) {
-                mObjects.remove(((DestroyObjectPacket)pkt).getTarget());
-            }
-            // signal change
-            if (mObjects.size() == 1) {
-                ArtemisObject last = mObjects.values().iterator().next();
-                if ("Artemis".equals(last.getName())) {
-                    // special (hack?) case;
-                    //  this is actually the end of the game
-                    clear();
-                    mListener.onObjectCountChanged(0);
-                    return;
-                }
-            } 
+    public void onPacket(DestroyObjectPacket pkt) {
+        synchronized(this) {
+            mObjects.remove(pkt.getTarget());
+        }
 
-            mListener.onObjectCountChanged(mObjects.size());
-            return;
-        } else if (pkt instanceof EngGridUpdatePacket) {
-            // this ONLY goes to the appropriate ship's engineer station
-            EngGridUpdatePacket gridUp = (EngGridUpdatePacket) pkt;
-            List<GridDamage> damages = gridUp.getDamage();
-            if (damages.size() > 0 && mGridDamage != null) {
-                for (GridDamage d : damages) {
-                    mGridDamage.put(d.coord, d.damage);
-                }
+        // signal change
+        if (mObjects.size() == 1) {
+            ArtemisObject last = mObjects.values().iterator().next();
+
+            if ("Artemis".equals(last.getName())) {
+                // special (hack?) case;
+                //  this is actually the end of the game
+                clear();
+                mListener.onObjectCountChanged(0);
+                return;
             }
-            
-            // update/init damcon teams
-            for (DamconStatus s : gridUp.getDamcons()) {
-                final int team = s.getTeamNumber();
-                if (mDamcons.containsKey(team)) {
-                    DamconStatus old = mDamcons.get(team);
-                    old.updateFrom(s);
-                } else {
-                    mDamcons.put(team, s);
-                }
+        } 
+
+        mListener.onObjectCountChanged(mObjects.size());
+        return;
+    }
+
+    @PacketListener
+    public void onPacket(EngGridUpdatePacket pkt) {
+        // this ONLY goes to the appropriate ship's engineer station
+        List<GridDamage> damages = pkt.getDamage();
+
+        if (damages.size() > 0 && mGridDamage != null) {
+            for (GridDamage d : damages) {
+                mGridDamage.put(d.coord, d.damage);
             }
         }
         
-        // from here, we only care about this kind
-        if (pkt instanceof ObjectUpdatingPacket) {
-            for (ArtemisPositionable p : ((ObjectUpdatingPacket)pkt)
-                    .getObjects()) {
-                updateOrCreate(p);
-            }
-        } else if (pkt instanceof PlayerUpdatePacket) {
-            PlayerUpdatePacket e = (PlayerUpdatePacket) pkt;
+        // update/init damcon teams
+        for (DamconStatus s : pkt.getDamcons()) {
+            final int team = s.getTeamNumber();
 
-            for (ArtemisPlayer player : e.getObjects()) {
-                updateOrCreate(player);
+            if (mDamcons.containsKey(team)) {
+                DamconStatus old = mDamcons.get(team);
+                old.updateFrom(s);
+            } else {
+                mDamcons.put(team, s);
             }
-        } 
+        }
     }
-    
+
+    @PacketListener
+    public void onPacket(ObjectUpdatingPacket pkt) {
+        for (ArtemisPositionable p : pkt.getObjects()) {
+            updateOrCreate(p);
+        }
+    }
+
+    @PacketListener
+    public void onPacket(PlayerUpdatePacket pkt) {
+        updateOrCreate(pkt.getPlayer());
+    }
+
+    @PacketListener
+    public void onPacket(IntelPacket pkt) {
+    	ArtemisNpc npc = (ArtemisNpc) mObjects.get(pkt.getId());
+
+    	if (npc != null) {
+    		npc.setIntel(pkt.getIntel());
+    	}
+    }
+
     @SuppressWarnings("unused")
     private boolean updateOrCreate(ArtemisPositionable o) {
         ArtemisPositionable p = (ArtemisPositionable) mObjects.get(o.getId());
+
         if (p != null) {
             p.updateFrom(o);
             
@@ -135,30 +149,34 @@ public class SystemManager {
                 //  first creating the object, we store the
                 //  updated ORIGINAL with the new ship number
                 ArtemisPlayer plr = (ArtemisPlayer) o;
-                if (plr.getShipIndex() >= 0)
+
+                if (plr.getShipIndex() >= 0) {
                     mPlayers[plr.getShipIndex()] = (ArtemisPlayer) p;
+                }
             }
             
             return false;
-        } else {
-            synchronized(this) {
-                mObjects.put(o.getId(), o);
-            }
-            
-            if (o instanceof ArtemisPlayer) {
-                ArtemisPlayer plr = (ArtemisPlayer) o;
-                if (plr.getShipIndex() >= 0)
-                    mPlayers[plr.getShipIndex()] = plr;
-            }
-            
-            if (DEBUG && o.getName() == null)
-                throw new IllegalStateException("Creating " + p +" without name! " + 
-                        Integer.toHexString(o.getId()));
-            
-            mListener.onObjectCountChanged(mObjects.size());
-            
-            return true;
         }
+
+        synchronized(this) {
+            mObjects.put(o.getId(), o);
+        }
+        
+        if (o instanceof ArtemisPlayer) {
+            ArtemisPlayer plr = (ArtemisPlayer) o;
+
+            if (plr.getShipIndex() >= 0) {
+                mPlayers[plr.getShipIndex()] = plr;
+            }
+        }
+        
+        if (DEBUG && o.getName() == null) {
+            throw new IllegalStateException("Creating " + p +" without name! " + 
+                    Integer.toHexString(o.getId()));
+        }
+        
+        mListener.onObjectCountChanged(mObjects.size());
+        return true;
     }
 
     public synchronized void getAll(List<ArtemisObject> dest) {
@@ -169,8 +187,9 @@ public class SystemManager {
         for (ArtemisObject obj : mObjects.values()) {
             // tentative
             if (!(obj instanceof ArtemisGenericObject) 
-                    && obj instanceof ArtemisPositionable)
+                    && obj instanceof ArtemisPositionable) {
                 dest.add(obj);
+            }
         }
     }
 
@@ -183,12 +202,14 @@ public class SystemManager {
      */
     public synchronized int getObjects(List<ArtemisObject> dest, ObjectType type) {
         int count = 0;
+
         for (ArtemisObject obj : mObjects.values()) {
             if (obj.getType() == type) {
                 dest.add(obj);
                 count++;
             }
         }
+
         return count;
     }
 
@@ -220,8 +241,9 @@ public class SystemManager {
      * @return
      */
     public ArtemisPlayer getPlayerShip(int shipIndex) {
-        if (shipIndex < 0 || shipIndex >= mPlayers.length)
+        if (shipIndex < 0 || shipIndex >= mPlayers.length) {
             throw new IllegalArgumentException("Invalid ship index " + shipIndex);
+        }
         
         return mPlayers[shipIndex];
     }
@@ -247,8 +269,9 @@ public class SystemManager {
     }
 
     public GridEntry getGridAt(GridCoord key) {
-        if (mGrid == null)
+        if (mGrid == null) {
             throw new IllegalStateException("SystemManager must have a ShipSystemGrid");
+        }
         
         return mGrid.getGridAt(key);
     }
@@ -279,10 +302,13 @@ public class SystemManager {
         
         final float total = mGrid.getSystemCount(sys);
         float current = total;
+
         for (GridCoord c : mGrid.getCoordsFor(sys)) {
             final float damage = getGridDamageAt(c);
-            if (damage != -1)
+        
+            if (damage != -1) {
                 current -= damage;
+            }
         }
         
         return current / total;
@@ -294,12 +320,14 @@ public class SystemManager {
      * @return null if no such object or if name is null
      */
     public synchronized ArtemisObject getObjectByName(final String name) {
-        if (name == null)
+        if (name == null) {
             return null;
+        }
         
         for (ArtemisObject obj : mObjects.values()) {
-            if (name.equals(obj.getName()))
+            if (name.equals(obj.getName())) {
                 return obj;
+            }
         }
         
         return null;
@@ -320,11 +348,13 @@ public class SystemManager {
      *  if we don't have the any entry for the coord
      */
     public float getGridDamageAt(GridCoord coord) {
-        if (mGridDamage == null)
+        if (mGridDamage == null) {
             return -1f;
+        }
         
-        if (mGridDamage.containsKey(coord))
+        if (mGridDamage.containsKey(coord)) {
             return mGridDamage.get(coord);
+        }
         
         return -1f;
     }
@@ -346,7 +376,6 @@ public class SystemManager {
 
     /**
      * Set the current ship's (fully loaded) grid
-     * 
      * @param grid
      */
     public void setSystemGrid(ShipSystemGrid grid) {
@@ -368,21 +397,11 @@ public class SystemManager {
         Arrays.fill(mPlayers, null);
         
         mGrid = null;
-        if (mGridDamage != null)
-            mGridDamage.clear(); 
+
+        if (mGridDamage != null) {
+            mGridDamage.clear();
+        }
         
         mDamcons.clear();
-        
-//        // Damcon teams seem to start in similar places each time,
-//        //  but I can't quite figure out the pattern... seems
-//        //  to be the same per-ship, but there's nothing in the .snt
-//        mDamcons.put(0, new DamconStatus(0, 6, 0,0,0, 2,6,1, 0));
-//        mDamcons.put(1, new DamconStatus(1, 6, 0,0,0, 0,3,1, 0));
-//        mDamcons.put(2, new DamconStatus(2, 6, 0,0,0, 3,7,2, 0));
     }
-
-//    @Override
-//    public Iterator<ArtemisObject> iterator() {
-//        return mObjects.values().iterator();
-//    }
 }

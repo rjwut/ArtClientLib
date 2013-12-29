@@ -1,17 +1,13 @@
 package net.dhleong.acl.world;
 
+import java.util.SortedMap;
+
 import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.util.BoolState;
 
 /**
- * An enemy ship; they may have special
- *  abilities, and can be scanned.
- *  
- * Other ships objects may be scan-able,
- *  but scanning for these is understood 
- *  
+ * An NPC ship; they may have special abilities, and can be scanned.
  * @author dhleong
- *
  */
 public class ArtemisNpc extends BaseArtemisShip {
     
@@ -29,8 +25,9 @@ public class ArtemisNpc extends BaseArtemisShip {
     public static final byte SCAN_LEVEL_FULL  = 2;
     
     private byte mScannedLevel = -1;
-    private int mElite, mEliteState;
+    private int mElite = -1, mEliteState = -1;
     private BoolState mEnemy;
+    private String mIntel;
 
     public ArtemisNpc(int objId, String name, int hullId) {
         super(objId, name, hullId);
@@ -72,12 +69,20 @@ public class ArtemisNpc extends BaseArtemisShip {
     public void setScanned(byte scanned) {
         mScannedLevel = scanned;
     }
-    
+
+    public String getIntel() {
+    	return mIntel;
+    }
+
+    public void setIntel(String intel) {
+    	mIntel = intel;
+    }
+
     @Override
     public void updateFrom(ArtemisPositionable eng) {
         super.updateFrom(eng);
         
-        // it SHOULD be an ArtemisEnemy
+        // it SHOULD be an ArtemisNpc
         if (eng instanceof ArtemisNpc) {
             ArtemisNpc cast = (ArtemisNpc) eng;
             BoolState enemy = cast.isEnemy();
@@ -97,20 +102,10 @@ public class ArtemisNpc extends BaseArtemisShip {
             if (cast.mEliteState != -1) {
                 setEliteState(cast.mEliteState);
             }
-        }
-    }
 
-    @Override
-    public String toString() {
-        final String base = String.format("[ENEMY:%s:%d:%c]%s", 
-                mName, 
-                mHullId,
-                (mScannedLevel > 0) ? mScannedLevel : '_',
-                super.toString());
-        if (mElite == -1 && mEliteState == -1)
-            return base;
-        else {
-            return String.format("%s[ELITE|%d][STATE:%d]", base, mElite, mEliteState);
+            if (cast.mIntel != null) {
+            	setIntel(cast.mIntel);
+            }
         }
     }
 
@@ -125,8 +120,13 @@ public class ArtemisNpc extends BaseArtemisShip {
      * @return
      */
     public static boolean isScanned(ArtemisObject obj, byte scanLevel) {
-        return !(obj instanceof ArtemisNpc) 
-                || ((ArtemisNpc)obj).isScanned(scanLevel);
+    	if (!(obj instanceof ArtemisNpc)) {
+    		return true;
+    	}
+
+    	ArtemisNpc npc = (ArtemisNpc) obj;
+
+    	return npc.isEnemy() == BoolState.FALSE || npc.isScanned(scanLevel);
     }
 
     /**
@@ -157,5 +157,15 @@ public class ArtemisNpc extends BaseArtemisShip {
     public static boolean isUsingEliteAbility(ArtemisObject obj, int ability) {
         return (obj instanceof ArtemisNpc) 
                 && ((ArtemisNpc)obj).isUsingEliteAbiilty(ability);
+    }
+
+    @Override
+	public void appendObjectProps(SortedMap<String, Object> props, boolean includeUnspecified) {
+    	super.appendObjectProps(props, includeUnspecified);
+    	putProp(props, "Scan level", mScannedLevel, -1, includeUnspecified);
+    	putProp(props, "Elite", mElite, -1, includeUnspecified);
+    	putProp(props, "Elite state", mEliteState, -1, includeUnspecified);
+    	putProp(props, "Is enemy", mEnemy, includeUnspecified);
+    	putProp(props, "Intel", mIntel, includeUnspecified);
     }
 }

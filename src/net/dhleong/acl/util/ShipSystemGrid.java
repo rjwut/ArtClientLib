@@ -1,8 +1,5 @@
 package net.dhleong.acl.util;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -11,7 +8,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import net.dhleong.acl.enums.ShipSystem;
-import net.dhleong.acl.net.PacketParser;
 
 /**
  * Some basic management of the internal systems
@@ -41,49 +37,6 @@ public class ShipSystemGrid {
     private final HashMap<GridCoord, GridEntry> mSystems = new HashMap<GridCoord, GridEntry>();
     private final int[] mSystemCounts = new int[ShipSystem.values().length];
 
-    /**
-     * Load the Grid from an InputStream of a .snt file.
-     *  This is a BLOCKING constructor!
-     *  
-     * @param is
-     * @throws IOException 
-     */
-    public ShipSystemGrid(InputStream is) throws IOException {
-        BufferedInputStream bis = new BufferedInputStream(is, 64);
-        byte[] row = new byte[32];
-        int x=-1, y=-1, z=-1;
-        float xVal=Float.MAX_VALUE, yVal=0;
-        while (bis.read(row) > -1) {
-            float newX = PacketParser.getLendFloat(row, 0);
-            float newY = PacketParser.getLendFloat(row, 4);
-
-            // update coords
-            if (newX != xVal) {
-                x++;
-                y = 0;
-                z = 0;
-            } else if (newY != yVal) {
-                y++;
-                z = 0;
-            } else {
-                z++;
-            }
-
-            // flip over
-            xVal = newX;
-            yVal = newY;
-            
-            int system = PacketParser.getLendInt(row, 12);
-            if (system >= 0) {
-                mSystems.put(GridCoord.getInstance(x, y, z), 
-                        new GridEntry(ShipSystem.values()[system],
-                                mSystemCounts[system]));
-                mSystemCounts[system]++;
-            }
-        }
-        
-        bis.close();
-    }
     
     /**
      * Get the number of nodes we have of the given SystemType 

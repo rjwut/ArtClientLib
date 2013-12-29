@@ -6,4 +6,9 @@ public class ToggleAutoBeamsPacket extends ShipActionPacket {
 	public ToggleAutoBeamsPacket() {
 		super(TYPE_TOGGLE_AUTO_BEAMS, 0);
 	}
+
+	@Override
+	protected void appendPacketDetail(StringBuilder b) {
+		// do nothing
+	}
 }

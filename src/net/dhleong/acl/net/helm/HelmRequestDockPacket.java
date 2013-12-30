@@ -3,7 +3,8 @@ package net.dhleong.acl.net.helm;
 import net.dhleong.acl.net.ShipActionPacket;
 
 /**
- * Request to dock.
+ * Request to dock. The request is automatically targeted at the nearest
+ * station.
  * @author dhleong
  */
 public class HelmRequestDockPacket extends ShipActionPacket {

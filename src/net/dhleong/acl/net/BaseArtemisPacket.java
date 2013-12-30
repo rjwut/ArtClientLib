@@ -5,16 +5,19 @@ import java.io.IOException;
 import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.enums.ConnectionType;
 
+/**
+ * Implements common packet functionality.
+ */
 public abstract class BaseArtemisPacket implements ArtemisPacket {
     protected abstract void appendPacketDetail(StringBuilder b);
 
     protected final ConnectionType mConnectionType;
     protected final int mType;
 
-    public BaseArtemisPacket(ConnectionType connectionType) {
-    	this(connectionType, 0);
-    }
-
+    /**
+     * @param connectionType The packet's ConnectionType
+     * @param packetType The packet's type value
+     */
     public BaseArtemisPacket(ConnectionType connectionType, int packetType) {
         mConnectionType = connectionType;
         mType = packetType;
@@ -24,7 +27,7 @@ public abstract class BaseArtemisPacket implements ArtemisPacket {
     public ConnectionType getConnectionType() {
         return mConnectionType;
     }
-    
+
     @Override
     public int getType() {
         return mType;

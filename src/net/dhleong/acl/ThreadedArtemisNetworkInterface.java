@@ -26,7 +26,14 @@ import net.dhleong.acl.net.setup.VersionPacket;
 import net.dhleong.acl.net.setup.WelcomePacket;
 import net.dhleong.acl.util.Util;
 
+/**
+ * Default implementation of ArtemisNetworkInterface. Kicks off a thread for
+ * each stream.
+ */
 public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface {
+	/**
+	 * Manages sending packets to the OutputStream.
+	 */
 	private static class SenderThread extends Thread {
         private final Socket mSkt;
         private final Queue<ArtemisPacket> mQueue = new ArrayDeque<ArtemisPacket>(128);
@@ -46,9 +53,11 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
             OutputStream output = new BufferedOutputStream(mSkt.getOutputStream());
             mWriter = new PacketWriter(output);
         }
-        
+
+        /**
+         * Enqueues a packet to be sent.
+         */
         public boolean offer(final ArtemisPacket pkt) {
-            //System.out.println(">> sending: " + pkt);
             return mQueue.offer(pkt);
         }
 
@@ -121,6 +130,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
             mConnected = true;
 
             // send a couple of these to prime the server
+            // TODO Is this really required?
             offer(new ReadyPacket2());
             offer(new ReadyPacket2());
             
@@ -155,6 +165,9 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         }
     }
 
+	/**
+	 * Manages receiving packets from the InputStream.
+	 */
     private static class ReceiverThread extends Thread {
         private List<Listener> mListeners = new CopyOnWriteArrayList<Listener>();
         private boolean mRunning = true;
@@ -238,6 +251,10 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
     /** Error code, for when we disconnect */
     private int errorCode = OnConnectedListener.ERROR_NONE;
 
+    /**
+     * @param tgtIp The IP address to connect to
+     * @param tgtPort The port to connect to (Artemis's default port is 2010)
+     */
     public ThreadedArtemisNetworkInterface(final String tgtIp, final int tgtPort) 
             throws UnknownHostException, IOException {
         final Socket skt = new Socket(tgtIp, tgtPort);
@@ -248,19 +265,35 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         mReceiveThread.addPacketListener(mSendThread);
     }
 
+    /**
+     * Registers an object as a packet listener. It must have one or more
+     * methods annotated with @PacketListener.
+     */
     @Override
     public void addPacketListener(final Object listener) {
         mReceiveThread.addPacketListener(listener);
     }
 
+    /**
+     * By default, ArtClientLib will attempt to parse all packets it receives.
+     * If this is set to false, it will only parse the preambles and emit only
+     * UnknownPackets. This basically turns ArtClientLib into a packet sniffer.
+     */
     public void setParsePackets(boolean parse) {
     	mReceiveThread.setParsePackets(parse);
     }
 
+    /**
+     * Returns true if currently connected to the remote machine; false
+     * otherwise.
+     */
     public boolean isConnected() {
         return mSendThread.mConnected;
     }
 
+    /**
+     * Enqueues a packet to be transmitted to the remote machine.
+     */
     @Override
     public void send(final ArtemisPacket pkt) {
     	if (pkt.getConnectionType() != ConnectionType.CLIENT) {
@@ -269,31 +302,53 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
 
     	mSendThread.offer(pkt);
     }
-    
+
+    /**
+     * Closes the connection to the remote machine.
+     */
     @Override
     public void stop() {
         mReceiveThread.end();
         mSendThread.end();
     }
-    
+
+    /**
+     * Connects to the remote machine and enables sending and receiving packets.
+     */
     @Override
     public void start() {
-        if (!mReceiveThread.mStarted)
+        if (!mReceiveThread.mStarted) {
             mReceiveThread.start();
-        if (!mSendThread.mStarted)
+        }
+
+        if (!mSendThread.mStarted) {
             mSendThread.start();
+        }
     }
 
+    /**
+     * Registers an object that will be notified when a connection to the remote
+     * machine is established or terminated.
+     */
     public void setOnConnectedListener(final OnConnectedListener listener) {
         mSendThread.mOnConnectedListener = listener;
     }
 
 
+    /**
+     * Contains all the information needed to invoke a packet listener method
+     * (annotated with @PacketListener).
+     * @author rjwut
+     */
     private static class Listener {
     	private Object object;
     	private Method method;
     	private Class<?> paramType;
 
+    	/**
+    	 * @param object The packet listener object
+    	 * @param method The annotated method
+    	 */
     	private Listener (Object object, Method method) {
     		validateListenerMethod(method);
     		this.object = object;
@@ -301,6 +356,10 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
     		paramType = method.getParameterTypes()[0];
     	}
 
+    	/**
+    	 * Throws an IllegalArgumentException if the given method is not a valid
+    	 * packet listener method.
+    	 */
     	private static void validateListenerMethod(Method method) {
     		if (!Modifier.isPublic(method.getModifiers())) {
     			throw new IllegalArgumentException(
@@ -337,8 +396,8 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
 
     	/**
     	 * Invokes the given listener, passing in the indicated packet. Since
-    	 * the listeners have been pre-vetted, no exception should occur, so we
-    	 * wrap the ones thrown by Method.invoke() in a RuntimeException.
+    	 * the listeners have been pre-validated, no exception should occur, so
+    	 * we wrap the ones thrown by Method.invoke() in a RuntimeException.
     	 */
     	private void offer(ArtemisPacket packet) {
     		Class<?> clazz = packet.getClass();

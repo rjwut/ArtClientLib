@@ -6,6 +6,9 @@ import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.PacketWriter;
 
+/**
+ * Converts a homing torpedo to energy or vice-versa.
+ */
 public class ConvertTorpedoPacket extends BaseArtemisPacket {
 	public enum Direction {
 		TORPEDO_TO_ENERGY, ENERGY_TO_TORPEDO
@@ -16,6 +19,9 @@ public class ConvertTorpedoPacket extends BaseArtemisPacket {
 
     private Direction mDirection;
 
+    /**
+     * @param direction The Direction value indicating the desired conversion type
+     */
     public ConvertTorpedoPacket(final Direction direction) {
         super(ConnectionType.CLIENT, TYPE);
 

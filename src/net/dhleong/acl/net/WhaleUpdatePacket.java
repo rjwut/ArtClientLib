@@ -8,6 +8,10 @@ import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.world.ArtemisCreature;
 import net.dhleong.acl.world.ArtemisPositionable;
 
+/**
+ * Updates for space whales.
+ * @author rjwut
+ */
 public class WhaleUpdatePacket extends BaseArtemisPacket implements ObjectUpdatingPacket {
     private enum Bit {
     	NAME,
@@ -26,7 +30,7 @@ public class WhaleUpdatePacket extends BaseArtemisPacket implements ObjectUpdati
     	UNK_7
     }
 
-    public final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
+    private final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
 
     public WhaleUpdatePacket(PacketReader reader) {
     	super(ConnectionType.SERVER, WORLD_TYPE);
@@ -69,13 +73,6 @@ public class WhaleUpdatePacket extends BaseArtemisPacket implements ObjectUpdati
             System.out.println("--> " + this);
             throw e;
         }
-    }
-
-    @Override
-    public void write(PacketWriter writer) throws IOException {
-    	throw new UnsupportedOperationException(
-    			getClass().getSimpleName() + " does not support write()"
-    	);
     }
 
     @Override

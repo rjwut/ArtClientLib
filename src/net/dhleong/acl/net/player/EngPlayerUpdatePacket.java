@@ -4,10 +4,11 @@ import java.util.Arrays;
 
 import net.dhleong.acl.enums.ShipSystem;
 import net.dhleong.acl.net.PacketReader;
+import net.dhleong.acl.world.Artemis;
 import net.dhleong.acl.world.ArtemisPlayer;
 
 /**
- * Packet with player data related to the engineering subystems
+ * Packet with player data related to the engineering station.
  * @author dhleong
  */
 public class EngPlayerUpdatePacket extends PlayerUpdatePacket {
@@ -40,40 +41,39 @@ public class EngPlayerUpdatePacket extends PlayerUpdatePacket {
 		COOLANT_AFT_SHIELDS
 	}
 
-	private static final int SYSTEM_COUNT = ShipSystem.values().length;
 	private static final Bit[] HEAT;
 	private static final Bit[] ENERGY;
 	private static final Bit[] COOLANT;
 
 	static {
 		Bit[] values = Bit.values();
-		HEAT = Arrays.copyOfRange(values, 0, SYSTEM_COUNT);
-		ENERGY = Arrays.copyOfRange(values, SYSTEM_COUNT, SYSTEM_COUNT * 2);
-		COOLANT = Arrays.copyOfRange(values, SYSTEM_COUNT * 2, SYSTEM_COUNT * 3);
+		HEAT = Arrays.copyOfRange(values, 0, Artemis.SYSTEM_COUNT);
+		ENERGY = Arrays.copyOfRange(values, Artemis.SYSTEM_COUNT, Artemis.SYSTEM_COUNT * 2);
+		COOLANT = Arrays.copyOfRange(values, Artemis.SYSTEM_COUNT * 2, Artemis.SYSTEM_COUNT * 3);
 	}
 
     public EngPlayerUpdatePacket(PacketReader reader) {
         try {
-            float[] heat = new float[ SYSTEM_COUNT ];
-            float[] sysEnergy = new float[ SYSTEM_COUNT ];
-            int[] coolant = new int[ SYSTEM_COUNT ];
+            float[] heat = new float[ Artemis.SYSTEM_COUNT ];
+            float[] sysEnergy = new float[ Artemis.SYSTEM_COUNT ];
+            int[] coolant = new int[ Artemis.SYSTEM_COUNT ];
             reader.startObject(Bit.values());
         
-            for (int i = 0; i < SYSTEM_COUNT; i++) {
+            for (int i = 0; i < Artemis.SYSTEM_COUNT; i++) {
                 heat[i] = reader.readFloat(HEAT[i], -1);
             }
 
-            for (int i = 0; i < SYSTEM_COUNT; i++) {
+            for (int i = 0; i < Artemis.SYSTEM_COUNT; i++) {
                 sysEnergy[i] = reader.readFloat(ENERGY[i], -1);
             }
 
-            for (int i = 0; i < SYSTEM_COUNT; i++) {
+            for (int i = 0; i < Artemis.SYSTEM_COUNT; i++) {
                 coolant[i] = reader.readByte(COOLANT[i], (byte) -1);
             }
             
             mPlayer = new ArtemisPlayer(reader.getObjectId());
             
-            for (int i = 0; i < SYSTEM_COUNT; i++) {
+            for (int i = 0; i < Artemis.SYSTEM_COUNT; i++) {
                 ShipSystem sys = ShipSystem.values()[i];
                 mPlayer.setSystemHeat(sys, heat[i]);
                 mPlayer.setSystemEnergy(sys, sysEnergy[i]);

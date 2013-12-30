@@ -8,9 +8,7 @@ import net.dhleong.acl.world.ArtemisObject;
  */
 public class SciSelectPacket extends ShipActionPacket {
 	/**
-	 * Sets the science officer's current target. If the argument is null, the
-	 * target is cleared.
-	 * @param target
+	 * @param target The target to select (or null to clear the taregt)
 	 */
     public SciSelectPacket(ArtemisObject target) {
         super(TYPE_SCI_SELECT, target == null ? 1 : target.getId());

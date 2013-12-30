@@ -9,8 +9,11 @@ import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.world.ArtemisNpc;
 import net.dhleong.acl.world.ArtemisPositionable;
 
+/**
+ * Updates on enemy and allied ships.
+ */
 public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdatingPacket {
-	public enum Bit {
+	private enum Bit {
 		NAME,
 		UNK_1_2,
 		UNK_1_3,
@@ -73,7 +76,7 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
 		Bit.SHIELD_FREQUENCY_E
     };
 
-    public final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
+    private final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
 
     public NpcUpdatePacket(PacketReader reader) {
     	super(ConnectionType.SERVER, WORLD_TYPE);

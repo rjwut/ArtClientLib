@@ -18,8 +18,12 @@ public class EngSetCoolantPacket extends BaseArtemisPacket {
     private ShipSystem mSystem;
     private int mValue;
 
+    /**
+     * @param system The ShipSystem whose coolant level is to be set
+     * @param value The amount of coolant to allocate
+     */
     public EngSetCoolantPacket(ShipSystem system, int value) {
-        super(ConnectionType.CLIENT);
+        super(ConnectionType.CLIENT, TYPE);
 
         if (system == null) {
         	throw new IllegalArgumentException("You must provide a system");

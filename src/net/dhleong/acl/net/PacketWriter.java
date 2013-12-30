@@ -10,9 +10,20 @@ import net.dhleong.acl.util.BitField;
 
 /**
  * Facilitates writing packets to an OutputStream. This object may be reused to
- * write as many packets as desired to a single OutputStream. Each packet must
- * begin with a call to start() and end with a call to flush().
- * @author rwalker
+ * write as many packets as desired to a single OutputStream. To write a packet,
+ * follow these steps:
+ * 
+ * 1. Invoke start().
+ * 2. Write the payload data using the write*() methods. Payload data is
+ *    buffered by the PacketWriter, not written immediately to the OutputStream.
+ * 3. Invoke flush(). The proper values for the fields in the preamble will be
+ *    automatically computed and written, followed by the payload. The entire
+ *    packet is then flushed to the OutputStream.
+ * 
+ * Once flush() has been called, you can start writing another packet by
+ * invoking start() again.
+ * 
+ * @author rjwut
  */
 public class PacketWriter {
 	private final OutputStream out;
@@ -95,6 +106,10 @@ public class PacketWriter {
 		return this;
 	}
 
+	/**
+	 * Writes a float (four bytes). You must invoke start() before calling this
+	 * method.
+	 */
 	public PacketWriter writeFloat(float v) {
 		writeInt(Float.floatToRawIntBits(v));
 		return this;
@@ -188,7 +203,7 @@ public class PacketWriter {
 	}
 
 	/**
-	 * Writes an int value to the OutputStream.
+	 * Writes an int value directly to the wrapped OutputStream.
 	 */
 	private void writeIntToStream(int value) throws IOException {
 		buffer[0] = (byte) (0xff & value);

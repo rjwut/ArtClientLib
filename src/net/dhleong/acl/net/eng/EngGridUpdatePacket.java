@@ -9,8 +9,8 @@ import net.dhleong.acl.net.PacketReader;
 import net.dhleong.acl.util.GridCoord;
 
 /**
- * Updates damage to the various system grids on the
- *  ship, as well as (I think!) DamCon team status/location
+ * Updates damage to the various system grids on the ship, as well as DamCon
+ * team status/location.
  * @author dhleong
  */
 public class EngGridUpdatePacket extends BaseArtemisPacket {
@@ -27,8 +27,8 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
     private List<DamconStatus> mDamconUpdates = null;
 
     public EngGridUpdatePacket(PacketReader reader) {
-        super(ConnectionType.SERVER, TYPE); // TODO don't save the byte[]?
-        reader.skip(1);
+        super(ConnectionType.SERVER, TYPE);
+        reader.readUnknown("Unknown", 1);
 
         while (reader.peekByte() != END_GRID_MARKER) {
             GridCoord coord = GridCoord.getInstance(
@@ -49,7 +49,7 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
         if (mDamage == null) {
             mDamage = EMPTY_DAMAGE;
         }
-        
+
         reader.skip(1); // read the 0xff byte
 
         while (reader.peekByte() != END_DAMCON_MARKER) {
@@ -78,10 +78,18 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
         }
     }
 
+    /**
+     * Returns a List of GridDamage objects that describe the damage data
+     * encoded in this packet.
+     */
     public List<GridDamage> getDamage() {
         return mDamage;
     }
 
+    /**
+     * Returns a List of DamconStatus objects that provide the DAMCON team
+     * updates encoded in this packet.
+     */
     public List<DamconStatus> getDamcons() {
         return mDamconUpdates;
     }
@@ -108,18 +116,18 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
 			}
 		}
 	}
-    
+
+
+	/**
+	 * Updates the level of damage to a node in the system grid.
+     * @author dhleong
+	 */
     public static final class GridDamage {
         public final GridCoord coord;
         public final float damage;
-        
+
         private GridDamage(GridCoord coord, float damage) {
             this.coord = coord;
-            this.damage = damage;
-        }
-        
-        public GridDamage(int x, int y, int z, float damage) {
-            coord = GridCoord.getInstance(x, y, z);
             this.damage = damage;
         }
 
@@ -149,6 +157,7 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
     }
     
     /**
+     * Updates the status of a DAMCON team.
      * @author dhleong
      */
     public static final class DamconStatus {
@@ -169,31 +178,49 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
             this.z = z;
             this.progress = progress;
         }
-        
+
+        /**
+         * The number assigned to this DAMCON team.
+         */
         public int getTeamNumber() {
             return teamNumber;
         }
-        
+
+        /**
+         * The number of people in this DAMCON team that are still alive.
+         */
         public int getMembers() {
             return members;
         }
-        
+
+        /**
+         * The grid location of this DAMCON team on the X-axis.
+         */
         public int getX() {
             return x;
         }
         
+        /**
+         * The grid location of this DAMCON team on the Y-axis.
+         */
         public int getY() {
             return y;
         }
         
+        /**
+         * The grid location of this DAMCON team on the Z-axis.
+         */
         public int getZ() {
             return z;
         }
-        
+
+        /**
+         * The DAMCON team's progress towards their destination.
+         */
         public float getProgress() {
             return progress;
         }
-        
+
         public void updateFrom(DamconStatus other) {
             this.members = other.members;
             

@@ -6,9 +6,8 @@ import net.dhleong.acl.world.Artemis;
 import net.dhleong.acl.world.ArtemisPlayer;
 
 /**
- * Player data related to weapons subsystems
+ * Player data related to the weapons station.
  * @author dhleong
- *
  */
 public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
 	private enum Bit {

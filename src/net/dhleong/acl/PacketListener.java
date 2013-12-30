@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
  * register the object that has the annotated method with the
  * ArtemisNetworkInterface implementation that will be receiving the packets.
  * 
- * @author rwalker
+ * @author rjwut
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

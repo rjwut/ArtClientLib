@@ -2,7 +2,7 @@ package net.dhleong.acl.enums;
 
 /**
  * Messages that can be sent to stations.
- * @author rwalker
+ * @author rjwut
  */
 public enum StationMessage implements CommsMessage {
 	STAND_BY_FOR_DOCKING("Stand by for docking."),

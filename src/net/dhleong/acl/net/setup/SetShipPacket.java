@@ -2,7 +2,6 @@ package net.dhleong.acl.net.setup;
 
 import net.dhleong.acl.net.ShipActionPacket;
 
-
 /**
  * Set the ship you want to be on. You must send this packet before
  * SetStationPacket.
@@ -19,7 +18,6 @@ public class SetShipPacket extends ShipActionPacket {
     public static final int SHIP_8_DIANA	= 7;
     
     /**
-     * Set the ship you want to be on.
      * @param shipIndex Index [0,7] of the ship you want to be on. The SHIP_*
      * constants are provided for reference, but the names can, of course, be
      * changed.

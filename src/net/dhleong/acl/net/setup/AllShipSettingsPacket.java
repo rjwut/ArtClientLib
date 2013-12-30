@@ -9,15 +9,13 @@ import net.dhleong.acl.net.PacketReader;
 import net.dhleong.acl.world.Artemis;
 
 /**
- * From the server to share what engines, ship types,  and ship names will be
- * used.
+ * Sent by the server to update the names, types and drives for each ship.
  * @author dhleong
  */
 public class AllShipSettingsPacket extends BaseArtemisPacket {
     public static final int TYPE = 0xf754c8fe;
     public static final byte MSG_TYPE = 0x0f;
     
-    /* These values are only instantiated on recv */
     public final DriveType[] drives;
     public final int[] shipTypes;
     public final String[] shipNames;

@@ -7,13 +7,17 @@ import net.dhleong.acl.net.PacketWriter;
 import net.dhleong.acl.net.ShipActionPacket;
 
 /**
- * "Take" or "untake" a station.
+ * "Take" or "untake" a bridge station.
  * @author dhleong
  */
 public class SetStationPacket extends ShipActionPacket {
 	private BridgeStation mStation;
 	private boolean mSelected;
 
+	/**
+	 * @param station The BridgeStation being updated
+	 * @param selected Whether the player is taking this station or not
+	 */
 	public SetStationPacket(BridgeStation station, boolean selected) {
         super(TYPE_SET_STATION);
 

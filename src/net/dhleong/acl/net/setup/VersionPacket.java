@@ -4,6 +4,11 @@ import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.PacketReader;
 
+/**
+ * Gives the Artemis server's version number. Send immediately after
+ * WelcomePacket.
+ * @author rjwut
+ */
 public class VersionPacket extends BaseArtemisPacket {
 	public static final int TYPE = 0xe548e74a;
 
@@ -15,6 +20,9 @@ public class VersionPacket extends BaseArtemisPacket {
 		mVersion = reader.readFloat();
 	}
 
+	/**
+	 * @return The version number
+	 */
 	public float getVersion() {
 		return mVersion;
 	}

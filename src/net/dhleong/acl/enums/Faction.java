@@ -2,7 +2,7 @@ package net.dhleong.acl.enums;
 
 /**
  * The various factions in the Artemis universe.
- * @author rwalker
+ * @author rjwut
  */
 public enum Faction {
 	TSN("TSN"),

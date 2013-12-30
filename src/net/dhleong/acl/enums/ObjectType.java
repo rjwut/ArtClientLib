@@ -14,7 +14,7 @@ import net.dhleong.acl.net.player.WeapPlayerUpdatePacket;
 
 /**
  * World object types.
- * @author rwalker
+ * @author rjwut
  */
 public enum ObjectType {
 	PLAYER_SHIP(1, true) {

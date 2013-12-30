@@ -7,6 +7,9 @@ import net.dhleong.acl.world.ArtemisObject;
  * Scans the indicated target.
  */
 public class SciScanPacket extends ShipActionPacket {
+	/**
+	 * @param target The target to scan
+	 */
     public SciScanPacket(ArtemisObject target) {
         super(TYPE_SCI_SCAN, target != null ? target.getId() : 0);
 

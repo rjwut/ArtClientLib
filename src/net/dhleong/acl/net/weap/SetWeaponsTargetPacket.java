@@ -8,6 +8,9 @@ import net.dhleong.acl.world.ArtemisObject;
  * @author dhleong
  */
 public class SetWeaponsTargetPacket extends ShipActionPacket {
+	/**
+	 * @param target The desired target (or null to release target lock)
+	 */
     public SetWeaponsTargetPacket(ArtemisObject target) {
         super(TYPE_SET_TARGET, target == null ? 1 : target.getId());
     }

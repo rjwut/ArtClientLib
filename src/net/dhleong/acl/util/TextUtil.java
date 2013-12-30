@@ -1,6 +1,12 @@
 package net.dhleong.acl.util;
 
+/**
+ * Various utility methods for coercing between hax values and other formats.
+ */
 public class TextUtil {
+	/**
+	 * Converts the given byte to a hex String.
+	 */
     public static String byteToHex(byte b) {
         String hex = Integer.toHexString(b);
         if (hex.length() >= 2) {
@@ -10,10 +16,16 @@ public class TextUtil {
         return String.format("0%s", hex);
     }
 
+    /**
+     * Converts the given byte array to a hex String.
+     */
     public static String byteArrayToHexString(byte[] data) {
         return byteArrayToHexString(data, 0, data.length);
     }
-    
+
+    /**
+     * Converts a subset of the given byte array to a hex String.
+     */
     public static String byteArrayToHexString(byte[] data, int offset, int length) {
         StringBuilder buf = new StringBuilder();
         final int end = offset + length;
@@ -23,9 +35,13 @@ public class TextUtil {
             
             buf.append(byteToHex(b));
         }
+
         return buf.toString();
     }
 
+    /**
+     * Converts an int to a hex String.
+     */
     public static String intToHex(int val) {
         String hex = Integer.toHexString(val);
 
@@ -36,10 +52,16 @@ public class TextUtil {
         return String.format("%8s", hex).replace(' ', '0');
     }
 
+    /**
+     * Converts a hex String to an int.
+     */
     public static int hexToInt(char byte1, char byte2) {
         return Integer.parseInt(String.format("%c%c", byte1, byte2), 16);
     }
 
+    /**
+     * Converts a hex String to a byte array.
+     */
     public static byte[] hexToByteArray(String hex) {
     	int len = hex.length();
 

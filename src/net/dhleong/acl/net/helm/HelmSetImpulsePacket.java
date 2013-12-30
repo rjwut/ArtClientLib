@@ -17,7 +17,7 @@ public class HelmSetImpulsePacket extends BaseArtemisPacket {
     private float mPower;
 
     /**
-     * @param power Impulse power percentage
+     * @param power Impulse power percentage (value between 0 and 1, inclusive)
      */
     public HelmSetImpulsePacket(float power) {
         super(ConnectionType.CLIENT, TYPE);

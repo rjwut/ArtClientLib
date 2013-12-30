@@ -12,14 +12,6 @@ import java.util.Arrays;
  * @author rjwut
  */
 public class BitField {
-	public static void main(String[] args) {
-		byte[] bytes = TextUtil.hexToByteArray(args[0]);
-		net.dhleong.acl.net.NpcUpdatePacket.Bit[] bits =
-				net.dhleong.acl.net.NpcUpdatePacket.Bit.values();
-		BitField bitField = new BitField(bits, bytes, 0);
-		System.out.println(bitField.listActiveBits(bits));
-	}
-
 	private byte[] bytes;
 
 	/**

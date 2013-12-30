@@ -19,9 +19,10 @@ public class EngSetEnergyPacket extends BaseArtemisPacket {
     private float mValue;
 
     /**
-     * Sets the given system's energy allocation. The value parameter should be
-     * a number between 0 (no energy) and 1 (max possible energy), inclusive. A
-     * value of 0.333333... is the default allocation level.
+     * Sets the given system's energy allocation.
+     * @param system The ShipSystem whose energy allocation is to be set
+     * @param value A number between 0 (no energy) and 1 (max possible energy),
+     * 		inclusive. A value of 0.333333... is the default allocation level.
      */
     public EngSetEnergyPacket(ShipSystem system, float value) {
         super(ConnectionType.CLIENT, TYPE);
@@ -44,10 +45,12 @@ public class EngSetEnergyPacket extends BaseArtemisPacket {
     }
 
     /**
-     * Sets the given system's energy allocation. The value parameter should be
-     * a number between 0 (no energy) and 300 (max possible energy), inclusive.
-     * This value corresponds to the energy allocation percentage as seen in the
-     * UI. A value of 100 (100%) is the default allocation level.
+     * Sets the given system's energy allocation.
+     * @param system The ShipSystem whose energy allocation is to be set
+     * @param percentage A number between 0 (no energy) and 300 (max possible
+     * 		energy), inclusive. This value corresponds to the energy allocation
+     * 		percentage as seen in the UI. A value of 100 (100%) is the default
+     * 		allocation level.
      */
     public EngSetEnergyPacket(ShipSystem system, int percentage) {
         this(system, percentage / (float) Artemis.MAX_ENERGY_ALLOCATION_PERCENT);

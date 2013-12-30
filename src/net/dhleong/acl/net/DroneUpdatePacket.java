@@ -9,8 +9,12 @@ import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.world.ArtemisDrone;
 import net.dhleong.acl.world.ArtemisPositionable;
 
+/**
+ * Status updates for Torgoth drones.
+ * @author rjwut
+ */
 public class DroneUpdatePacket extends BaseArtemisPacket implements ObjectUpdatingPacket {
-    public enum Bit {
+    private enum Bit {
     	UNK_0,
     	X,
     	UNK_2,
@@ -30,7 +34,7 @@ public class DroneUpdatePacket extends BaseArtemisPacket implements ObjectUpdati
     	UNK_15
     }
 
-    public final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
+    private final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
 
     public DroneUpdatePacket(PacketReader reader) {
     	super(ConnectionType.SERVER, WORLD_TYPE);

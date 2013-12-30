@@ -22,13 +22,10 @@ public class EngSendDamconPacket extends BaseArtemisPacket {
 
     /**
      * Send the team to grid node at x,y,z.
-     * 
-     * @param teamNumber int [0, TEAMS) where TEAMS is
-     *  probably 3
-     *  
-     * @param x
-     * @param y
-     * @param z
+     * @param teamNumber int [0, TEAMS) where TEAMS is probably 3
+     * @param x Destination X-coordinate in the system grid
+     * @param y Destination Y-coordinate in the system grid
+     * @param z Destination Z-coordinate in the system grid
      */
     public EngSendDamconPacket(int teamNumber, int x, int y, int z) {
         super(ConnectionType.CLIENT, TYPE);
@@ -45,8 +42,12 @@ public class EngSendDamconPacket extends BaseArtemisPacket {
         mZ = z;
     }
 
+    /**
+     * @param teamNumber int [0, TEAMS) where TEAMS is probably 3
+     * @param coord Destination coordinates in the system grid
+     */
     public EngSendDamconPacket(int teamNumber, GridCoord coord) {
-        this(teamNumber, coord.x, coord.y, coord.z);
+        this(teamNumber, coord.getX(), coord.getY(), coord.getZ());
     }
 
     @Override

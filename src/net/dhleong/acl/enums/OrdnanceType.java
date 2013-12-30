@@ -2,7 +2,7 @@ package net.dhleong.acl.enums;
 
 /**
  * The four types of ordnance that player ships can fire.
- * @author rwalker
+ * @author rjwut
  */
 public enum OrdnanceType {
 	HOMING("Homing"),

@@ -6,6 +6,10 @@ import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.PacketWriter;
 
+/**
+ * Changes the ship's trim, causing it to climb, dive or level out.
+ * @author rjwut
+ */
 public class ClimbDivePacket extends BaseArtemisPacket {
     public static final int TYPE = 0x0351A5AC;
     public static final int SUBTYPE = 0x1b;
@@ -15,6 +19,9 @@ public class ClimbDivePacket extends BaseArtemisPacket {
     private boolean mUp;
 
     /**
+     * Giving an "up" command while diving causes the ship to level out; giving
+     * a second "up" command causes it to start climbing. The "down" command
+     * does the reverse.
      * @param up True if you want to tilt the ship up, false to tilt it down.
      */
     public ClimbDivePacket(boolean up) {

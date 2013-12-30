@@ -10,6 +10,7 @@ import net.dhleong.acl.world.ArtemisMesh;
 import net.dhleong.acl.world.ArtemisPositionable;
 
 /**
+ * Updates for generic mesh objects.
  * @author dhleong
  */
 public class GenericMeshPacket extends BaseArtemisPacket implements ObjectUpdatingPacket {
@@ -45,8 +46,8 @@ public class GenericMeshPacket extends BaseArtemisPacket implements ObjectUpdati
 		UNK_16
 	}
 
-    public final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
-    float red, green, blue;
+    private final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
+    private float red, green, blue;
 
     public GenericMeshPacket(PacketReader reader) {
     	super(ConnectionType.SERVER, WORLD_TYPE);

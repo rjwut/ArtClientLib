@@ -2,7 +2,7 @@ package net.dhleong.acl.enums;
 
 /**
  * The eight ship systems.
- * @author rwalker
+ * @author rjwut
  */
 public enum ShipSystem {
 	BEAMS("Beams"),

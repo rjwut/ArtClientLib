@@ -2,7 +2,7 @@ package net.dhleong.acl.enums;
 
 /**
  * Represents the type of the machine found at the opposite end of a connection.
- * @author rwalker
+ * @author rjwut
  */
 public enum ConnectionType {
 	SERVER, CLIENT;

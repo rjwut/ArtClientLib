@@ -9,7 +9,7 @@ import net.dhleong.acl.net.ShipActionPacket;
 
 
 /**
- * Set the name, drive, and type of ship you want.
+ * Set the name, type and drive of ship your station has selected.
  * @author dhleong
  */
 public class SetShipSettingsPacket extends ShipActionPacket {
@@ -17,9 +17,40 @@ public class SetShipSettingsPacket extends ShipActionPacket {
 	private int mHullId;
 	private String mName;
 
-	public SetShipSettingsPacket(DriveType drive, int hullId, String name) {
+	/**
+	 * Use this constructor if you wish to use the ShipType enum. This may be
+	 * incompatible with changes to vesselData.xml.
+	 * @param drive The desired type of drive
+	 * @param type
+	 * @param name The desired ship name
+	 */
+	public SetShipSettingsPacket(DriveType drive, ShipType type, String name) {
         super(TYPE_SHIP_SETUP);
 
+        if (type == null) {
+        	throw new IllegalArgumentException("You must specify a ship type");
+        }
+
+        if (!type.isPlayerShip()) {
+        	throw new IllegalArgumentException("Can't select " + type.getFullName());
+        }
+
+        init(drive, type.getId(), name);
+	}
+
+	/**
+	 * Use this constructor if you wish to use a hull ID. This allows you to
+	 * select ships from a modified vesselData.xml.
+	 * @param drive The desired type of drive
+	 * @param hullId The ID for the desired ship type
+	 * @param name The desired ship name
+	 */
+	public SetShipSettingsPacket(DriveType drive, int hullId, String name) {
+        super(TYPE_SHIP_SETUP);
+        init(drive, hullId, name);
+    }
+
+	private void init(DriveType drive, int hullId, String name) {
         if (drive == null) {
         	throw new IllegalArgumentException("You must specify a drive type");
         }
@@ -31,9 +62,9 @@ public class SetShipSettingsPacket extends ShipActionPacket {
         mDrive = drive;
         mHullId = hullId;
         mName = name;
-    }
+	}
 
-    @Override
+	@Override
     public void write(PacketWriter writer) throws IOException {
     	writer	.start(TYPE)
     			.writeInt(TYPE_SHIP_SETUP)

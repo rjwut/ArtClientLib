@@ -8,6 +8,9 @@ import net.dhleong.acl.world.Artemis;
  * @author dhleong
  */
 public class FireTubePacket extends ShipActionPacket {
+	/**
+	 * @param tube The index of the tube to fire, [0 - Artemis.MAX_TUBES)
+	 */
     public FireTubePacket(int tube) {
         super(TYPE_FIRE_TUBE, tube);
 

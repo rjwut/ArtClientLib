@@ -6,8 +6,7 @@ import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.PacketReader;
 
 /**
- * From the server to share what engines, ship types, and ship names will be
- * used.
+ * Indicates that a jump has begun or ended.
  * @author dhleong
  */
 public class JumpStatusPacket extends BaseArtemisPacket {
@@ -42,7 +41,8 @@ public class JumpStatusPacket extends BaseArtemisPacket {
     }
     
     /**
-     * Is this the countdown started packet?
+     * Returns true if the jump is starting (countdown has begun); false if the
+     * jump has ended.
      * @return
      */
     public boolean isCountdown() {

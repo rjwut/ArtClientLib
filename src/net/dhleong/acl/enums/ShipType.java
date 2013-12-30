@@ -5,7 +5,7 @@ import java.util.Arrays;
 /**
  * The default list of ship types. Note that this enumeration will only be
  * accurate if the vesselData.xml file is unchanged.
- * @author rwalker
+ * @author rjwut
  */
 public enum ShipType {
 	TSN_LIGHT_CRUISER(0, Faction.TSN, "Light Cruiser"),
@@ -41,6 +41,10 @@ public enum ShipType {
 
 	public static ShipType[] playerShips() {
 		return Arrays.copyOf(PLAYER_SHIPS, PLAYER_SHIPS.length);
+	}
+
+	public boolean isPlayerShip() {
+		return ordinal() < TSN_BASE.ordinal();
 	}
 
 	public static ShipType fromId(int id) {

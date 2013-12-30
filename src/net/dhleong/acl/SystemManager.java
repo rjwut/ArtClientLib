@@ -27,7 +27,9 @@ import net.dhleong.acl.world.ArtemisPlayer;
 import net.dhleong.acl.world.ArtemisPositionable;
 
 /**
- * 
+ * A repository of Artemis world objects. Register an instance of SystemManager
+ * with the ArtemisNetworkInterface and it will keep track of all objects as
+ * they're created, updated and destroyed.
  * @author dhleong
  */
 public class SystemManager {

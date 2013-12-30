@@ -7,6 +7,9 @@ import net.dhleong.acl.enums.MainScreenView;
  * @author dhleong
  */
 public class SetMainScreenPacket extends ShipActionPacket {
+	/**
+	 * @param screen The enum value representing the desired view
+	 */
     public SetMainScreenPacket(MainScreenView screen) {
         super(TYPE_MAINSCREEN, screen != null ? screen.ordinal() : -1);
 

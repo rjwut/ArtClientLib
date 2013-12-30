@@ -4,7 +4,7 @@ import net.dhleong.acl.enums.ConnectionType;
 
 /**
  * Provides intel on another vessel, typically as the result of a level 2 scan.
- * @author rwalker
+ * @author rjwut
  */
 public class IntelPacket extends BaseArtemisPacket {
 	public static final int TYPE = 0xee665279;
@@ -19,10 +19,16 @@ public class IntelPacket extends BaseArtemisPacket {
         mIntel = reader.readString();
     }
 
+	/**
+	 * The ID of the ship in question
+	 */
 	public int getId() {
 		return mId;
 	}
 
+	/**
+	 * The intel on that ship, as human-readable text
+	 */
 	public String getIntel() {
 		return mIntel;
 	}

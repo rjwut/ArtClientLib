@@ -18,10 +18,10 @@ public class HelmJumpPacket extends BaseArtemisPacket {
     private float mDistance;
 
     /**
-     * Initiates a jump for the indicate direction and distance.
+     * Initiates a jump for the indicated direction and distance.
      * @param bearing Bearing as a percentage of 360
-     * @param distance Distance as a percentage of the
-     *  max possible jump distance, 50K
+     * @param distance Distance as a percentage of the max possible jump
+     * 		distance, 50K
      */
     public HelmJumpPacket(float bearing, float distance) {
         super(ConnectionType.CLIENT, TYPE);

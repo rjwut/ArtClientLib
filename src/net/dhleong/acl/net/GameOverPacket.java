@@ -3,6 +3,10 @@ package net.dhleong.acl.net;
 import net.dhleong.acl.ArtemisPacketException;
 import net.dhleong.acl.enums.ConnectionType;
 
+/**
+ * Sent by the server when the game ends.
+ * @author rjwut
+ */
 public class GameOverPacket extends BaseArtemisPacket {
     public static final int TYPE = 0xf754c8fe;
     public static final int MSG_TYPE = 0x06;

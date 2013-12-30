@@ -1,5 +1,9 @@
 package net.dhleong.acl;
 
+/**
+ * Interface for objects which can connect to an Artemis server and send and
+ * receive packets.
+ */
 public interface ArtemisNetworkInterface {
 	// The main Artemis server version we're targeting
     public static final float TARGET_VERSION = 2.000f;

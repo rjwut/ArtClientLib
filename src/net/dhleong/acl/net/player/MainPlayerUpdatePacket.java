@@ -7,6 +7,11 @@ import net.dhleong.acl.net.PacketReader;
 import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.world.ArtemisPlayer;
 
+/**
+ * Provides principal updates for a player's ship. Some engineering- or
+ * weapons-oriented updates are provided by the EngPlayerUpdatePacket or
+ * WeapPlayerUpdatePacket.
+ */
 public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
     private enum Bit {
     	UNK_0,

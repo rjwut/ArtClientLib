@@ -20,7 +20,7 @@ public class HelmSetSteeringPacket extends BaseArtemisPacket {
 
     /**
      * @param steering float in [0, 1], where 0.5 is "centered" (no turning),
-     * 0 is left (hard to port), 1 is right (hard to starboard)
+     * 0.0 is left (hard to port), 1.0 is right (hard to starboard)
      */
     public HelmSetSteeringPacket(float steering) {
         super(ConnectionType.CLIENT, TYPE);

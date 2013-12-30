@@ -2,7 +2,7 @@ package net.dhleong.acl.enums;
 
 /**
  * Messages that can be sent to civilian NPCs.
- * @author rwalker 
+ * @author rjwut 
  */
 public enum AllyMessage implements CommsMessage {
 	HAIL(0, "Hail."),

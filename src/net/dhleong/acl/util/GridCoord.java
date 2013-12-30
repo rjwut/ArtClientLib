@@ -5,22 +5,31 @@ import java.util.Iterator;
 import java.util.Queue;
 
 /**
- * A 3d grid coordinate, for referencing
- *  internal systems on the Player's ship
- *  
+ * A 3d grid coordinate, for referencing internal systems on the Player's ship.
  * @author dhleong
- *
  */
 public final class GridCoord implements Comparable<GridCoord> {
     private static final int CACHE_SIZE = 50;
     private static final boolean DEBUG = false;
     private static final Queue<GridCoord> sCache = new ArrayDeque<GridCoord>(CACHE_SIZE);
-    public final int x, y, z;
+    private final int x, y, z;
 
     private GridCoord(int x, int y, int z) {
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+
+    public int getX() {
+    	return x;
+    }
+
+    public int getY() {
+    	return y;
+    }
+
+    public int getZ() {
+    	return z;
     }
 
     @Override
@@ -55,25 +64,25 @@ public final class GridCoord implements Comparable<GridCoord> {
     }
 
     /**
-     * This factory method uses a very simple LRU queue
-     *  to maintain a cache of GridCoords, since we will
-     *  probably reuse just a handful but fairly often.
-     *  This should keep our memory footprint to a minimum.
-     * 
-     * @param x
-     * @param y
-     * @param z
-     * @return
+     * This factory method uses a very simple LRU queue to maintain a cache of
+     * GridCoords, since we will probably reuse just a handful but fairly often.
+     * This should keep our memory footprint to a minimum.
      */
     public static final GridCoord getInstance(int x, int y, int z) {
         synchronized(sCache) {
             Iterator<GridCoord> iter = sCache.iterator();
+
             while (iter.hasNext()) {
                 GridCoord c = iter.next();
+
                 if (c.equals(x, y, z)) {
                     iter.remove(); // pop out so we can move it to the head
                     sCache.offer(c);
-                    if (DEBUG) System.out.println("~~ Move to head: " + c);
+
+                    if (DEBUG) {
+                    	System.out.println("~~ Move to head: " + c);
+                    }
+
                     return c;
                 }
             }
@@ -83,10 +92,14 @@ public final class GridCoord implements Comparable<GridCoord> {
 
         // put it in the queue, if there's room. 
         int size = sCache.size();
+
         if (size >= CACHE_SIZE) {
             synchronized(sCache) {
                 GridCoord old = sCache.poll(); // free up space
-                if (DEBUG) System.out.println("~~ Removed: " + old + " for " + c);
+
+                if (DEBUG) {
+                	System.out.println("~~ Removed: " + old + " for " + c);
+                }
             }
         }
 
@@ -101,23 +114,23 @@ public final class GridCoord implements Comparable<GridCoord> {
      * Return a unique long representing this coord.
      *  It's super simple, but should work since our
      *  coords tend to be 10 or less in any dimension
-     * 
-     * @return
      */
     public long getUniqueId() {
         return (x * 10000L) + (y * 100) + z;
     }
 
     /**
-     * Sorts in z order, then x, then y
+     * Sorts in z order, then x, then y.
      */
     @Override
     public int compareTo(GridCoord other) {
-        if (z != other.z)
+        if (z != other.z) {
             return z - other.z;
+        }
         
-        if (x != other.x)
+        if (x != other.x) {
             return x - other.x;
+        }
         
         return y - other.y;
     }

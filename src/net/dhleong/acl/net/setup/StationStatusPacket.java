@@ -14,11 +14,8 @@ import net.dhleong.acl.net.PacketReader;
 public class StationStatusPacket extends BaseArtemisPacket {
     public static final int TYPE = 0x19c6e2d4;
     
-    /**
-     * The number of the ship we describe, starting from 1 (Artemis).
-     */
-    public final int shipNumber;
-    public final BridgeStationStatus[] statuses;
+    private final int shipNumber;
+    private final BridgeStationStatus[] statuses;
     
     public StationStatusPacket(PacketReader reader) {
     	super(ConnectionType.SERVER, TYPE);
@@ -33,9 +30,9 @@ public class StationStatusPacket extends BaseArtemisPacket {
     }
 
     /**
-     * Get the status for a specific station
-     * @param station
-     * @return
+     * Get the status for a specific BridgeStation
+     * @param station The desired BridgeStation
+     * @return BridgeStationStatus The status of that station
      */
     public BridgeStationStatus get(BridgeStation station) {
         if (station == null) {

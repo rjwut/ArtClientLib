@@ -5,7 +5,7 @@ import java.util.Map;
 
 /**
  * Messages that can be sent to enemy NPCs.
- * @author rwalker 
+ * @author rjwut 
  */
 public enum EnemyMessage implements CommsMessage {
 	WILL_YOU_SURRENDER("Will you surrender?"),

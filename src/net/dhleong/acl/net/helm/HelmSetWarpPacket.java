@@ -8,6 +8,9 @@ import net.dhleong.acl.world.Artemis;
  * @author dhleong
  */
 public class HelmSetWarpPacket extends ShipActionPacket {
+	/**
+	 * @param warp Value between 0 (no warp) and 4 (max warp)
+	 */
     public HelmSetWarpPacket(int warp) {
         super(TYPE_WARPSPEED, warp);
 

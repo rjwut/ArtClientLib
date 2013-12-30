@@ -9,7 +9,7 @@ import net.dhleong.acl.net.PacketWriter;
 import net.dhleong.acl.world.Artemis;
 
 /**
- * Load a type of torpedo into a tube
+ * Load a type of torpedo into a tube.
  * @author dhleong
  */
 public class LoadTubePacket extends BaseArtemisPacket {
@@ -20,8 +20,8 @@ public class LoadTubePacket extends BaseArtemisPacket {
     private OrdnanceType mOrdnanceType;
 
     /**
-     * @param tube Indexed from 0
-     * @param torpedoType one of the TORP_* constants
+     * @param tube Index of tube to load, [0 - Artemis.MAX_TUBES)
+     * @param torpedoType OrdnanceType value indicating what to load
      */
     public LoadTubePacket(int tube, OrdnanceType ordnanceType) {
         super(ConnectionType.CLIENT, TYPE);

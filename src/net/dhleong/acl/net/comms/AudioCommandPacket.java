@@ -19,6 +19,10 @@ public class AudioCommandPacket extends BaseArtemisPacket {
     private int audioId;
     private Command cmd;
 
+    /**
+     * @param audioId The ID of the audio message to which the command applies
+     * @param cmd The command to issue (PLAY or DELETE)
+     */
     public AudioCommandPacket(int audioId, Command cmd) {
         super(ConnectionType.CLIENT, TYPE);
 

@@ -2,7 +2,7 @@ package net.dhleong.acl.enums;
 
 /**
  * The bridge stations.
- * @author rwalker
+ * @author rjwut
  */
 public enum BridgeStation {
 	MAIN_SCREEN("Main screen"),

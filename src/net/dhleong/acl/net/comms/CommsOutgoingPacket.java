@@ -17,6 +17,12 @@ public class CommsOutgoingPacket extends BaseArtemisPacket {
     private static final int ARG_1_PLACEHOLDER = 0x00730078;
     private static final int ARG_2_PLACEHOLDER = 0x004f005e;
 
+    /**
+     * Use this constructor for messages which do not have an argument;
+     * otherwise, an IllegalArgumentException will be thrown.
+     * @param target The message recipient
+     * @param msg The message to be sent
+     */
     public CommsOutgoingPacket(ArtemisObject target, CommsMessage msg) {
         super(ConnectionType.CLIENT, TYPE);
 
@@ -30,9 +36,13 @@ public class CommsOutgoingPacket extends BaseArtemisPacket {
     }
     
     /**
-     * Use this constructor when sending a
+     * Use this constructor for messages which have an argument; otherwise, an
+     * IllegalArgumentException will be thrown. At this writing only the
      * {@link net.dhleong.acl.enums.AllyMessage#GO_DEFEND}
-     * message; arg should be the objId of the target to be defended.
+     * message has an argument, which is the ID of the object to be defended.
+     * @param target The message recipient
+     * @param msg The message to be sent
+     * @param arg The message argument
      */
     public CommsOutgoingPacket(ArtemisObject target, CommsMessage msg,
             int arg) {

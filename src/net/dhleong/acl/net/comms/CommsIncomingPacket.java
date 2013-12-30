@@ -9,7 +9,7 @@ import net.dhleong.acl.net.PacketReader;
  */
 public class CommsIncomingPacket extends BaseArtemisPacket {
     public static final int TYPE = 0xD672C35F;
-    
+
     private final int mPriority;
     private final String mFrom;
     private final String mMessage;
@@ -29,10 +29,19 @@ public class CommsIncomingPacket extends BaseArtemisPacket {
         return mPriority;
     }
 
+    /**
+     * A String identifying the sender. This may not correspond to the name of
+     * a game entity. For example, some messages from stations or friendly ships
+     * have additional detail after the entity's name ("DS3 TSN Base"). Messages
+     * in scripted scenarios can have any String for the sender.
+     */
     public String getFrom() {
         return mFrom;
     }
-    
+
+    /**
+     * The content of the message.
+     */
     public String getMessage() {
         return mMessage;
     }

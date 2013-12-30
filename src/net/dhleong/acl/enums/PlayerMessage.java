@@ -2,7 +2,7 @@ package net.dhleong.acl.enums;
 
 /**
  * Messages that can be sent to other players.
- * @author rwalker
+ * @author rjwut
  */
 public enum PlayerMessage implements CommsMessage {
 	YES("Yes."),

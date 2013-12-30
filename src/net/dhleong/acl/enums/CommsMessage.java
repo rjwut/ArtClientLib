@@ -2,7 +2,7 @@ package net.dhleong.acl.enums;
 
 /**
  * All messages that can be sent over COMMs implement this interface.
- * @author rwalker
+ * @author rjwut
  */
 public interface CommsMessage {
 	/**

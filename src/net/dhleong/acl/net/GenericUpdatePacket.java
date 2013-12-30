@@ -12,7 +12,6 @@ import net.dhleong.acl.world.ArtemisPositionable;
 /**
  * Update/create ArtemisGenericObjects
  * @author dhleong
- *
  */
 public class GenericUpdatePacket extends BaseArtemisPacket implements ObjectUpdatingPacket {
 	private enum Bit {
@@ -26,7 +25,7 @@ public class GenericUpdatePacket extends BaseArtemisPacket implements ObjectUpda
     	UNK_3
     }
 
-    public final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
+    private final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
 
     public GenericUpdatePacket(PacketReader reader) {
     	super(ConnectionType.SERVER, WORLD_TYPE);

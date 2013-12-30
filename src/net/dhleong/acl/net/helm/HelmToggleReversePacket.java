@@ -3,7 +3,7 @@ package net.dhleong.acl.net.helm;
 import net.dhleong.acl.net.ShipActionPacket;
 
 /**
- * Toggle reverse thrusters (or whatever)
+ * Toggles reverse engines.
  * @author dhleong
  */
 public class HelmToggleReversePacket extends ShipActionPacket {

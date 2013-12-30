@@ -1,6 +1,5 @@
 package net.dhleong.acl.net;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +7,9 @@ import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.world.ArtemisPositionable;
 import net.dhleong.acl.world.ArtemisStation;
 
+/**
+ * Provides updates for space stations.
+ */
 public class StationPacket extends BaseArtemisPacket implements ObjectUpdatingPacket {
 	private enum Bit {
 		NAME,
@@ -73,17 +75,6 @@ public class StationPacket extends BaseArtemisPacket implements ObjectUpdatingPa
             station.setUnknownFields(reader.getUnknownObjectFields());
             mObjects.add(station);
         }
-    }
-
-    public List<ArtemisPositionable> getCreatedObjects() {
-        return mObjects;
-    }
-
-    @Override
-    public void write(PacketWriter writer) throws IOException {
-    	throw new UnsupportedOperationException(
-    			getClass().getSimpleName() + " does not support write()"
-    	);
     }
 
 	@Override

@@ -70,6 +70,7 @@ public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectU
 
     public MainPlayerUpdatePacket(PacketReader reader) {
     	super(ConnectionType.SERVER, WORLD_TYPE);
+
     	while (reader.hasMore()) {
     		reader.startObject(Bit.values());
     		reader.readObjectUnknown(Bit.UNK_1_1, 4);
@@ -121,7 +122,7 @@ public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectU
             }
 
             // total available coolant?
-            byte availableCoolant = reader.readByte(Bit.AVAILABLE_COOLANT, (byte) -1); // MUST
+            byte availableCoolant = reader.readByte(Bit.AVAILABLE_COOLANT, (byte) -1);
             int scanTarget = reader.readInt(Bit.SCIENCE_TARGET, -1); // 1 means no target
             int captainTarget = reader.readInt(Bit.CAPTAIN_TARGET, -1);
             byte driveType = reader.readByte(Bit.DRIVE_TYPE, (byte) -1);
@@ -130,7 +131,7 @@ public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectU
             BoolState mReverse = reader.readBool(Bit.REVERSE_STATE, 1);
 
             reader.readObjectUnknown(Bit.UNK_5_5, 4);
-            reader.readObjectUnknown(Bit.UNK_5_6, 4);
+            reader.readObjectUnknown(Bit.UNK_5_6, 1);
             reader.readObjectUnknown(Bit.UNK_5_7, 4);
 
             ArtemisPlayer player = new ArtemisPlayer(

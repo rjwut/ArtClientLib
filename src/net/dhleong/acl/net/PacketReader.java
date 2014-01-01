@@ -62,11 +62,6 @@ public class PacketReader {
 	 */
 	public PacketReader(InputStream in) {
 		this.in = in;
-
-		if (Util.debug) {
-			unknownProps = new TreeMap<String, byte[]>();
-			unknownObjectProps = new TreeMap<String, byte[]>();
-		}
 	}
 
 	/**
@@ -88,9 +83,9 @@ public class PacketReader {
 		objectId = 0;
 		bitField = null;
 
-		if (unknownProps != null) {
-			unknownProps.clear();
-			unknownObjectProps.clear();
+		if (Util.debug) {
+			unknownProps = new TreeMap<String, byte[]>();
+			unknownObjectProps = new TreeMap<String, byte[]>();
 		}
 
 		// header (0xdeadbeef)
@@ -538,8 +533,8 @@ public class PacketReader {
 			bitField = null;
 		}
 
-		if (unknownObjectProps != null) {
-			unknownObjectProps.clear();
+		if (Util.debug) {
+			unknownObjectProps = new TreeMap<String, byte[]>();
 		}
 	}
 

@@ -463,37 +463,40 @@ public class PacketReader {
 	}
 
 	/**
-	 * Reads the given number of bytes from the current packet's payload and
-	 * puts them in the unknown property map with the indicated name. This
-	 * method only works if Util.debug = true; otherwise, nothing happens.
+	 * If Util.debug = true, this method reads the given number of bytes from
+	 * the current packet's payload and puts them in the unknown property map
+	 * with the indicated name. Otherwise, the bytes are read off and discarded.
 	 */
 	public void readUnknown(String name, int byteCount) {
 		if (unknownProps != null) {
 			unknownProps.put(name, readBytes(byteCount));
+		} else {
+			offset += byteCount;
 		}
 	}
 
 	/**
-	 * Reads the given number of bytes from the current packet's payload and
-	 * puts them in the unknown object property map with the indicated name.
-	 * This method only works if Util.debug = true; otherwise, nothing happens.
+	 * If Util.debug = true, this method reads the given number of bytes from
+	 * the current packet's payload and puts them in the unknown object property
+	 * map with the indicated name. Otherwise, the bytes are read off and
+	 * discarded.
 	 */
 	public void readObjectUnknown(String name, int byteCount) {
 		if (unknownObjectProps != null) {
 			unknownObjectProps.put(name, readBytes(byteCount));
+		} else {
+			offset += byteCount;
 		}
 	}
 
 	/**
-	 * Reads the given number of bytes from the current packet's payload if the
-	 * indicated bit in the current BitField is on, and puts them in the unknown
-	 * object property map under the name of the indicated bit. Otherwise, the
-	 * pointer is not moved, and nothing is put into the map. This method only
-	 * works if Util.debug = true; otherwise, nothing happens.
+	 * if the indicated bit in the current BitField is off, this method returns
+	 * without doing anything. Otherwise, it acts as a convenience method for
+	 * readObjectUnknown(bit.name(), byteCount).
 	 */
 	public void readObjectUnknown(Enum<?> bit, int byteCount) {
-		if (unknownObjectProps != null && bitField.get(bit)) {
-			unknownObjectProps.put(bit.name(), readBytes(byteCount));
+		if (bitField.get(bit)) {
+			readObjectUnknown(bit.name(), byteCount);
 		}
 	}
 

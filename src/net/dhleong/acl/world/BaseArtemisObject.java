@@ -209,7 +209,10 @@ public abstract class BaseArtemisObject implements ArtemisObject {
     	putProp(props, "X", mX, Float.MIN_VALUE, includeUnspecified);
     	putProp(props, "Y", mY, Float.MIN_VALUE, includeUnspecified);
     	putProp(props, "Z", mZ, Float.MIN_VALUE, includeUnspecified);
-    	props.putAll(unknownProps);
+
+    	if (unknownProps != null) {
+        	props.putAll(unknownProps);
+    	}
     }
 
     @Override

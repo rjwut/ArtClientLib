@@ -40,14 +40,7 @@ public class StationPacket extends BaseArtemisPacket implements ObjectUpdatingPa
 
         while (reader.hasMore()) {
             reader.startObject(Bit.values());
-            
-            try {
-                name = reader.readString(Bit.NAME);
-            } catch (StringIndexOutOfBoundsException e) {
-                System.out.println("DEBUG: Packet = " + this);
-                throw e;
-            }
-
+            name = reader.readString(Bit.NAME);
             shieldsFront = reader.readFloat(Bit.FORE_SHIELDS, -1);
             shieldsRear = reader.readFloat(Bit.AFT_SHIELDS, -1);
 

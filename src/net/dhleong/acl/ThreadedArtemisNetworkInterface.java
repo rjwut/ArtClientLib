@@ -24,6 +24,7 @@ import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.ReadyPacket2;
 import net.dhleong.acl.net.setup.VersionPacket;
 import net.dhleong.acl.net.setup.WelcomePacket;
+import net.dhleong.acl.util.TextUtil;
 import net.dhleong.acl.util.Util;
 
 /**
@@ -204,10 +205,24 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                 } catch (final ArtemisPacketException e) {
                     // TODO ?
                     if (mRunning) {
-                        System.err.println("Exitting due to parseException");
+                    	int packetType = e.getPacketType();
+                    	System.err.println("### PACKET PARSE EXCEPTION! ###");
+
+                    	if (packetType != 0) {
+                    		System.err.println("Packet type: " + packetType);
+
+                    		byte[] payload = e.getPayload();
+
+                    		if (payload != null) {
+                    			System.err.println("    Payload: " + TextUtil.byteArrayToHexString(payload));
+                    		}
+                    	}
+
                         e.printStackTrace();
                         mInterface.errorCode = OnConnectedListener.ERROR_PARSE;
+                        end();
                     }
+
                     break;
                 }
             }

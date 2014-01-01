@@ -167,10 +167,16 @@ public class PacketReader {
 				throw new EOFException("Stream is closed");
 			}
 		} catch (IOException ex) {
-			throw new ArtemisPacketException(ex);
+			throw new ArtemisPacketException(ex, packetType);
 		}
 
-		return buildPacket(packetType);
+		try {
+			return buildPacket(packetType);
+		} catch (ArtemisPacketException ex) {
+			throw new ArtemisPacketException(ex, packetType, payload);
+		} catch (RuntimeException ex) {
+			throw new ArtemisPacketException(ex, packetType, payload);
+		}
 	}
 
 	/**

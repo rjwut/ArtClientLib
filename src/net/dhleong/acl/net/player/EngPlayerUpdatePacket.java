@@ -53,36 +53,30 @@ public class EngPlayerUpdatePacket extends PlayerUpdatePacket {
 	}
 
     public EngPlayerUpdatePacket(PacketReader reader) {
-        try {
-            float[] heat = new float[ Artemis.SYSTEM_COUNT ];
-            float[] sysEnergy = new float[ Artemis.SYSTEM_COUNT ];
-            int[] coolant = new int[ Artemis.SYSTEM_COUNT ];
-            reader.startObject(Bit.values());
+        float[] heat = new float[ Artemis.SYSTEM_COUNT ];
+        float[] sysEnergy = new float[ Artemis.SYSTEM_COUNT ];
+        int[] coolant = new int[ Artemis.SYSTEM_COUNT ];
+        reader.startObject(Bit.values());
+    
+        for (int i = 0; i < Artemis.SYSTEM_COUNT; i++) {
+            heat[i] = reader.readFloat(HEAT[i], -1);
+        }
+
+        for (int i = 0; i < Artemis.SYSTEM_COUNT; i++) {
+            sysEnergy[i] = reader.readFloat(ENERGY[i], -1);
+        }
+
+        for (int i = 0; i < Artemis.SYSTEM_COUNT; i++) {
+            coolant[i] = reader.readByte(COOLANT[i], (byte) -1);
+        }
         
-            for (int i = 0; i < Artemis.SYSTEM_COUNT; i++) {
-                heat[i] = reader.readFloat(HEAT[i], -1);
-            }
-
-            for (int i = 0; i < Artemis.SYSTEM_COUNT; i++) {
-                sysEnergy[i] = reader.readFloat(ENERGY[i], -1);
-            }
-
-            for (int i = 0; i < Artemis.SYSTEM_COUNT; i++) {
-                coolant[i] = reader.readByte(COOLANT[i], (byte) -1);
-            }
-            
-            mPlayer = new ArtemisPlayer(reader.getObjectId());
-            
-            for (int i = 0; i < Artemis.SYSTEM_COUNT; i++) {
-                ShipSystem sys = ShipSystem.values()[i];
-                mPlayer.setSystemHeat(sys, heat[i]);
-                mPlayer.setSystemEnergy(sys, sysEnergy[i]);
-                mPlayer.setSystemCoolant(sys, coolant[i]);
-            }
-        } catch (RuntimeException e) {
-            System.out.println("!!! Error!");
-            System.out.println("this -->" + this);
-            throw e;
+        mPlayer = new ArtemisPlayer(reader.getObjectId());
+        
+        for (int i = 0; i < Artemis.SYSTEM_COUNT; i++) {
+            ShipSystem sys = ShipSystem.values()[i];
+            mPlayer.setSystemHeat(sys, heat[i]);
+            mPlayer.setSystemEnergy(sys, sysEnergy[i]);
+            mPlayer.setSystemCoolant(sys, coolant[i]);
         }
     }
 

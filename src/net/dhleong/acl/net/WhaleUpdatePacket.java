@@ -33,44 +33,38 @@ public class WhaleUpdatePacket extends BaseArtemisPacket implements ObjectUpdati
 
     public WhaleUpdatePacket(PacketReader reader) {
     	super(ConnectionType.SERVER, WORLD_TYPE);
+        float x, y, z, bearing;
+        String name;
+        
+        while (reader.hasMore()) {
+            reader.startObject(Bit.values());
+            name = reader.readString(Bit.NAME);
 
-    	try {
-            float x, y, z, bearing;
-            String name;
+            reader.readObjectUnknown(Bit.UNK_0, 4);
+            reader.readObjectUnknown(Bit.UNK_1, 4);
             
-            while (reader.hasMore()) {
-                reader.startObject(Bit.values());
-                name = reader.readString(Bit.NAME);
+            x = reader.readFloat(Bit.X, Float.MIN_VALUE);
+            y = reader.readFloat(Bit.Y, Float.MIN_VALUE);
+            z = reader.readFloat(Bit.Z, Float.MIN_VALUE);
+            
+            reader.readObjectUnknown(Bit.UNK_2, 4);
+            reader.readObjectUnknown(Bit.UNK_3, 4);
 
-                reader.readObjectUnknown(Bit.UNK_0, 4);
-                reader.readObjectUnknown(Bit.UNK_1, 4);
-                
-                x = reader.readFloat(Bit.X, Float.MIN_VALUE);
-                y = reader.readFloat(Bit.Y, Float.MIN_VALUE);
-                z = reader.readFloat(Bit.Z, Float.MIN_VALUE);
-                
-                reader.readObjectUnknown(Bit.UNK_2, 4);
-                reader.readObjectUnknown(Bit.UNK_3, 4);
+            bearing = reader.readFloat(Bit.HEADING, Float.MIN_VALUE);
 
-                bearing = reader.readFloat(Bit.HEADING, Float.MIN_VALUE);
-
-                reader.readObjectUnknown(Bit.UNK_4, 4);
-                reader.readObjectUnknown(Bit.UNK_5, 4);
-                reader.readObjectUnknown(Bit.UNK_6, 4);
-                reader.readObjectUnknown(Bit.UNK_7, 4);
-                
-                final ArtemisWhale obj = new ArtemisWhale(reader.getObjectId(),
-                		name);
-                obj.setX(x);
-                obj.setY(y);
-                obj.setZ(z);
-                obj.setBearing(bearing);
-                obj.setUnknownProps(reader.getUnknownObjectProps());
-                mObjects.add(obj);
-            }
-        } catch (RuntimeException e) {
-            System.out.println("--> " + this);
-            throw e;
+            reader.readObjectUnknown(Bit.UNK_4, 4);
+            reader.readObjectUnknown(Bit.UNK_5, 4);
+            reader.readObjectUnknown(Bit.UNK_6, 4);
+            reader.readObjectUnknown(Bit.UNK_7, 4);
+            
+            final ArtemisWhale obj = new ArtemisWhale(reader.getObjectId(),
+            		name);
+            obj.setX(x);
+            obj.setY(y);
+            obj.setZ(z);
+            obj.setBearing(bearing);
+            obj.setUnknownProps(reader.getUnknownObjectProps());
+            mObjects.add(obj);
         }
     }
 

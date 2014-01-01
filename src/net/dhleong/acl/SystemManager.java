@@ -140,7 +140,7 @@ public class SystemManager {
 
     @SuppressWarnings("unused")
     private boolean updateOrCreate(ArtemisObject o) {
-        ArtemisObject p = (ArtemisObject) mObjects.get(o.getId());
+        ArtemisObject p = mObjects.get(o.getId());
 
         if (p != null) {
             p.updateFrom(o);
@@ -187,8 +187,7 @@ public class SystemManager {
     public synchronized void getAllSelectable(List<ArtemisObject> dest) {
         for (ArtemisObject obj : mObjects.values()) {
             // tentative
-            if (!(obj instanceof ArtemisGenericObject) 
-                    && obj instanceof ArtemisObject) {
+            if (!(obj instanceof ArtemisGenericObject)) {
                 dest.add(obj);
             }
         }

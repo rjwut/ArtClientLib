@@ -29,46 +29,40 @@ public class GenericUpdatePacket extends BaseArtemisPacket implements ObjectUpda
 
     public GenericUpdatePacket(PacketReader reader) {
     	super(ConnectionType.SERVER, WORLD_TYPE);
+        float x, y, z;
+        String name;
+        
+        while (reader.hasMore()) {
+            reader.startObject(Bit.values());
+            ObjectType type = reader.getObjectType();
 
-    	try {
-            float x, y, z;
-            String name;
-            
-            while (reader.hasMore()) {
-                reader.startObject(Bit.values());
-                ObjectType type = reader.getObjectType();
-
-            	if (type == ObjectType.TORPEDO) {
-                    reader.readObjectUnknown("UNK_TORPEDO", 1);
-                }
-
-                x = reader.readFloat(Bit.X, Float.MIN_VALUE);
-                y = reader.readFloat(Bit.Y, Float.MIN_VALUE);
-                z = reader.readFloat(Bit.Z, Float.MIN_VALUE);
-
-                if (type.isNamed()) {
-                    name = reader.readString(Bit.NAME);
-                } else {
-                    name = null;
-                    reader.readInt(Bit.NAME);
-                }
-
-                reader.readObjectUnknown(Bit.UNK_0, 4);
-                reader.readObjectUnknown(Bit.UNK_1, 4);
-                reader.readObjectUnknown(Bit.UNK_2, 4);
-                reader.readObjectUnknown(Bit.UNK_3, 4);
-                
-                final ArtemisGenericObject obj = new ArtemisGenericObject(
-                		reader.getObjectId(), name, type);
-                obj.setX(x);
-                obj.setY(y);
-                obj.setZ(z);
-                obj.setUnknownProps(reader.getUnknownObjectProps());
-                mObjects.add(obj);
+        	if (type == ObjectType.TORPEDO) {
+                reader.readObjectUnknown("UNK_TORPEDO", 1);
             }
-        } catch (RuntimeException e) {
-            System.out.println("--> " + this);
-            throw e;
+
+            x = reader.readFloat(Bit.X, Float.MIN_VALUE);
+            y = reader.readFloat(Bit.Y, Float.MIN_VALUE);
+            z = reader.readFloat(Bit.Z, Float.MIN_VALUE);
+
+            if (type.isNamed()) {
+                name = reader.readString(Bit.NAME);
+            } else {
+                name = null;
+                reader.readInt(Bit.NAME);
+            }
+
+            reader.readObjectUnknown(Bit.UNK_0, 4);
+            reader.readObjectUnknown(Bit.UNK_1, 4);
+            reader.readObjectUnknown(Bit.UNK_2, 4);
+            reader.readObjectUnknown(Bit.UNK_3, 4);
+            
+            final ArtemisGenericObject obj = new ArtemisGenericObject(
+            		reader.getObjectId(), name, type);
+            obj.setX(x);
+            obj.setY(y);
+            obj.setZ(z);
+            obj.setUnknownProps(reader.getUnknownObjectProps());
+            mObjects.add(obj);
         }
     }
 

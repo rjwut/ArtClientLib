@@ -1,10 +1,17 @@
 package net.dhleong.acl.net.player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.dhleong.acl.enums.BeamFrequency;
+import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.enums.DriveType;
 import net.dhleong.acl.enums.MainScreenView;
+import net.dhleong.acl.net.BaseArtemisPacket;
+import net.dhleong.acl.net.ObjectUpdatingPacket;
 import net.dhleong.acl.net.PacketReader;
 import net.dhleong.acl.util.BoolState;
+import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisPlayer;
 
 /**
@@ -12,9 +19,9 @@ import net.dhleong.acl.world.ArtemisPlayer;
  * weapons-oriented updates are provided by the EngPlayerUpdatePacket or
  * WeapPlayerUpdatePacket.
  */
-public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
+public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectUpdatingPacket {
     private enum Bit {
-    	UNK_0,
+    	UNK_1_1,
     	IMPULSE,
     	RUDDER,
     	TOP_SPEED,
@@ -29,12 +36,12 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
     	X,
     	Y,
     	Z,
-    	UNK_3,
-    	UNK_4,
+    	UNK_2_7,
+    	UNK_2_8,
 
     	HEADING,
     	VELOCITY,
-    	UNK_5,
+    	UNK_3_3,
     	NAME,
     	FORE_SHIELDS,
     	FORE_SHIELDS_MAX,
@@ -43,22 +50,29 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
 
     	DOCKING_STATION,
     	RED_ALERT,
-    	UNK_6,
+    	UNK_4_3,
     	MAIN_SCREEN,
     	BEAM_FREQUENCY,
     	AVAILABLE_COOLANT,
     	SCIENCE_TARGET,
     	CAPTAIN_TARGET,
+
     	DRIVE_TYPE,
     	SCAN_OBJECT_ID,
     	SCAN_PROGRESS,
-    	REVERSE_STATE
+    	REVERSE_STATE,
+    	UNK_5_5,
+    	UNK_5_6,
+    	UNK_5_7
     }
 
+    private final List<ArtemisObject> mObjects = new ArrayList<ArtemisObject>();
+
     public MainPlayerUpdatePacket(PacketReader reader) {
-        try {
+    	super(ConnectionType.SERVER, WORLD_TYPE);
+    	while (reader.hasMore()) {
     		reader.startObject(Bit.values());
-    		reader.readObjectUnknown(Bit.UNK_0, 4);
+    		reader.readObjectUnknown(Bit.UNK_1_1, 4);
 
     		float impulseSlider = reader.readFloat(Bit.IMPULSE, -1); 
             float steeringSlider = reader.readFloat(Bit.RUDDER, -1);
@@ -74,13 +88,13 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
             float y = reader.readFloat(Bit.Y, Float.MIN_VALUE);
             float z = reader.readFloat(Bit.Z, Float.MIN_VALUE);
 
-            reader.readObjectUnknown(Bit.UNK_3, 4);
-            reader.readObjectUnknown(Bit.UNK_4, 4);
+            reader.readObjectUnknown(Bit.UNK_2_7, 4);
+            reader.readObjectUnknown(Bit.UNK_2_8, 4);
 
             float heading = reader.readFloat(Bit.HEADING, Float.MIN_VALUE);
             float velocity = reader.readFloat(Bit.VELOCITY, -1);
 
-            reader.readObjectUnknown(Bit.UNK_5, 2);
+            reader.readObjectUnknown(Bit.UNK_3_3, 2);
 
             String name = reader.readString(Bit.NAME);
             float shieldsFront = reader.readFloat(Bit.FORE_SHIELDS, Float.MIN_VALUE);
@@ -90,7 +104,7 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
             int dockingStation = reader.readInt(Bit.DOCKING_STATION, -1);
             BoolState redAlert = reader.readBool(Bit.RED_ALERT, 1);
 
-            reader.readObjectUnknown(Bit.UNK_6, 4);
+            reader.readObjectUnknown(Bit.UNK_4_3, 4);
 
             MainScreenView mainScreen;
 
@@ -115,48 +129,56 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
             float scanProgress = reader.readFloat(Bit.SCAN_PROGRESS, -1);
             BoolState mReverse = reader.readBool(Bit.REVERSE_STATE, 1);
 
-            mPlayer = new ArtemisPlayer(
+            reader.readObjectUnknown(Bit.UNK_5_5, 4);
+            reader.readObjectUnknown(Bit.UNK_5_6, 4);
+            reader.readObjectUnknown(Bit.UNK_5_7, 4);
+
+            ArtemisPlayer player = new ArtemisPlayer(
             		reader.getObjectId(), name, hullId, shipNumber,
             		redAlert, shields
             );
-            mPlayer.setTopSpeed(topSpeed);
-            mPlayer.setTurnRate(turnRate);
-            mPlayer.setAutoBeams(mAutoBeams);
-            mPlayer.setWarp(warp);
-            mPlayer.setImpulse(impulseSlider);
-            mPlayer.setSteering(steeringSlider);
-            mPlayer.setX(x);
-            mPlayer.setY(y);
-            mPlayer.setZ(z);
-            mPlayer.setBearing(heading);
-            mPlayer.setVelocity(velocity);
-            mPlayer.setEnergy(energy);
-            mPlayer.setDockingStation(dockingStation);
-            mPlayer.setMainScreen(mainScreen);
-            mPlayer.setBeamFrequency(beamFreq);
-            mPlayer.setAvailableCoolant(availableCoolant);
-            mPlayer.setScienceTarget(scanTarget);
-            mPlayer.setCaptainTarget(captainTarget);
-            mPlayer.setScanObjectId(scanningId);
-            mPlayer.setScanProgress(scanProgress);
-            mPlayer.setShieldsFront(shieldsFront);
-            mPlayer.setShieldsFrontMax(shieldsFrontMax);
-            mPlayer.setShieldsRear(shieldsRear);
-            mPlayer.setShieldsRearMax(shieldsRearMax);
-            mPlayer.setDriveType(driveType == -1
+            player.setTopSpeed(topSpeed);
+            player.setTurnRate(turnRate);
+            player.setAutoBeams(mAutoBeams);
+            player.setWarp(warp);
+            player.setImpulse(impulseSlider);
+            player.setSteering(steeringSlider);
+            player.setX(x);
+            player.setY(y);
+            player.setZ(z);
+            player.setBearing(heading);
+            player.setVelocity(velocity);
+            player.setEnergy(energy);
+            player.setDockingStation(dockingStation);
+            player.setMainScreen(mainScreen);
+            player.setBeamFrequency(beamFreq);
+            player.setAvailableCoolant(availableCoolant);
+            player.setScienceTarget(scanTarget);
+            player.setCaptainTarget(captainTarget);
+            player.setScanObjectId(scanningId);
+            player.setScanProgress(scanProgress);
+            player.setShieldsFront(shieldsFront);
+            player.setShieldsFrontMax(shieldsFrontMax);
+            player.setShieldsRear(shieldsRear);
+            player.setShieldsRearMax(shieldsRearMax);
+            player.setDriveType(driveType == -1
                     ? null
                     : DriveType.values()[driveType]);
-            mPlayer.setReverse(mReverse);
-            mPlayer.setUnknownProps(reader.getUnknownObjectProps());
-        } catch (RuntimeException e) {
-            System.out.println("!!! Error!");
-            System.out.println("this -->" + this);
-            throw e;
-        }
+            player.setReverse(mReverse);
+            player.setUnknownProps(reader.getUnknownObjectProps());
+            mObjects.add(player);
+    	}
+    }
+
+    @Override
+    public List<ArtemisObject> getObjects() {
+        return mObjects;
     }
 
 	@Override
 	protected void appendPacketDetail(StringBuilder b) {
-		b.append(mPlayer);
+		for (ArtemisObject obj : mObjects) {
+			b.append("\nObject #").append(obj.getId()).append(obj);
+		}
 	}
 }

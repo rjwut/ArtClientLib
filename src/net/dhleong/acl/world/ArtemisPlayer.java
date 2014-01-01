@@ -12,10 +12,8 @@ import net.dhleong.acl.enums.ShipSystem;
 import net.dhleong.acl.util.BoolState;
 
 /**
- * A player ship
- * 
+ * A player ship.
  * @author dhleong
- *
  */
 public class ArtemisPlayer extends BaseArtemisShip {
     /** constant result of getTubeContents(), means NOTHING */
@@ -33,7 +31,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
     private final float[] mTubeTimes = new float[Artemis.MAX_TUBES]; 
     private final int[] mTubeTypes = new int[Artemis.MAX_TUBES];
     private float mEnergy = -1;
-    private int mDockingStation = 0;
+    private int mDockingStation = -1;
     private MainScreenView mMainScreen;
     private int mAvailableCoolant = -1;
     private float mImpulse = -1;
@@ -41,36 +39,30 @@ public class ArtemisPlayer extends BaseArtemisShip {
     private BeamFrequency mBeamFreq;
     private DriveType mDriveType;
     private BoolState mReverse;
-    private int mScanTarget = -1;
+    private int mScienceTarget = -1;
     private float mScanProgress = -1;
     private int mCaptainTarget = -1;
-    private int mScanningId = 0;
+    private int mScanningId = -1;
     
     /**
      * Special constructor for a very incomplete ArtemisPlayer
      * @param objId
      */
     public ArtemisPlayer(int objId) {
-        this(objId, null, -1, -1, BoolState.UNKNOWN, BoolState.UNKNOWN); // ?
-        setSteering(Float.MIN_VALUE);
-        setBearing(Float.MIN_VALUE);
-        setVelocity(Float.MIN_VALUE);
-        setHullId(-1);
+        this(objId, null, -1, -1, BoolState.UNKNOWN, BoolState.UNKNOWN);
     }
 
     /**
-     * 
      * @param objId
      * @param name
      * @param hullId
-     * @param shipNumber The number [1,6] of the ship,
+     * @param shipNumber The number [1,Artemis.SHIP_COUNT] of the ship,
      *  as found in the packet. NOT the ship index!
      * @param redAlert
      */
-    public ArtemisPlayer(int objId, String name, int hullId, 
-            int shipNumber, BoolState redAlert, BoolState shields) {
+    public ArtemisPlayer(int objId, String name, int hullId, int shipNumber,
+    		BoolState redAlert, BoolState shields) {
         super(objId, name, hullId);
-        
         mRedAlert = redAlert;
         mShields = shields;
         mShipNumber = shipNumber;
@@ -86,73 +78,40 @@ public class ArtemisPlayer extends BaseArtemisShip {
         Arrays.fill(mTubeTypes, TUBE_UNKNOWN);
         Arrays.fill(mTubeTimes, -1);
     }
-    
 
-    public float getEnergy() {
-        return mEnergy;
-    }
-    
-    /**
-     * Get coolant setting for a system, if we have it
-     * @param sys
-     * @return The setting as an int [0, 8], or -1 if we don't know
-     */
-    public int getSystemCoolant(ShipSystem sys) {
-//        return mCoolant.containsKey(sys)
-//                ? mCoolant.get(sys)
-//                : -1;
-        return mCoolant[sys.ordinal()];
-    }
-
-    /**
-     * Get this ship's player ship index. This
-     *  is NOT the displayed number, but the INDEX
-     *  (used in SystemManager#getPlayerShip) 
-     * @return int in [0,5], or -1 if undefined
-     */
-    public int getShipIndex() {
-        return mShipNumber == -1 ? -1 : mShipNumber-1;
-    }
-    
-    /**
-     * Get the energy setting for a system, if we have it
-     * @param sys
-     * @return The setting as a float [0, 1] where 1f == 300%,
-     *  or -1 if we don't know
-     */
-    public float getSystemEnergy(ShipSystem sys) {
-//        return mSystems.containsKey(sys) 
-//                ? mSystems.get(sys) 
-//                : -1f;
-        return mSystems[sys.ordinal()];
-    }
-    
-    public float getSystemHeat(ShipSystem sys) {
-//      return mSystems.containsKey(sys) 
-//              ? mSystems.get(sys) 
-//              : -1f;
-      return mHeat[sys.ordinal()];
-  }
-    
     @Override
     public ObjectType getType() {
         return ObjectType.PLAYER_SHIP;
     }
     
-    public boolean hasShieldsActive() {
-        return mShields == BoolState.TRUE;
+    /**
+     * The ship's energy reserves.
+     * Unspecified: -1
+     */
+    public float getEnergy() {
+        return mEnergy;
     }
 
-    public boolean isRedAlert() {
-        return mRedAlert == BoolState.TRUE;
+    public void setEnergy(float energy) {
+        mEnergy = energy;
     }
 
-    public void setRedAlert(boolean newState) {
-        mRedAlert = BoolState.from(newState);
+    /**
+     * Get this ship's player ship index. This is NOT the displayed number, but
+     * the INDEX (used in SystemManager#getPlayerShip).
+     * Unspecified: -1
+     * @return int in [0,Artemis.SHIP_COUNT), or -1 if undefined
+     */
+    public int getShipIndex() {
+        return mShipNumber == -1 ? -1 : mShipNumber - 1;
     }
-
-    public void setShields(boolean newState) {
-        mShields = BoolState.from(newState);
+    
+    /**
+     * The amount of coolant allocated to the given system.
+     * Unspecified: -1
+     */
+    public int getSystemCoolant(ShipSystem sys) {
+        return mCoolant[sys.ordinal()];
     }
 
     public void setSystemCoolant(ShipSystem sys, int coolant) {
@@ -160,12 +119,12 @@ public class ArtemisPlayer extends BaseArtemisShip {
     }
     
     /**
-     * Convenience, set energy as an int percentage [0, 300]
-     * @param sys
-     * @param energyPercentage
+     * The energy allocation level for a system, as a value between 0 (no energy
+     * allocated) and 1 (maximum energy allocated).
+     * Unspecified: -1
      */
-    public void setSystemEnergy(ShipSystem sys, int energyPercentage) {
-        setSystemEnergy(sys, energyPercentage / (float) Artemis.MAX_ENERGY_ALLOCATION_PERCENT);
+    public float getSystemEnergy(ShipSystem sys) {
+        return mSystems[sys.ordinal()];
     }
 
     public void setSystemEnergy(ShipSystem sys, float energy) {
@@ -175,30 +134,68 @@ public class ArtemisPlayer extends BaseArtemisShip {
         mSystems[sys.ordinal()] = energy;
     }
 
+    /**
+     * Convenience, set energy as an int percentage [0, 300]
+     */
+    public void setSystemEnergy(ShipSystem sys, int energyPercentage) {
+        setSystemEnergy(sys, energyPercentage / (float) Artemis.MAX_ENERGY_ALLOCATION_PERCENT);
+    }
+
+    /**
+     * The heat level for a system.
+     * Unspecified: -1
+     */
+    public float getSystemHeat(ShipSystem sys) {
+    	return mHeat[sys.ordinal()];
+    }
+
     public void setSystemHeat(ShipSystem sys, float heat) {
         mHeat[sys.ordinal()] = heat;
     }
 
+    /**
+     * Whether the shields are up or not.
+     */
+    public BoolState getShieldsState() {
+        return mShields;
+    }
 
-    public void setShipEnergy(float energy) {
-        mEnergy = energy;
+    public void setShields(boolean newState) {
+        mShields = BoolState.from(newState);
     }
 
     /**
-     * Get the ID of the station at which we're docking
-     * @return The station's ID, or 0 if not docking
+     * Whether or not we're at red alert.
+     */
+    public BoolState getRedAlertState() {
+        return mRedAlert;
+    }
+
+    public void setRedAlert(boolean newState) {
+        mRedAlert = BoolState.from(newState);
+    }
+
+    /**
+     * Get the ID of the station at which we're docking. Note that this property
+     * is only updated in a packet when the docking process commences; undocking
+     * does not update this property. However, if an existing ArtemisPlayer
+     * object is docked, is updated by another one, and the update has the ship
+     * engaging impulse or warp drive, this property will be set to 0 to
+     * indicate that the ship has undocked.
+     * Unspecified: -1
      */
     public int getDockingStation() {
         return mDockingStation;
     }
 
-    /**
-     * set 0 to indicate not docked
-     */
     public void setDockingStation(int stationId) {
         mDockingStation = stationId;
     }
 
+    /**
+     * The number of torpedoes of the given type in the ship's stores.
+     * Unspecified: -1
+     */
     public int getTorpedoCount(OrdnanceType type) {
         return mTorpedos[type.ordinal()];
     }
@@ -206,9 +203,207 @@ public class ArtemisPlayer extends BaseArtemisShip {
     public void setTorpedoCount(int torpType, int count) {
         mTorpedos[torpType] = count;
     }
+
+    /**
+     * Whether or not the ship's impulse drive is in reverse.
+     */
+    public BoolState getReverseState() {
+        return mReverse;
+    }
+
+    public void setReverse(BoolState reverse) {
+        mReverse = reverse;
+    }
+
+    /**
+     * Returns BoolState.TRUE if the indicated tube is occupied, BoolState.FALSE
+     * if it's unoccupied, and BoolState.UNKNOWN if unspecified.
+     */
+    public BoolState getTubeOccupied(int tube) {
+    	int content = mTubeTypes[tube];
+
+    	if (content == TUBE_UNKNOWN) {
+    		return BoolState.UNKNOWN;
+    	}
+
+    	return BoolState.from(content != TUBE_EMPTY);
+    }
+
+    /**
+     * The type of ordnance in the given tube. If the tube is empty, this method
+     * returns TUBE_EMPTY. If it's not, it returns OrdnanceType.ordinal() for
+     * the type of ordnance that's in the tube.
+     * Unspecified: Integer.MIN_VALUE (TUBE_UNKNOWN)
+     */
+    public int getTubeContents(int tube) {
+    	return mTubeTypes[tube];
+    }
+
+    /**
+     * Returns the number of seconds until the current (un)load operation is
+     * complete.
+     * Unspecified: -1
+     */
+    public float getTubeCountdown(int tube) {
+        return mTubeTimes[tube];
+    }
+
+    public void setTubeContents(int tube, OrdnanceType type) {
+        mTubeTypes[tube] = type != null ? type.ordinal() : TUBE_EMPTY;
+    }
+
+    /**
+     * Set by PlayerUpdatePacket. 
+     * @param tube Tube index number [0, Artemis.MAX_TUBES)
+     * @param countdown Time in seconds until it's (un)loaded
+     * @param type Type of torpedo being loaded. This is only set when
+     * 		the process first begins. This value should be one of:
+     * 		OrdnanceType.ordinal() (if loaded and type is known), TUBE_EMPTY or
+     * 		TUBE_UNKNOWN.
+     */
+    public void setTubeStatus(int tube, float countdown, int type) {
+        mTubeTimes[tube] = countdown;
+        mTubeTypes[tube] = type;
+    }
     
+    /**
+     * Amount of coolant in the ship's reserves.
+     * Unspecified: -1
+     */
+    public int getAvailableCoolant() {
+        return mAvailableCoolant;
+    }
+    
+    public void setAvailableCoolant(int availableCoolant) {
+        mAvailableCoolant = availableCoolant;
+    }
+
+    /**
+     * The view for the main screen.
+     * Unspecified: null
+     */
+    public MainScreenView getMainScreen() {
+        return mMainScreen;
+    }
+
+    public void setMainScreen(MainScreenView screen) {
+        mMainScreen = screen;
+    }
+
+    /**
+     * The frequency at which beam weapons are to be tuned.
+     * Unspecified: null
+     */
+    public BeamFrequency getBeamFrequency() {
+    	return mBeamFreq;
+    }
+
+    public void setBeamFrequency(BeamFrequency beamFreq) {
+    	mBeamFreq = beamFreq;
+	}
+
+    /**
+     * Impulse setting, as a value from 0 (all stop) and 1 (full impulse).
+     * Unspecified: -1
+     */
+    public float getImpulse() {
+        return mImpulse;
+    }
+
+    public void setImpulse(float impulseSlider) {
+        mImpulse = impulseSlider;
+    }
+
+    /**
+     * The type of drive system the ship has.
+     * Unspecified: null
+     */
+    public DriveType getDriveType() {
+        return mDriveType;
+    }
+
+    public void setDriveType(DriveType driveType) {
+        mDriveType = driveType;
+    }
+
+    /**
+     * Whether or not auto beams are enabled.
+     * Unspecified: null
+     */
+    public BoolState getAutoBeams() {
+    	return mAutoBeams;
+    }
+
+    public void setAutoBeams(BoolState autoBeams) {
+    	mAutoBeams = autoBeams;
+    }
+
+    /**
+     * The ID of the object targeted by the science officer. If the target is
+     * cleared, this method returns 1.
+     * Unspecified: -1
+     */
+    public int getScienceTarget() {
+        return mScienceTarget;
+    }
+
+    public void setScienceTarget(int scienceTarget) {
+        mScienceTarget = scienceTarget;
+    }
+
+    /**
+     * The progress of the current scan, as a value between 0 and 1.
+     * Unspecified: -1
+     */
+    public float getScanProgress() {
+        return mScanProgress;
+    }
+
+    public void setScanProgress(float scanProgress) {
+        mScanProgress = scanProgress;
+    }
+    
+    /**
+     * The ID of the object targeted by the captain officer. If the target is
+     * cleared, this method returns 1.
+     * Unspecified: -1
+     */
+    public int getCaptainTarget() {
+        return mCaptainTarget;
+    }
+
+    public void setCaptainTarget(int captainTarget) {
+        mCaptainTarget = captainTarget;
+    }
+
+    /**
+     * The ID of the object being scanned. Note that this is distinct from the
+     * science target: science can start a scan then change targets, but the
+     * scan continues on the original target.
+     * Unspecified: -1
+     */
+    public int getScanObjectId() {
+        return mScanningId;
+    }
+
+    public void setScanObjectId(int scanningId) {
+        mScanningId = scanningId;
+    }
+
+    /**
+     * Warp factor, between 0 (not at warp) and Artemis.MAX_WARP.
+     * Unspecified: -1
+     */
+    public byte getWarp() {
+    	return mWarp;
+    }
+
+    public void setWarp(byte warp) {
+		mWarp = warp;
+	}
+
     @Override
-    public void updateFrom(ArtemisPositionable eng) {
+    public void updateFrom(ArtemisObject eng) {
         super.updateFrom(eng);
         
         // it should be!
@@ -219,7 +414,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
                 mShipNumber = plr.mShipNumber;
             }
             
-            if (plr.mAutoBeams != BoolState.UNKNOWN) {
+            if (BoolState.isKnown(plr.mAutoBeams)) {
             	mAutoBeams = plr.mAutoBeams;
             }
 
@@ -231,7 +426,9 @@ public class ArtemisPlayer extends BaseArtemisShip {
             	mWarp = plr.mWarp;
             }
 
-            if (plr.mImpulse != -1 || plr.mWarp != -1) {
+            if (plr.mDockingStation != -1) {
+                mDockingStation = plr.mDockingStation;
+            } else if (plr.mImpulse != -1 || plr.mWarp != -1) {
             	mDockingStation = 0;
             }
 
@@ -239,54 +436,57 @@ public class ArtemisPlayer extends BaseArtemisShip {
             	mBeamFreq = plr.mBeamFreq;
             }
 
-            if (plr.mDockingStation != 0) {
-                mDockingStation = plr.mDockingStation;
+            if (BoolState.isKnown(BoolState.UNKNOWN)) {
+                mRedAlert = plr.mRedAlert;
+            }
+
+            if (BoolState.isKnown(BoolState.UNKNOWN)) {
+                mShields = plr.mShields;
             }
             
-            if (plr.mRedAlert != BoolState.UNKNOWN)
-                mRedAlert = plr.mRedAlert;
-
-            if (plr.mShields != BoolState.UNKNOWN)
-                mShields = plr.mShields;
-            
-            if (plr.mEnergy != -1)
+            if (plr.mEnergy != -1) {
                 mEnergy = plr.mEnergy;
+            }
             
-            if (plr.mAvailableCoolant != -1)
+            if (plr.mAvailableCoolant != -1) {
                 mAvailableCoolant = plr.mAvailableCoolant;
+            }
             
-            if (plr.mDriveType != null)
+            if (plr.mDriveType != null) {
                 mDriveType = plr.mDriveType;
+            }
             
             for (int i = 0; i < Artemis.SYSTEM_COUNT; i++) {
-                if (plr.mHeat[i] != -1)
+                if (plr.mHeat[i] != -1) {
                     mHeat[i] = plr.mHeat[i];
+                }
                 
-                if (plr.mSystems[i] != -1)
+                if (plr.mSystems[i] != -1) {
                     mSystems[i] = plr.mSystems[i];
+                }
                 
-                if (plr.mCoolant[i] != -1)
+                if (plr.mCoolant[i] != -1) {
                     mCoolant[i] = plr.mCoolant[i];
+                }
             }
 
             for (int i=0; i < OrdnanceType.COUNT; i++) {
-                if (plr.mTorpedos[i] != -1)
+                if (plr.mTorpedos[i] != -1) {
                     mTorpedos[i] = plr.mTorpedos[i];
+                }
             }
 
             for (int i = 0; i < Artemis.MAX_TUBES; i++) {
-                // just copy this
                 if (plr.mTubeTimes[i] >= 0) {
-                    mTubeTimes[i] = plr.mTubeTimes[i];
-                    
-                    // round down
-                    if (mTubeTimes[i] < 0.05)
-                        mTubeTimes[i] = 0;
+                	float time = plr.mTubeTimes[i];
+                	mTubeTimes[i] = time < 0.05f ? 0 : time;
                 }
-                
 
-                if (plr.mTubeTypes[i] != TUBE_UNKNOWN)
-                    mTubeTypes[i] = plr.mTubeTypes[i];
+                int type = plr.mTubeTypes[i];
+
+                if (type != TUBE_UNKNOWN) {
+                    mTubeTypes[i] = type;
+                }
             }
             
             if (plr.mMainScreen != null) {
@@ -297,188 +497,23 @@ public class ArtemisPlayer extends BaseArtemisShip {
                 mReverse = plr.mReverse;
             }
             
-            if (plr.mScanTarget != -1) {
-                mScanTarget = plr.mScanTarget;
+            if (plr.mScienceTarget != -1) {
+                mScienceTarget = plr.mScienceTarget;
             }
-                
+
             if (plr.mScanProgress != -1) {
                 mScanProgress = plr.mScanProgress;
             }
-            
+
             if (plr.mCaptainTarget != -1) {
                 mCaptainTarget = plr.mCaptainTarget;
             }
-            
+
             if (plr.mScanningId != -1) {
                 mScanningId = plr.mScanningId;
             }
         }
     }
-
-    public BoolState getRedAlertState() {
-        return mRedAlert;
-    }
-    
-    public BoolState getReverseState() {
-        return mReverse;
-    }
-    
-    public BoolState getShieldsState() {
-        return mShields;
-    }
-
-    /**
-     * Set by PlayerUpdatePacket. 
-     * @param tube Tube index number [0, 5]
-     * @param timeToLoad Time in seconds until it's loaded
-     * @param typeLoading Type of torpedo being loaded. This seems
-     *  to only be set when the process first begins
-     */
-    public void setTubeStatus(int tube, float timeToLoad, int typeLoading) {
-        mTubeTimes[tube] = timeToLoad;
-        mTubeTypes[tube] = typeLoading;
-    }
-
-    public int getTubeContents(int tube) {
-        return mTubeTypes[tube];
-    }
-
-    public float getTubeCountdown(int tube) {
-        return mTubeTimes[tube];
-    }
-
-    public void setTubeContents(int tube, int contents) {
-        mTubeTypes[tube] = contents;
-    }
-
-    /**
-     * Sets the current main screen in use
-     * @param mainScreen
-     */
-    public void setMainScreen(MainScreenView screen) {
-        mMainScreen = screen;
-    }
-    
-    /**
-     * How much coolant do we have available?
-     */
-    public int getAvailableCoolant() {
-        return mAvailableCoolant;
-    }
-    
-    public void setAvailableCoolant(int availableCoolant) {
-        mAvailableCoolant = availableCoolant;
-    }
-
-    public MainScreenView getMainScreen() {
-        return mMainScreen;
-    }
-
-    public BeamFrequency getBeamFrequency() {
-    	return mBeamFreq;
-    }
-
-    public void setBeamFrequency(BeamFrequency beamFreq) {
-    	mBeamFreq = beamFreq;
-	}
-
-    /** Get the value of the impulse slider */
-    public float getImpulse() {
-        return mImpulse;
-    }
-
-    public void setImpulse(float impulseSlider) {
-        mImpulse = impulseSlider;
-    }
-
-    public void setDriveType(DriveType driveType) {
-        mDriveType = driveType;
-    }
-
-    /**
-     * 
-     * @return null if unknown, else either 
-     *  {@link DriveType#WARP} or {@link DriveType#JUMP}
-     */
-    public DriveType getDriveType() {
-        return mDriveType;
-    }
-
-    public BoolState getAutoBeams() {
-    	return mAutoBeams;
-    }
-
-    public void setAutoBeams(BoolState autoBeams) {
-    	mAutoBeams = autoBeams;
-    }
-
-    public void setReverse(BoolState reverse) {
-        mReverse = reverse;
-    }
-
-    public void setScanTarget(int scanTarget) {
-        mScanTarget = scanTarget;
-    }
-
-    public void setScanProgress(float scanProgress) {
-        mScanProgress = scanProgress;
-    }
-    
-    /**
-     * Get the id of the current science target,
-     *  that is, whatever object Science
-     *  has selected
-     *  
-     * @return The id of the target, 1 if
-     *  no target, or {@link Integer#MIN_VALUE}
-     *  if unknown
-     */
-    public int getScienceTarget() {
-        return mScanTarget;
-    }
-    
-    /**
-     * The progress of scanning as a percentage,
-     *  or -1 if unknown
-     * @return
-     */
-    public float getScanProgress() {
-        return mScanProgress;
-    }
-
-    public void setCaptainTarget(int captainTarget) {
-        mCaptainTarget = captainTarget;
-    }
-    
-    /**
-     * Like {@link #getScienceTarget()}, but for
-     *  the captain's map selection
-     * @return
-     */
-    public int getCaptainTarget() {
-        return mCaptainTarget;
-    }
-
-    /**
-     * Set the ID of the object being scanned
-     * 
-     * @param scanningId
-     */
-    public void setScanObjectId(int scanningId) {
-        mScanningId = scanningId;
-    }
-    
-    public int getScanObjectId() {
-        return mScanningId;
-    }
-
-    public byte getWarp() {
-    	return mWarp;
-    }
-
-    public void setWarp(byte warp) {
-		mWarp = warp;
-	}
 
     @Override
 	public void appendObjectProps(SortedMap<String, Object> props, boolean includeUnspecified) {
@@ -519,7 +554,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
     	}
 
     	putProp(props, "Energy", mEnergy, -1, includeUnspecified);
-    	putProp(props, "Docking station", mDockingStation, 0, includeUnspecified);
+    	putProp(props, "Docking station", mDockingStation, -1, includeUnspecified);
     	putProp(props, "Main screen view", mMainScreen, includeUnspecified);
     	putProp(props, "Coolant", mAvailableCoolant, -1, includeUnspecified);
     	putProp(props, "Impulse", mImpulse, -1, includeUnspecified);
@@ -527,7 +562,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
     	putProp(props, "Beam frequency", mBeamFreq, includeUnspecified);
     	putProp(props, "Drive type", mDriveType, includeUnspecified);
     	putProp(props, "Reverse", mReverse, includeUnspecified);
-    	putProp(props, "Scan target", mScanTarget, -1, includeUnspecified);
+    	putProp(props, "Scan target", mScienceTarget, -1, includeUnspecified);
     	putProp(props, "Scan progress", mScanProgress, -1, includeUnspecified);
     	putProp(props, "Scan object ID", mScanningId, -1, includeUnspecified);
     	putProp(props, "Captain target", mCaptainTarget, -1, includeUnspecified);

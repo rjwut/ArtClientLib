@@ -7,7 +7,7 @@ import java.util.List;
 import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.world.ArtemisMesh;
-import net.dhleong.acl.world.ArtemisPositionable;
+import net.dhleong.acl.world.ArtemisObject;
 
 /**
  * Updates for generic mesh objects.
@@ -46,7 +46,7 @@ public class GenericMeshPacket extends BaseArtemisPacket implements ObjectUpdati
 		UNK_16
 	}
 
-    private final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
+    private final List<ArtemisObject> mObjects = new ArrayList<ArtemisObject>();
     private float red, green, blue;
 
     public GenericMeshPacket(PacketReader reader) {
@@ -58,9 +58,9 @@ public class GenericMeshPacket extends BaseArtemisPacket implements ObjectUpdati
         while (reader.hasMore()) {
         	reader.startObject(Bit.values());
             
-            x = reader.readFloat(Bit.X, -1);
-            y = reader.readFloat(Bit.Y, -1);
-            z = reader.readFloat(Bit.Z, -1);
+            x = reader.readFloat(Bit.X, Float.MIN_VALUE);
+            y = reader.readFloat(Bit.Y, Float.MIN_VALUE);
+            z = reader.readFloat(Bit.Z, Float.MIN_VALUE);
 
             reader.readObjectUnknown(Bit.UNK_0, 4);
             reader.readObjectUnknown(Bit.UNK_1, 4);
@@ -86,11 +86,11 @@ public class GenericMeshPacket extends BaseArtemisPacket implements ObjectUpdati
                 green = reader.readFloat();
                 blue = reader.readFloat();
             } else {
-                red = green = blue = -1;
+                red = green = blue = Float.MIN_VALUE;
             }
-            
-            shieldsFront = reader.readFloat(Bit.FORE_SHIELDS, -1);
-            shieldsRear  = reader.readFloat(Bit.AFT_SHIELDS, -1);
+
+            shieldsFront = reader.readFloat(Bit.FORE_SHIELDS, Float.MIN_VALUE);
+            shieldsRear  = reader.readFloat(Bit.AFT_SHIELDS, Float.MIN_VALUE);
             
             reader.readObjectUnknown(Bit.UNK_12, 1);
             reader.readObjectUnknown(Bit.UNK_13, 4);
@@ -108,7 +108,7 @@ public class GenericMeshPacket extends BaseArtemisPacket implements ObjectUpdati
             newObj.setTexture(texture);
             newObj.setARGB(1.0f, red, green, blue);
             newObj.setFakeShields(shieldsFront, shieldsRear);
-            newObj.setUnknownFields(reader.getUnknownObjectFields());
+            newObj.setUnknownProps(reader.getUnknownObjectProps());
             mObjects.add(newObj);
         }
     }
@@ -131,13 +131,13 @@ public class GenericMeshPacket extends BaseArtemisPacket implements ObjectUpdati
     }
 
     @Override
-    public List<ArtemisPositionable> getObjects() {
+    public List<ArtemisObject> getObjects() {
         return mObjects;
     }
 
 	@Override
 	protected void appendPacketDetail(StringBuilder b) {
-		for (ArtemisPositionable obj : mObjects) {
+		for (ArtemisObject obj : mObjects) {
 			b.append("\n").append(obj);
 		}
 	}

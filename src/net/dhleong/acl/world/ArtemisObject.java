@@ -5,15 +5,113 @@ import java.util.SortedMap;
 import net.dhleong.acl.enums.ObjectType;
 
 /**
- * Some sort of object in the World.
- *  Every object has a Type, a Name
- *  and an ID
+ * This class represents information about an object in the game world. It may
+ * contain all the information known about that object, or just updates. Every
+ * object has an ID, a type, a name and a position.
+ * 
+ * 
+ * Unspecified properties vs. unknown properties
+ * 
+ * A property is unspecified if no value has been given for it. Since object
+ * update packets typically contain values for properties which have changed,
+ * other properties will be unspecified. To avoid instantiating a lot of
+ * objects, special values are used to indicate whether a primitive property is
+ * unspecified. The documentation for each property's accessor method will tell
+ * you what that value is. The "unspecified" value depends on the property's
+ * type and what its permissible values are:
+ * 
+ * BoolState: BoolState.UNKNOWN
+ * Other Objects: null
+ * Numeric primitives: -1, or the type's MIN_VALUE if -1 is a permissible value
+ * 		for that property
+ * 
+ * An unknown property is one whose purpose is currently unknown. It may have a
+ * specified value, but we don't know what that value means. ArtClientLib is
+ * capable of tracking unknown property values, but this capability is really
+ * only useful for people who are trying to determine what these properties
+ * mean.
+ * 
+ * 
+ * Updating objects
+ *
+ * Most packets which update object information produce instances of this class.
+ * These instances will contain only the property values that were updated by
+ * that packet; all other values will be unspecified. You can use the
+ * updateFrom() method to transfer all specified properties from one object to
+ * another; this allows you to keep around a single instance that always has the
+ * latest known state for that world object.
+ * 
+ * 
+ * Object positions
+ * 
+ * A sector is a three-dimentional rectangular prism. From the perspective of a
+ * ship with a heading of 0 degress, the X axis runs from port to starboard, the
+ * Y axis runs up and down, and the Z axis runs bow to stern. The boundaries of
+ * the sector are (0, 500, 0) [top northeast corner] to (100000, -500, 100000)
+ * [bottom southwest corner]. However, some objects, such as asteroids and
+ * nebulae, may lie outside these bounds.
+ * 
  * @author dhleong
  */
 public interface ArtemisObject {
+	/**
+	 * The object's unique identifier. This property should always be specified.
+	 */
     public int getId();
+
+    /**
+     * The object's type.
+     * Unspecified: null
+     */
     public ObjectType getType();
+
+    /**
+     * The object's name.
+     * Unspecified: null
+     */
     public String getName();
-    public SortedMap<String, Object> getProps(boolean includeUnknown);
-    public void appendObjectProps(SortedMap<String, Object> props, boolean includeUnknown);
+
+    /**
+	 * The object's position along the X-axis.
+	 * Unspecified: Float.MIN_VALUE
+	 */
+    public abstract float getX();
+    public abstract void setX(float x);
+
+    /**
+	 * The object's position along the Y-axis
+	 * Unspecified: Float.MIN_VALUE
+	 */
+    public abstract float getY();
+    public abstract void setY(float y);
+
+    /**
+	 * The object's position along the Z-axis
+	 * Unspecified: Float.MIN_VALUE
+	 */
+    public abstract float getZ();
+    public abstract void setZ(float z);
+
+    /**
+     * Returns a SortedMap containing the values for properties whose purpose is
+     * currently unknown. This is useful for debugging.
+     */
+    public SortedMap<String, byte[]> getUnknownProps();
+    public void setUnknownProps(SortedMap<String, byte[]> unknownProps);
+
+    /**
+     * Updates this object's properties to match any updates provided by the
+     * given object. If any property of the given object is unspecified, this
+     * object's corresponding property will not be updated.
+     */
+    public void updateFrom(ArtemisObject other);
+
+    /**
+     * Returns a SortedMap containing this object's properties. If
+     * includeUnspecified is true, all properties will be included in the map,
+     * even if they're unspecified. Otherwise, only specified properties will be
+     * included. Note that unknown properties that have not been specified will
+     * never be included, even if includeUnspecified is true.
+     */
+    public SortedMap<String, Object> getProps(boolean includeUnspecified);
 }

@@ -28,7 +28,7 @@ import net.dhleong.acl.util.Util;
 /**
  * Facilitates reading packets from an InputStream. This object may be reused to
  * read as many packets as desired from a single InputStream. Individual packet
- * classes can read their fields by using the read*() methods on this class.
+ * classes can read their properties by using the read*() methods on this class.
  * @author rjwut
  */
 public class PacketReader {
@@ -37,11 +37,11 @@ public class PacketReader {
 	private boolean parse = true;
 	private byte[] payload;
 	private int offset;
-	private SortedMap<String, byte[]> unknownFields;
+	private SortedMap<String, byte[]> unknownProps;
 	private ObjectType objectType;
 	private int objectId;
 	private BitField bitField;
-	private SortedMap<String, byte[]> unknownObjectFields;
+	private SortedMap<String, byte[]> unknownObjectProps;
 
 	/**
 	 * Testing constructor for reading packets from a hex String.
@@ -64,8 +64,8 @@ public class PacketReader {
 		this.in = in;
 
 		if (Util.debug) {
-			unknownFields = new TreeMap<String, byte[]>();
-			unknownObjectFields = new TreeMap<String, byte[]>();
+			unknownProps = new TreeMap<String, byte[]>();
+			unknownObjectProps = new TreeMap<String, byte[]>();
 		}
 	}
 
@@ -88,9 +88,9 @@ public class PacketReader {
 		objectId = 0;
 		bitField = null;
 
-		if (unknownFields != null) {
-			unknownFields.clear();
-			unknownObjectFields.clear();
+		if (unknownProps != null) {
+			unknownProps.clear();
+			unknownObjectProps.clear();
 		}
 
 		// header (0xdeadbeef)
@@ -458,36 +458,36 @@ public class PacketReader {
 
 	/**
 	 * Reads the given number of bytes from the current packet's payload and
-	 * puts them in the unknown field map with the indicated name. This method
-	 * only works if Util.debug = true; otherwise, nothing happens.
+	 * puts them in the unknown property map with the indicated name. This
+	 * method only works if Util.debug = true; otherwise, nothing happens.
 	 */
 	public void readUnknown(String name, int byteCount) {
-		if (unknownFields != null) {
-			unknownFields.put(name, readBytes(byteCount));
+		if (unknownProps != null) {
+			unknownProps.put(name, readBytes(byteCount));
 		}
 	}
 
 	/**
 	 * Reads the given number of bytes from the current packet's payload and
-	 * puts them in the unknown object field map with the indicated name. This
-	 * method only works if Util.debug = true; otherwise, nothing happens.
+	 * puts them in the unknown object property map with the indicated name.
+	 * This method only works if Util.debug = true; otherwise, nothing happens.
 	 */
 	public void readObjectUnknown(String name, int byteCount) {
-		if (unknownObjectFields != null) {
-			unknownObjectFields.put(name, readBytes(byteCount));
+		if (unknownObjectProps != null) {
+			unknownObjectProps.put(name, readBytes(byteCount));
 		}
 	}
 
 	/**
 	 * Reads the given number of bytes from the current packet's payload if the
 	 * indicated bit in the current BitField is on, and puts them in the unknown
-	 * object field map under the name of the indicated bit. Otherwise, the
+	 * object property map under the name of the indicated bit. Otherwise, the
 	 * pointer is not moved, and nothing is put into the map. This method only
 	 * works if Util.debug = true; otherwise, nothing happens.
 	 */
 	public void readObjectUnknown(Enum<?> bit, int byteCount) {
-		if (unknownObjectFields != null && bitField.get(bit)) {
-			unknownObjectFields.put(bit.name(), readBytes(byteCount));
+		if (unknownObjectProps != null && bitField.get(bit)) {
+			unknownObjectProps.put(bit.name(), readBytes(byteCount));
 		}
 	}
 
@@ -499,18 +499,18 @@ public class PacketReader {
 	}
 
 	/**
-	 * Returns the unknown fields previously stored by readUnknown(). If
+	 * Returns the unknown properties previously stored by readUnknown(). If
 	 * Util.debug = false, this method always returns null.
 	 */
-	public SortedMap<String, byte[]> getUnknownFields() {
-		return unknownFields;
+	public SortedMap<String, byte[]> getUnknownProps() {
+		return unknownProps;
 	}
 
 	/**
 	 * Starts reading an object from an ObjectUpdatingPacket. This will read off
 	 * an object type value (byte), an object ID (int) and (if a bits enum value
 	 * array is given) a BitField from the current packet's payload. If
-	 * Util.debug = true, this also clears the unknownObjectFields property.
+	 * Util.debug = true, this also clears the unknownObjectProps property.
 	 */
 	public void startObject(Enum<?>[] bits) {
 		byte typeByte = readByte();
@@ -529,8 +529,8 @@ public class PacketReader {
 			bitField = null;
 		}
 
-		if (unknownObjectFields != null) {
-			unknownObjectFields.clear();
+		if (unknownObjectProps != null) {
+			unknownObjectProps.clear();
 		}
 	}
 
@@ -556,12 +556,12 @@ public class PacketReader {
 	}
 
 	/**
-	 * Returns the unknown object fields previously stored by
+	 * Returns the unknown object properties previously stored by
 	 * readObjectUnknown(). If Util.debug = false, this method always returns
 	 * null.
 	 */
-	public SortedMap<String, byte[]> getUnknownObjectFields() {
-		return unknownObjectFields;
+	public SortedMap<String, byte[]> getUnknownObjectProps() {
+		return unknownObjectProps;
 	}
 
 	/**

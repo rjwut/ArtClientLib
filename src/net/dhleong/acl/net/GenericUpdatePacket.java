@@ -7,7 +7,7 @@ import java.util.List;
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.world.ArtemisGenericObject;
-import net.dhleong.acl.world.ArtemisPositionable;
+import net.dhleong.acl.world.ArtemisObject;
 
 /**
  * Update/create ArtemisGenericObjects
@@ -25,7 +25,7 @@ public class GenericUpdatePacket extends BaseArtemisPacket implements ObjectUpda
     	UNK_3
     }
 
-    private final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
+    private final List<ArtemisObject> mObjects = new ArrayList<ArtemisObject>();
 
     public GenericUpdatePacket(PacketReader reader) {
     	super(ConnectionType.SERVER, WORLD_TYPE);
@@ -42,9 +42,9 @@ public class GenericUpdatePacket extends BaseArtemisPacket implements ObjectUpda
                     reader.readObjectUnknown("UNK_TORPEDO", 1);
                 }
 
-                x = reader.readFloat(Bit.X, -1);
-                y = reader.readFloat(Bit.Y, -1);
-                z = reader.readFloat(Bit.Z, -1);
+                x = reader.readFloat(Bit.X, Float.MIN_VALUE);
+                y = reader.readFloat(Bit.Y, Float.MIN_VALUE);
+                z = reader.readFloat(Bit.Z, Float.MIN_VALUE);
 
                 if (type.isNamed()) {
                     name = reader.readString(Bit.NAME);
@@ -63,7 +63,7 @@ public class GenericUpdatePacket extends BaseArtemisPacket implements ObjectUpda
                 obj.setX(x);
                 obj.setY(y);
                 obj.setZ(z);
-                obj.setUnknownFields(reader.getUnknownObjectFields());
+                obj.setUnknownProps(reader.getUnknownObjectProps());
                 mObjects.add(obj);
             }
         } catch (RuntimeException e) {
@@ -80,13 +80,13 @@ public class GenericUpdatePacket extends BaseArtemisPacket implements ObjectUpda
     }
 
     @Override
-    public List<ArtemisPositionable> getObjects() {
+    public List<ArtemisObject> getObjects() {
         return mObjects;
     }
 
 	@Override
 	protected void appendPacketDetail(StringBuilder b) {
-		for (ArtemisPositionable obj : mObjects) {
+		for (ArtemisObject obj : mObjects) {
 			b.append("\nObject #").append(obj.getId()).append(obj);
 		}
 	}

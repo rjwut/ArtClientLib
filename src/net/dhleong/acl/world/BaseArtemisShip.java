@@ -5,8 +5,11 @@ import java.util.SortedMap;
 import net.dhleong.acl.enums.BeamFrequency;
 import net.dhleong.acl.enums.ShipType;
 
+/**
+ * Base implementation for ships (player or NPC).
+ */
 public abstract class BaseArtemisShip extends BaseArtemisShielded
-implements ArtemisBearable {
+		implements ArtemisBearable {
     protected int mHullId = -1;
     private float mBearing = Float.MIN_VALUE;
     private float mVelocity = -1;
@@ -26,11 +29,17 @@ implements ArtemisBearable {
         }
     }
 
+    /**
+     * Identifies the type of ship this is. This corresponds to the uniqueID
+     * attribute of vessel elements in vesselData.xml. In a stock install of
+     * Artemis, where vesselData.xml hasn't been modified, this value will
+     * correspond to a value in the ShipType enumeration.
+     * Unspecified: -1
+     */
     public int getHullId() {
         return mHullId;
     }
     
-
     public void setHullId(int hullId) {
         mHullId = hullId;
     }
@@ -65,6 +74,10 @@ implements ArtemisBearable {
         mSteering = steeringSlider;
     }
 
+    /**
+     * The maximum speed of this ship, in ls (whatever that is).
+     * Unspecified: -1
+     */
     public float getTopSpeed() {
         return mTopSpeed;
     }
@@ -73,6 +86,10 @@ implements ArtemisBearable {
         mTopSpeed = topSpeed;
     }
     
+    /**
+     * The maximum turn rate of this ship.
+     * Unspecified: -1
+     */
     public float getTurnRate() {
         return mTurnRate;
     }
@@ -81,6 +98,10 @@ implements ArtemisBearable {
         mTurnRate = turnRate;
     }
 
+    /**
+     * The maximum strength of the forward shield.
+     * Unspecified: -1
+     */
     public float getShieldsFrontMax() {
         return mShieldsFrontMax;
     }
@@ -89,6 +110,10 @@ implements ArtemisBearable {
         this.mShieldsFrontMax = shieldsFrontMax;
     }
     
+    /**
+     * The maximum strength of the aft shield.
+     * Unspecified: -1
+     */
     public float getShieldsRearMax() {
         return mShieldsRearMax;
     }
@@ -97,8 +122,13 @@ implements ArtemisBearable {
         this.mShieldsRearMax = shieldsRearMax;
     }
     
-    public float getShieldFreq(int freq) {
-        return mShieldFreqs[freq];
+    /**
+     * A value between 0 and 1 indicating the shields' resistance to the given
+     * BeamFrequency.
+     * Unspecified: -1
+     */
+    public float getShieldFreq(BeamFrequency freq) {
+        return mShieldFreqs[freq.ordinal()];
     }
     
     public void setShieldFreq(int freq, float value) {
@@ -106,7 +136,7 @@ implements ArtemisBearable {
     }
 
     @Override
-    public void updateFrom(ArtemisPositionable eng) {
+    public void updateFrom(ArtemisObject eng) {
         super.updateFrom(eng);
         
         if (eng instanceof BaseArtemisShip) {
@@ -164,7 +194,7 @@ implements ArtemisBearable {
     		putProp(
     				props,
     				"Ship type",
-    				shipType != null ? shipType.getFullName() : null,
+    				shipType != null ? shipType : null,
     				includeUnspecified
     		);
     	}

@@ -7,9 +7,18 @@ import java.util.TreeMap;
 import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.util.TextUtil;
 
-public abstract class BaseArtemisObject implements ArtemisPositionable {
+/**
+ * Base implementation for all ArtemisObjects.
+ */
+public abstract class BaseArtemisObject implements ArtemisObject {
 	private static final String UNKNOWN = "UNKNOWN";
 
+	/**
+	 * Puts the given int property into the indicated map. If the given value is
+	 * equal to unspecifiedValue, then the includeUnspecified value dictates the
+	 * behavor of this method. If it is true, the property is recorded in the
+	 * map as "UNKNOWN". Otherwise, it is omitted.
+	 */
 	public static void putProp(SortedMap<String, Object> props, String label,
 			int value, int unspecifiedValue, boolean includeUnspecified) {
 		if (!includeUnspecified && value == unspecifiedValue) {
@@ -19,6 +28,12 @@ public abstract class BaseArtemisObject implements ArtemisPositionable {
 		props.put(label, value != unspecifiedValue ? Integer.valueOf(value) : UNKNOWN);
 	}
 
+	/**
+	 * Puts the given float property into the indicated map. If the given value
+	 * is equal to unspecifiedValue, then the includeUnspecified value dictates
+	 * the behavor of this method. If it is true, the property is recorded in
+	 * the map as "UNKNOWN". Otherwise, it is omitted.
+	 */
 	public static void putProp(SortedMap<String, Object> props, String label,
 			float value, float unspecifiedValue, boolean includeUnspecified) {
 		if (!includeUnspecified && value == unspecifiedValue) {
@@ -28,15 +43,27 @@ public abstract class BaseArtemisObject implements ArtemisPositionable {
 		props.put(label, value != unspecifiedValue ? Float.valueOf(value) : UNKNOWN);
 	}
 
+	/**
+	 * Puts the given BoolState property into the indicated map. If the given
+	 * value is null or BoolState.UNKNOWN, then the includeUnspecified value
+	 * dictates the behavor of this method. If it is true, the property is
+	 * recorded in the map as-is. Otherwise, it is omitted.
+	 */
 	public static void putProp(SortedMap<String, Object> props, String label,
 			BoolState value, boolean includeUnspecified) {
-		if (!includeUnspecified && value == BoolState.UNKNOWN) {
+		if (!includeUnspecified && !BoolState.isKnown(value)) {
 			return;
 		}
 
-		props.put(label, value);
+		props.put(label, value != null ? value : BoolState.UNKNOWN);
 	}
 
+	/**
+	 * Puts the given Object property into the indicated map. If the given value
+	 * is null, then the includeUnspecified value dictates the behavor of this
+	 * method. If it is true, the property is recorded in the map as "UNKNOWN".
+	 * Otherwise, it is omitted.
+	 */
 	public static void putProp(SortedMap<String, Object> props, String label,
 			Object value, boolean includeUnspecified) {
 		if (!includeUnspecified && value == null) {
@@ -48,10 +75,10 @@ public abstract class BaseArtemisObject implements ArtemisPositionable {
 
 	protected final int mId;
     public String mName;
-    private float mX = -1;
-    private float mY = -1;
-    private float mZ = -1;
-    private SortedMap<String, byte[]> unknownFields;
+    private float mX = Float.MIN_VALUE;
+    private float mY = Float.MIN_VALUE;
+    private float mZ = Float.MIN_VALUE;
+    private SortedMap<String, byte[]> unknownProps;
 
     public BaseArtemisObject(int objId, String name) {
         mId = objId;
@@ -61,19 +88,6 @@ public abstract class BaseArtemisObject implements ArtemisPositionable {
     @Override
     public int getId() {
         return mId;
-    }
-    
-    @Override
-    public boolean equals(Object other) {
-        if (other == null || !(other instanceof ArtemisObject))
-            return false;
-        
-        return getId() == ((ArtemisObject)other).getId();
-    }
-    
-    @Override
-    public int hashCode() {
-        return getId();
     }
 
     @Override
@@ -110,47 +124,53 @@ public abstract class BaseArtemisObject implements ArtemisPositionable {
     public void setZ(float z) {
         mZ = z;
     }
-    
+
     @Override
-    public void updateFrom(ArtemisPositionable eng) {
-        // names can actually change!
-        if (eng.getName() != null)
+    public void updateFrom(ArtemisObject eng) {
+        if (eng.getName() != null) {
             mName = eng.getName();
-        
-        if (eng.getX() != -1) {
-        	setX(eng.getX());
         }
 
-        if (eng.getY() != -1) {
-        	setY(eng.getY());
+        float x = eng.getX();
+        float y = eng.getY();
+        float z = eng.getZ();
+
+        if (x != Float.MIN_VALUE) {
+        	mX = x;
         }
 
-        if (eng.getZ() != -1) {
-        	setZ(eng.getZ());
+        if (y != Float.MIN_VALUE) {
+        	mY = y;
+        }
+
+        if (z != Float.MIN_VALUE) {
+        	mZ = z;
         }
 
         BaseArtemisObject cast = (BaseArtemisObject) eng;
-        SortedMap<String, byte[]> unknown = cast.getUnknownFields();
+        SortedMap<String, byte[]> unknown = cast.getUnknownProps();
 
-        if (unknown != null) {
-        	if (unknownFields == null) {
-        		unknownFields = new TreeMap<String, byte[]>();
+        if (unknown != null && !unknown.isEmpty()) {
+        	if (unknownProps == null) {
+        		unknownProps = new TreeMap<String, byte[]>();
         	}
 
-        	unknownFields.putAll(unknown);
+        	unknownProps.putAll(unknown);
         }
     }
 
-    public SortedMap<String, byte[]> getUnknownFields() {
-    	return unknownFields;
-    }
-
-    public void setUnknownFields(SortedMap<String, byte[]> unknownFields) {
-    	this.unknownFields = unknownFields;
+    @Override
+    public final SortedMap<String, byte[]> getUnknownProps() {
+    	return unknownProps;
     }
 
     @Override
-    public SortedMap<String, Object> getProps(boolean includeUnspecified) {
+    public final void setUnknownProps(SortedMap<String, byte[]> unknownProps) {
+    	this.unknownProps = unknownProps;
+    }
+
+    @Override
+    public final SortedMap<String, Object> getProps(boolean includeUnspecified) {
     	SortedMap<String, Object> props = new TreeMap<String, Object>();
     	appendObjectProps(props, includeUnspecified);
     	return props;
@@ -175,13 +195,38 @@ public abstract class BaseArtemisObject implements ArtemisPositionable {
     	return b.toString();
     }
 
-    @Override
-	public void appendObjectProps(SortedMap<String, Object> props, boolean includeUnspecified) {
+    /**
+     * Appends this object's properties to the given map. If includeUnspecified
+     * is true, unspecified properties area also included (except for unknown
+     * properties). Subclasses must always call the superclass's implementation
+     * of this method.
+     */
+	protected void appendObjectProps(SortedMap<String, Object> props,
+			boolean includeUnspecified) {
     	props.put("ID", Integer.valueOf(mId));
     	putProp(props, "Name", mName, includeUnspecified);
-    	putProp(props, "X", mX, -1, includeUnspecified);
-    	putProp(props, "Y", mY, -1, includeUnspecified);
-    	putProp(props, "Z", mZ, -1, includeUnspecified);
-    	props.putAll(unknownFields);
+    	putProp(props, "Object type", getType(), includeUnspecified);
+    	putProp(props, "X", mX, Float.MIN_VALUE, includeUnspecified);
+    	putProp(props, "Y", mY, Float.MIN_VALUE, includeUnspecified);
+    	putProp(props, "Z", mZ, Float.MIN_VALUE, includeUnspecified);
+    	props.putAll(unknownProps);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+    	if (this == other) {
+    		return true;
+    	}
+
+    	if (!(other instanceof ArtemisObject)) {
+            return false;
+        }
+        
+        return mId == ((ArtemisObject) other).getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return mId;
     }
 }

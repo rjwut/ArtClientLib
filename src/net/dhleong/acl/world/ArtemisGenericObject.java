@@ -1,11 +1,12 @@
 package net.dhleong.acl.world;
 
-import java.util.SortedMap;
-
 import net.dhleong.acl.enums.ObjectType;
 
 /**
- * There are many "generic" objects which are very similar in implementation
+ * There are many "generic" objects which are very similar in implementation.
+ * They are all handled by this class. Specifically, the objects implemented by
+ * this class are: mines, anomalies, nebulae, torpedoes, black holes, asteroids
+ * and space monsters.
  * @author dhleong
  */
 public class ArtemisGenericObject extends BaseArtemisObject {
@@ -19,11 +20,5 @@ public class ArtemisGenericObject extends BaseArtemisObject {
     @Override
     public ObjectType getType() {
         return mType;
-    }
-
-    @Override
-	public void appendObjectProps(SortedMap<String, Object> props, boolean includeUnspecified) {
-    	super.appendObjectProps(props, includeUnspecified);
-    	putProp(props, "Type", mType, includeUnspecified);
     }
 }

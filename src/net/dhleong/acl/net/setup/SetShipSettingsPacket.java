@@ -32,7 +32,7 @@ public class SetShipSettingsPacket extends ShipActionPacket {
         }
 
         if (!type.isPlayerShip()) {
-        	throw new IllegalArgumentException("Can't select " + type.getFullName());
+        	throw new IllegalArgumentException("Can't select " + type);
         }
 
         init(drive, type.getId(), name);

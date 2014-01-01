@@ -4,14 +4,19 @@ import java.util.SortedMap;
 
 import net.dhleong.acl.enums.ObjectType;
 
-public class ArtemisDrone extends ArtemisGenericObject implements ArtemisBearable {
-	public ArtemisDrone(int objId) {
-		super(objId, null, ObjectType.DRONE);
-	}
-
-	private float mBearing = -1;
+public class ArtemisDrone extends BaseArtemisObject implements ArtemisBearable {
+	private float mBearing = Float.MIN_VALUE;
 	private float mVelocity = -1;
 	private float mSteering = -1;
+
+	public ArtemisDrone(int objId) {
+		super(objId, null);
+	}
+
+	@Override
+	public ObjectType getType() {
+		return ObjectType.DRONE;
+	}
 
 	@Override
 	public float getBearing() {
@@ -44,21 +49,30 @@ public class ArtemisDrone extends ArtemisGenericObject implements ArtemisBearabl
 	}
 
 	@Override
-	public void updateFrom(ArtemisPositionable other) {
+	public void updateFrom(ArtemisObject other) {
 		super.updateFrom(other);
 
 		if (other instanceof ArtemisDrone) {
 			ArtemisDrone drone = (ArtemisDrone) other;
-			mBearing = drone.mBearing;
-			mVelocity = drone.mVelocity;
-			mSteering = drone.mSteering;
+
+			if (drone.mBearing != Float.MIN_VALUE) {
+				mBearing = drone.mBearing;
+			}
+
+			if (drone.mVelocity != -1) {
+				mVelocity = drone.mVelocity;
+			}
+
+			if (drone.mSteering != -1) {
+				mSteering = drone.mSteering;
+			}
 		}
 	}
 
     @Override
 	public void appendObjectProps(SortedMap<String, Object> props, boolean includeUnspecified) {
     	super.appendObjectProps(props, includeUnspecified);
-    	putProp(props, "Heading", mBearing, -1, includeUnspecified);
+    	putProp(props, "Heading", mBearing, Float.MIN_VALUE, includeUnspecified);
     	putProp(props, "Velocity", mVelocity, -1, includeUnspecified);
     	putProp(props, "Rudder", mSteering, -1, includeUnspecified);
     }

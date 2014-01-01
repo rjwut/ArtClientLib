@@ -81,7 +81,8 @@ public enum ShipType {
 		return hullName;
 	}
 
-	public String getFullName() {
+	@Override
+	public String toString() {
 		return fullName;
 	}
 }

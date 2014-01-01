@@ -7,7 +7,7 @@ import java.util.List;
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.world.ArtemisDrone;
-import net.dhleong.acl.world.ArtemisPositionable;
+import net.dhleong.acl.world.ArtemisObject;
 
 /**
  * Status updates for Torgoth drones.
@@ -34,7 +34,7 @@ public class DroneUpdatePacket extends BaseArtemisPacket implements ObjectUpdati
     	UNK_15
     }
 
-    private final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
+    private final List<ArtemisObject> mObjects = new ArrayList<ArtemisObject>();
 
     public DroneUpdatePacket(PacketReader reader) {
     	super(ConnectionType.SERVER, WORLD_TYPE);
@@ -45,12 +45,12 @@ public class DroneUpdatePacket extends BaseArtemisPacket implements ObjectUpdati
             while (reader.hasMore() && reader.peekByte() == ObjectType.DRONE.getId()) {
                 reader.startObject(Bit.values());
             	reader.readObjectUnknown(Bit.UNK_0, 4);
-            	x = reader.readFloat(Bit.X, -1);
+            	x = reader.readFloat(Bit.X, Float.MIN_VALUE);
             	reader.readObjectUnknown(Bit.UNK_2, 4);
-            	z = reader.readFloat(Bit.Z, -1);
+            	z = reader.readFloat(Bit.Z, Float.MIN_VALUE);
             	reader.readObjectUnknown(Bit.UNK_4, 4);
-            	y = reader.readFloat(Bit.Y, -1);
-            	bearing = reader.readFloat(Bit.HEADING, -1);
+            	y = reader.readFloat(Bit.Y, Float.MIN_VALUE);
+            	bearing = reader.readFloat(Bit.HEADING, Float.MIN_VALUE);
             	reader.readObjectUnknown(Bit.UNK_7, 4);
             	reader.readObjectUnknown(Bit.UNK_8, 4);
             	reader.readObjectUnknown(Bit.UNK_9, 4);
@@ -65,7 +65,7 @@ public class DroneUpdatePacket extends BaseArtemisPacket implements ObjectUpdati
                 obj.setY(y);
                 obj.setZ(z);
                 obj.setBearing(bearing);
-                obj.setUnknownFields(reader.getUnknownObjectFields());
+                obj.setUnknownProps(reader.getUnknownObjectProps());
                 mObjects.add(obj);
             }
         } catch (RuntimeException e) {
@@ -82,13 +82,13 @@ public class DroneUpdatePacket extends BaseArtemisPacket implements ObjectUpdati
     }
 
     @Override
-    public List<ArtemisPositionable> getObjects() {
+    public List<ArtemisObject> getObjects() {
         return mObjects;
     }
 
 	@Override
 	protected void appendPacketDetail(StringBuilder b) {
-		for (ArtemisPositionable obj : mObjects) {
+		for (ArtemisObject obj : mObjects) {
 			b.append("\nObject #").append(obj.getId()).append(obj);
 		}
 	}

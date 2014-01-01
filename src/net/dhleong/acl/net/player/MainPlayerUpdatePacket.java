@@ -70,9 +70,9 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
             BoolState shields = reader.readBool(Bit.SHIELD_STATE, 2);
             int shipNumber = reader.readInt(Bit.SHIP_NUMBER);
             int hullId = reader.readInt(Bit.SHIP_TYPE);
-            float x = reader.readFloat(Bit.X, -1);
-            float y = reader.readFloat(Bit.Y, -1);
-            float z = reader.readFloat(Bit.Z, -1);
+            float x = reader.readFloat(Bit.X, Float.MIN_VALUE);
+            float y = reader.readFloat(Bit.Y, Float.MIN_VALUE);
+            float z = reader.readFloat(Bit.Z, Float.MIN_VALUE);
 
             reader.readObjectUnknown(Bit.UNK_3, 4);
             reader.readObjectUnknown(Bit.UNK_4, 4);
@@ -83,16 +83,13 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
             reader.readObjectUnknown(Bit.UNK_5, 2);
 
             String name = reader.readString(Bit.NAME);
-            float shieldsFront = reader.readFloat(Bit.FORE_SHIELDS, -1);
+            float shieldsFront = reader.readFloat(Bit.FORE_SHIELDS, Float.MIN_VALUE);
             float shieldsFrontMax = reader.readFloat(Bit.FORE_SHIELDS_MAX, -1);
-            float shieldsRear = reader.readFloat(Bit.AFT_SHIELDS, -1);
+            float shieldsRear = reader.readFloat(Bit.AFT_SHIELDS, Float.MIN_VALUE);
             float shieldsRearMax = reader.readFloat(Bit.AFT_SHIELDS_MAX, -1);
-
-            // I don't *think* the server sends us
-            //  this value when we undock...
-            int dockingStation = reader.readInt(Bit.DOCKING_STATION, 0);
+            int dockingStation = reader.readInt(Bit.DOCKING_STATION, -1);
             BoolState redAlert = reader.readBool(Bit.RED_ALERT, 1);
-            
+
             reader.readObjectUnknown(Bit.UNK_6, 4);
 
             MainScreenView mainScreen;
@@ -133,12 +130,12 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
             mPlayer.setZ(z);
             mPlayer.setBearing(heading);
             mPlayer.setVelocity(velocity);
-            mPlayer.setShipEnergy(energy);
+            mPlayer.setEnergy(energy);
             mPlayer.setDockingStation(dockingStation);
             mPlayer.setMainScreen(mainScreen);
             mPlayer.setBeamFrequency(beamFreq);
             mPlayer.setAvailableCoolant(availableCoolant);
-            mPlayer.setScanTarget(scanTarget);
+            mPlayer.setScienceTarget(scanTarget);
             mPlayer.setCaptainTarget(captainTarget);
             mPlayer.setScanObjectId(scanningId);
             mPlayer.setScanProgress(scanProgress);
@@ -150,7 +147,7 @@ public class MainPlayerUpdatePacket extends PlayerUpdatePacket {
                     ? null
                     : DriveType.values()[driveType]);
             mPlayer.setReverse(mReverse);
-            mPlayer.setUnknownFields(reader.getUnknownObjectFields());
+            mPlayer.setUnknownProps(reader.getUnknownObjectProps());
         } catch (RuntimeException e) {
             System.out.println("!!! Error!");
             System.out.println("this -->" + this);

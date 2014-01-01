@@ -38,7 +38,7 @@ public class CommsOutgoingPacket extends BaseArtemisPacket {
     /**
      * Use this constructor for messages which have an argument; otherwise, an
      * IllegalArgumentException will be thrown. At this writing only the
-     * {@link net.dhleong.acl.enums.AllyMessage#GO_DEFEND}
+     * {@link net.dhleong.acl.enums.OtherMessage#GO_DEFEND}
      * message has an argument, which is the ID of the object to be defended.
      * @param target The message recipient
      * @param msg The message to be sent

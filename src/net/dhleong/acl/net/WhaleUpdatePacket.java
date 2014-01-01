@@ -1,12 +1,11 @@
 package net.dhleong.acl.net;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.dhleong.acl.enums.ConnectionType;
-import net.dhleong.acl.world.ArtemisCreature;
-import net.dhleong.acl.world.ArtemisPositionable;
+import net.dhleong.acl.world.ArtemisWhale;
+import net.dhleong.acl.world.ArtemisObject;
 
 /**
  * Updates for space whales.
@@ -30,7 +29,7 @@ public class WhaleUpdatePacket extends BaseArtemisPacket implements ObjectUpdati
     	UNK_7
     }
 
-    private final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
+    private final List<ArtemisObject> mObjects = new ArrayList<ArtemisObject>();
 
     public WhaleUpdatePacket(PacketReader reader) {
     	super(ConnectionType.SERVER, WORLD_TYPE);
@@ -46,9 +45,9 @@ public class WhaleUpdatePacket extends BaseArtemisPacket implements ObjectUpdati
                 reader.readObjectUnknown(Bit.UNK_0, 4);
                 reader.readObjectUnknown(Bit.UNK_1, 4);
                 
-                x = reader.readFloat(Bit.X, -1);
-                y = reader.readFloat(Bit.Y, -1);
-                z = reader.readFloat(Bit.Z, -1);
+                x = reader.readFloat(Bit.X, Float.MIN_VALUE);
+                y = reader.readFloat(Bit.Y, Float.MIN_VALUE);
+                z = reader.readFloat(Bit.Z, Float.MIN_VALUE);
                 
                 reader.readObjectUnknown(Bit.UNK_2, 4);
                 reader.readObjectUnknown(Bit.UNK_3, 4);
@@ -60,13 +59,13 @@ public class WhaleUpdatePacket extends BaseArtemisPacket implements ObjectUpdati
                 reader.readObjectUnknown(Bit.UNK_6, 4);
                 reader.readObjectUnknown(Bit.UNK_7, 4);
                 
-                final ArtemisCreature obj = new ArtemisCreature(
-                        reader.getObjectId(), name, reader.getObjectType());
+                final ArtemisWhale obj = new ArtemisWhale(reader.getObjectId(),
+                		name);
                 obj.setX(x);
                 obj.setY(y);
                 obj.setZ(z);
                 obj.setBearing(bearing);
-                obj.setUnknownFields(reader.getUnknownObjectFields());
+                obj.setUnknownProps(reader.getUnknownObjectProps());
                 mObjects.add(obj);
             }
         } catch (RuntimeException e) {
@@ -76,13 +75,13 @@ public class WhaleUpdatePacket extends BaseArtemisPacket implements ObjectUpdati
     }
 
     @Override
-    public List<ArtemisPositionable> getObjects() {
+    public List<ArtemisObject> getObjects() {
         return mObjects;
     }
 
 	@Override
 	protected void appendPacketDetail(StringBuilder b) {
-		for (ArtemisPositionable obj : mObjects) {
+		for (ArtemisObject obj : mObjects) {
 			b.append("\nObject #").append(obj.getId()).append(obj);
 		}
 	}

@@ -4,7 +4,7 @@ package net.dhleong.acl.enums;
  * Messages that can be sent to civilian NPCs.
  * @author rjwut 
  */
-public enum AllyMessage implements CommsMessage {
+public enum OtherMessage implements CommsMessage {
 	HAIL(0, "Hail."),
 	TURN_TO_HEADING_0(1, "Turn to heading 0."),
 	TURN_TO_HEADING_90(2, "Turn to heading 90."),
@@ -26,8 +26,8 @@ public enum AllyMessage implements CommsMessage {
 	/**
 	 * Returns the AllyMessage that corresponds to the given ID.
 	 */
-	public static AllyMessage fromId(int id) {
-		for (AllyMessage message : values()) {
+	public static OtherMessage fromId(int id) {
+		for (OtherMessage message : values()) {
 			if (message.id == id) {
 				return message;
 			}
@@ -39,7 +39,7 @@ public enum AllyMessage implements CommsMessage {
 	private int id;
 	private String label;
 
-	AllyMessage(int id, String label) {
+	OtherMessage(int id, String label) {
 		this.id = id;
 		this.label = label;
 	}

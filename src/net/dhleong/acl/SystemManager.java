@@ -24,7 +24,6 @@ import net.dhleong.acl.world.ArtemisGenericObject;
 import net.dhleong.acl.world.ArtemisNpc;
 import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisPlayer;
-import net.dhleong.acl.world.ArtemisPositionable;
 
 /**
  * A repository of Artemis world objects. Register an instance of SystemManager
@@ -120,7 +119,7 @@ public class SystemManager {
 
     @PacketListener
     public void onPacket(ObjectUpdatingPacket pkt) {
-        for (ArtemisPositionable p : pkt.getObjects()) {
+        for (ArtemisObject p : pkt.getObjects()) {
             updateOrCreate(p);
         }
     }
@@ -140,8 +139,8 @@ public class SystemManager {
     }
 
     @SuppressWarnings("unused")
-    private boolean updateOrCreate(ArtemisPositionable o) {
-        ArtemisPositionable p = (ArtemisPositionable) mObjects.get(o.getId());
+    private boolean updateOrCreate(ArtemisObject o) {
+        ArtemisObject p = (ArtemisObject) mObjects.get(o.getId());
 
         if (p != null) {
             p.updateFrom(o);
@@ -189,7 +188,7 @@ public class SystemManager {
         for (ArtemisObject obj : mObjects.values()) {
             // tentative
             if (!(obj instanceof ArtemisGenericObject) 
-                    && obj instanceof ArtemisPositionable) {
+                    && obj instanceof ArtemisObject) {
                 dest.add(obj);
             }
         }

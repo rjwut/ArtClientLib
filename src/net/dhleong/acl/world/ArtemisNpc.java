@@ -2,6 +2,7 @@ package net.dhleong.acl.world;
 
 import java.util.SortedMap;
 
+import net.dhleong.acl.enums.EliteAbility;
 import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.util.BoolState;
 
@@ -10,29 +11,30 @@ import net.dhleong.acl.util.BoolState;
  * @author dhleong
  */
 public class ArtemisNpc extends BaseArtemisShip {
-    
-    // elite enemy bits
-    public static final int ELITE_INVIS_TO_MAIN_SCREEN  = 1;
-    public static final int ELITE_INVIS_TO_SCIENCE      = 2;
-    public static final int ELITE_INVIS_TO_TACTICAL     = 4;
-    public static final int ELITE_CLOAKING              = 8;
-    public static final int ELITE_HET                   = 16;
-    public static final int ELITE_WARP                  = 32;
-    public static final int ELITE_TELEPORT              = 64;
-
     // scan levels... only 2 for now
     public static final byte SCAN_LEVEL_BASIC = 1;
     public static final byte SCAN_LEVEL_FULL  = 2;
     
-    private byte mScannedLevel = -1;
+    private byte mScanLevel = -1;
     private int mElite = -1, mEliteState = -1;
-    private BoolState mEnemy;
+    private BoolState mEnemy = BoolState.UNKNOWN;
     private String mIntel;
 
     public ArtemisNpc(int objId, String name, int hullId) {
         super(objId, name, hullId);
     }
 
+    @Override
+    public ObjectType getType() {
+        return ObjectType.NPC_SHIP;
+    }
+
+    /**
+     * Returns BoolState.TRUE if this ship is an enemy, BoolState.FALSE if it's
+     * friendly, and BoolState.UNKNOWN if its status is unspecified. Note that
+     * this only works in Solo mode.
+     * Unspecified: BoolState.UNKNOWN
+     */
     public BoolState isEnemy() {
     	return mEnemy;
     }
@@ -41,35 +43,62 @@ public class ArtemisNpc extends BaseArtemisShip {
     	mEnemy = enemy;
     }
 
-    @Override
-    public ObjectType getType() {
-        return ObjectType.NPC_SHIP;
-    }
-    
-    public boolean hasEliteAbility(int ability) {
-        return mElite != -1 && (mElite & ability) != 0;
+    /**
+     * Returns true if this ship has the specified elite ability and false if it
+     * does not or if it is unknown whether it has it.
+     */
+    public boolean hasEliteAbility(EliteAbility ability) {
+        return mElite != -1 && ability.on(mElite);
     }
 
-    public boolean isUsingEliteAbiilty(int ability) {
-        return mEliteState != -1 && (mEliteState & ability) != 0;
+    /**
+     * Returns true if this ship is using the specified elite ability and false
+     * if it is not.
+     */
+    public boolean isUsingEliteAbilty(EliteAbility ability) {
+        return mEliteState != -1 && ability.on(mEliteState);
     }
-    
-    public boolean isScanned(byte scanLevel) {
-        return mScannedLevel >= scanLevel;
-    }
-    
+
+    /**
+     * Sets the elite ability bit field.
+     * Unspecified: -1
+     */
     public void setEliteBits(int elite) {
         mElite = elite;
     }
 
+    /**
+     * Sets the elite state bit field (what abilities are being used).
+     * Unspecified: -1
+     */
     public void setEliteState(int elite) {
         mEliteState = elite;
     }
-    
-    public void setScanned(byte scanned) {
-        mScannedLevel = scanned;
+
+    /**
+     * The scan level for this ship.
+     * Unspecified: -1
+     */
+    public byte getScanLevel() {
+        return mScanLevel;
     }
 
+    public void setScanLevel(byte scanLevel) {
+        mScanLevel = scanLevel;
+    }
+
+    /**
+     * Returns true if this ship has been scanned at the given level or higher;
+     * false otherwise.
+     */
+    public boolean isScanned(byte scanLevel) {
+        return mScanLevel >= scanLevel;
+    }
+
+    /**
+     * The intel String for this ship.
+     * Unspecified: null
+     */
     public String getIntel() {
     	return mIntel;
     }
@@ -79,7 +108,7 @@ public class ArtemisNpc extends BaseArtemisShip {
     }
 
     @Override
-    public void updateFrom(ArtemisPositionable eng) {
+    public void updateFrom(ArtemisObject eng) {
         super.updateFrom(eng);
         
         // it SHOULD be an ArtemisNpc
@@ -91,8 +120,8 @@ public class ArtemisNpc extends BaseArtemisShip {
             	mEnemy = enemy;
             }
 
-            if (cast.mScannedLevel != -1) {
-                setScanned(cast.mScannedLevel);
+            if (cast.mScanLevel != -1) {
+                setScanLevel(cast.mScanLevel);
             }
             
             if (cast.mElite != -1) {
@@ -110,14 +139,10 @@ public class ArtemisNpc extends BaseArtemisShip {
     }
 
     /**
-     * Return whether or not we can show the given scanLevel info
-     *  for ANY ArtemisObject. The logic is we can ALWAYS show
-     *  scan info for non-enemies; otherwise, if it IS an enemy,
-     *  it must pass {@link #isScanned(byte)} (of course)
-     *  
-     * @param obj
-     * @param scanLevel
-     * @return
+     * Return whether or not we can show the given scanLevel info for ANY
+     * ArtemisObject. The logic is we can ALWAYS show scan info for non-enemies;
+     * otherwise, if it IS an enemy, it must pass {@link #isScanned(byte)} (of
+     * course).
      */
     public static boolean isScanned(ArtemisObject obj, byte scanLevel) {
     	if (!(obj instanceof ArtemisNpc)) {
@@ -130,39 +155,36 @@ public class ArtemisNpc extends BaseArtemisShip {
     }
 
     /**
-     * Convenience, checks if we've scanned the obj AT ALL 
-     *  (IE: do we have BASIC level scan?) 
-     * @param obj
-     * @return
+     * Convenience, checks if we've scanned the obj AT ALL. (Do we have BASIC
+     * level scan?)
      */
     public static boolean isScanned(ArtemisObject obj) {
         return isScanned(obj, SCAN_LEVEL_BASIC);
     }
 
-    public byte getScanLevel() {
-        return mScannedLevel;
+    /**
+     * Use for static abilities like INVISIBLE_TO_MAIN_SCREEN.
+     */
+    public static boolean hasEliteAbility(ArtemisObject obj,
+    		EliteAbility ability) {
+        return (obj instanceof ArtemisNpc)
+                && ((ArtemisNpc) obj).hasEliteAbility(ability);
     }
 
     /**
-     * Use for static abilities like ELITE_INVIS_TO_MAIN_SCREEN
+     * Use for dynamic abilities like CLOAKING.
      */
-    public static boolean hasEliteAbility(ArtemisObject obj, int ability) {
+    public static boolean isUsingEliteAbility(ArtemisObject obj,
+    		EliteAbility ability) {
         return (obj instanceof ArtemisNpc) 
-                && ((ArtemisNpc)obj).hasEliteAbility(ability);
-    }
-
-    /**
-     * Use for dynamic abilities like ELITE_CLOAKING
-     */
-    public static boolean isUsingEliteAbility(ArtemisObject obj, int ability) {
-        return (obj instanceof ArtemisNpc) 
-                && ((ArtemisNpc)obj).isUsingEliteAbiilty(ability);
+                && ((ArtemisNpc) obj).isUsingEliteAbilty(ability);
     }
 
     @Override
-	public void appendObjectProps(SortedMap<String, Object> props, boolean includeUnspecified) {
+	public void appendObjectProps(SortedMap<String, Object> props,
+			boolean includeUnspecified) {
     	super.appendObjectProps(props, includeUnspecified);
-    	putProp(props, "Scan level", mScannedLevel, -1, includeUnspecified);
+    	putProp(props, "Scan level", mScanLevel, -1, includeUnspecified);
     	putProp(props, "Elite", mElite, -1, includeUnspecified);
     	putProp(props, "Elite state", mEliteState, -1, includeUnspecified);
     	putProp(props, "Is enemy", mEnemy, includeUnspecified);

@@ -3,6 +3,7 @@ package net.dhleong.acl;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+import net.dhleong.acl.enums.BeamFrequency;
 import net.dhleong.acl.enums.BridgeStation;
 import net.dhleong.acl.enums.OrdnanceType;
 import net.dhleong.acl.enums.ShipSystem;
@@ -12,7 +13,7 @@ import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.ReadyPacket2;
 import net.dhleong.acl.net.setup.SetStationPacket;
 import net.dhleong.acl.world.ArtemisPlayer;
-import net.dhleong.acl.world.ArtemisPositionable;
+import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.BaseArtemisShip;
 
 /**
@@ -73,11 +74,11 @@ public class BadParseDetectingRunner {
                     final ObjectUpdatingPacket up = (ObjectUpdatingPacket) pkt;
                     try {
 
-                        for (final ArtemisPositionable p : up.getObjects()) {
+                        for (final ArtemisObject p : up.getObjects()) {
                             if (p instanceof BaseArtemisShip)
                                 testShip((BaseArtemisShip)p);
                             else
-                                testPositionable(p);
+                                testObject(p);
                         }
 
                     } catch (final RuntimeException e) {
@@ -119,7 +120,7 @@ public class BadParseDetectingRunner {
     }
 
     public static void testShip(final BaseArtemisShip p) {
-        testPositionable(p);
+        testObject(p);
 
         assertRange(-1, 10000, p.getHullId(), "hullId");
 
@@ -134,8 +135,8 @@ public class BadParseDetectingRunner {
         assertRange(-50, 1000, p.getShieldsFront(), "shieldFront");
         assertRange(-50, 1000, p.getShieldsRear(), "shieldRear");
         
-        for (int i=0; i<5; i++) {
-            assertRange(-1, 1f, p.getShieldFreq(i), "shieldFreq("+i+")");
+        for (BeamFrequency freq : BeamFrequency.values()) {
+            assertRange(-1, 1f, p.getShieldFreq(freq), "shieldFreq(" + freq + ")");
         }
     }
 
@@ -146,7 +147,7 @@ public class BadParseDetectingRunner {
                             label, expected));
     }
 
-    public static void testPositionable(final ArtemisPositionable p) {
+    public static void testObject(final ArtemisObject p) {
         assertRange(-1, 100020, p.getX(), "x");
         assertRange(-300, 300, p.getY(), "y");
         assertRange(-1, 100020, p.getZ(), "z");

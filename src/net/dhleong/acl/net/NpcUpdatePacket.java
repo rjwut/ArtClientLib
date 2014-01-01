@@ -7,7 +7,7 @@ import java.util.List;
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.world.ArtemisNpc;
-import net.dhleong.acl.world.ArtemisPositionable;
+import net.dhleong.acl.world.ArtemisObject;
 
 /**
  * Updates on enemy and allied ships.
@@ -76,22 +76,23 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
 		Bit.SHIELD_FREQUENCY_E
     };
 
-    private final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
+    private final List<ArtemisObject> mObjects = new ArrayList<ArtemisObject>();
 
     public NpcUpdatePacket(PacketReader reader) {
     	super(ConnectionType.SERVER, WORLD_TYPE);
-        float x, y, z, bearing, steering, velocity, maxImpulse, maxTurnRate;
-        float[] freqs = new float[SHLD_FREQS.length];
-        int scanned = -1;
-        String name = null;
-        BoolState enemy;
-        int hullId = -1;
-        int elite = -1;
-        int eliteState = -1;
-        float shieldsFront, shieldsFrontMax;
-        float shieldsRear, shieldsRearMax;
 
-        while (reader.hasMore()) {
+    	while (reader.hasMore()) {
+            float x, y, z, bearing, steering, velocity, maxImpulse, maxTurnRate;
+            float[] freqs = new float[SHLD_FREQS.length];
+            int scanned = -1;
+            String name = null;
+            BoolState enemy;
+            int hullId = -1;
+            int elite = -1;
+            int eliteState = -1;
+            float shieldsFront, shieldsFrontMax;
+            float shieldsRear, shieldsRearMax;
+
             reader.startObject(Bit.values());
             name = reader.readString(Bit.NAME);
 
@@ -109,9 +110,9 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
             }
 
             hullId = reader.readInt(Bit.SHIP_TYPE, -1);
-            x = reader.readFloat(Bit.X, -1);
-            y = reader.readFloat(Bit.Y, -1);
-            z = reader.readFloat(Bit.Z, -1);
+            x = reader.readFloat(Bit.X, Float.MIN_VALUE);
+            y = reader.readFloat(Bit.Y, Float.MIN_VALUE);
+            z = reader.readFloat(Bit.Z, Float.MIN_VALUE);
 
             reader.readObjectUnknown(Bit.UNK_2_3, 4);
 
@@ -122,9 +123,9 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
             reader.readObjectUnknown(Bit.UNK_2_7, 1);
             reader.readObjectUnknown(Bit.UNK_2_8, 2);
 
-            shieldsFront = reader.readFloat(Bit.FORE_SHIELD, -1);
+            shieldsFront = reader.readFloat(Bit.FORE_SHIELD, Float.MIN_VALUE);
             shieldsFrontMax = reader.readFloat(Bit.FORE_SHIELD_MAX, -1);
-            shieldsRear = reader.readFloat(Bit.AFT_SHIELD, -1);
+            shieldsRear = reader.readFloat(Bit.AFT_SHIELD, Float.MIN_VALUE);
             shieldsRearMax = reader.readFloat(Bit.AFT_SHIELD_MAX, -1);
 
             reader.readObjectUnknown(Bit.UNK_3_5, 2);
@@ -161,7 +162,7 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
            	reader.readObjectUnknown(Bit.UNK_6_7, 4);
 
             ArtemisNpc obj = new ArtemisNpc(reader.getObjectId(), name, hullId);
-            obj.setScanned((byte) scanned);
+            obj.setScanLevel((byte) scanned);
             obj.setEnemy(enemy);
             obj.setEliteBits(elite);
             obj.setEliteState(eliteState);
@@ -187,14 +188,14 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
                 obj.setShieldFreq(i, freqs[i]);
             }
 
-            obj.setUnknownFields(reader.getUnknownObjectFields());
+            obj.setUnknownProps(reader.getUnknownObjectProps());
             mObjects.add(obj);
         }
     }
 
 	@Override
 	protected void appendPacketDetail(StringBuilder b) {
-		for (ArtemisPositionable obj : mObjects) {
+		for (ArtemisObject obj : mObjects) {
 			b.append("\nObject ").append(obj.getId()).append(obj);
 		}
 	}
@@ -207,7 +208,7 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
     }
 
     @Override
-    public List<ArtemisPositionable> getObjects() {
+    public List<ArtemisObject> getObjects() {
         return mObjects;
     }
 }

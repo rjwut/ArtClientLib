@@ -4,6 +4,9 @@ import java.util.SortedMap;
 
 import net.dhleong.acl.enums.ObjectType;
 
+/**
+ * Space stations
+ */
 public class ArtemisStation extends BaseArtemisShielded {
 	private int mIndex = -1;
 
@@ -11,6 +14,16 @@ public class ArtemisStation extends BaseArtemisShielded {
         super(objId, name);
     }
 
+	@Override
+    public ObjectType getType() {
+        return ObjectType.SPACE_STATION;
+    }
+
+	/**
+	 * This station's index value. In non-scripted scenarios, DS1's index is 0,
+	 * DS2's index is 1, etc. This value is unique even if the names aren't.
+	 * Unspecified: -1
+	 */
 	public int getIndex() {
 		return mIndex;
 	}
@@ -19,13 +32,8 @@ public class ArtemisStation extends BaseArtemisShielded {
 		mIndex = index;
 	}
 
-	@Override
-    public ObjectType getType() {
-        return ObjectType.SPACE_STATION;
-    }
-
     @Override
-    public void updateFrom(ArtemisPositionable eng) {
+    public void updateFrom(ArtemisObject eng) {
         super.updateFrom(eng);
         
         if (eng instanceof ArtemisStation) {

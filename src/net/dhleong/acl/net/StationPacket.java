@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.dhleong.acl.enums.ConnectionType;
-import net.dhleong.acl.world.ArtemisPositionable;
+import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisStation;
 
 /**
@@ -29,7 +29,7 @@ public class StationPacket extends BaseArtemisPacket implements ObjectUpdatingPa
 		UNK_7
 	}
 
-    private final List<ArtemisPositionable> mObjects = new ArrayList<ArtemisPositionable>();
+    private final List<ArtemisObject> mObjects = new ArrayList<ArtemisObject>();
 
     public StationPacket(PacketReader reader) {
     	super(ConnectionType.SERVER, WORLD_TYPE);
@@ -54,9 +54,9 @@ public class StationPacket extends BaseArtemisPacket implements ObjectUpdatingPa
             index = reader.readInt(Bit.INDEX, 4);
             reader.readObjectUnknown(Bit.UNK_1, 4); // hull ID?
 
-            x = reader.readFloat(Bit.X, -1);
-            y = reader.readFloat(Bit.Y, -1);
-            z = reader.readFloat(Bit.Z, -1);
+            x = reader.readFloat(Bit.X, Float.MIN_VALUE);
+            y = reader.readFloat(Bit.Y, Float.MIN_VALUE);
+            z = reader.readFloat(Bit.Z, Float.MIN_VALUE);
 
             reader.readObjectUnknown(Bit.UNK_2, 4);
             reader.readObjectUnknown(Bit.UNK_3, 4);
@@ -72,20 +72,20 @@ public class StationPacket extends BaseArtemisPacket implements ObjectUpdatingPa
             station.setZ(z);
             station.setShieldsFront(shieldsFront);
             station.setShieldsRear(shieldsRear);
-            station.setUnknownFields(reader.getUnknownObjectFields());
+            station.setUnknownProps(reader.getUnknownObjectProps());
             mObjects.add(station);
         }
     }
 
 	@Override
 	protected void appendPacketDetail(StringBuilder b) {
-		for (ArtemisPositionable obj : mObjects) {
+		for (ArtemisObject obj : mObjects) {
 			b.append("\nStation #").append(obj.getId()).append(obj);
 		}
 	}
 
     @Override
-    public List<ArtemisPositionable> getObjects() {
+    public List<ArtemisObject> getObjects() {
         return mObjects;
     }
 }

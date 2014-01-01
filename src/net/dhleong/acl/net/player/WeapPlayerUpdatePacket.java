@@ -19,6 +19,7 @@ public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
 		TUBE_TIME_1,
 		TUBE_TIME_2,
 		TUBE_TIME_3,
+
 		TUBE_TIME_4,
 		TUBE_TIME_5,
 		TUBE_TIME_6,
@@ -27,6 +28,7 @@ public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
 		TUBE_USE_3,
 		TUBE_USE_4,
 		TUBE_USE_5,
+
 		TUBE_USE_6,
 		TUBE_TYPE_1,
 		TUBE_TYPE_2,

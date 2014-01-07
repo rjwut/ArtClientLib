@@ -1,18 +1,41 @@
 package net.dhleong.acl.enums;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Elite abilities that enemy ships may have.
- * TODO Update for Artemis 2.0
  * @author rjwut
  */
 public enum EliteAbility {
-	INVISIBLE_TO_MAIN_SCREEN,
-	INVISIBLE_TO_SCIENCE,
-	INVISIBLE_TO_TACTICAL,
-	CLOAKING,
-	HIGH_ENERGY_TURN,
+	STEALTH,		// invisible on long range or tactical views
+	LOW_VIS,		// invisible on helm or weapons views until within 3k
+	CLOAK,			// invisible on all views
+	HET,			// high energy turn
 	WARP,
-	TELEPORT;
+	TELEPORT,		// jump drive
+	TRACTOR,
+	DRONES,			// Torgoth drone launcher
+	ANTI_MINE,
+	ANTI_TORP,
+	SHIELD_DRAIN; 
+
+
+	/**
+	 * Returns a set containing the EliteAbility values that correspond to the
+	 * given bit field value.
+	 */
+	public static Set<EliteAbility> fromValue(int value) {
+		Set<EliteAbility> set = new HashSet<EliteAbility>();
+
+		for (EliteAbility ability : values()) {
+			if ((value & ability.bit) != 0) {
+				set.add(ability);
+			}
+		}
+
+		return set;
+	}
 
 	private int bit;
 
@@ -20,7 +43,11 @@ public enum EliteAbility {
 		bit = 0x01 << ordinal();
 	}
 
-	public boolean on(int flags) {
-		return (flags & bit) != 0;
+	/**
+	 * Given a bit field value, returns true if the bit corresponding to this
+	 * EliteAbility is turned on.
+	 */
+	public boolean on(int value) {
+		return (value & bit) != 0;
 	}
 }

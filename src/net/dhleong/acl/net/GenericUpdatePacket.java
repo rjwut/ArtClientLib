@@ -19,10 +19,10 @@ public class GenericUpdatePacket extends BaseArtemisPacket implements ObjectUpda
     	Y,
     	Z,
     	NAME,
-    	UNK_0,
-    	UNK_1,
-    	UNK_2,
-    	UNK_3
+    	UNK_1_5,
+    	UNK_1_6,
+    	UNK_1_7,
+    	UNK_1_8
     }
 
     private final List<ArtemisObject> mObjects = new ArrayList<ArtemisObject>();
@@ -51,11 +51,11 @@ public class GenericUpdatePacket extends BaseArtemisPacket implements ObjectUpda
                 reader.readInt(Bit.NAME);
             }
 
-            reader.readObjectUnknown(Bit.UNK_0, 4);
-            reader.readObjectUnknown(Bit.UNK_1, 4);
-            reader.readObjectUnknown(Bit.UNK_2, 4);
-            reader.readObjectUnknown(Bit.UNK_3, 4);
-            
+            reader.readObjectUnknown(Bit.UNK_1_5, 4);
+            reader.readObjectUnknown(Bit.UNK_1_6, 4);
+            reader.readObjectUnknown(Bit.UNK_1_7, 4);
+            reader.readObjectUnknown(Bit.UNK_1_8, 4);
+
             final ArtemisGenericObject obj = new ArtemisGenericObject(
             		reader.getObjectId(), name, type);
             obj.setX(x);

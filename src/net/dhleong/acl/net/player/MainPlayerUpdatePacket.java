@@ -88,10 +88,8 @@ public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectU
             float x = reader.readFloat(Bit.X, Float.MIN_VALUE);
             float y = reader.readFloat(Bit.Y, Float.MIN_VALUE);
             float z = reader.readFloat(Bit.Z, Float.MIN_VALUE);
-
-            reader.readObjectUnknown(Bit.UNK_2_7, 4);
-            reader.readObjectUnknown(Bit.UNK_2_8, 4);
-
+            float pitch = reader.readFloat(Bit.UNK_2_7, Float.MIN_VALUE);
+            float roll = reader.readFloat(Bit.UNK_2_8, Float.MIN_VALUE);
             float heading = reader.readFloat(Bit.HEADING, Float.MIN_VALUE);
             float velocity = reader.readFloat(Bit.VELOCITY, -1);
 
@@ -147,7 +145,9 @@ public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectU
             player.setX(x);
             player.setY(y);
             player.setZ(z);
-            player.setBearing(heading);
+            player.setPitch(pitch);
+            player.setRoll(roll);
+            player.setHeading(heading);
             player.setVelocity(velocity);
             player.setEnergy(energy);
             player.setDockingStation(dockingStation);

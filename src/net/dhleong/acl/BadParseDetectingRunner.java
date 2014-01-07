@@ -124,8 +124,8 @@ public class BadParseDetectingRunner {
 
         assertRange(-1, 10000, p.getHullId(), "hullId");
 
-        if (p.getBearing() != Float.MIN_VALUE)
-            assertRange(-4, 4, p.getBearing(), "bearing");
+        if (p.getHeading() != Float.MIN_VALUE)
+            assertRange(-4, 4, p.getHeading(), "heading");
 
         // I guess they can go negative when destroyed...?
         assertRange(-50, 1000, p.getShieldsFrontMax(), "shieldFrontMax");

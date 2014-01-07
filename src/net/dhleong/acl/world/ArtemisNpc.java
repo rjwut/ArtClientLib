@@ -1,10 +1,13 @@
 package net.dhleong.acl.world;
 
+import java.util.Set;
 import java.util.SortedMap;
 
 import net.dhleong.acl.enums.EliteAbility;
 import net.dhleong.acl.enums.ObjectType;
+import net.dhleong.acl.enums.ShipSystem;
 import net.dhleong.acl.util.BoolState;
+import net.dhleong.acl.util.Util;
 
 /**
  * An NPC ship; they may have special abilities, and can be scanned.
@@ -19,9 +22,14 @@ public class ArtemisNpc extends BaseArtemisShip {
     private int mElite = -1, mEliteState = -1;
     private BoolState mEnemy = BoolState.UNKNOWN;
     private String mIntel;
+    private final float[] mSysDamage = new float[8];
 
     public ArtemisNpc(int objId, String name, int hullId) {
         super(objId, name, hullId);
+
+        for (int i = 0; i < 8; i++) {
+        	mSysDamage[i] = -1;
+        }
     }
 
     @Override
@@ -41,6 +49,15 @@ public class ArtemisNpc extends BaseArtemisShip {
 
     public void setEnemy(BoolState enemy) {
     	mEnemy = enemy;
+    }
+
+    /**
+     * Returns a Set containing the EliteAbility values that pertain to this
+     * ship.
+     * Unspecified: null
+     */
+    public Set<EliteAbility> getEliteAbilities() {
+    	return mElite != -1 ? EliteAbility.fromValue(mElite) : null;
     }
 
     /**
@@ -71,7 +88,7 @@ public class ArtemisNpc extends BaseArtemisShip {
      * Sets the elite state bit field (what abilities are being used).
      * Unspecified: -1
      */
-    public void setEliteState(int elite) {
+    public void setEliteStateBits(int elite) {
         mEliteState = elite;
     }
 
@@ -107,6 +124,19 @@ public class ArtemisNpc extends BaseArtemisShip {
     	mIntel = intel;
     }
 
+    /**
+     * The percentage of damage sustained by a particular system, expressed as
+     * a value between 0 and 1.
+     * Unspecified: -1
+     */
+    public float getSystemDamage(ShipSystem sys) {
+    	return mSysDamage[sys.ordinal()];
+    }
+
+    public void setSystemDamage(ShipSystem sys, float value) {
+    	mSysDamage[sys.ordinal()] = value;
+    }
+
     @Override
     public void updateFrom(ArtemisObject eng) {
         super.updateFrom(eng);
@@ -129,55 +159,21 @@ public class ArtemisNpc extends BaseArtemisShip {
             }
 
             if (cast.mEliteState != -1) {
-                setEliteState(cast.mEliteState);
+                setEliteStateBits(cast.mEliteState);
             }
 
             if (cast.mIntel != null) {
             	setIntel(cast.mIntel);
             }
+
+            for (int i = 0; i < mSysDamage.length; i++) {
+            	float value = cast.mSysDamage[i];
+
+            	if (value != -1) {
+                    mSysDamage[i] = value;
+            	}
+            }
         }
-    }
-
-    /**
-     * Return whether or not we can show the given scanLevel info for ANY
-     * ArtemisObject. The logic is we can ALWAYS show scan info for non-enemies;
-     * otherwise, if it IS an enemy, it must pass {@link #isScanned(byte)} (of
-     * course).
-     */
-    public static boolean isScanned(ArtemisObject obj, byte scanLevel) {
-    	if (!(obj instanceof ArtemisNpc)) {
-    		return true;
-    	}
-
-    	ArtemisNpc npc = (ArtemisNpc) obj;
-
-    	return npc.isEnemy() == BoolState.FALSE || npc.isScanned(scanLevel);
-    }
-
-    /**
-     * Convenience, checks if we've scanned the obj AT ALL. (Do we have BASIC
-     * level scan?)
-     */
-    public static boolean isScanned(ArtemisObject obj) {
-        return isScanned(obj, SCAN_LEVEL_BASIC);
-    }
-
-    /**
-     * Use for static abilities like INVISIBLE_TO_MAIN_SCREEN.
-     */
-    public static boolean hasEliteAbility(ArtemisObject obj,
-    		EliteAbility ability) {
-        return (obj instanceof ArtemisNpc)
-                && ((ArtemisNpc) obj).hasEliteAbility(ability);
-    }
-
-    /**
-     * Use for dynamic abilities like CLOAKING.
-     */
-    public static boolean isUsingEliteAbility(ArtemisObject obj,
-    		EliteAbility ability) {
-        return (obj instanceof ArtemisNpc) 
-                && ((ArtemisNpc) obj).isUsingEliteAbilty(ability);
     }
 
     @Override
@@ -185,9 +181,28 @@ public class ArtemisNpc extends BaseArtemisShip {
 			boolean includeUnspecified) {
     	super.appendObjectProps(props, includeUnspecified);
     	putProp(props, "Scan level", mScanLevel, -1, includeUnspecified);
-    	putProp(props, "Elite", mElite, -1, includeUnspecified);
-    	putProp(props, "Elite state", mEliteState, -1, includeUnspecified);
+
+    	if (mElite != -1) {
+    		String str = Util.enumSetToString(EliteAbility.fromValue(mElite));
+    		props.put("Specials", str != "" ? str : "NONE");
+    	} else if (includeUnspecified) {
+        	props.put("Specials", "UNKNOWN");
+    	}
+
+    	if (mEliteState != -1) {
+    		String str = Util.enumSetToString(EliteAbility.fromValue(mEliteState));
+    		props.put("Specials active", str != "" ? str : "NONE");
+    	} else if (includeUnspecified) {
+        	props.put("Specials active", "UNKNOWN");
+    	}
+
     	putProp(props, "Is enemy", mEnemy, includeUnspecified);
     	putProp(props, "Intel", mIntel, includeUnspecified);
+    	ShipSystem[] systems = ShipSystem.values();
+
+    	for (int i = 0; i < mSysDamage.length; i++) {
+    		putProp(props, "Damage: " + systems[i], mSysDamage[i],
+    				-1, includeUnspecified);
+    	}
     }
 }

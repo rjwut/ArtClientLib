@@ -51,7 +51,7 @@ public class GenericMeshPacket extends BaseArtemisPacket implements ObjectUpdati
 
     public GenericMeshPacket(PacketReader reader) {
     	super(ConnectionType.SERVER, WORLD_TYPE);
-        float x, y, z;//, bearing;
+        float x, y, z;
         String name = null, mesh = null, texture = null;
         float shieldsFront, shieldsRear;
 

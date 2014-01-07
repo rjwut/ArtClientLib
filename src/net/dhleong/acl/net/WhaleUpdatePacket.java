@@ -14,55 +14,56 @@ import net.dhleong.acl.world.ArtemisObject;
 public class WhaleUpdatePacket extends BaseArtemisPacket implements ObjectUpdatingPacket {
     private enum Bit {
     	NAME,
-    	UNK_0,
-    	UNK_1,
+    	UNK_1_2,
+    	UNK_1_3,
     	X,
     	Y,
     	Z,
-    	UNK_2,
-    	UNK_3,
+    	PITCH,
+    	ROLL,
 
     	HEADING,
-    	UNK_4,
-    	UNK_5,
-    	UNK_6,
-    	UNK_7
+    	UNK_2_2,
+    	UNK_2_3,
+    	UNK_2_4,
+    	UNK_2_5
     }
 
     private final List<ArtemisObject> mObjects = new ArrayList<ArtemisObject>();
 
     public WhaleUpdatePacket(PacketReader reader) {
     	super(ConnectionType.SERVER, WORLD_TYPE);
-        float x, y, z, bearing;
-        String name;
         
         while (reader.hasMore()) {
+            float x, y, z, heading, pitch, roll;
+            String name;
+
             reader.startObject(Bit.values());
             name = reader.readString(Bit.NAME);
 
-            reader.readObjectUnknown(Bit.UNK_0, 4);
-            reader.readObjectUnknown(Bit.UNK_1, 4);
-            
+            reader.readObjectUnknown(Bit.UNK_1_2, 4);
+            reader.readObjectUnknown(Bit.UNK_1_3, 4);
+
             x = reader.readFloat(Bit.X, Float.MIN_VALUE);
             y = reader.readFloat(Bit.Y, Float.MIN_VALUE);
             z = reader.readFloat(Bit.Z, Float.MIN_VALUE);
-            
-            reader.readObjectUnknown(Bit.UNK_2, 4);
-            reader.readObjectUnknown(Bit.UNK_3, 4);
+            pitch = reader.readFloat(Bit.PITCH, Float.MIN_VALUE);
+            roll = reader.readFloat(Bit.ROLL, Float.MIN_VALUE);
+            heading = reader.readFloat(Bit.HEADING, Float.MIN_VALUE);
 
-            bearing = reader.readFloat(Bit.HEADING, Float.MIN_VALUE);
-
-            reader.readObjectUnknown(Bit.UNK_4, 4);
-            reader.readObjectUnknown(Bit.UNK_5, 4);
-            reader.readObjectUnknown(Bit.UNK_6, 4);
-            reader.readObjectUnknown(Bit.UNK_7, 4);
+            reader.readObjectUnknown(Bit.UNK_2_2, 4);
+            reader.readObjectUnknown(Bit.UNK_2_3, 4);
+            reader.readObjectUnknown(Bit.UNK_2_4, 4);
+            reader.readObjectUnknown(Bit.UNK_2_5, 4);
             
             final ArtemisWhale obj = new ArtemisWhale(reader.getObjectId(),
             		name);
             obj.setX(x);
             obj.setY(y);
             obj.setZ(z);
-            obj.setBearing(bearing);
+            obj.setHeading(heading);
+            obj.setPitch(pitch);
+            obj.setRoll(roll);
             obj.setUnknownProps(reader.getUnknownObjectProps());
             mObjects.add(obj);
         }

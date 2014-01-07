@@ -7,7 +7,14 @@ import net.dhleong.acl.enums.ObjectType;
 /**
  * This class represents information about an object in the game world. It may
  * contain all the information known about that object, or just updates. Every
- * object has an ID, a type, a name and a position.
+ * object has the following:
+ * 
+ * - an ID
+ * - a type
+ * - a position (x, y, z)
+ * 
+ * Many objects also have a name, but not all of them do, and the name is not
+ * guaranteed to be unique.
  * 
  * 
  * Unspecified properties vs. unknown properties

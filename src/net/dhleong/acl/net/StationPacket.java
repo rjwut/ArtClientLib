@@ -41,8 +41,8 @@ public class StationPacket extends BaseArtemisPacket implements ObjectUpdatingPa
         while (reader.hasMore()) {
             reader.startObject(Bit.values());
             name = reader.readString(Bit.NAME);
-            shieldsFront = reader.readFloat(Bit.FORE_SHIELDS, -1);
-            shieldsRear = reader.readFloat(Bit.AFT_SHIELDS, -1);
+            shieldsFront = reader.readFloat(Bit.FORE_SHIELDS, Float.MIN_VALUE);
+            shieldsRear = reader.readFloat(Bit.AFT_SHIELDS, Float.MIN_VALUE);
 
             index = reader.readInt(Bit.INDEX, 4);
             reader.readObjectUnknown(Bit.UNK_1, 4); // hull ID?

@@ -219,6 +219,8 @@ public class PacketReader {
 				return new GameMessagePacket(this);
 			case SoundEffectPacket.MSG_TYPE:
 				return new SoundEffectPacket(this);
+			case KeyCaptureTogglePacket.MSG_TYPE:
+				return new KeyCaptureTogglePacket(this);
 			default:
 				return new UnknownPacket(
 						ConnectionType.SERVER,

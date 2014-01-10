@@ -125,7 +125,7 @@ public abstract class BaseArtemisObject implements ArtemisObject {
         mZ = z;
     }
 
-    @Override
+	@Override
     public void updateFrom(ArtemisObject eng) {
         if (eng.getName() != null) {
             mName = eng.getName();
@@ -197,9 +197,9 @@ public abstract class BaseArtemisObject implements ArtemisObject {
 
     /**
      * Appends this object's properties to the given map. If includeUnspecified
-     * is true, unspecified properties area also included (except for unknown
-     * properties). Subclasses must always call the superclass's implementation
-     * of this method.
+     * is true, unspecified properties area also included (unless they are also
+     * unknown properties). Subclasses must always call the superclass's
+     * implementation of this method.
      */
 	protected void appendObjectProps(SortedMap<String, Object> props,
 			boolean includeUnspecified) {

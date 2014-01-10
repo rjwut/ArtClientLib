@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.dhleong.acl.enums.BeamFrequency;
 import net.dhleong.acl.enums.ConnectionType;
+import net.dhleong.acl.enums.ShipSystem;
 import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.world.ArtemisNpc;
 import net.dhleong.acl.world.ArtemisObject;
@@ -25,8 +27,8 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
 
 		Y,
 		Z,
-		UNK_2_3,
-		RUDDER,
+		PITCH,
+		ROLL,
 		HEADING,
 		VELOCITY,
 		UNK_2_7,
@@ -38,8 +40,8 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
 		AFT_SHIELD_MAX,
 		UNK_3_5,
 		UNK_3_6,
-		UNK_3_7,
-		UNK_3_8,
+		ELITE_ABILITIES,
+		ELITE_STATE,
 
 		UNK_4_1,
 		UNK_4_2,
@@ -52,23 +54,34 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
 
 		UNK_5_1,
 		UNK_5_2,
+		BEAM_SYSTEM_DAMAGE,
+		TORPEDO_SYSTEM_DAMAGE,
+		SENSOR_SYSTEM_DAMAGE,
+		MANEUVER_SYSTEM_DAMAGE,
+		IMPULSE_SYSTEM_DAMAGE,
+		WARP_SYSTEM_DAMAGE,
+
+		FORE_SHIELD_SYSTEM_DAMAGE,
+		AFT_SHIELD_SYSTEM_DAMAGE,
 		SHIELD_FREQUENCY_A,
 		SHIELD_FREQUENCY_B,
 		SHIELD_FREQUENCY_C,
 		SHIELD_FREQUENCY_D,
-		SHIELD_FREQUENCY_E,
-		UNK_5_8,
-
-		UNK_6_1,
-		UNK_6_2,
-		UNK_6_3,
-		UNK_6_4,
-		UNK_6_5,
-		UNK_6_6,
-		UNK_6_7
+		SHIELD_FREQUENCY_E
 	}
 
-    private static final Bit[] SHLD_FREQS = new Bit[] {
+	private static final Bit[] SYSTEM_DAMAGES = new Bit[] {
+		Bit.BEAM_SYSTEM_DAMAGE,
+		Bit.TORPEDO_SYSTEM_DAMAGE,
+		Bit.SENSOR_SYSTEM_DAMAGE,
+		Bit.MANEUVER_SYSTEM_DAMAGE,
+		Bit.IMPULSE_SYSTEM_DAMAGE,
+		Bit.WARP_SYSTEM_DAMAGE,
+		Bit.FORE_SHIELD_SYSTEM_DAMAGE,
+		Bit.AFT_SHIELD_SYSTEM_DAMAGE
+	};
+
+	private static final Bit[] SHLD_FREQS = new Bit[] {
 		Bit.SHIELD_FREQUENCY_A,
 		Bit.SHIELD_FREQUENCY_B,
 		Bit.SHIELD_FREQUENCY_C,
@@ -82,7 +95,8 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
     	super(ConnectionType.SERVER, WORLD_TYPE);
 
     	while (reader.hasMore()) {
-            float x, y, z, bearing, steering, velocity, maxImpulse, maxTurnRate;
+            float x, y, z, pitch, roll, heading, velocity, maxImpulse, maxTurnRate;
+            float[] sysDamage = new float[SYSTEM_DAMAGES.length];
             float[] freqs = new float[SHLD_FREQS.length];
             int scanned = -1;
             String name = null;
@@ -113,11 +127,9 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
             x = reader.readFloat(Bit.X, Float.MIN_VALUE);
             y = reader.readFloat(Bit.Y, Float.MIN_VALUE);
             z = reader.readFloat(Bit.Z, Float.MIN_VALUE);
-
-            reader.readObjectUnknown(Bit.UNK_2_3, 4);
-
-            steering = reader.readFloat(Bit.RUDDER, -1); // I *think* so
-            bearing = reader.readFloat(Bit.HEADING, Float.MIN_VALUE);
+            pitch = reader.readFloat(Bit.PITCH, Float.MIN_VALUE);
+            roll = reader.readFloat(Bit.ROLL, Float.MIN_VALUE);
+            heading = reader.readFloat(Bit.HEADING, Float.MIN_VALUE);
             velocity = reader.readFloat(Bit.VELOCITY, -1);
 
             reader.readObjectUnknown(Bit.UNK_2_7, 1);
@@ -131,8 +143,8 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
             reader.readObjectUnknown(Bit.UNK_3_5, 2);
             reader.readObjectUnknown(Bit.UNK_3_6, 1);
 
-            elite = reader.readInt(Bit.UNK_3_7);
-            eliteState = reader.readInt(Bit.UNK_3_8); // what abilities are active?
+            elite = reader.readInt(Bit.ELITE_ABILITIES, -1);
+            eliteState = reader.readInt(Bit.ELITE_STATE, -1);
             scanned = reader.readInt(Bit.UNK_4_1);
 
             reader.readObjectUnknown(Bit.UNK_4_2, 4);
@@ -147,34 +159,29 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
             reader.readObjectUnknown(Bit.UNK_5_1, 4);
             reader.readObjectUnknown(Bit.UNK_5_2, 4);
 
+            // system damage
+            for (int i = 0; i < SYSTEM_DAMAGES.length; i++) {
+            	sysDamage[i] = reader.readFloat(SYSTEM_DAMAGES[i], -1);
+            }
+
             // shield frequencies
             for (int i = 0; i < SHLD_FREQS.length; i++) {
                 freqs[i] = reader.readFloat(SHLD_FREQS[i], -1);
             }
 
-            reader.readObjectUnknown(Bit.UNK_5_8, 4);
-            reader.readObjectUnknown(Bit.UNK_6_1, 4);
-            reader.readObjectUnknown(Bit.UNK_6_2, 4);
-            reader.readObjectUnknown(Bit.UNK_6_3, 4);
-            reader.readObjectUnknown(Bit.UNK_6_4, 4);
-           	reader.readObjectUnknown(Bit.UNK_6_5, 4);
-           	reader.readObjectUnknown(Bit.UNK_6_6, 4);
-           	reader.readObjectUnknown(Bit.UNK_6_7, 4);
-
             ArtemisNpc obj = new ArtemisNpc(reader.getObjectId(), name, hullId);
             obj.setScanLevel((byte) scanned);
             obj.setEnemy(enemy);
             obj.setEliteBits(elite);
-            obj.setEliteState(eliteState);
-
+            obj.setEliteStateBits(eliteState);
             
             // shared updates
             obj.setX(x);
             obj.setY(y);
             obj.setZ(z);
-            
-            obj.setSteering(steering);
-            obj.setBearing(bearing);
+            obj.setPitch(pitch);
+            obj.setRoll(roll);
+            obj.setHeading(heading);
             obj.setVelocity(velocity);
             obj.setTopSpeed(maxImpulse);
             obj.setTurnRate(maxTurnRate);
@@ -183,9 +190,13 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
             obj.setShieldsFrontMax(shieldsFrontMax);
             obj.setShieldsRear(shieldsRear);
             obj.setShieldsRearMax(shieldsRearMax);
-            
-            for (int i = 0; i < freqs.length; i++) {
-                obj.setShieldFreq(i, freqs[i]);
+
+            for (ShipSystem sys : ShipSystem.values()) {
+            	obj.setSystemDamage(sys, sysDamage[sys.ordinal()]);
+            }
+
+            for (BeamFrequency bf : BeamFrequency.values()) {
+                obj.setShieldFreq(bf, freqs[bf.ordinal()]);
             }
 
             obj.setUnknownProps(reader.getUnknownObjectProps());

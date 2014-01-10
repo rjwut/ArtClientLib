@@ -5,7 +5,7 @@ import java.util.SortedMap;
 /**
  * Base implementation of a shielded world object.
  */
-public abstract class BaseArtemisShielded extends BaseArtemisObject
+public abstract class BaseArtemisShielded extends BaseArtemisOrientable
 		implements ArtemisShielded {
     private float mShieldsFront = Float.MIN_VALUE;
     private float mShieldsRear = Float.MIN_VALUE;

@@ -42,12 +42,12 @@ public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
         Bit.TORP_HOMING, Bit.TORP_NUKES, Bit.TORP_MINES, Bit.TORP_EMPS
     };
 
-    static final Bit[] TUBE_TIMES = {
+    private static final Bit[] TUBE_TIMES = {
         Bit.TUBE_TIME_1, Bit.TUBE_TIME_2, Bit.TUBE_TIME_3,
         Bit.TUBE_TIME_4, Bit.TUBE_TIME_5, Bit.TUBE_TIME_6
     };
 
-    static final Bit[] TUBE_USES = {
+    private static final Bit[] TUBE_USES = {
         Bit.TUBE_USE_1, Bit.TUBE_USE_2, Bit.TUBE_USE_3,
         Bit.TUBE_USE_4, Bit.TUBE_USE_5, Bit.TUBE_USE_6
     };

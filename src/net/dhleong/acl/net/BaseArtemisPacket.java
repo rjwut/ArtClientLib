@@ -11,8 +11,8 @@ import net.dhleong.acl.enums.ConnectionType;
 public abstract class BaseArtemisPacket implements ArtemisPacket {
     protected abstract void appendPacketDetail(StringBuilder b);
 
-    protected final ConnectionType mConnectionType;
-    protected final int mType;
+    private final ConnectionType mConnectionType;
+    private final int mType;
 
     /**
      * @param connectionType The packet's ConnectionType

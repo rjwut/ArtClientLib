@@ -8,10 +8,8 @@ import net.dhleong.acl.enums.ShipType;
 /**
  * Base implementation for ships (player or NPC).
  */
-public abstract class BaseArtemisShip extends BaseArtemisShielded
-		implements ArtemisBearable {
-    protected int mHullId = -1;
-    private float mBearing = Float.MIN_VALUE;
+public abstract class BaseArtemisShip extends BaseArtemisShielded {
+    private int mHullId = -1;
     private float mVelocity = -1;
     private float mShieldsFrontMax = -1;
     private float mShieldsRearMax = -1;
@@ -43,33 +41,19 @@ public abstract class BaseArtemisShip extends BaseArtemisShielded
     public void setHullId(int hullId) {
         mHullId = hullId;
     }
-
-    @Override
-    public float getBearing() {
-        return mBearing;
-    }
-
-    @Override
-    public void setBearing(float bearing) {
-        mBearing = bearing;
-    }
     
-    @Override
     public float getVelocity() {
         return mVelocity;
     }
     
-    @Override
     public void setVelocity(float velocity) {
         mVelocity = velocity;
     }
 
-    @Override
     public float getSteering() {
         return mSteering;
     }
 
-    @Override
     public void setSteering(float steeringSlider) {
         mSteering = steeringSlider;
     }
@@ -121,7 +105,7 @@ public abstract class BaseArtemisShip extends BaseArtemisShielded
     public void setShieldsRearMax(float shieldsRearMax) {
         this.mShieldsRearMax = shieldsRearMax;
     }
-    
+
     /**
      * A value between 0 and 1 indicating the shields' resistance to the given
      * BeamFrequency.
@@ -131,8 +115,8 @@ public abstract class BaseArtemisShip extends BaseArtemisShielded
         return mShieldFreqs[freq.ordinal()];
     }
     
-    public void setShieldFreq(int freq, float value) {
-        mShieldFreqs[freq] = value;
+    public void setShieldFreq(BeamFrequency freq, float value) {
+        mShieldFreqs[freq.ordinal()] = value;
     }
 
     @Override
@@ -144,10 +128,6 @@ public abstract class BaseArtemisShip extends BaseArtemisShielded
 
             if (ship.mHullId != -1) {
                 mHullId = ship.mHullId;
-            }
-            
-            if (ship.mBearing != Float.MIN_VALUE) { 
-                mBearing = ship.mBearing;
             }
             
             if (ship.mSteering != -1) {
@@ -199,7 +179,6 @@ public abstract class BaseArtemisShip extends BaseArtemisShielded
     		);
     	}
 
-    	putProp(props, "Heading", mBearing, Float.MIN_VALUE, includeUnspecified);
     	putProp(props, "Velocity", mVelocity, -1, includeUnspecified);
     	putProp(props, "Shields: fore max", mShieldsFrontMax, -1, includeUnspecified);
     	putProp(props, "Shields: aft max", mShieldsRearMax, -1, includeUnspecified);

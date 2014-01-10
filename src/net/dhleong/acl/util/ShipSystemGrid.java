@@ -39,7 +39,6 @@ public class ShipSystemGrid {
     private final Map<GridCoord, GridEntry> mSystems = new HashMap<GridCoord, GridEntry>();
     private final int[] mSystemCounts = new int[ShipSystem.values().length];
 
-    
     /**
      * Get the number of nodes we have of the given ShipSystem.
      */

@@ -9,7 +9,7 @@ import net.dhleong.acl.enums.ShipType;
  * Base implementation for ships (player or NPC).
  */
 public abstract class BaseArtemisShip extends BaseArtemisShielded {
-    protected int mHullId = -1;
+    private int mHullId = -1;
     private float mVelocity = -1;
     private float mShieldsFrontMax = -1;
     private float mShieldsRearMax = -1;

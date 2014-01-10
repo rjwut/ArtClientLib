@@ -12,6 +12,7 @@ public final class GridCoord implements Comparable<GridCoord> {
     private static final int CACHE_SIZE = 50;
     private static final boolean DEBUG = false;
     private static final Queue<GridCoord> sCache = new ArrayDeque<GridCoord>(CACHE_SIZE);
+
     private final int x, y, z;
 
     private GridCoord(int x, int y, int z) {

@@ -30,6 +30,13 @@ public class StationStatusPacket extends BaseArtemisPacket {
     }
 
     /**
+     * Returns the ship number whose stations this packet reports.
+     */
+    public int getShipNumber() {
+    	return shipNumber;
+    }
+
+    /**
      * Get the status for a specific BridgeStation
      * @param station The desired BridgeStation
      * @return BridgeStationStatus The status of that station

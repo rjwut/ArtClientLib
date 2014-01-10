@@ -36,7 +36,7 @@ public class AudioCommandPacket extends BaseArtemisPacket {
 
     @Override
     public void write(PacketWriter writer) throws IOException {
-    	writer	.start(mType)
+    	writer	.start(getType())
     			.writeInt(audioId)
     			.writeInt(cmd.ordinal());
     }

@@ -16,9 +16,9 @@ public class AllShipSettingsPacket extends BaseArtemisPacket {
     public static final int TYPE = 0xf754c8fe;
     public static final byte MSG_TYPE = 0x0f;
     
-    public final DriveType[] drives;
-    public final int[] shipTypes;
-    public final String[] shipNames;
+    private final DriveType[] drives;
+    private final int[] shipTypes;
+    private final String[] shipNames;
 
     public AllShipSettingsPacket(PacketReader reader) throws ArtemisPacketException {
         super(ConnectionType.SERVER, TYPE);
@@ -42,7 +42,19 @@ public class AllShipSettingsPacket extends BaseArtemisPacket {
         }
     }
 
-	@Override
+    public DriveType getDrive(int shipIndex) {
+    	return drives[shipIndex];
+    }
+
+    public int getShipType(int shipIndex) {
+    	return shipTypes[shipIndex];
+    }
+
+    public String getShipName(int shipIndex) {
+    	return shipNames[shipIndex];
+    }
+
+    @Override
 	protected void appendPacketDetail(StringBuilder b) {
         for (int i = 0; i < Artemis.SHIP_COUNT; i++) {
         	int shipTypeVal = shipTypes[i];

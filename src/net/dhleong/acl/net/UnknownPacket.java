@@ -1,5 +1,7 @@
 package net.dhleong.acl.net;
 
+import java.io.IOException;
+
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.util.TextUtil;
 
@@ -30,6 +32,13 @@ public class UnknownPacket extends BaseArtemisPacket {
      */
     public byte[] getPayload() {
     	return mPayload;
+    }
+
+    @Override
+    public void write(PacketWriter writer) throws IOException {
+    	writer.start(getType());
+    	writer.writeBytes(mPayload);
+    	writer.flush();
     }
 
 	@Override

@@ -9,6 +9,7 @@ import java.io.InputStream;
 
 import net.dhleong.acl.net.PacketReader;
 import net.dhleong.acl.net.player.MainPlayerUpdatePacket;
+import net.dhleong.acl.net.protocol.PacketFactoryRegistry;
 import net.dhleong.acl.util.TextUtil;
 
 public class TraceDumper {
@@ -41,7 +42,7 @@ public class TraceDumper {
             System.out.println("Tracing: " + filePath);
             InputStream baseIs = new BufferedInputStream(new FileInputStream(new File(filePath)));
             InputStream is = new HexDecodingIS(baseIs);
-            PacketReader reader = new PacketReader(is);
+            PacketReader reader = new PacketReader(is, new PacketFactoryRegistry());
             
             while (true) {
                 final ArtemisPacket pkt = reader.readPacket();

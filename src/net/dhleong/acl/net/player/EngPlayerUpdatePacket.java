@@ -2,8 +2,13 @@ package net.dhleong.acl.net.player;
 
 import java.util.Arrays;
 
+import net.dhleong.acl.ArtemisPacket;
+import net.dhleong.acl.ArtemisPacketException;
+import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.enums.ShipSystem;
 import net.dhleong.acl.net.PacketReader;
+import net.dhleong.acl.net.protocol.PacketFactory;
+import net.dhleong.acl.net.protocol.PacketFactoryRegistry;
 import net.dhleong.acl.world.Artemis;
 import net.dhleong.acl.world.ArtemisPlayer;
 
@@ -12,6 +17,21 @@ import net.dhleong.acl.world.ArtemisPlayer;
  * @author dhleong
  */
 public class EngPlayerUpdatePacket extends PlayerUpdatePacket {
+	public static void register(PacketFactoryRegistry registry) {
+		registry.register(WORLD_TYPE, ObjectType.ENGINEERING_BRIDGE_STATION.getId(), new PacketFactory() {
+			@Override
+			public Class<? extends ArtemisPacket> getFactoryClass() {
+				return EngPlayerUpdatePacket.class;
+			}
+
+			@Override
+			public ArtemisPacket build(PacketReader reader)
+					throws ArtemisPacketException {
+				return new EngPlayerUpdatePacket(reader);
+			}
+		});
+	}
+
 	private enum Bit {
 		HEAT_BEAMS,
 		HEAT_TORPEDOES,
@@ -52,7 +72,7 @@ public class EngPlayerUpdatePacket extends PlayerUpdatePacket {
 		COOLANT = Arrays.copyOfRange(values, Artemis.SYSTEM_COUNT * 2, Artemis.SYSTEM_COUNT * 3);
 	}
 
-    public EngPlayerUpdatePacket(PacketReader reader) {
+    private EngPlayerUpdatePacket(PacketReader reader) {
         float[] heat = new float[ Artemis.SYSTEM_COUNT ];
         float[] sysEnergy = new float[ Artemis.SYSTEM_COUNT ];
         int[] coolant = new int[ Artemis.SYSTEM_COUNT ];

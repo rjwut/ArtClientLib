@@ -4,8 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.dhleong.acl.ArtemisPacket;
+import net.dhleong.acl.ArtemisPacketException;
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.enums.ObjectType;
+import net.dhleong.acl.net.protocol.PacketFactory;
+import net.dhleong.acl.net.protocol.PacketFactoryRegistry;
 import net.dhleong.acl.world.ArtemisGenericObject;
 import net.dhleong.acl.world.ArtemisObject;
 
@@ -14,6 +18,30 @@ import net.dhleong.acl.world.ArtemisObject;
  * @author dhleong
  */
 public class GenericUpdatePacket extends BaseArtemisPacket implements ObjectUpdatingPacket {
+	private static ObjectType[] GENERIC_TYPES = {
+		ObjectType.MINE, ObjectType.ANOMALY, ObjectType.NEBULA,
+		ObjectType.TORPEDO, ObjectType.BLACK_HOLE, ObjectType.ASTEROID
+	};
+
+	public static void register(PacketFactoryRegistry registry) {
+		PacketFactory factory =  new PacketFactory() {
+			@Override
+			public Class<? extends ArtemisPacket> getFactoryClass() {
+				return GenericUpdatePacket.class;
+			}
+
+			@Override
+			public ArtemisPacket build(PacketReader reader)
+					throws ArtemisPacketException {
+				return new GenericUpdatePacket(reader);
+			}
+		};
+
+		for (ObjectType objType : GENERIC_TYPES) {
+			registry.register(WORLD_TYPE, objType.getId(), factory);
+		}
+	}
+
 	private enum Bit {
     	X,
     	Y,
@@ -27,7 +55,7 @@ public class GenericUpdatePacket extends BaseArtemisPacket implements ObjectUpda
 
     private final List<ArtemisObject> mObjects = new ArrayList<ArtemisObject>();
 
-    public GenericUpdatePacket(PacketReader reader) {
+    private GenericUpdatePacket(PacketReader reader) {
     	super(ConnectionType.SERVER, WORLD_TYPE);
         float x, y, z;
         String name;

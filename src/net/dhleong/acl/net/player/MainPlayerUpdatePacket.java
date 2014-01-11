@@ -3,13 +3,18 @@ package net.dhleong.acl.net.player;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.dhleong.acl.ArtemisPacket;
+import net.dhleong.acl.ArtemisPacketException;
 import net.dhleong.acl.enums.BeamFrequency;
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.enums.DriveType;
 import net.dhleong.acl.enums.MainScreenView;
+import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.ObjectUpdatingPacket;
 import net.dhleong.acl.net.PacketReader;
+import net.dhleong.acl.net.protocol.PacketFactory;
+import net.dhleong.acl.net.protocol.PacketFactoryRegistry;
 import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisPlayer;
@@ -20,6 +25,21 @@ import net.dhleong.acl.world.ArtemisPlayer;
  * WeapPlayerUpdatePacket.
  */
 public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectUpdatingPacket {
+	public static void register(PacketFactoryRegistry registry) {
+		registry.register(WORLD_TYPE, ObjectType.PLAYER_SHIP.getId(), new PacketFactory() {
+			@Override
+			public Class<? extends ArtemisPacket> getFactoryClass() {
+				return MainPlayerUpdatePacket.class;
+			}
+
+			@Override
+			public ArtemisPacket build(PacketReader reader)
+					throws ArtemisPacketException {
+				return new MainPlayerUpdatePacket(reader);
+			}
+		});
+	}
+
     private enum Bit {
     	UNK_1_1,
     	IMPULSE,
@@ -68,7 +88,7 @@ public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectU
 
     private final List<ArtemisObject> mObjects = new ArrayList<ArtemisObject>();
 
-    public MainPlayerUpdatePacket(PacketReader reader) {
+    private MainPlayerUpdatePacket(PacketReader reader) {
     	super(ConnectionType.SERVER, WORLD_TYPE);
 
     	while (reader.hasMore()) {

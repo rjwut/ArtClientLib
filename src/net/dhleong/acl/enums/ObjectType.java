@@ -1,77 +1,25 @@
 package net.dhleong.acl.enums;
 
-import net.dhleong.acl.ArtemisPacket;
-import net.dhleong.acl.net.DroneUpdatePacket;
-import net.dhleong.acl.net.NpcUpdatePacket;
-import net.dhleong.acl.net.GenericMeshPacket;
-import net.dhleong.acl.net.GenericUpdatePacket;
-import net.dhleong.acl.net.PacketReader;
-import net.dhleong.acl.net.StationPacket;
-import net.dhleong.acl.net.WhaleUpdatePacket;
-import net.dhleong.acl.net.player.EngPlayerUpdatePacket;
-import net.dhleong.acl.net.player.MainPlayerUpdatePacket;
-import net.dhleong.acl.net.player.WeapPlayerUpdatePacket;
-
 /**
  * World object types.
  * @author rjwut
  */
 public enum ObjectType {
-	PLAYER_SHIP(1, true) {
-		@Override
-		public ArtemisPacket buildPacket(PacketReader reader) {
-            return new MainPlayerUpdatePacket(reader);
-		}
-	},
-	WEAPONS_BRIDGE_STATION(2, false) {
-		@Override
-		public ArtemisPacket buildPacket(PacketReader reader) {
-            return new WeapPlayerUpdatePacket(reader);
-		}
-	},
-	ENGINEERING_BRIDGE_STATION(3, false) {
-		@Override
-		public ArtemisPacket buildPacket(PacketReader reader) {
-            return new EngPlayerUpdatePacket(reader);
-		}
-	},
-	NPC_SHIP(4, true) {
-		@Override
-		public ArtemisPacket buildPacket(PacketReader reader) {
-            return new NpcUpdatePacket(reader);
-		}
-	},
-	SPACE_STATION(5, true) {
-		@Override
-		public ArtemisPacket buildPacket(PacketReader reader) {
-            return new StationPacket(reader);
-		}
-	},
+	PLAYER_SHIP(1, true),
+	WEAPONS_BRIDGE_STATION(2, false),
+	ENGINEERING_BRIDGE_STATION(3, false),
+	NPC_SHIP(4, true),
+	SPACE_STATION(5, true),
 	MINE(6, false),
 	ANOMALY(7, true),
 	NEBULA(9, false),
 	TORPEDO(10, false),
 	BLACK_HOLE(11, true),
 	ASTEROID(12, false),
-	GENERIC_MESH(13, true) {
-		@Override
-		public ArtemisPacket buildPacket(PacketReader reader) {
-            return new GenericMeshPacket(reader);
-		}
-	},
+	GENERIC_MESH(13, true),
 	MONSTER(14, true),
-	WHALE(15, true) {
-		@Override
-		public ArtemisPacket buildPacket(PacketReader reader) {
-        	return new WhaleUpdatePacket(reader);
-		}
-	},
-	DRONE(16, false) {
-		@Override
-		public ArtemisPacket buildPacket(PacketReader reader) {
-        	return new DroneUpdatePacket(reader);
-		}
-	};
+	WHALE(15, true),
+	DRONE(16, false);
 
 	public static ObjectType fromId(int id) {
 		for (ObjectType objectType : values()) {
@@ -83,18 +31,18 @@ public enum ObjectType {
 		return null;
 	}
 
-	private int id;
+	private byte id;
 	private boolean named;
 
 	ObjectType(int id, boolean named) {
-		this.id = id;
+		this.id = (byte) id;
 		this.named = named;
 	}
 
 	/**
 	 * Returns the ID of this type.
 	 */
-	public int getId() {
+	public byte getId() {
 		return id;
 	}
 
@@ -103,13 +51,5 @@ public enum ObjectType {
 	 */
 	public boolean isNamed() {
 		return named;
-	}
-
-	/**
-	 * Converts the given byte array into the ArtemisPacket subtype that
-	 * corresponds to this object type.
-	 */
-	public ArtemisPacket buildPacket(PacketReader reader) {
-        return new GenericUpdatePacket(reader);
 	}
 }

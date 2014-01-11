@@ -1,15 +1,34 @@
 package net.dhleong.acl.net.comms;
 
+import net.dhleong.acl.ArtemisPacket;
+import net.dhleong.acl.ArtemisPacketException;
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.PacketReader;
+import net.dhleong.acl.net.protocol.PacketFactory;
+import net.dhleong.acl.net.protocol.PacketFactoryRegistry;
 
 /**
  * Received when an incoming COMMs audio message arrives.
  * @author dhleong
  */
 public class IncomingAudioPacket extends BaseArtemisPacket {
-    public static final int TYPE = 0xae88e058;
+    private static final int TYPE = 0xae88e058;
+
+	public static void register(PacketFactoryRegistry registry) {
+		registry.register(TYPE, new PacketFactory() {
+			@Override
+			public Class<? extends ArtemisPacket> getFactoryClass() {
+				return IncomingAudioPacket.class;
+			}
+
+			@Override
+			public ArtemisPacket build(PacketReader reader)
+					throws ArtemisPacketException {
+				return new IncomingAudioPacket(reader);
+			}
+		});
+	}
 
     public enum Mode {
     	PLAYING,	// server is playing the message
@@ -21,7 +40,7 @@ public class IncomingAudioPacket extends BaseArtemisPacket {
     private final String mFile;
     private final Mode mMode;
 
-    public IncomingAudioPacket(PacketReader reader) {
+    private IncomingAudioPacket(PacketReader reader) {
     	super(ConnectionType.SERVER, TYPE);
         mId = reader.readInt();
         mMode = Mode.values()[reader.readInt() - 1];
@@ -71,13 +90,6 @@ public class IncomingAudioPacket extends BaseArtemisPacket {
      */
     public Mode getAudioMode() {
         return mMode;
-    }
-    
-    /**
-     * Convenience to check if this is a new message.
-     */
-    public boolean isIncoming() {
-        return mMode == Mode.INCOMING;
     }
 
 	@Override

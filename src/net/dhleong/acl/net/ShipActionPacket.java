@@ -10,7 +10,7 @@ import net.dhleong.acl.enums.ConnectionType;
  * @author rjwut
  */
 public abstract class ShipActionPacket extends BaseArtemisPacket {
-    public static final int TYPE = ArtemisPacket.SHIP_ACTION_TYPE;
+    protected static final int TYPE = ArtemisPacket.SHIP_ACTION_TYPE;
     
     protected static final int TYPE_WARPSPEED          = 0x00;
     protected static final int TYPE_MAINSCREEN         = 0x01;

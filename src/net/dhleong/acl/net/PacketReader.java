@@ -12,14 +12,8 @@ import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.ArtemisPacketException;
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.enums.ObjectType;
-import net.dhleong.acl.net.comms.CommsIncomingPacket;
-import net.dhleong.acl.net.comms.IncomingAudioPacket;
-import net.dhleong.acl.net.eng.EngGridUpdatePacket;
-import net.dhleong.acl.net.helm.JumpStatusPacket;
-import net.dhleong.acl.net.setup.AllShipSettingsPacket;
-import net.dhleong.acl.net.setup.StationStatusPacket;
-import net.dhleong.acl.net.setup.VersionPacket;
-import net.dhleong.acl.net.setup.WelcomePacket;
+import net.dhleong.acl.net.protocol.PacketFactory;
+import net.dhleong.acl.net.protocol.PacketFactoryRegistry;
 import net.dhleong.acl.util.BitField;
 import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.util.TextUtil;
@@ -35,6 +29,7 @@ public class PacketReader {
 	private InputStream in;
 	private byte[] buffer = new byte[4];
 	private boolean parse = true;
+	private PacketFactoryRegistry registry;
 	private byte[] payload;
 	private int offset;
 	private SortedMap<String, byte[]> unknownProps;
@@ -46,22 +41,23 @@ public class PacketReader {
 	/**
 	 * Testing constructor for reading packets from a hex String.
 	 */
-	public PacketReader(String hex) {
-		this(TextUtil.hexToByteArray(hex));
+	public PacketReader(String hex, PacketFactoryRegistry registry) {
+		this(TextUtil.hexToByteArray(hex), registry);
 	}
 
 	/**
 	 * Testing constructor for reading packets from a byte array.
 	 */
-	public PacketReader(byte[] bytes) {
-		this(new ByteArrayInputStream(bytes));
+	public PacketReader(byte[] bytes, PacketFactoryRegistry registry) {
+		this(new ByteArrayInputStream(bytes), registry);
 	}
 
 	/**
 	 * Wraps the given InputStream with this PacketReader.
 	 */
-	public PacketReader(InputStream in) {
+	public PacketReader(InputStream in, PacketFactoryRegistry registry) {
 		this.in = in;
+		this.registry = registry;
 	}
 
 	/**
@@ -104,7 +100,6 @@ public class PacketReader {
 			throw new ArtemisPacketException(
 					"Illegal packet length: " + len
 			);
-			//return new BaseArtemisPacket(ConnectionType.SERVER);
 		}
 
 		// connection type
@@ -165,8 +160,18 @@ public class PacketReader {
 			throw new ArtemisPacketException(ex, packetType);
 		}
 
+		PacketFactory factory = null;
+
+		if (parse) {
+			factory = registry.get(packetType, hasMore() ? peekByte() : 0x00);
+		}
+
+		if (factory == null) {
+			return new UnknownPacket(ConnectionType.SERVER, packetType, payload);
+		}
+
 		try {
-			return buildPacket(packetType);
+			return factory.build(this);
 		} catch (ArtemisPacketException ex) {
 			throw new ArtemisPacketException(ex, packetType, payload);
 		} catch (RuntimeException ex) {
@@ -180,88 +185,6 @@ public class PacketReader {
 	 */
 	public boolean hasMore() {
 		return offset < payload.length && (bitField == null || payload[offset] != 0);
-	}
-
-	private ArtemisPacket buildPacket(int pktType) throws ArtemisPacketException {
-		if (!parse) {
-			return new UnknownPacket(ConnectionType.SERVER, pktType, payload);
-		}
-
-		switch (pktType) {
-		case BeamFiredPacket.TYPE:
-			return new BeamFiredPacket(this);
-
-		case EngGridUpdatePacket.TYPE:
-			return new EngGridUpdatePacket(this);
-
-		case CommsIncomingPacket.TYPE:
-			return new CommsIncomingPacket(this);
-
-		case IncomingAudioPacket.TYPE:
-			return new IncomingAudioPacket(this);
-
-		case DestroyObjectPacket.TYPE:
-			return new DestroyObjectPacket(this);
-
-		case GameMessagePacket.TYPE:
-			// This is a generic type; a few other global messages are included
-			switch(payload[0]) {
-			case GameStartPacket.MSG_TYPE:
-				return new GameStartPacket(this);
-			case GameOverPacket.MSG_TYPE:
-				return new GameOverPacket(this);
-			case AllShipSettingsPacket.MSG_TYPE:
-				return new AllShipSettingsPacket(this);
-			case JumpStatusPacket.MSG_TYPE_BEGIN:
-			case JumpStatusPacket.MSG_TYPE_END:
-				return new JumpStatusPacket(this);
-			case GameMessagePacket.MSG_TYPE:
-				return new GameMessagePacket(this);
-			case SoundEffectPacket.MSG_TYPE:
-				return new SoundEffectPacket(this);
-			case KeyCaptureTogglePacket.MSG_TYPE:
-				return new KeyCaptureTogglePacket(this);
-			default:
-				return new UnknownPacket(
-						ConnectionType.SERVER,
-						GameMessagePacket.TYPE,
-						payload
-				);
-			}
-
-		case StationStatusPacket.TYPE:
-			return new StationStatusPacket(this);
-
-		case IntelPacket.TYPE:
-        	return new IntelPacket(this);
-
-		case WelcomePacket.TYPE:
-			return new WelcomePacket(this);
-
-		case VersionPacket.TYPE:
-			return new VersionPacket(this);
-
-		case ArtemisPacket.WORLD_TYPE:
-			// ooh, crazy world type; switch for kid types
-			final int typeVal = payload[0];
-
-			if (typeVal == 0) {
-				// some sort of empty packet... possibly keepalive?
-				return null;
-			}
-
-			ObjectType type = ObjectType.fromId(typeVal);
-
-			if (type != null) {
-				return type.buildPacket(this);
-			}
-
-			// Unhandled? Fall back on base packet class
-			// $FALL-THROUGH$
-
-		default:
-			return new UnknownPacket(ConnectionType.SERVER, pktType, payload);
-        }       
 	}
 
 	/**

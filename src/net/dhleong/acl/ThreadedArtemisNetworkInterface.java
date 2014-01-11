@@ -20,6 +20,8 @@ import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.net.GameOverPacket;
 import net.dhleong.acl.net.PacketReader;
 import net.dhleong.acl.net.PacketWriter;
+import net.dhleong.acl.net.protocol.PacketFactoryRegistry;
+import net.dhleong.acl.net.protocol.Protocol;
 import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.ReadyPacket2;
 import net.dhleong.acl.net.setup.VersionPacket;
@@ -169,7 +171,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
 	/**
 	 * Manages receiving packets from the InputStream.
 	 */
-    private static class ReceiverThread extends Thread {
+    private class ReceiverThread extends Thread {
         private List<Listener> mListeners = new CopyOnWriteArrayList<Listener>();
         private boolean mRunning = true;
         private final ThreadedArtemisNetworkInterface mInterface;
@@ -179,7 +181,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         public ReceiverThread(final ThreadedArtemisNetworkInterface net, final Socket skt) throws IOException {
             mInterface = net;
             InputStream input = new BufferedInputStream(skt.getInputStream());
-            mReader = new PacketReader(input);
+            mReader = new PacketReader(input, registry);
         }
 
         private void setParsePackets(boolean parse) {
@@ -260,11 +262,18 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
     
     private static final boolean DEBUG = false;
 
+    private final PacketFactoryRegistry registry = new PacketFactoryRegistry();
     private final ReceiverThread mReceiveThread;
     private final SenderThread mSendThread;
-    
+
     /** Error code, for when we disconnect */
     private int errorCode = OnConnectedListener.ERROR_NONE;
+
+
+	@Override
+	public void registerProtocol(Protocol protocol) {
+		protocol.registerPacketFactories(registry);
+	}
 
     /**
      * @param tgtIp The IP address to connect to

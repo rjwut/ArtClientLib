@@ -1,11 +1,14 @@
 package net.dhleong.acl.net.setup;
 
+import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.ArtemisPacketException;
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.enums.DriveType;
 import net.dhleong.acl.enums.ShipType;
 import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.PacketReader;
+import net.dhleong.acl.net.protocol.PacketFactory;
+import net.dhleong.acl.net.protocol.PacketFactoryRegistry;
 import net.dhleong.acl.world.Artemis;
 
 /**
@@ -13,14 +16,29 @@ import net.dhleong.acl.world.Artemis;
  * @author dhleong
  */
 public class AllShipSettingsPacket extends BaseArtemisPacket {
-    public static final int TYPE = 0xf754c8fe;
-    public static final byte MSG_TYPE = 0x0f;
+    private static final int TYPE = 0xf754c8fe;
+    private static final byte MSG_TYPE = 0x0f;
     
+	public static void register(PacketFactoryRegistry registry) {
+		registry.register(TYPE, MSG_TYPE, new PacketFactory() {
+			@Override
+			public Class<? extends ArtemisPacket> getFactoryClass() {
+				return AllShipSettingsPacket.class;
+			}
+
+			@Override
+			public ArtemisPacket build(PacketReader reader)
+					throws ArtemisPacketException {
+				return new AllShipSettingsPacket(reader);
+			}
+		});
+	}
+
     private final DriveType[] drives;
     private final int[] shipTypes;
     private final String[] shipNames;
 
-    public AllShipSettingsPacket(PacketReader reader) throws ArtemisPacketException {
+    private AllShipSettingsPacket(PacketReader reader) throws ArtemisPacketException {
         super(ConnectionType.SERVER, TYPE);
         drives = new DriveType[Artemis.SHIP_COUNT];
         shipTypes = new int[Artemis.SHIP_COUNT];

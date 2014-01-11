@@ -1,7 +1,10 @@
 package net.dhleong.acl.net;
 
+import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.ArtemisPacketException;
 import net.dhleong.acl.enums.ConnectionType;
+import net.dhleong.acl.net.protocol.PacketFactory;
+import net.dhleong.acl.net.protocol.PacketFactoryRegistry;
 
 /**
  * Enables/disables keystroke capture for this station. Note that the game
@@ -10,12 +13,27 @@ import net.dhleong.acl.enums.ConnectionType;
  * @author rjwut
  */
 public class KeyCaptureTogglePacket extends BaseArtemisPacket {
-	public static final int TYPE = 0xf754c8fe;
-	public static final int MSG_TYPE = 0x11;
+	private static final int TYPE = 0xf754c8fe;
+	private static final byte MSG_TYPE = 0x11;
+
+	public static void register(PacketFactoryRegistry registry) {
+		registry.register(TYPE, MSG_TYPE, new PacketFactory() {
+			@Override
+			public Class<? extends ArtemisPacket> getFactoryClass() {
+				return KeyCaptureTogglePacket.class;
+			}
+
+			@Override
+			public ArtemisPacket build(PacketReader reader)
+					throws ArtemisPacketException {
+				return new KeyCaptureTogglePacket(reader);
+			}
+		});
+	}
 
 	private boolean mEnabled;
 
-	public KeyCaptureTogglePacket(PacketReader reader) throws ArtemisPacketException {
+	private KeyCaptureTogglePacket(PacketReader reader) throws ArtemisPacketException {
 		super(ConnectionType.SERVER, TYPE);
 		int subtype = reader.readInt();
 

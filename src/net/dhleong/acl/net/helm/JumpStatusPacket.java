@@ -1,16 +1,36 @@
 package net.dhleong.acl.net.helm;
 
+import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.ArtemisPacketException;
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.PacketReader;
+import net.dhleong.acl.net.protocol.PacketFactory;
+import net.dhleong.acl.net.protocol.PacketFactoryRegistry;
 
 /**
  * Indicates that a jump has begun or ended.
  * @author dhleong
  */
 public class JumpStatusPacket extends BaseArtemisPacket {
-    public static final int TYPE = 0xf754c8fe;
+    private static final int TYPE = 0xf754c8fe;
+
+	public static void register(PacketFactoryRegistry registry) {
+		PacketFactory factory = new PacketFactory() {
+			@Override
+			public Class<? extends ArtemisPacket> getFactoryClass() {
+				return JumpStatusPacket.class;
+			}
+
+			@Override
+			public ArtemisPacket build(PacketReader reader)
+					throws ArtemisPacketException {
+				return new JumpStatusPacket(reader);
+			}
+		};
+		registry.register(TYPE, MSG_TYPE_BEGIN, factory);
+		registry.register(TYPE, MSG_TYPE_END, factory);
+	}
 
     /**
      * Jump "begin"; that is, the countdown has begun
@@ -24,7 +44,7 @@ public class JumpStatusPacket extends BaseArtemisPacket {
 
     private final boolean begin;
 
-    public JumpStatusPacket(PacketReader reader) throws ArtemisPacketException {
+    private JumpStatusPacket(PacketReader reader) throws ArtemisPacketException {
         super(ConnectionType.SERVER, TYPE);
         int subtype = reader.readInt();
 

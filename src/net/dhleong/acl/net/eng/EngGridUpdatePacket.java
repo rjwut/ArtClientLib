@@ -3,9 +3,13 @@ package net.dhleong.acl.net.eng;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.dhleong.acl.ArtemisPacket;
+import net.dhleong.acl.ArtemisPacketException;
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.PacketReader;
+import net.dhleong.acl.net.protocol.PacketFactory;
+import net.dhleong.acl.net.protocol.PacketFactoryRegistry;
 import net.dhleong.acl.util.GridCoord;
 
 /**
@@ -14,7 +18,22 @@ import net.dhleong.acl.util.GridCoord;
  * @author dhleong
  */
 public class EngGridUpdatePacket extends BaseArtemisPacket {
-    public static final int TYPE = 0x77e9f3c;
+    private static final int TYPE = 0x77e9f3c;
+
+	public static void register(PacketFactoryRegistry registry) {
+		registry.register(TYPE, new PacketFactory() {
+			@Override
+			public Class<? extends ArtemisPacket> getFactoryClass() {
+				return EngGridUpdatePacket.class;
+			}
+
+			@Override
+			public ArtemisPacket build(PacketReader reader)
+					throws ArtemisPacketException {
+				return new EngGridUpdatePacket(reader);
+			}
+		});
+	}
 
     private static final List<GridDamage> EMPTY_DAMAGE = new ArrayList<GridDamage>();
     private static final List<DamconStatus> EMPTY_DAMCON = new ArrayList<DamconStatus>();
@@ -26,7 +45,7 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
     private List<GridDamage> mDamage = null;
     private List<DamconStatus> mDamconUpdates = null;
 
-    public EngGridUpdatePacket(PacketReader reader) {
+    private EngGridUpdatePacket(PacketReader reader) {
         super(ConnectionType.SERVER, TYPE);
         reader.readUnknown("Unknown", 1);
 

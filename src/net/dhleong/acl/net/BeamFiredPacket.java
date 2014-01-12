@@ -1,14 +1,33 @@
 package net.dhleong.acl.net;
 
+import net.dhleong.acl.ArtemisPacket;
+import net.dhleong.acl.ArtemisPacketException;
 import net.dhleong.acl.enums.ConnectionType;
+import net.dhleong.acl.net.protocol.PacketFactory;
+import net.dhleong.acl.net.protocol.PacketFactoryRegistry;
 
 public class BeamFiredPacket extends BaseArtemisPacket {
-	public static final int TYPE = 0xb83fd2c4;
+	private static final int TYPE = 0xb83fd2c4;
+
+	public static void register(PacketFactoryRegistry registry) {
+		registry.register(TYPE, new PacketFactory() {
+			@Override
+			public Class<? extends ArtemisPacket> getFactoryClass() {
+				return BeamFiredPacket.class;
+			}
+
+			@Override
+			public ArtemisPacket build(PacketReader reader)
+					throws ArtemisPacketException {
+				return new BeamFiredPacket(reader);
+			}
+		});
+	}
 
 	private int mOriginId;
 	private int mTargetId;
 
-	public BeamFiredPacket(PacketReader reader) {
+	private BeamFiredPacket(PacketReader reader) {
 		super(ConnectionType.SERVER, TYPE);
 		reader.readUnknown("Unknown 0", 4);
 		reader.readUnknown("Unknown 1", 4);

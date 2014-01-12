@@ -5,7 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.dhleong.acl.ArtemisPacket;
+import net.dhleong.acl.ArtemisPacketException;
 import net.dhleong.acl.enums.ConnectionType;
+import net.dhleong.acl.enums.ObjectType;
+import net.dhleong.acl.net.protocol.PacketFactory;
+import net.dhleong.acl.net.protocol.PacketFactoryRegistry;
 import net.dhleong.acl.world.ArtemisMesh;
 import net.dhleong.acl.world.ArtemisObject;
 
@@ -14,6 +18,21 @@ import net.dhleong.acl.world.ArtemisObject;
  * @author dhleong
  */
 public class GenericMeshPacket extends BaseArtemisPacket implements ObjectUpdatingPacket {
+	public static void register(PacketFactoryRegistry registry) {
+		registry.register(WORLD_TYPE, ObjectType.GENERIC_MESH.getId(), new PacketFactory() {
+			@Override
+			public Class<? extends ArtemisPacket> getFactoryClass() {
+				return GenericMeshPacket.class;
+			}
+
+			@Override
+			public ArtemisPacket build(PacketReader reader)
+					throws ArtemisPacketException {
+				return new GenericMeshPacket(reader);
+			}
+		});
+	}
+
 	private enum Bit {
 		X,
 		Y,
@@ -49,7 +68,7 @@ public class GenericMeshPacket extends BaseArtemisPacket implements ObjectUpdati
     private final List<ArtemisObject> mObjects = new ArrayList<ArtemisObject>();
     private float red, green, blue;
 
-    public GenericMeshPacket(PacketReader reader) {
+    private GenericMeshPacket(PacketReader reader) {
     	super(ConnectionType.SERVER, WORLD_TYPE);
         float x, y, z;
         String name = null, mesh = null, texture = null;

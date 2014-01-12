@@ -1,7 +1,12 @@
 package net.dhleong.acl.net.player;
 
+import net.dhleong.acl.ArtemisPacket;
+import net.dhleong.acl.ArtemisPacketException;
+import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.enums.OrdnanceType;
 import net.dhleong.acl.net.PacketReader;
+import net.dhleong.acl.net.protocol.PacketFactory;
+import net.dhleong.acl.net.protocol.PacketFactoryRegistry;
 import net.dhleong.acl.world.Artemis;
 import net.dhleong.acl.world.ArtemisPlayer;
 
@@ -10,6 +15,21 @@ import net.dhleong.acl.world.ArtemisPlayer;
  * @author dhleong
  */
 public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
+	public static void register(PacketFactoryRegistry registry) {
+		registry.register(WORLD_TYPE, ObjectType.WEAPONS_BRIDGE_STATION.getId(), new PacketFactory() {
+			@Override
+			public Class<? extends ArtemisPacket> getFactoryClass() {
+				return WeapPlayerUpdatePacket.class;
+			}
+
+			@Override
+			public ArtemisPacket build(PacketReader reader)
+					throws ArtemisPacketException {
+				return new WeapPlayerUpdatePacket(reader);
+			}
+		});
+	}
+
 	private enum Bit {
 		TORP_HOMING,
 		TORP_NUKES,
@@ -57,7 +77,7 @@ public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
         Bit.TUBE_TYPE_4, Bit.TUBE_TYPE_5, Bit.TUBE_TYPE_6
     };
     
-    public WeapPlayerUpdatePacket(PacketReader reader) {
+    private WeapPlayerUpdatePacket(PacketReader reader) {
         int[] torps = new int[ TORPEDOS.length ];
         float[] tubeTimes = new float[Artemis.MAX_TUBES];
         int[] tubeContents = new int[Artemis.MAX_TUBES];

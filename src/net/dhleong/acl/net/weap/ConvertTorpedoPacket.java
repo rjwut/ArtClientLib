@@ -10,12 +10,12 @@ import net.dhleong.acl.net.PacketWriter;
  * Converts a homing torpedo to energy or vice-versa.
  */
 public class ConvertTorpedoPacket extends BaseArtemisPacket {
+    private static final int TYPE = 0x69CC01D9;
+    private static final int SUBTYPE = 0x03;
+
 	public enum Direction {
 		TORPEDO_TO_ENERGY, ENERGY_TO_TORPEDO
 	}
-
-    public static final int TYPE = 0x69CC01D9;
-    public static final int SUBTYPE = 0x03;
 
     private Direction mDirection;
 

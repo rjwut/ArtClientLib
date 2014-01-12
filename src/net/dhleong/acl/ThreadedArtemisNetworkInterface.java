@@ -5,21 +5,17 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayDeque;
-import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.net.GameOverPacket;
 import net.dhleong.acl.net.PacketReader;
 import net.dhleong.acl.net.PacketWriter;
+import net.dhleong.acl.net.protocol.PacketFactoryRegistry;
+import net.dhleong.acl.net.protocol.Protocol;
 import net.dhleong.acl.net.setup.ReadyPacket;
 import net.dhleong.acl.net.setup.ReadyPacket2;
 import net.dhleong.acl.net.setup.VersionPacket;
@@ -169,8 +165,8 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
 	/**
 	 * Manages receiving packets from the InputStream.
 	 */
-    private static class ReceiverThread extends Thread {
-        private List<Listener> mListeners = new CopyOnWriteArrayList<Listener>();
+    private class ReceiverThread extends Thread {
+        private ListenerRegistry mListeners = new ListenerRegistry();
         private boolean mRunning = true;
         private final ThreadedArtemisNetworkInterface mInterface;
         private PacketReader mReader;
@@ -179,7 +175,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         public ReceiverThread(final ThreadedArtemisNetworkInterface net, final Socket skt) throws IOException {
             mInterface = net;
             InputStream input = new BufferedInputStream(skt.getInputStream());
-            mReader = new PacketReader(input);
+            mReader = new PacketReader(input, factoryRegistry, mListeners);
         }
 
         private void setParsePackets(boolean parse) {
@@ -200,7 +196,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                     //  indicating that the server aliveness
                     //  and perhaps calculating latency
                     if (pkt != null && mRunning) {
-                    	fireListeners(pkt);
+                    	mListeners.fire(pkt);
                     }
                 } catch (final ArtemisPacketException e) {
                     // TODO ?
@@ -232,39 +228,28 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         
         public void end() {
             mRunning = false;
-            
-            // also, not interested in listening anymore
-            synchronized(mListeners) {
-                mListeners.clear();
-            }
+            mListeners.clear();
         }
 
     	private void addPacketListener(Object object) {
-    		Method[] methods = object.getClass().getMethods();
-
-    		for (Method method : methods) {
-    			Annotation anno = method.getAnnotation(PacketListener.class);
-
-    			if (anno != null) {
-    				mListeners.add(new Listener(object, method));
-    			}
-    		}
-    	}
-
-    	private void fireListeners(ArtemisPacket packet) {
-    		for (Listener listener : mListeners) {
-    			listener.offer(packet);
-    		}
+    		mListeners.register(object);
     	}
     }
     
     private static final boolean DEBUG = false;
 
+    private final PacketFactoryRegistry factoryRegistry = new PacketFactoryRegistry();
     private final ReceiverThread mReceiveThread;
     private final SenderThread mSendThread;
-    
+
     /** Error code, for when we disconnect */
     private int errorCode = OnConnectedListener.ERROR_NONE;
+
+
+	@Override
+	public void registerProtocol(Protocol protocol) {
+		protocol.registerPacketFactories(factoryRegistry);
+	}
 
     /**
      * @param tgtIp The IP address to connect to
@@ -347,87 +332,5 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
      */
     public void setOnConnectedListener(final OnConnectedListener listener) {
         mSendThread.mOnConnectedListener = listener;
-    }
-
-
-    /**
-     * Contains all the information needed to invoke a packet listener method
-     * (annotated with @PacketListener).
-     * @author rjwut
-     */
-    private static class Listener {
-    	private Object object;
-    	private Method method;
-    	private Class<?> paramType;
-
-    	/**
-    	 * @param object The packet listener object
-    	 * @param method The annotated method
-    	 */
-    	private Listener (Object object, Method method) {
-    		validateListenerMethod(method);
-    		this.object = object;
-    		this.method = method;
-    		paramType = method.getParameterTypes()[0];
-    	}
-
-    	/**
-    	 * Throws an IllegalArgumentException if the given method is not a valid
-    	 * packet listener method.
-    	 */
-    	private static void validateListenerMethod(Method method) {
-    		if (!Modifier.isPublic(method.getModifiers())) {
-    			throw new IllegalArgumentException(
-    					"Method " + method.getName() +
-    					" must be public to be a @PacketListener"
-    			);
-    		}
-
-    		if (!Void.TYPE.equals(method.getReturnType())) {
-    			throw new IllegalArgumentException(
-    					"Method " + method.getName() +
-    					" must return void to be a @PacketListener"
-    			);
-    		}
-
-    		Class<?>[] paramTypes = method.getParameterTypes();
-
-    		if (paramTypes.length != 1) {
-    			throw new IllegalArgumentException(
-    					"Method " + method.getName() +
-    					" must have exactly one argument"
-    			);
-    		}
-
-    		Class<?> paramType = paramTypes[0];
-
-    		if (!ArtemisPacket.class.isAssignableFrom(paramType)) {
-    			throw new IllegalArgumentException(
-    					"Method " + method.getName() +
-    					" argument must be an ArtemisPacket or a subtype of it"
-    			);
-    		}
-    	}
-
-    	/**
-    	 * Invokes the given listener, passing in the indicated packet. Since
-    	 * the listeners have been pre-validated, no exception should occur, so
-    	 * we wrap the ones thrown by Method.invoke() in a RuntimeException.
-    	 */
-    	private void offer(ArtemisPacket packet) {
-    		Class<?> clazz = packet.getClass();
-
-    		if (paramType.isAssignableFrom(clazz)) {
-        		try {
-    				method.invoke(object, packet);
-    			} catch (IllegalAccessException ex) {
-    				throw new RuntimeException(ex);
-    			} catch (IllegalArgumentException ex) {
-    				throw new RuntimeException(ex);
-    			} catch (InvocationTargetException ex) {
-    				throw new RuntimeException(ex);
-    			}
-    		}
-    	}
     }
 }

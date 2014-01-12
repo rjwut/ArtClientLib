@@ -11,8 +11,8 @@ import net.dhleong.acl.net.PacketWriter;
  * @author dhleong
  */
 public class HelmSetImpulsePacket extends BaseArtemisPacket {
-    public static final int TYPE = 0x0351A5AC;
-    public static final int SUBTYPE = 0x00;
+    private static final int TYPE = 0x0351A5AC;
+    private static final int SUBTYPE = 0x00;
 
     private float mPower;
 

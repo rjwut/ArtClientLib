@@ -1,18 +1,37 @@
 package net.dhleong.acl.net;
 
+import net.dhleong.acl.ArtemisPacket;
+import net.dhleong.acl.ArtemisPacketException;
 import net.dhleong.acl.enums.ConnectionType;
+import net.dhleong.acl.net.protocol.PacketFactory;
+import net.dhleong.acl.net.protocol.PacketFactoryRegistry;
 
 /**
  * Provides intel on another vessel, typically as the result of a level 2 scan.
  * @author rjwut
  */
 public class IntelPacket extends BaseArtemisPacket {
-	public static final int TYPE = 0xee665279;
+	private static final int TYPE = 0xee665279;
+
+	public static void register(PacketFactoryRegistry registry) {
+		registry.register(TYPE, new PacketFactory() {
+			@Override
+			public Class<? extends ArtemisPacket> getFactoryClass() {
+				return IntelPacket.class;
+			}
+
+			@Override
+			public ArtemisPacket build(PacketReader reader)
+					throws ArtemisPacketException {
+				return new IntelPacket(reader);
+			}
+		});
+	}
 
 	private final int mId;
 	private final String mIntel;
 
-	public IntelPacket(PacketReader reader) {
+	private IntelPacket(PacketReader reader) {
     	super(ConnectionType.SERVER, TYPE);
     	mId = reader.readInt();
     	reader.readUnknown("Unknown", 1);

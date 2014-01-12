@@ -4,9 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.dhleong.acl.ArtemisPacket;
+import net.dhleong.acl.ArtemisPacketException;
 import net.dhleong.acl.enums.BeamFrequency;
 import net.dhleong.acl.enums.ConnectionType;
+import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.enums.ShipSystem;
+import net.dhleong.acl.net.protocol.PacketFactory;
+import net.dhleong.acl.net.protocol.PacketFactoryRegistry;
 import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.world.ArtemisNpc;
 import net.dhleong.acl.world.ArtemisObject;
@@ -15,6 +20,21 @@ import net.dhleong.acl.world.ArtemisObject;
  * Updates on enemy and allied ships.
  */
 public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdatingPacket {
+	public static void register(PacketFactoryRegistry registry) {
+		registry.register(WORLD_TYPE, ObjectType.NPC_SHIP.getId(), new PacketFactory() {
+			@Override
+			public Class<? extends ArtemisPacket> getFactoryClass() {
+				return NpcUpdatePacket.class;
+			}
+
+			@Override
+			public ArtemisPacket build(PacketReader reader)
+					throws ArtemisPacketException {
+				return new NpcUpdatePacket(reader);
+			}
+		});
+	}
+
 	private enum Bit {
 		NAME,
 		UNK_1_2,
@@ -91,7 +111,7 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
 
     private final List<ArtemisObject> mObjects = new ArrayList<ArtemisObject>();
 
-    public NpcUpdatePacket(PacketReader reader) {
+    private NpcUpdatePacket(PacketReader reader) {
     	super(ConnectionType.SERVER, WORLD_TYPE);
 
     	while (reader.hasMore()) {

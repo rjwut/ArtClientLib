@@ -1,5 +1,8 @@
 package net.dhleong.acl;
 
+import net.dhleong.acl.net.protocol.CoreArtemisProtocol;
+import net.dhleong.acl.net.protocol.Protocol;
+
 /**
  * Interface for objects which can connect to an Artemis server and send and
  * receive packets.
@@ -32,4 +35,10 @@ public interface ArtemisNetworkInterface {
      * Disconnects from the server.
      */
     void stop();
+
+    /**
+     * Registers the packet types defined by the given Protocol with this
+     * object. The {@link CoreArtemisProtocol} is registered automatically.
+     */
+	void registerProtocol(Protocol protocol);
 }

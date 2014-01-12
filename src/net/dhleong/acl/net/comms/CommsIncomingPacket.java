@@ -1,20 +1,39 @@
 package net.dhleong.acl.net.comms;
 
+import net.dhleong.acl.ArtemisPacket;
+import net.dhleong.acl.ArtemisPacketException;
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.net.BaseArtemisPacket;
 import net.dhleong.acl.net.PacketReader;
+import net.dhleong.acl.net.protocol.PacketFactory;
+import net.dhleong.acl.net.protocol.PacketFactoryRegistry;
 
 /**
  * Received when an incoming COMMs message arrives.
  */
 public class CommsIncomingPacket extends BaseArtemisPacket {
-    public static final int TYPE = 0xD672C35F;
+    private static final int TYPE = 0xD672C35F;
+
+	public static void register(PacketFactoryRegistry registry) {
+		registry.register(TYPE, new PacketFactory() {
+			@Override
+			public Class<? extends ArtemisPacket> getFactoryClass() {
+				return CommsIncomingPacket.class;
+			}
+
+			@Override
+			public ArtemisPacket build(PacketReader reader)
+					throws ArtemisPacketException {
+				return new CommsIncomingPacket(reader);
+			}
+		});
+	}
 
     private final int mPriority;
     private final String mFrom;
     private final String mMessage;
 
-    public CommsIncomingPacket(PacketReader reader) {
+    private CommsIncomingPacket(PacketReader reader) {
         super(ConnectionType.SERVER, TYPE);
         mPriority = reader.readInt();
         mFrom = reader.readString();

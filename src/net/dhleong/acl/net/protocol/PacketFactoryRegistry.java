@@ -71,7 +71,7 @@ public class PacketFactoryRegistry {
 	/**
 	 * Returns the PacketFactory registered under the given type and subType, or
 	 * null if no such PacketFactory has been registered. If a packetFactory was
-	 * registere under a null subType, the subType will be ignored when matching
+	 * not registered under a subType, the subType will be ignored when matching
 	 * on it.
 	 */
 	public PacketFactory get(int type, byte subType) {

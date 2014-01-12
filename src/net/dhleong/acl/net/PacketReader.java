@@ -10,6 +10,7 @@ import java.util.TreeMap;
 
 import net.dhleong.acl.ArtemisPacket;
 import net.dhleong.acl.ArtemisPacketException;
+import net.dhleong.acl.ListenerRegistry;
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.net.protocol.PacketFactory;
@@ -29,7 +30,8 @@ public class PacketReader {
 	private InputStream in;
 	private byte[] buffer = new byte[4];
 	private boolean parse = true;
-	private PacketFactoryRegistry registry;
+	private PacketFactoryRegistry factoryRegistry;
+	private ListenerRegistry listenerRegistry;
 	private byte[] payload;
 	private int offset;
 	private SortedMap<String, byte[]> unknownProps;
@@ -41,23 +43,27 @@ public class PacketReader {
 	/**
 	 * Testing constructor for reading packets from a hex String.
 	 */
-	public PacketReader(String hex, PacketFactoryRegistry registry) {
-		this(TextUtil.hexToByteArray(hex), registry);
+	public PacketReader(String hex, PacketFactoryRegistry factoryRegistry,
+			ListenerRegistry listenerRegistry) {
+		this(TextUtil.hexToByteArray(hex), factoryRegistry, listenerRegistry);
 	}
 
 	/**
 	 * Testing constructor for reading packets from a byte array.
 	 */
-	public PacketReader(byte[] bytes, PacketFactoryRegistry registry) {
-		this(new ByteArrayInputStream(bytes), registry);
+	public PacketReader(byte[] bytes, PacketFactoryRegistry factoryRegistry,
+			ListenerRegistry listenerRegistry) {
+		this(new ByteArrayInputStream(bytes), factoryRegistry, listenerRegistry);
 	}
 
 	/**
 	 * Wraps the given InputStream with this PacketReader.
 	 */
-	public PacketReader(InputStream in, PacketFactoryRegistry registry) {
+	public PacketReader(InputStream in, PacketFactoryRegistry factoryRegistry,
+			ListenerRegistry listenerRegistry) {
 		this.in = in;
-		this.registry = registry;
+		this.factoryRegistry = factoryRegistry;
+		this.listenerRegistry = listenerRegistry;
 	}
 
 	/**
@@ -160,23 +166,31 @@ public class PacketReader {
 			throw new ArtemisPacketException(ex, packetType);
 		}
 
+		// Find the PacketFactory that knows how to handle this packet type
 		PacketFactory factory = null;
 
 		if (parse) {
-			factory = registry.get(packetType, hasMore() ? peekByte() : 0x00);
+			factory = factoryRegistry.get(packetType, hasMore() ? peekByte() : 0x00);
 		}
 
 		if (factory == null) {
+			// No factory can handle this; return an UnknownPacket
 			return new UnknownPacket(ConnectionType.SERVER, packetType, payload);
 		}
 
-		try {
-			return factory.build(this);
-		} catch (ArtemisPacketException ex) {
-			throw new ArtemisPacketException(ex, packetType, payload);
-		} catch (RuntimeException ex) {
-			throw new ArtemisPacketException(ex, packetType, payload);
+		// Are we interested in this packet type?
+		if (listenerRegistry.listeningFor(factory.getFactoryClass())) {
+			// Parse it and build the packet
+			try {
+				return factory.build(this);
+			} catch (ArtemisPacketException ex) {
+				throw new ArtemisPacketException(ex, packetType, payload);
+			} catch (RuntimeException ex) {
+				throw new ArtemisPacketException(ex, packetType, payload);
+			}
 		}
+
+		return null;
 	}
 
 	/**

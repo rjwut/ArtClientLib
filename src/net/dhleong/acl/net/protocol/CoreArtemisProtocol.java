@@ -26,33 +26,38 @@ import net.dhleong.acl.net.setup.StationStatusPacket;
 import net.dhleong.acl.net.setup.VersionPacket;
 import net.dhleong.acl.net.setup.WelcomePacket;
 
+/**
+ * Implements the core Artemis protocol.
+ * @author rjwut
+ */
 public class CoreArtemisProtocol implements Protocol {
 	@Override
 	public void registerPacketFactories(PacketFactoryRegistry registry) {
-		AllShipSettingsPacket.register(registry);
+		NpcUpdatePacket.register(registry);
+		WhaleUpdatePacket.register(registry);
+		MainPlayerUpdatePacket.register(registry);
 		BeamFiredPacket.register(registry);
-		CommsIncomingPacket.register(registry);
-		DestroyObjectPacket.register(registry);
-		DroneUpdatePacket.register(registry);
 		EngGridUpdatePacket.register(registry);
 		EngPlayerUpdatePacket.register(registry);
+		WeapPlayerUpdatePacket.register(registry);
+		IntelPacket.register(registry);
+		DroneUpdatePacket.register(registry);
+		GenericUpdatePacket.register(registry);
+		SoundEffectPacket.register(registry);
+		StationPacket.register(registry);
+
+		AllShipSettingsPacket.register(registry);
+		CommsIncomingPacket.register(registry);
+		DestroyObjectPacket.register(registry);
 		GameMessagePacket.register(registry);
 		GameOverPacket.register(registry);
 		GameStartPacket.register(registry);
 		GenericMeshPacket.register(registry);
-		GenericUpdatePacket.register(registry);
 		IncomingAudioPacket.register(registry);
-		IntelPacket.register(registry);
 		JumpStatusPacket.register(registry);
 		KeyCaptureTogglePacket.register(registry);
-		MainPlayerUpdatePacket.register(registry);
-		NpcUpdatePacket.register(registry);
-		SoundEffectPacket.register(registry);
-		StationPacket.register(registry);
 		StationStatusPacket.register(registry);
 		VersionPacket.register(registry);
-		WeapPlayerUpdatePacket.register(registry);
 		WelcomePacket.register(registry);
-		WhaleUpdatePacket.register(registry);
 	}
 }

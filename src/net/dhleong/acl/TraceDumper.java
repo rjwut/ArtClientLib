@@ -42,7 +42,11 @@ public class TraceDumper {
             System.out.println("Tracing: " + filePath);
             InputStream baseIs = new BufferedInputStream(new FileInputStream(new File(filePath)));
             InputStream is = new HexDecodingIS(baseIs);
-            PacketReader reader = new PacketReader(is, new PacketFactoryRegistry());
+            PacketReader reader = new PacketReader(
+            		is,
+            		new PacketFactoryRegistry(),
+            		new ListenerRegistry()
+            );
             
             while (true) {
                 final ArtemisPacket pkt = reader.readPacket();

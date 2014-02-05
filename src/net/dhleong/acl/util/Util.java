@@ -7,8 +7,6 @@ import java.util.Set;
  * worry, we love you and will find you a home.
  */
 public class Util {
-	public static boolean debug = false;
-
 	/** stupid linear search */
     public static final int findInArray(float[] haystack, float needle) {
         for (int i = 0; i < haystack.length; i++) {

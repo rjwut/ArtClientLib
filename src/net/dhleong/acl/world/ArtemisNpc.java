@@ -76,12 +76,20 @@ public class ArtemisNpc extends BaseArtemisShip {
         return mEliteState != -1 && ability.on(mEliteState);
     }
 
+    public int getEliteBits() {
+    	return mElite;
+    }
+
     /**
      * Sets the elite ability bit field.
      * Unspecified: -1
      */
     public void setEliteBits(int elite) {
         mElite = elite;
+    }
+
+    public int getEliteStateBits() {
+    	return mEliteState;
     }
 
     /**

@@ -13,6 +13,7 @@ import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.protocol.ArtemisPacketException;
 import net.dhleong.acl.protocol.UnknownPacket;
+import net.dhleong.acl.protocol.UnparsedPacket;
 import net.dhleong.acl.util.BitField;
 import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.util.TextUtil;
@@ -194,7 +195,7 @@ public class PacketReader {
 			}
 		}
 
-		return null;
+		return new UnparsedPacket(connType, packetType, payload);
 	}
 
 	/**

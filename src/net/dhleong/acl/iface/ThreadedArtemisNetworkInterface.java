@@ -14,6 +14,7 @@ import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.protocol.ArtemisPacketException;
 import net.dhleong.acl.protocol.Protocol;
+import net.dhleong.acl.protocol.UnparsedPacket;
 import net.dhleong.acl.protocol.core.GameOverPacket;
 import net.dhleong.acl.protocol.core.setup.ReadyPacket;
 import net.dhleong.acl.protocol.core.setup.ReadyPacket2;
@@ -74,6 +75,28 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         mSendThread = new SenderThread(this, skt);
         mReceiveThread = new ReceiverThread(this, skt);
         mReceiveThread.addPacketListener(mSendThread);
+    }
+
+    private ThreadedArtemisNetworkInterface pair;
+    private PairingPolicy pairingPolicy;
+
+    public static void pair(
+    		ThreadedArtemisNetworkInterface iface1,
+    		ThreadedArtemisNetworkInterface iface2,
+    		PairingPolicy pairingPolicy
+    ) {
+    	if (iface1 == null || iface2 == null || pairingPolicy == null) {
+    		throw new IllegalArgumentException("All arguments are required");
+    	}
+
+    	iface1.pair = iface2;
+    	iface1.pairingPolicy = pairingPolicy;
+    	iface2.pair = iface1;
+    	iface2.pairingPolicy = pairingPolicy;
+    }
+
+    public ThreadedArtemisNetworkInterface getPair() {
+    	return pair;
     }
 
     @Override
@@ -204,7 +227,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
             
                 try {
                     if (DEBUG) {
-                    	System.out.println(">> " + mCurrentPacket);
+                    	System.out.println("< " + mCurrentPacket);
                     }
 
                     mCurrentPacket.write(mWriter);
@@ -251,8 +274,8 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
 
             // send a couple of these to prime the server
             // TODO Is this really required?
-            offer(new ReadyPacket2());
-            offer(new ReadyPacket2());
+            //offer(new ReadyPacket2());
+            //offer(new ReadyPacket2());
             
             if (!wasConnected && mOnConnectedListener != null) {
                 mOnConnectedListener.onConnected();
@@ -315,12 +338,20 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                     // read packet
                     final ArtemisPacket pkt = mReader.readPacket();
 
-                    // only bother with non-null packets; else,
-                    //  they are just keepalive (I guess) for 
-                    //  indicating that the server aliveness
-                    //  and perhaps calculating latency
-                    if (pkt != null && mRunning) {
-                    	mListeners.fire(pkt);
+                    if (DEBUG) {
+                    	System.out.println("> " + pkt);
+                    }
+
+                    if (mRunning) {
+                    	boolean unparsed = pkt instanceof UnparsedPacket;
+
+                    	if (pair != null && (unparsed || pairingPolicy == PairingPolicy.ALL)) {
+                    		pair.send(pkt);
+                    	}
+
+                    	if (!unparsed) {
+                    		mListeners.fire(pkt);
+                    	}
                     }
                 } catch (final ArtemisPacketException e) {
                     if (mRunning) {

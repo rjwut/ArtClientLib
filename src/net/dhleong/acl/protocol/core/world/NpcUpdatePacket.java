@@ -54,7 +54,7 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
 		ROLL,
 		HEADING,
 		VELOCITY,
-		UNK_2_7,
+		SURRENDERED,
 		UNK_2_8,
 
 		FORE_SHIELD,
@@ -129,6 +129,7 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
             int eliteState = -1;
             float shieldsFront, shieldsFrontMax;
             float shieldsRear, shieldsRearMax;
+            BoolState surrendered;
 
             reader.startObject(Bit.values());
             name = reader.readString(Bit.NAME);
@@ -140,12 +141,7 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
             maxImpulse = reader.readFloat(Bit.MAX_IMPULSE, -1);
             maxTurnRate = reader.readFloat(Bit.MAX_TURN_RATE, -1);
 
-            if (reader.has(Bit.IS_ENEMY)) {
-                enemy = BoolState.from(reader.readInt() == 1);
-            } else {
-            	enemy = BoolState.UNKNOWN;
-            }
-
+            enemy = reader.readBool(Bit.IS_ENEMY, 4);
             hullId = reader.readInt(Bit.SHIP_TYPE, -1);
             x = reader.readFloat(Bit.X, Float.MIN_VALUE);
             y = reader.readFloat(Bit.Y, Float.MIN_VALUE);
@@ -154,8 +150,8 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
             roll = reader.readFloat(Bit.ROLL, Float.MIN_VALUE);
             heading = reader.readFloat(Bit.HEADING, Float.MIN_VALUE);
             velocity = reader.readFloat(Bit.VELOCITY, -1);
+            surrendered = reader.readBool(Bit.SURRENDERED, 1);
 
-            reader.readObjectUnknown(Bit.UNK_2_7, 1);
             reader.readObjectUnknown(Bit.UNK_2_8, 2);
 
             shieldsFront = reader.readFloat(Bit.FORE_SHIELD, Float.MIN_VALUE);
@@ -206,6 +202,7 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
             obj.setRoll(roll);
             obj.setHeading(heading);
             obj.setVelocity(velocity);
+            obj.setSurrendered(surrendered);
             obj.setTopSpeed(maxImpulse);
             obj.setTurnRate(maxTurnRate);
             
@@ -248,7 +245,7 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
 					.writeFloat(Bit.ROLL, npc.getRoll(), Float.MIN_VALUE)
 					.writeFloat(Bit.HEADING, npc.getHeading(), Float.MIN_VALUE)
 					.writeFloat(Bit.VELOCITY, npc.getVelocity(), -1)
-					.writeUnknown(Bit.UNK_2_7)
+					.writeUnknown(Bit.SURRENDERED)
 					.writeUnknown(Bit.UNK_2_8)
 					.writeFloat(Bit.FORE_SHIELD, npc.getShieldsFront(), Float.MIN_VALUE)
 					.writeFloat(Bit.FORE_SHIELD_MAX, npc.getShieldsFrontMax(), -1)

@@ -37,6 +37,8 @@ public class CoreArtemisProtocol implements Protocol {
 		DestroyObjectPacket.register(registry);
 		GameMessagePacket.register(registry);
 		GameOverPacket.register(registry);
+		GameOverReasonPacket.register(registry);
+		GameOverStatsPacket.register(registry);
 		GameStartPacket.register(registry);
 		GenericMeshPacket.register(registry);
 		IncomingAudioPacket.register(registry);

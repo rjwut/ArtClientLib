@@ -8,6 +8,7 @@ import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.util.BitField;
 import net.dhleong.acl.util.BoolState;
+import net.dhleong.acl.util.TextUtil;
 import net.dhleong.acl.world.ArtemisObject;
 
 /**

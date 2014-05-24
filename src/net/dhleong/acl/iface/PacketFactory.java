@@ -16,8 +16,8 @@ public interface PacketFactory {
 	public Class<? extends ArtemisPacket> getFactoryClass();
 
 	/**
-	 * Returns a packet constructed with a playload read from the given
-	 * PacketReader. (It is assumed that the preamble has already been read.
+	 * Returns a packet constructed with a payload read from the given
+	 * PacketReader. (It is assumed that the preamble has already been read.)
 	 * This method should throw an ArtemisPacketException if the payload is
 	 * malformed.
 	 */

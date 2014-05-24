@@ -15,9 +15,6 @@ import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.protocol.ArtemisPacketException;
 import net.dhleong.acl.protocol.Protocol;
 import net.dhleong.acl.protocol.UnparsedPacket;
-import net.dhleong.acl.protocol.core.GameOverPacket;
-import net.dhleong.acl.protocol.core.setup.ReadyPacket;
-import net.dhleong.acl.protocol.core.setup.ReadyPacket2;
 import net.dhleong.acl.protocol.core.setup.VersionPacket;
 import net.dhleong.acl.protocol.core.setup.WelcomePacket;
 import net.dhleong.acl.util.TextUtil;
@@ -28,7 +25,7 @@ import net.dhleong.acl.util.Util;
  * each stream.
  */
 public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface {
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private final ConnectionType recvType;
     private final ConnectionType sendType;
@@ -183,7 +180,6 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         private final Queue<ArtemisPacket> mQueue = new ArrayDeque<ArtemisPacket>(128);
         private boolean mRunning = true;
         
-        private ArtemisPacket mCurrentPacket = null;
         private final PacketWriter mWriter;
         private final ThreadedArtemisNetworkInterface mInterface;
         
@@ -208,7 +204,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         @Override
         public void run() {
             mStarted = true;
-            
+
             while (mRunning) {
                 try {
                     Thread.sleep(5);
@@ -219,19 +215,21 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                 if (!mConnected) {
                     continue;
                 }
-                
-                if (mCurrentPacket == null && (mCurrentPacket = mQueue.poll()) == null) {
+
+                ArtemisPacket pkt = null;
+            	pkt = mQueue.poll();
+
+            	if (pkt == null) {
                     // empty queue; loop back to wait
                     continue;
                 }
             
                 try {
                     if (DEBUG) {
-                    	System.out.println("< " + mCurrentPacket);
+                    	System.out.println("< " + pkt);
                     }
 
-                    mCurrentPacket.write(mWriter);
-                    mCurrentPacket = null;
+                    pkt.write(mWriter);
                 } catch (final IOException e) {
                     if (mRunning) {
                         e.printStackTrace();
@@ -241,7 +239,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                     break;
                 }
             }
-            
+
             mConnected = false;
             mInterface.stop();
             
@@ -301,11 +299,6 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                 end();
             }
         }
-
-        @PacketListener
-        public void onPacket(final GameOverPacket pkt) {
-        	offer(new ReadyPacket());
-        }
     }
 
 	/**
@@ -344,8 +337,11 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
 
                     if (mRunning) {
                     	boolean unparsed = pkt instanceof UnparsedPacket;
+                    	boolean sendToPair =
+                    			pair != null &&
+                    			(unparsed || pairingPolicy == PairingPolicy.ALL);
 
-                    	if (pair != null && (unparsed || pairingPolicy == PairingPolicy.ALL)) {
+                    	if (sendToPair) {
                     		pair.send(pkt);
                     	}
 

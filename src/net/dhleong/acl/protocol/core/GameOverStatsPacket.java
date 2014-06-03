@@ -37,7 +37,7 @@ public class GameOverStatsPacket extends BaseArtemisPacket implements
 		});
 	}
 
-	private byte column;
+	private byte columnIndex;
 	private List<Row> rows = new LinkedList<Row>();
 
 	private GameOverStatsPacket(PacketReader reader) {
@@ -48,7 +48,7 @@ public class GameOverStatsPacket extends BaseArtemisPacket implements
 			throw new UnexpectedTypeException(subtype, MSG_TYPE);
         }
 
-        column = reader.readByte();
+        columnIndex = reader.readByte();
 
         do {
         	if (reader.readByte() == END_MARKER) {
@@ -61,13 +61,13 @@ public class GameOverStatsPacket extends BaseArtemisPacket implements
         } while (true);
 	}
 
-    public GameOverStatsPacket(byte column) {
+    public GameOverStatsPacket(byte columnIndex) {
     	super(ConnectionType.SERVER, TYPE);
-    	this.column = column;
+    	this.columnIndex = columnIndex;
     }
 
-    public byte getColumn() {
-    	return column;
+    public byte getColumnIndex() {
+    	return columnIndex;
     }
 
     @Override
@@ -82,6 +82,7 @@ public class GameOverStatsPacket extends BaseArtemisPacket implements
 	@Override
 	protected void writePayload(PacketWriter writer) {
 		writer.writeInt(MSG_TYPE);
+		writer.writeByte(columnIndex);
 
 		for (Row row : rows) {
 			writer

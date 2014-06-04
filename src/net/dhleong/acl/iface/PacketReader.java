@@ -412,7 +412,6 @@ public class PacketReader {
 	/**
 	 * Reads the given number of bytes from the current packet's payload and
 	 * puts them in the unknown object property map with the indicated name.
-	 * Otherwise, the bytes are read off and discarded.
 	 */
 	public void readObjectUnknown(String name, int byteCount) {
 		unknownObjectProps.put(name, readBytes(byteCount));
@@ -437,8 +436,7 @@ public class PacketReader {
 	}
 
 	/**
-	 * Returns the unknown properties previously stored by readUnknown(). If
-	 * Util.debug = false, this method always returns null.
+	 * Returns the unknown properties previously stored by readUnknown().
 	 */
 	public SortedMap<String, byte[]> getUnknownProps() {
 		return unknownProps;
@@ -447,8 +445,8 @@ public class PacketReader {
 	/**
 	 * Starts reading an object from an ObjectUpdatingPacket. This will read off
 	 * an object type value (byte), an object ID (int) and (if a bits enum value
-	 * array is given) a BitField from the current packet's payload. If
-	 * Util.debug = true, this also clears the unknownObjectProps property.
+	 * array is given) a BitField from the current packet's payload. This also
+	 * clears the unknownObjectProps property.
 	 */
 	public void startObject(Enum<?>[] bits) {
 		byte typeByte = readByte();
@@ -493,8 +491,7 @@ public class PacketReader {
 
 	/**
 	 * Returns the unknown object properties previously stored by
-	 * readObjectUnknown(). If Util.debug = false, this method always returns
-	 * null.
+	 * readObjectUnknown().
 	 */
 	public SortedMap<String, byte[]> getUnknownObjectProps() {
 		return unknownObjectProps;

@@ -8,7 +8,6 @@ import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.util.BitField;
 import net.dhleong.acl.util.BoolState;
-import net.dhleong.acl.util.TextUtil;
 import net.dhleong.acl.world.ArtemisObject;
 
 /**
@@ -59,6 +58,12 @@ public class PacketWriter {
 		return this;
 	}
 
+	/**
+	 * Starts writing a new entry into the packet for the given object. If
+	 * object entries for this packet have bit fields, an array of the possible
+	 * enum values (not just the ones in this packet) should be provided;
+	 * otherwise, the bits argument should be null.
+	 */
 	public PacketWriter startObject(ArtemisObject object, Enum<?>[] bits) {
 		assertStarted();
 		obj = object;
@@ -76,6 +81,12 @@ public class PacketWriter {
 		return this;
 	}
 
+	/**
+	 * If the given byte is different from defaultValue, the byte is written
+	 * to the packet, and the corresponding bit in the object's bit field is set;
+	 * otherwise, nothing happens. You must invoke startObject() before calling
+	 * this method.
+	 */
 	public PacketWriter writeByte(Enum<?> bit, byte v, byte defaultValue) {
 		assertObjectStarted();
 
@@ -87,6 +98,12 @@ public class PacketWriter {
 		return this;
 	}
 
+	/**
+	 * If the given BoolState is known, it is written to the packet using the
+	 * given number of bytes, and the corresponding bit in the object's bit
+	 * field is set; otherwise, nothing happens. You must invoke startObject()
+	 * before calling this method.
+	 */
 	public PacketWriter writeBool(Enum<?> bit, BoolState v, int byteCount) {
 		assertObjectStarted();
 
@@ -110,6 +127,12 @@ public class PacketWriter {
 		return this;
 	}
 
+	/**
+	 * If the given int is different from defaultValue, the int is coerced to a
+	 * short and written to the packet, and the corresponding bit in the
+	 * object's bit field is set; otherwise, nothing happens. You must invoke
+	 * startObject() before calling this method.
+	 */
 	public PacketWriter writeShort(Enum<?> bit, int v, int defaultValue) {
 		assertObjectStarted();
 
@@ -131,6 +154,12 @@ public class PacketWriter {
 		return this;
 	}
 
+	/**
+	 * If the given int is different from defaultValue, the int is written to
+	 * the packet, and the corresponding bit in the object's bit field is set;
+	 * otherwise, nothing happens. You must invoke startObject() before calling
+	 * this method.
+	 */
 	public PacketWriter writeInt(Enum<?> bit, int v, int defaultValue) {
 		assertObjectStarted();
 
@@ -152,6 +181,12 @@ public class PacketWriter {
 		return this;
 	}
 
+	/**
+	 * If the given long is different from defaultValue, the long is written to
+	 * the packet, and the corresponding bit in the object's bit field is set;
+	 * otherwise, nothing happens. You must invoke startObject() before calling
+	 * this method.
+	 */
 	public PacketWriter writeLong(Enum<?> bit, long v, long defaultValue) {
 		assertObjectStarted();
 
@@ -171,6 +206,12 @@ public class PacketWriter {
 		return writeInt(Float.floatToRawIntBits(v));
 	}
 
+	/**
+	 * If the given float is different from defaultValue, the float is written
+	 * to the packet, and the corresponding bit in the object's bit field is
+	 * set; otherwise, nothing happens. You must invoke startObject() before
+	 * calling this method.
+	 */
 	public PacketWriter writeFloat(Enum<?> bit, float v, float defaultValue) {
 		return writeInt(
 				bit,
@@ -189,6 +230,11 @@ public class PacketWriter {
 		return this;
 	}
 
+	/**
+	 * If the given String is not null, it is written to the packet, and the
+	 * corresponding bit in the object's bit field is set; otherwise, nothing
+	 * happens. You must invoke startObject() before calling this method.
+	 */
 	public PacketWriter writeString(Enum<?> bit, String str) {
 		assertObjectStarted();
 
@@ -209,6 +255,11 @@ public class PacketWriter {
 		return this;
 	}
 
+	/**
+	 * If the given byte array is not null, it is written to the packet, and the
+	 * corresponding bit in the object's bit field is set; otherwise, nothing
+	 * happens. You must invoke startObject() before calling this method.
+	 */
 	public PacketWriter writeBytes(Enum<?> bit, byte[] bytes) {
 		assertObjectStarted();
 
@@ -220,6 +271,12 @@ public class PacketWriter {
 		return this;
 	}
 
+	/**
+	 * Retrieves the named unknown value as a byte array from the unknown
+	 * properties map. If the retrieved value is not null, it is written to the
+	 * packet; otherwise, the defaultValue byte array will be written. You must
+	 * invoke startObject() before calling this method.
+	 */
 	public PacketWriter writeUnknown(String name, byte[] defaultValue) {
 		assertObjectStarted();
 		byte[] v = obj.getUnknownProps().get(name);
@@ -227,6 +284,13 @@ public class PacketWriter {
 		return this;
 	}
 
+	/**
+	 * Retrieves the unknown value identified by the indicated bit as a byte
+	 * array from the unknown properties map. If the retrieved value is not
+	 * null, it is written to the packet and the corresponding bit in the
+	 * object's bit field is set; otherwise, nothing happens. You must invoke
+	 * startObject() before calling this method.
+	 */
 	public PacketWriter writeUnknown(Enum<?> bit) {
 		assertObjectStarted();
 		byte[] v = obj.getUnknownProps().get(bit.name());
@@ -239,6 +303,13 @@ public class PacketWriter {
 		return this;
 	}
 
+	/**
+	 * Flushes the current object's bytes to the packet, but not to the wrapped
+	 * OutputStream. This prepares the packet for writing another byte. You must
+	 * invoke startObject() before calling this method. When this method
+	 * returns, you will have to call startObject() again before you can write
+	 * another object.
+	 */
 	public void endObject() {
 		writeByte(obj.getType().getId());
 		writeInt(obj.getId());
@@ -287,6 +358,11 @@ public class PacketWriter {
 		}
 	}
 
+	/**
+	 * Throws an IllegalStateException if startObject() has not been called
+	 * since the time this object was constructed or since the last call to
+	 * endObject() or flush().
+	 */
 	private void assertObjectStarted() {
 		if (baosObj == null) {
 			throw new IllegalStateException("Must invoke startObject() first");
@@ -294,7 +370,8 @@ public class PacketWriter {
 	}
 
 	/**
-	 * Writes an int value directly to the wrapped OutputStream.
+	 * Writes an int directly to the wrapped OutputStream. This is used by
+	 * PacketWriter to write values in the preamble, which are all ints.
 	 */
 	private void writeIntToStream(int value) throws IOException {
 		buffer[0] = (byte) (0xff & value);
@@ -304,12 +381,18 @@ public class PacketWriter {
 		out.write(buffer);
 	}
 
+	/**
+	 * Writes an int (coerced into a short) to the given ByteArrayOutputStream.
+	 */
 	private void writeShort(ByteArrayOutputStream o, int v) {
 		buffer[0] = (byte) (v & 0xff);
 		buffer[1] = (byte) ((v >> 8) & 0xff);
 		o.write(buffer, 0, 2);
 	}
 
+	/**
+	 * Writes an int to the given ByteArrayOutputStream.
+	 */
 	private void writeInt(ByteArrayOutputStream o, int v) {
 		buffer[0] = (byte) (v & 0xff);
 		buffer[1] = (byte) ((v >> 8) & 0xff);
@@ -318,6 +401,9 @@ public class PacketWriter {
 		o.write(buffer, 0, 4);
 	}
 
+	/**
+	 * Writes a long to the given ByteArrayOutputStream.
+	 */
 	private void writeLong(ByteArrayOutputStream o, long v) {
 		buffer[0] = (byte) (v & 0xff);
 		buffer[1] = (byte) ((v >> 8) & 0xff);
@@ -330,6 +416,9 @@ public class PacketWriter {
 		o.write(buffer, 0, 8);
 	}
 
+	/**
+	 * Writes a String to the given ByteArrayOutputStream.
+	 */
 	private void writeString(ByteArrayOutputStream o, String str) {
 		int charCount = str.length() + 1;
 		writeInt(o, charCount);
@@ -343,9 +432,12 @@ public class PacketWriter {
 			throw new RuntimeException(ex);
 		}
 
-		writeShort(o, 0);
+		writeShort(o, 0);	// terminating null
 	}
 
+	/**
+	 * Writes a byte array to the given ByteArrayOutputStream.
+	 */
 	private static void writeBytes(ByteArrayOutputStream o, byte[] bytes) {
 		try {
 			o.write(bytes);

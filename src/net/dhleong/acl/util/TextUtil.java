@@ -53,6 +53,25 @@ public class TextUtil {
     }
 
     /**
+     * Converts an int to a little-endian hex String.
+     */
+    public static String intToHexLE(int val) {
+    	StringBuilder buf = new StringBuilder();
+
+    	for (int i = 0; i < 32; i += 8) {
+    		String hex = Integer.toHexString((0xff & (val >> i)));
+
+    		if (hex.length() == 1) {
+    			buf.append('0');
+    		}
+
+    		buf.append(hex);
+    	}
+
+    	return buf.toString();
+    }
+
+    /**
      * Converts a hex String to an int.
      */
     public static int hexToInt(char byte1, char byte2) {
@@ -67,7 +86,7 @@ public class TextUtil {
 
     	if (len % 2 == 1) {
     		throw new IllegalArgumentException(
-    				"Hex strings must contain two characters per byte"
+    				"Hex strings must contain two characters per byte: " + hex
     		);
     	}
 

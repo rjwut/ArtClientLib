@@ -12,6 +12,7 @@ import net.dhleong.acl.enums.ObjectType;
 public class ArtemisMesh extends BaseArtemisObject {
     private String mMesh;
     private String mTex;
+    private boolean hasColor;
     private int mColor;
     private float mShieldsFront = Float.MIN_VALUE;
     private float mShieldsRear = Float.MIN_VALUE;
@@ -48,7 +49,11 @@ public class ArtemisMesh extends BaseArtemisObject {
     public void setTexture(String path) {
         mTex = path;
     }
-    
+
+    public boolean hasColor() {
+    	return hasColor;
+    }
+
     /**
      * The color that will be used to render this object on sensor views. This
      * is specified as an ARGB int value. To specify each channel separately,
@@ -57,6 +62,22 @@ public class ArtemisMesh extends BaseArtemisObject {
      */
     public int getColor() {
         return mColor;
+    }
+
+    public int getAlpha() {
+    	return (mColor >>> 24) & 0xff;
+    }
+
+    public int getRed() {
+    	return (mColor >>> 16) & 0xff;
+    }
+
+    public int getGreen() {
+    	return (mColor >>> 8) & 0xff;
+    }
+
+    public int getBlue() {
+    	return mColor & 0xff;
     }
 
     /**
@@ -69,6 +90,7 @@ public class ArtemisMesh extends BaseArtemisObject {
         mColor |= ((r & 0xff) << 16);
         mColor |= ((g & 0xff) << 8);
         mColor |= (b & 0xff);
+    	hasColor = true;
     }
     
     /**

@@ -436,14 +436,14 @@ public class ArtemisPlayer extends BaseArtemisShip {
             	mBeamFreq = plr.mBeamFreq;
             }
 
-            if (BoolState.isKnown(BoolState.UNKNOWN)) {
+            if (BoolState.isKnown(plr.mRedAlert)) {
                 mRedAlert = plr.mRedAlert;
             }
 
-            if (BoolState.isKnown(BoolState.UNKNOWN)) {
+            if (BoolState.isKnown(plr.mShields)) {
                 mShields = plr.mShields;
             }
-            
+
             if (plr.mEnergy != -1) {
                 mEnergy = plr.mEnergy;
             }

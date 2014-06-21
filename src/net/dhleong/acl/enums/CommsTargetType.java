@@ -5,10 +5,30 @@ import net.dhleong.acl.world.ArtemisNpc;
 import net.dhleong.acl.world.ArtemisObject;
 
 public enum CommsTargetType {
-	PLAYER,
-	ENEMY,
-	STATION,
-	OTHER;
+	PLAYER {
+		@Override
+		public CommsMessage messageFromId(int id) {
+			return PlayerMessage.values()[id];
+		}
+	},
+	ENEMY {
+		@Override
+		public CommsMessage messageFromId(int id) {
+			return EnemyMessage.values()[id];
+		}
+	},
+	STATION {
+		@Override
+		public CommsMessage messageFromId(int id) {
+			return StationMessage.values()[id];
+		}
+	},
+	OTHER {
+		@Override
+		public CommsMessage messageFromId(int id) {
+			return OtherMessage.fromId(id);
+		}
+	};
 
 	public static CommsTargetType fromObject(ArtemisObject obj) {
 		ObjectType type = obj.getType();
@@ -25,4 +45,6 @@ public enum CommsTargetType {
 			return null;
 		}
 	}
+
+	public abstract CommsMessage messageFromId(int id);
 }

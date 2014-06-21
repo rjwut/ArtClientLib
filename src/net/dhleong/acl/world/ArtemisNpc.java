@@ -21,6 +21,7 @@ public class ArtemisNpc extends BaseArtemisShip {
     private byte mScanLevel = -1;
     private int mElite = -1, mEliteState = -1;
     private BoolState mEnemy = BoolState.UNKNOWN;
+    private BoolState mSurrendered = BoolState.UNKNOWN;
     private String mIntel;
     private final float[] mSysDamage = new float[8];
 
@@ -39,8 +40,7 @@ public class ArtemisNpc extends BaseArtemisShip {
 
     /**
      * Returns BoolState.TRUE if this ship is an enemy, BoolState.FALSE if it's
-     * friendly, and BoolState.UNKNOWN if its status is unspecified. Note that
-     * this only works in Solo mode.
+     * friendly. Note that this only works in Solo mode.
      * Unspecified: BoolState.UNKNOWN
      */
     public BoolState isEnemy() {
@@ -49,6 +49,19 @@ public class ArtemisNpc extends BaseArtemisShip {
 
     public void setEnemy(BoolState enemy) {
     	mEnemy = enemy;
+    }
+
+    /**
+     * Returns BoolState.TRUE if this ship has surrendered, and BoolState.FALSE
+     * if it hasn't.
+     * Unspecified: BoolState.UNKNOWN
+     */
+    public BoolState isSurrendered() {
+    	return mSurrendered;
+    }
+
+    public void setSurrendered(BoolState surrendered) {
+    	mSurrendered = surrendered;
     }
 
     /**
@@ -76,12 +89,20 @@ public class ArtemisNpc extends BaseArtemisShip {
         return mEliteState != -1 && ability.on(mEliteState);
     }
 
+    public int getEliteBits() {
+    	return mElite;
+    }
+
     /**
      * Sets the elite ability bit field.
      * Unspecified: -1
      */
     public void setEliteBits(int elite) {
         mElite = elite;
+    }
+
+    public int getEliteStateBits() {
+    	return mEliteState;
     }
 
     /**
@@ -150,6 +171,12 @@ public class ArtemisNpc extends BaseArtemisShip {
             	mEnemy = enemy;
             }
 
+            BoolState surrendered = cast.isSurrendered();
+
+            if (BoolState.isKnown(surrendered)) {
+            	mSurrendered = surrendered;
+            }
+
             if (cast.mScanLevel != -1) {
                 setScanLevel(cast.mScanLevel);
             }
@@ -197,6 +224,7 @@ public class ArtemisNpc extends BaseArtemisShip {
     	}
 
     	putProp(props, "Is enemy", mEnemy, includeUnspecified);
+    	putProp(props, "Surrendered", mSurrendered, includeUnspecified);
     	putProp(props, "Intel", mIntel, includeUnspecified);
     	ShipSystem[] systems = ShipSystem.values();
 

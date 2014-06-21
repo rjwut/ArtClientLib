@@ -15,17 +15,17 @@ import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.protocol.ArtemisPacketException;
 import net.dhleong.acl.protocol.Protocol;
 import net.dhleong.acl.protocol.UnparsedPacket;
+import net.dhleong.acl.protocol.Version;
 import net.dhleong.acl.protocol.core.setup.VersionPacket;
 import net.dhleong.acl.protocol.core.setup.WelcomePacket;
 import net.dhleong.acl.util.TextUtil;
-import net.dhleong.acl.util.Util;
 
 /**
  * Default implementation of ArtemisNetworkInterface. Kicks off a thread for
  * each stream.
  */
 public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface {
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private final ConnectionType recvType;
     private final ConnectionType sendType;
@@ -282,11 +282,12 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
 
         @PacketListener
         public void onPacket(final VersionPacket pkt) {
-            final float version = pkt.getVersion();
+            final Version version = pkt.getVersion();
 
-            if (Util.findInArray(ArtemisNetworkInterface.SUPPORTED_VERSIONS, version) == -1) {
-                System.err.println(String
-                        .format("Unsupported Artemis server version (%f)", version));
+            if (version.lt(ArtemisNetworkInterface.MIN_VERSION)) {
+                System.err.println(
+                		"Unsupported Artemis server version: " + version
+                );
 
                 if (mOnConnectedListener != null) {
                     mOnConnectedListener.onDisconnected(

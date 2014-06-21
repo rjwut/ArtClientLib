@@ -18,7 +18,7 @@ import net.dhleong.acl.protocol.BaseArtemisPacket;
  */
 public class WelcomePacket extends BaseArtemisPacket {
 	private static final int TYPE = 0x6d04b3da;
-	private static final byte[] MSG = "You have connected to Thom Robertson's Artemis Bridge Simulator. Please connect with an authorized game client.".getBytes(Charset.forName("US-ASCII"));
+	private static final byte[] MSG = "You have connected to Thom Robertson's Artemis Bridge Simulator.  Please connect with an authorized game client.".getBytes(Charset.forName("US-ASCII"));
 
 	public static void register(PacketFactoryRegistry registry) {
 		registry.register(ConnectionType.SERVER, TYPE, new PacketFactory() {

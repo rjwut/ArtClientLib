@@ -3,6 +3,7 @@ package net.dhleong.acl.iface;
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.protocol.Protocol;
+import net.dhleong.acl.protocol.Version;
 import net.dhleong.acl.protocol.core.CoreArtemisProtocol;
 
 /**
@@ -10,15 +11,9 @@ import net.dhleong.acl.protocol.core.CoreArtemisProtocol;
  * receive packets.
  */
 public interface ArtemisNetworkInterface {
-	// The main Artemis server version we're targeting
-    public static final float TARGET_VERSION = 2.000f;
-    
-    // The Artemis server versions we support
-    public static final float[] SUPPORTED_VERSIONS = new float[] {
-        TARGET_VERSION
-    };
+	public static final Version MIN_VERSION = new Version(2, 0);
 
-    /**
+	/**
      * Returns the ConnectionType of the packets this interface can receive. An
      * ArtemisProtocolException will be thrown if it receives a packet of the
      * wrong type.

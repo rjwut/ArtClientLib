@@ -19,7 +19,7 @@ public class ListenerRegistry {
      * Registers all methods on the given Object which have the @PacketListener
      * annotation with the registry.
      */
-    void register(Object object) {
+    public void register(Object object) {
 		Method[] methods = object.getClass().getMethods();
 
 		for (Method method : methods) {

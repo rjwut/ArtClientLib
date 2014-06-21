@@ -8,6 +8,7 @@ import net.dhleong.acl.iface.PacketWriter;
 import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.protocol.ArtemisPacketException;
 import net.dhleong.acl.protocol.BaseArtemisPacket;
+import net.dhleong.acl.protocol.Version;
 
 /**
  * Gives the Artemis server's version number. Send immediately after
@@ -33,15 +34,25 @@ public class VersionPacket extends BaseArtemisPacket {
 	}
 
 	private int mUnknown;
-	private float mVersion;
+	private Version mVersion;
 
 	private VersionPacket(PacketReader reader) {
 		super(ConnectionType.SERVER, TYPE);
 		mUnknown = reader.readInt();
-		mVersion = reader.readFloat();
+		float fVersion = reader.readFloat();
+
+		if (reader.hasMore()) {
+			mVersion = new Version(
+					reader.readInt(),
+					reader.readInt(),
+					reader.readInt()
+			);
+		} else {
+			mVersion = new Version(fVersion);
+		}
 	}
 
-	public VersionPacket(float version) {
+	public VersionPacket(Version version) {
 		super(ConnectionType.SERVER, TYPE);
 		mVersion = version;
 	}
@@ -49,13 +60,14 @@ public class VersionPacket extends BaseArtemisPacket {
 	/**
 	 * @return The version number
 	 */
-	public float getVersion() {
+	public Version getVersion() {
 		return mVersion;
 	}
 
 	@Override
 	protected void writePayload(PacketWriter writer) {
-		writer.writeInt(mUnknown).writeFloat(mVersion);
+		writer.writeInt(mUnknown);
+		mVersion.writeTo(writer);
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package net.dhleong.acl.iface;
 
-import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,26 +37,6 @@ public class PacketReader {
 	private int objectId;
 	private BitField bitField;
 	private SortedMap<String, byte[]> unknownObjectProps;
-
-	/**
-	 * Testing constructor for reading packets from a hex String.
-	 */
-	public PacketReader(ConnectionType connType, String hex,
-			PacketFactoryRegistry factoryRegistry,
-			ListenerRegistry listenerRegistry) {
-		this(connType, TextUtil.hexToByteArray(hex), factoryRegistry,
-				listenerRegistry);
-	}
-
-	/**
-	 * Testing constructor for reading packets from a byte array.
-	 */
-	public PacketReader(ConnectionType connType, byte[] bytes,
-			PacketFactoryRegistry factoryRegistry,
-			ListenerRegistry listenerRegistry) {
-		this(connType, new ByteArrayInputStream(bytes), factoryRegistry,
-				listenerRegistry);
-	}
 
 	/**
 	 * Wraps the given InputStream with this PacketReader.
@@ -170,6 +149,17 @@ public class PacketReader {
 			throw new ArtemisPacketException(ex, connType, packetType);
 		}
 
+		/*
+		System.out.println(
+				">>> " + TextUtil.intToHexLE(ArtemisPacket.HEADER) + " " +
+				TextUtil.intToHexLE(len) + " " +
+				TextUtil.intToHexLE(connectionTypeValue) + " 00000000 " +
+				TextUtil.intToHexLE(remainingBytes) + " " +
+				TextUtil.intToHexLE(packetType) + " " +
+				TextUtil.byteArrayToHexString(payload)
+		);
+		*/
+
 		// Find the PacketFactory that knows how to handle this packet type
 		PacketFactory factory = null;
 
@@ -178,24 +168,35 @@ public class PacketReader {
 					hasMore() ? peekByte() : 0x00);
 		}
 
+		ArtemisPacket packet;
+
 		if (factory == null) {
 			// No factory can handle this; return an UnknownPacket
-			return new UnknownPacket(connType, packetType, payload);
-		}
-
-		// Are we interested in this packet type?
-		if (listenerRegistry.listeningFor(factory.getFactoryClass())) {
+			packet = new UnknownPacket(connType, packetType, payload);
+		} else if (listenerRegistry.listeningFor(factory.getFactoryClass())) {
 			// Parse it and build the packet
 			try {
-				return factory.build(this);
+				packet = factory.build(this);
 			} catch (ArtemisPacketException ex) {
 				throw new ArtemisPacketException(ex, connType, packetType, payload);
 			} catch (RuntimeException ex) {
 				throw new ArtemisPacketException(ex, connType, packetType, payload);
 			}
+
+			int bytesLeft = payload.length - offset;
+
+			if (bytesLeft > 0) {
+				System.out.println(
+						">>> Unread bytes [" +
+						packet.getClass().getSimpleName() + "]: " +
+						TextUtil.byteArrayToHexString(readBytes(bytesLeft))
+				);
+			}
+		} else {
+			packet = new UnparsedPacket(connType, packetType, payload);
 		}
 
-		return new UnparsedPacket(connType, packetType, payload);
+		return packet;
 	}
 
 	/**

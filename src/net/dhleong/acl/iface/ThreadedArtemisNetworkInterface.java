@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -17,7 +18,6 @@ import net.dhleong.acl.protocol.Protocol;
 import net.dhleong.acl.protocol.Version;
 import net.dhleong.acl.protocol.core.setup.VersionPacket;
 import net.dhleong.acl.protocol.core.setup.WelcomePacket;
-import net.dhleong.acl.util.TextUtil;
 
 /**
  * Default implementation of ArtemisNetworkInterface. Kicks off a thread for
@@ -37,14 +37,14 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
     private Exception exception;
 
     /**
-     * Prepares an outgoing client connection to an Artemis server. The
-     * connection won't actually be opened until start() is called.
+     * Prepares an outgoing client connection to an Artemis server. The send and
+     * receive streams won't actually be opened until start() is called.
      * @param tgtIp The IP address to connect to
      * @param tgtPort The port to connect to (Artemis's default port is 2010)
      */
     public ThreadedArtemisNetworkInterface(final String host, final int port) 
             throws UnknownHostException, IOException {
-    	this(new Socket(host, port), ConnectionType.SERVER);
+   		this(new Socket(host, port), ConnectionType.SERVER);
     }
 
     /**
@@ -302,30 +302,17 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                     }
                 } catch (final ArtemisPacketException e) {
                     if (mRunning) {
-                    	ConnectionType connType = e.getConnectionType();
-                    	System.err.println("### PACKET PARSE EXCEPTION! ###");
+                    	Throwable cause = e.getCause();
 
-                    	if (connType != null) {
-                    		System.err.println("Connection type: " + connType);
-                        	int packetType = e.getPacketType();
-
-                        	if (packetType != 0) {
-                        		System.err.println(
-                        			"    Packet type: " + packetType
-                        		);
-                        		byte[] payload = e.getPayload();
-
-                        		if (payload != null) {
-                        			System.err.println(
-                        				"        Payload: " +
-               							TextUtil.byteArrayToHexString(payload)
-                        			);
-                        		}
-                        	}
+                    	if (cause instanceof SocketException) {
+                    		// Parse failed because the connection was lost
+                    		mInterface.disconnectCause = DisconnectEvent.Cause.REMOTE_DISCONNECT;
+                        	mInterface.exception = (SocketException) cause;
+                    	} else {
+                        	mInterface.disconnectCause = DisconnectEvent.Cause.PACKET_PARSE_EXCEPTION;
+                        	mInterface.exception = e;
                     	}
 
-                    	mInterface.disconnectCause = DisconnectEvent.Cause.PACKET_PARSE_EXCEPTION;
-                    	mInterface.exception = e;
                         end();
                     }
 
@@ -338,7 +325,6 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         
         public void end() {
             mRunning = false;
-            mListeners.clear();
         }
     }
 }

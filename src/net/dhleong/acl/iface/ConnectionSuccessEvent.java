@@ -6,4 +6,5 @@ package net.dhleong.acl.iface;
  * @author rjwut
  */
 public class ConnectionSuccessEvent extends ConnectionEvent {
+	// no additional members
 }

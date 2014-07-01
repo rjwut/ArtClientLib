@@ -1,41 +1,35 @@
 package net.dhleong.acl.iface;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import net.dhleong.acl.protocol.ArtemisPacket;
-
 /**
- * Contains ListenerMethods to be invoked when a compatible ArtemisPacket
- * arrives.
+ * Contains ListenerMethods to be invoked when a corresponding event occurs.
  * @author rjwut
  */
 public class ListenerRegistry {
     private List<ListenerMethod> listeners = new CopyOnWriteArrayList<ListenerMethod>();
 
     /**
-     * Registers all methods on the given Object which have the @PacketListener
+     * Registers all methods on the given Object which have the @Listener
      * annotation with the registry.
      */
     public void register(Object object) {
 		Method[] methods = object.getClass().getMethods();
 
 		for (Method method : methods) {
-			Annotation anno = method.getAnnotation(PacketListener.class);
-
-			if (anno != null) {
+			if (method.getAnnotation(Listener.class) != null) {
 				listeners.add(new ListenerMethod(object, method));
 			}
 		}
     }
 
     /**
-     * Returns true if any listeners are interested in packets of the given
-     * class; false otherwise.
+     * Returns true if any listeners are interested in events or packets of the
+     * given class; false otherwise.
      */
-    public boolean listeningFor(Class<? extends ArtemisPacket> clazz) {
+    public boolean listeningFor(Class<?> clazz) {
 		for (ListenerMethod listener : listeners) {
 			if (listener.accepts(clazz)) {
 				return true;
@@ -46,11 +40,11 @@ public class ListenerRegistry {
     }
 
     /**
-     * Fires all listeners which are compatible with the given ArtemisPacket.
+     * Fires all listeners which are compatible with the given event or packet.
      */
-    void fire(ArtemisPacket packet) {
+    void fire(Object obj) {
 		for (ListenerMethod listener : listeners) {
-			listener.offer(packet);
+			listener.offer(obj);
 		}
     }
 

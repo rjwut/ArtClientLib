@@ -71,7 +71,7 @@ public class CommsIncomingPacket extends BaseArtemisPacket {
 
     /**
      * A String identifying the sender. This may not correspond to the name of
-     * a game entity. For example, some messages from stations or friendly ships
+     * a game entity. For example, some messages from bases or friendly ships
      * have additional detail after the entity's name ("DS3 TSN Base"). Messages
      * in scripted scenarios can have any String for the sender.
      */

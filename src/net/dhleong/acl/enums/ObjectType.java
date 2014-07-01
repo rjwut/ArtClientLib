@@ -6,10 +6,10 @@ package net.dhleong.acl.enums;
  */
 public enum ObjectType {
 	PLAYER_SHIP(1, true),
-	WEAPONS_BRIDGE_STATION(2, false),
-	ENGINEERING_BRIDGE_STATION(3, false),
+	WEAPONS_CONSOLE(2, false),
+	ENGINEERING_CONSOLE(3, false),
 	NPC_SHIP(4, true),
-	SPACE_STATION(5, true),
+	BASE(5, true),
 	MINE(6, false),
 	ANOMALY(7, true),
 	NEBULA(9, false),

@@ -13,6 +13,8 @@ import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.protocol.ArtemisPacketException;
 import net.dhleong.acl.protocol.UnknownPacket;
 import net.dhleong.acl.protocol.UnparsedPacket;
+import net.dhleong.acl.protocol.Version;
+import net.dhleong.acl.protocol.core.setup.VersionPacket;
 import net.dhleong.acl.util.BitField;
 import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.util.TextUtil;
@@ -30,6 +32,7 @@ public class PacketReader {
 	private boolean parse = true;
 	private PacketFactoryRegistry factoryRegistry;
 	private ListenerRegistry listenerRegistry;
+	private Version version;
 	private byte[] payload;
 	private int offset;
 	private SortedMap<String, byte[]> unknownProps;
@@ -58,6 +61,13 @@ public class PacketReader {
 	 */
 	public void setParsePackets(boolean parse) {
 		this.parse = parse;
+	}
+
+	/**
+	 * Returns the server Version, or null if unknown.
+	 */
+	public Version getVersion() {
+		return version;
 	}
 
 	/**
@@ -181,6 +191,10 @@ public class PacketReader {
 				throw new ArtemisPacketException(ex, connType, packetType, payload);
 			} catch (RuntimeException ex) {
 				throw new ArtemisPacketException(ex, connType, packetType, payload);
+			}
+
+			if (packet instanceof VersionPacket) {
+				version = ((VersionPacket) packet).getVersion();
 			}
 
 			int bytesLeft = payload.length - offset;

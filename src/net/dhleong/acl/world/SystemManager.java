@@ -9,7 +9,7 @@ import java.util.Set;
 
 import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.enums.ShipSystem;
-import net.dhleong.acl.iface.PacketListener;
+import net.dhleong.acl.iface.Listener;
 import net.dhleong.acl.protocol.core.eng.EngGridUpdatePacket;
 import net.dhleong.acl.protocol.core.eng.EngGridUpdatePacket.DamconStatus;
 import net.dhleong.acl.protocol.core.eng.EngGridUpdatePacket.GridDamage;
@@ -66,7 +66,7 @@ public class SystemManager {
         mListener.onObjectCountChanged(mObjects.size());
     }
 
-    @PacketListener
+    @Listener
     public void onPacket(DestroyObjectPacket pkt) {
         synchronized(this) {
             mObjects.remove(pkt.getTarget());
@@ -89,9 +89,9 @@ public class SystemManager {
         return;
     }
 
-    @PacketListener
+    @Listener
     public void onPacket(EngGridUpdatePacket pkt) {
-        // this ONLY goes to the appropriate ship's engineer station
+        // this ONLY goes to the appropriate ship's engineer console
         List<GridDamage> damages = pkt.getDamage();
 
         if (damages.size() > 0 && mGridDamage != null) {
@@ -113,19 +113,19 @@ public class SystemManager {
         }
     }
 
-    @PacketListener
+    @Listener
     public void onPacket(ObjectUpdatingPacket pkt) {
         for (ArtemisObject p : pkt.getObjects()) {
             updateOrCreate(p);
         }
     }
 
-    @PacketListener
+    @Listener
     public void onPacket(PlayerUpdatePacket pkt) {
         updateOrCreate(pkt.getPlayer());
     }
 
-    @PacketListener
+    @Listener
     public void onPacket(IntelPacket pkt) {
     	ArtemisNpc npc = (ArtemisNpc) mObjects.get(pkt.getId());
 

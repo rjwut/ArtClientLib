@@ -15,14 +15,14 @@ import net.dhleong.acl.world.Artemis;
 import net.dhleong.acl.world.ArtemisPlayer;
 
 /**
- * Packet with player data related to the engineering station.
+ * Packet with player data related to the engineering console.
  * @author dhleong
  */
 public class EngPlayerUpdatePacket extends PlayerUpdatePacket {
 	public static void register(PacketFactoryRegistry registry) {
 		registry.register(ConnectionType.SERVER,
 				ObjectUpdatingPacket.WORLD_TYPE,
-				ObjectType.ENGINEERING_BRIDGE_STATION.getId(),
+				ObjectType.ENGINEERING_CONSOLE.getId(),
 				new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {

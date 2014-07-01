@@ -1,9 +1,9 @@
 package net.dhleong.acl.enums;
 
 /**
- * Availability status for the various bridge stations.
+ * Availability status for the various bridge consoles.
  * @author rjwut
  */
-public enum BridgeStationStatus {
+public enum ConsoleStatus {
 	AVAILABLE, YOURS, UNAVAILABLE;
 }

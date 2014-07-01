@@ -9,7 +9,7 @@ import net.dhleong.acl.iface.PacketWriter;
  * (major.minor.patch), and can interpret float version numbers for backwards
  * compatibility. For robustness and to avoid duplication of code, it can handle
  * an arbitrary number of parts in the version number, not just three.
- * @author rwalker
+ * @author rjwut
  */
 public class Version implements Comparable<Version> {
 	public static final Version MODERN = new Version(2, 1);

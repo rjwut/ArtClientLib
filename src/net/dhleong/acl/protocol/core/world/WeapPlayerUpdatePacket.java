@@ -13,14 +13,14 @@ import net.dhleong.acl.world.Artemis;
 import net.dhleong.acl.world.ArtemisPlayer;
 
 /**
- * Player data related to the weapons station.
+ * Player data related to the weapons console.
  * @author dhleong
  */
 public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
 	public static void register(PacketFactoryRegistry registry) {
 		registry.register(ConnectionType.SERVER,
 				ObjectUpdatingPacket.WORLD_TYPE,
-				ObjectType.WEAPONS_BRIDGE_STATION.getId(), new PacketFactory() {
+				ObjectType.WEAPONS_CONSOLE.getId(), new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {
 				return WeapPlayerUpdatePacket.class;

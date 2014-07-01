@@ -6,6 +6,7 @@ import java.io.OutputStream;
 
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.protocol.ArtemisPacket;
+import net.dhleong.acl.protocol.Version;
 import net.dhleong.acl.util.BitField;
 import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.world.ArtemisObject;
@@ -29,6 +30,8 @@ import net.dhleong.acl.world.ArtemisObject;
  */
 public class PacketWriter {
 	private final OutputStream out;
+	private Version version;
+
 	private int packetType;
 	private ByteArrayOutputStream baos;
 	private ArtemisObject obj;
@@ -47,6 +50,20 @@ public class PacketWriter {
 		}
 
 		this.out = out;
+	}
+
+	/**
+	 * Returns the server version number, or null if unknown.
+	 */
+	public Version getVersion() {
+		return version;
+	}
+
+	/**
+	 * Sets the server version number. This is invoked by VersionPacket. 
+	 */
+	public void setVersion(Version version) {
+		this.version = version;
 	}
 
 	/**

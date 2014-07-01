@@ -25,7 +25,7 @@ public abstract class ShipActionPacket extends BaseArtemisPacket {
     protected static final int TYPE_SET_BEAMFREQ       = 0x0b;
     protected static final int TYPE_AUTO_DAMCON        = 0x0c;
     protected static final int TYPE_SET_SHIP           = 0x0d;
-    protected static final int TYPE_SET_STATION        = 0x0e;
+    protected static final int TYPE_SET_CONSOLE        = 0x0e;
     protected static final int TYPE_READY              = 0x0f;
     protected static final int TYPE_SCI_SELECT         = 0x10; 
     protected static final int TYPE_CAPTAIN_SELECT     = 0x11;

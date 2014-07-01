@@ -11,7 +11,7 @@ import net.dhleong.acl.protocol.BaseArtemisPacket;
 import net.dhleong.acl.protocol.UnexpectedTypeException;
 
 /**
- * Set steering amount. Just like the actual station, you need to send one
+ * Set steering amount. Just like the actual console, you need to send one
  * packet to start turning, then another to reset the steering angle to stop
  * turning.
  * @author dhleong

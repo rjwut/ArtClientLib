@@ -34,10 +34,10 @@ public interface ArtemisNetworkInterface {
 	public void registerProtocol(Protocol protocol);
 
     /**
-     * Registers an object as a packet listener. It must have one or more
-     * methods annotated with @PacketListener.
+     * Registers an object as a listener. It must have one or more qualifying
+     * methods annotated with {@link Listener}.
      */
-    public void addPacketListener(Object listener);
+    public void addListener(Object listener);
 
     /**
      * Opens the send/receive streams to the remote machine.

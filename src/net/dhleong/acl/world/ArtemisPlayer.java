@@ -31,7 +31,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
     private final float[] mTubeTimes = new float[Artemis.MAX_TUBES]; 
     private final int[] mTubeTypes = new int[Artemis.MAX_TUBES];
     private float mEnergy = -1;
-    private int mDockingStation = -1;
+    private int mDockingBase = -1;
     private MainScreenView mMainScreen;
     private int mAvailableCoolant = -1;
     private float mImpulse = -1;
@@ -176,20 +176,20 @@ public class ArtemisPlayer extends BaseArtemisShip {
     }
 
     /**
-     * Get the ID of the station at which we're docking. Note that this property
-     * is only updated in a packet when the docking process commences; undocking
+     * Get the ID of the base at which we're docking. Note that this property is
+     * only updated in a packet when the docking process commences; undocking
      * does not update this property. However, if an existing ArtemisPlayer
      * object is docked, is updated by another one, and the update has the ship
      * engaging impulse or warp drive, this property will be set to 0 to
      * indicate that the ship has undocked.
      * Unspecified: -1
      */
-    public int getDockingStation() {
-        return mDockingStation;
+    public int getDockingBase() {
+        return mDockingBase;
     }
 
-    public void setDockingStation(int stationId) {
-        mDockingStation = stationId;
+    public void setDockingBase(int baseId) {
+        mDockingBase = baseId;
     }
 
     /**
@@ -426,10 +426,10 @@ public class ArtemisPlayer extends BaseArtemisShip {
             	mWarp = plr.mWarp;
             }
 
-            if (plr.mDockingStation != -1) {
-                mDockingStation = plr.mDockingStation;
+            if (plr.mDockingBase != -1) {
+                mDockingBase = plr.mDockingBase;
             } else if (plr.mImpulse != -1 || plr.mWarp != -1) {
-            	mDockingStation = 0;
+            	mDockingBase = 0;
             }
 
             if (plr.mBeamFreq != null) {
@@ -554,7 +554,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
     	}
 
     	putProp(props, "Energy", mEnergy, -1, includeUnspecified);
-    	putProp(props, "Docking station", mDockingStation, -1, includeUnspecified);
+    	putProp(props, "Docking base", mDockingBase, -1, includeUnspecified);
     	putProp(props, "Main screen view", mMainScreen, includeUnspecified);
     	putProp(props, "Coolant", mAvailableCoolant, -1, includeUnspecified);
     	putProp(props, "Impulse", mImpulse, -1, includeUnspecified);

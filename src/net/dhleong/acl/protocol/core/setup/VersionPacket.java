@@ -68,6 +68,7 @@ public class VersionPacket extends BaseArtemisPacket {
 	protected void writePayload(PacketWriter writer) {
 		writer.writeInt(mUnknown);
 		mVersion.writeTo(writer);
+		writer.setVersion(mVersion);
 	}
 
 	@Override

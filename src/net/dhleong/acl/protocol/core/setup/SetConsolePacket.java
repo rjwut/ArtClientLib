@@ -1,6 +1,6 @@
 package net.dhleong.acl.protocol.core.setup;
 
-import net.dhleong.acl.enums.BridgeStation;
+import net.dhleong.acl.enums.Console;
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.iface.PacketFactory;
 import net.dhleong.acl.iface.PacketFactoryRegistry;
@@ -12,64 +12,64 @@ import net.dhleong.acl.protocol.UnexpectedTypeException;
 import net.dhleong.acl.protocol.core.ShipActionPacket;
 
 /**
- * "Take" or "untake" a bridge station.
+ * "Take" or "untake" a bridge console.
  * @author dhleong
  */
-public class SetStationPacket extends ShipActionPacket {
+public class SetConsolePacket extends ShipActionPacket {
 	public static void register(PacketFactoryRegistry registry) {
 		registry.register(ConnectionType.CLIENT, TYPE, new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {
-				return SetStationPacket.class;
+				return SetConsolePacket.class;
 			}
 
 			@Override
 			public ArtemisPacket build(PacketReader reader)
 					throws ArtemisPacketException {
-				return new SetStationPacket(reader);
+				return new SetConsolePacket(reader);
 			}
 		});
 	}
 
-	private BridgeStation mStation;
+	private Console mConsole;
 	private boolean mSelected;
 
 	/**
-	 * @param station The BridgeStation being updated
-	 * @param selected Whether the player is taking this station or not
+	 * @param console The Console being updated
+	 * @param selected Whether the player is taking this console or not
 	 */
-	public SetStationPacket(BridgeStation station, boolean selected) {
-        super(TYPE_SET_STATION);
+	public SetConsolePacket(Console console, boolean selected) {
+        super(TYPE_SET_CONSOLE);
 
-        if (station == null) {
-        	throw new IllegalArgumentException("You must specify a station");
+        if (console == null) {
+        	throw new IllegalArgumentException("You must specify a console");
         }
 
-        mStation = station;
+        mConsole = console;
         mSelected = selected;
     }
 
-	private SetStationPacket(PacketReader reader) {
-        super(TYPE_SET_STATION);
+	private SetConsolePacket(PacketReader reader) {
+        super(TYPE_SET_CONSOLE);
 		int subtype = reader.readInt();
 
-		if (subtype != TYPE_SET_STATION) {
-        	throw new UnexpectedTypeException(subtype, TYPE_SET_STATION);
+		if (subtype != TYPE_SET_CONSOLE) {
+        	throw new UnexpectedTypeException(subtype, TYPE_SET_CONSOLE);
 		}
 
-		mStation = BridgeStation.values()[reader.readInt()];
+		mConsole = Console.values()[reader.readInt()];
 		mSelected = reader.readInt() == 1;
 	}
 
 	@Override
     public void writePayload(PacketWriter writer) {
-    	writer	.writeInt(TYPE_SET_STATION)
-    			.writeInt(mStation.ordinal())
+    	writer	.writeInt(TYPE_SET_CONSOLE)
+    			.writeInt(mConsole.ordinal())
     			.writeInt(mSelected ? 1 : 0);
     }
 
 	@Override
 	protected void appendPacketDetail(StringBuilder b) {
-		b.append(mStation).append(' ').append(mSelected ? "selected" : "deselected");
+		b.append(mConsole).append(' ').append(mSelected ? "selected" : "deselected");
 	}
 }

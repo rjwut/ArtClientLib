@@ -5,22 +5,22 @@ import java.util.SortedMap;
 import net.dhleong.acl.enums.ObjectType;
 
 /**
- * Space stations
+ * Bases
  */
-public class ArtemisStation extends BaseArtemisShielded {
+public class ArtemisBase extends BaseArtemisShielded {
 	private int mIndex = -1;
 
-	public ArtemisStation(int objId, String name) {
+	public ArtemisBase(int objId, String name) {
         super(objId, name);
     }
 
 	@Override
     public ObjectType getType() {
-        return ObjectType.SPACE_STATION;
+        return ObjectType.BASE;
     }
 
 	/**
-	 * This station's index value. In non-scripted scenarios, DS1's index is 0,
+	 * This base's index value. In non-scripted scenarios, DS1's index is 0,
 	 * DS2's index is 1, etc. This value is unique even if the names aren't.
 	 * Unspecified: -1
 	 */
@@ -36,11 +36,11 @@ public class ArtemisStation extends BaseArtemisShielded {
     public void updateFrom(ArtemisObject eng) {
         super.updateFrom(eng);
         
-        if (eng instanceof ArtemisStation) {
-            ArtemisStation station = (ArtemisStation) eng;
+        if (eng instanceof ArtemisBase) {
+            ArtemisBase base = (ArtemisBase) eng;
 
-            if (station.mIndex != -1) {
-            	mIndex = station.mIndex;
+            if (base.mIndex != -1) {
+            	mIndex = base.mIndex;
             }
         }
     }
@@ -48,6 +48,6 @@ public class ArtemisStation extends BaseArtemisShielded {
     @Override
 	public void appendObjectProps(SortedMap<String, Object> props, boolean includeUnspecified) {
     	super.appendObjectProps(props, includeUnspecified);
-    	putProp(props, "Station index", mIndex, -1, includeUnspecified);
+    	putProp(props, "Base index", mIndex, -1, includeUnspecified);
     }
 }

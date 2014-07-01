@@ -14,7 +14,6 @@ import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.protocol.ArtemisPacketException;
 import net.dhleong.acl.protocol.Protocol;
-import net.dhleong.acl.protocol.UnparsedPacket;
 import net.dhleong.acl.protocol.Version;
 import net.dhleong.acl.protocol.core.setup.VersionPacket;
 import net.dhleong.acl.protocol.core.setup.WelcomePacket;
@@ -30,11 +29,12 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
     private final ConnectionType recvType;
     private final ConnectionType sendType;
     private final PacketFactoryRegistry factoryRegistry = new PacketFactoryRegistry();
+    private final ListenerRegistry mListeners = new ListenerRegistry();
     private final ReceiverThread mReceiveThread;
     private final SenderThread mSendThread;
 
-    /** Error code, for when we disconnect */
-    private int errorCode = OnConnectedListener.ERROR_NONE;
+    private DisconnectEvent.Cause disconnectCause = DisconnectEvent.Cause.LOCAL_DISCONNECT;
+    private Exception exception;
 
     /**
      * Prepares an outgoing client connection to an Artemis server. The
@@ -71,29 +71,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
     	skt.setKeepAlive(true);
         mSendThread = new SenderThread(this, skt);
         mReceiveThread = new ReceiverThread(this, skt);
-        mReceiveThread.addPacketListener(mSendThread);
-    }
-
-    private ThreadedArtemisNetworkInterface pair;
-    private PairingPolicy pairingPolicy;
-
-    public static void pair(
-    		ThreadedArtemisNetworkInterface iface1,
-    		ThreadedArtemisNetworkInterface iface2,
-    		PairingPolicy pairingPolicy
-    ) {
-    	if (iface1 == null || iface2 == null || pairingPolicy == null) {
-    		throw new IllegalArgumentException("All arguments are required");
-    	}
-
-    	iface1.pair = iface2;
-    	iface1.pairingPolicy = pairingPolicy;
-    	iface2.pair = iface1;
-    	iface2.pairingPolicy = pairingPolicy;
-    }
-
-    public ThreadedArtemisNetworkInterface getPair() {
-    	return pair;
+        addListener(mSendThread);
     }
 
     @Override
@@ -112,8 +90,8 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
 	}
 
     @Override
-    public void addPacketListener(final Object listener) {
-        mReceiveThread.addPacketListener(listener);
+    public void addListener(final Object listener) {
+    	mListeners.register(listener);
     }
 
     /**
@@ -163,14 +141,6 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         mSendThread.end();
     }
 
-    /**
-     * Registers an object that will be notified when a connection to the remote
-     * machine is established or terminated.
-     */
-    public void setOnConnectedListener(final OnConnectedListener listener) {
-        mSendThread.mOnConnectedListener = listener;
-    }
-
 
     /**
 	 * Manages sending packets to the OutputStream.
@@ -184,7 +154,6 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         private final ThreadedArtemisNetworkInterface mInterface;
         
         private boolean mConnected = false;
-        private OnConnectedListener mOnConnectedListener;
         private boolean mStarted;
 
         public SenderThread(final ThreadedArtemisNetworkInterface net, final Socket skt) throws IOException {
@@ -232,8 +201,8 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                     pkt.write(mWriter);
                 } catch (final IOException e) {
                     if (mRunning) {
-                        e.printStackTrace();
-                        mInterface.errorCode = OnConnectedListener.ERROR_IO;
+                    	mInterface.disconnectCause = DisconnectEvent.Cause.IO_EXCEPTION;
+                    	mInterface.exception = e;
                     }
 
                     break;
@@ -252,20 +221,18 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
             } catch (final IOException e) {
             	// DON'T CARE
             }
-            
-            if (mOnConnectedListener != null) {
-                mOnConnectedListener.onDisconnected(mInterface.errorCode);
-    
-                // not interested in listening anymore
-                mOnConnectedListener = null;
-            }
+
+            mInterface.mListeners.fire(new DisconnectEvent(
+            		mInterface.disconnectCause,
+            		mInterface.exception
+            ));
         }
 
         public void end() {
             mRunning = false;
         }
 
-        @PacketListener
+        @Listener
         public void onPacket(final WelcomePacket pkt) {
             final boolean wasConnected = mConnected;
             mConnected = true;
@@ -274,28 +241,23 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
             // TODO Is this really required?
             //offer(new ReadyPacket2());
             //offer(new ReadyPacket2());
-            
-            if (!wasConnected && mOnConnectedListener != null) {
-                mOnConnectedListener.onConnected();
+
+            if (!wasConnected) {
+            	mInterface.mListeners.fire(new ConnectionSuccessEvent());
             }
         }
 
-        @PacketListener
+        @Listener
         public void onPacket(final VersionPacket pkt) {
             final Version version = pkt.getVersion();
 
             if (version.lt(ArtemisNetworkInterface.MIN_VERSION)) {
-                System.err.println(
-                		"Unsupported Artemis server version: " + version
-                );
-
-                if (mOnConnectedListener != null) {
-                    mOnConnectedListener.onDisconnected(
-                            OnConnectedListener.ERROR_VERSION);
-                }
+            	mInterface.mListeners.fire(new DisconnectEvent(
+            			DisconnectEvent.Cause.UNSUPPORTED_SERVER_VERSION,
+            			null
+            	));
                 
                 // go ahead and end the receive thread NOW
-                mInterface.errorCode = OnConnectedListener.ERROR_VERSION;
                 mInterface.mReceiveThread.end();
                 end();
             }
@@ -306,7 +268,6 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
 	 * Manages receiving packets from the InputStream.
 	 */
     private class ReceiverThread extends Thread {
-        private ListenerRegistry mListeners = new ListenerRegistry();
         private boolean mRunning = true;
         private final ThreadedArtemisNetworkInterface mInterface;
         private PacketReader mReader;
@@ -337,18 +298,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                     }
 
                     if (mRunning) {
-                    	boolean unparsed = pkt instanceof UnparsedPacket;
-                    	boolean sendToPair =
-                    			pair != null &&
-                    			(unparsed || pairingPolicy == PairingPolicy.ALL);
-
-                    	if (sendToPair) {
-                    		pair.send(pkt);
-                    	}
-
-                    	if (!unparsed) {
-                    		mListeners.fire(pkt);
-                    	}
+                		mListeners.fire(pkt);
                     }
                 } catch (final ArtemisPacketException e) {
                     if (mRunning) {
@@ -374,8 +324,8 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                         	}
                     	}
 
-                        e.printStackTrace();
-                        mInterface.errorCode = OnConnectedListener.ERROR_PARSE;
+                    	mInterface.disconnectCause = DisconnectEvent.Cause.PACKET_PARSE_EXCEPTION;
+                    	mInterface.exception = e;
                         end();
                     }
 
@@ -390,9 +340,5 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
             mRunning = false;
             mListeners.clear();
         }
-
-    	private void addPacketListener(Object object) {
-    		mListeners.register(object);
-    	}
     }
 }

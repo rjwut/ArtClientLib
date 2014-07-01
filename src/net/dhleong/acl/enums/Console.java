@@ -1,10 +1,10 @@
 package net.dhleong.acl.enums;
 
 /**
- * The bridge stations.
+ * The bridge conoles.
  * @author rjwut
  */
-public enum BridgeStation {
+public enum Console {
 	MAIN_SCREEN("Main screen"),
 	HELM("Helm"),
 	WEAPONS("Weapons"),
@@ -17,7 +17,7 @@ public enum BridgeStation {
 
 	private String label;
 
-	BridgeStation(String label) {
+	Console(String label) {
 		this.label = label;
 	}
 

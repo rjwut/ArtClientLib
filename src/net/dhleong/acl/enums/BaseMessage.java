@@ -1,10 +1,10 @@
 package net.dhleong.acl.enums;
 
 /**
- * Messages that can be sent to stations.
+ * Messages that can be sent to bases.
  * @author rjwut
  */
-public enum StationMessage implements CommsMessage {
+public enum BaseMessage implements CommsMessage {
 	STAND_BY_FOR_DOCKING("Stand by for docking."),
 	PLEASE_REPORT_STATUS("Please report status."),
 	BUILD_HOMING_MISSILES("Please build type 1 homing ordnance for us."),
@@ -14,7 +14,7 @@ public enum StationMessage implements CommsMessage {
 
 	private String label;
 
-	StationMessage(String label) {
+	BaseMessage(String label) {
 		this.label = label;
 	}
 
@@ -35,6 +35,6 @@ public enum StationMessage implements CommsMessage {
 
 	@Override
 	public CommsTargetType getTargetType() {
-		return CommsTargetType.STATION;
+		return CommsTargetType.BASE;
 	}
 }

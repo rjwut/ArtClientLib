@@ -1,7 +1,7 @@
 package net.dhleong.acl.protocol.core.setup;
 
-import net.dhleong.acl.enums.BridgeStation;
-import net.dhleong.acl.enums.BridgeStationStatus;
+import net.dhleong.acl.enums.Console;
+import net.dhleong.acl.enums.ConsoleStatus;
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.iface.PacketFactory;
 import net.dhleong.acl.iface.PacketFactoryRegistry;
@@ -13,61 +13,62 @@ import net.dhleong.acl.protocol.BaseArtemisPacket;
 import net.dhleong.acl.world.Artemis;
 
 /**
- * Indicates which stations are taken; received in response to a
- * SetStationPacket or SetShipPacket.
+ * Indicates which consoles are taken; received in response to a
+ * SetConsolePacket or SetShipPacket.
  * @author dhleong
  */
-public class StationStatusPacket extends BaseArtemisPacket {
+public class ConsoleStatusPacket extends BaseArtemisPacket {
     private static final int TYPE = 0x19c6e2d4;
     
 	public static void register(PacketFactoryRegistry registry) {
 		registry.register(ConnectionType.SERVER, TYPE, new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {
-				return StationStatusPacket.class;
+				return ConsoleStatusPacket.class;
 			}
 
 			@Override
 			public ArtemisPacket build(PacketReader reader)
 					throws ArtemisPacketException {
-				return new StationStatusPacket(reader);
+				return new ConsoleStatusPacket(reader);
 			}
 		});
 	}
 
     private final int shipNumber;
-    private final BridgeStationStatus[] statuses;
+    private final ConsoleStatus[] statuses;
     
-    private StationStatusPacket(PacketReader reader) {
+    private ConsoleStatusPacket(PacketReader reader) {
     	super(ConnectionType.SERVER, TYPE);
         shipNumber = reader.readInt();
-        final BridgeStation[] stationValues = BridgeStation.values();
-        final BridgeStationStatus[] statusValues = BridgeStationStatus.values();
-        statuses = new BridgeStationStatus[stationValues.length];
+        final Console[] consoleValues = Console.values();
+        final ConsoleStatus[] statusValues = ConsoleStatus.values();
+        statuses = new ConsoleStatus[consoleValues.length];
 
-        for (BridgeStation station : stationValues) {
-        	statuses[station.ordinal()] = statusValues[reader.readByte()];
+        for (Console console : consoleValues) {
+        	statuses[console.ordinal()] = statusValues[reader.readByte()];
         }
     }
 
-    public StationStatusPacket(int shipNumber, BridgeStationStatus[] statuses) {
+    public ConsoleStatusPacket(int shipNumber, ConsoleStatus[] statuses) {
     	super(ConnectionType.SERVER, TYPE);
+
     	if (shipNumber < 1 || shipNumber > Artemis.SHIP_COUNT) {
     		throw new IllegalArgumentException(
     				"Ship number must be between 1 and " + Artemis.SHIP_COUNT
     		);
     	}
 
-    	if (statuses.length != BridgeStationStatus.values().length) {
+    	if (statuses.length != ConsoleStatus.values().length) {
     		throw new IllegalArgumentException(
-    				"Must provide a status for each bridge station"
+    				"Must provide a status for each bridge console"
     		);
     	}
 
-    	for (BridgeStationStatus status : statuses) {
+    	for (ConsoleStatus status : statuses) {
     		if (status == null) {
         		throw new IllegalArgumentException(
-        				"Must provide a status for each bridge station"
+        				"Must provide a status for each bridge console"
         		);
     		}
     	}
@@ -77,30 +78,30 @@ public class StationStatusPacket extends BaseArtemisPacket {
     }
 
     /**
-     * Returns the ship number whose stations this packet reports.
+     * Returns the ship number whose consoles this packet reports.
      */
     public int getShipNumber() {
     	return shipNumber;
     }
 
     /**
-     * Get the status for a specific BridgeStation
-     * @param station The desired BridgeStation
-     * @return BridgeStationStatus The status of that station
+     * Get the status for a specific Console
+     * @param console The desired Console
+     * @return ConsoleStatus The status of that console
      */
-    public BridgeStationStatus get(BridgeStation station) {
-        if (station == null) {
-            throw new IllegalArgumentException("You must specify a station");
+    public ConsoleStatus get(Console console) {
+        if (console == null) {
+            throw new IllegalArgumentException("You must specify a console");
         }
 
-        return statuses[station.ordinal()];
+        return statuses[console.ordinal()];
     }
 
 	@Override
 	protected void writePayload(PacketWriter writer) {
 		writer.writeInt(shipNumber);
 
-		for (BridgeStationStatus status : statuses) {
+		for (ConsoleStatus status : statuses) {
 			writer.writeByte((byte) status.ordinal());
 		}
 	}
@@ -109,9 +110,9 @@ public class StationStatusPacket extends BaseArtemisPacket {
 	protected void appendPacketDetail(StringBuilder b) {
 		b.append("Ship #").append(shipNumber);
 
-		for (BridgeStation station : BridgeStation.values()) {
-    		BridgeStationStatus status = statuses[station.ordinal()];
-			b.append("\n\t").append(station).append(": ").append(status);
+		for (Console console : Console.values()) {
+    		ConsoleStatus status = statuses[console.ordinal()];
+			b.append("\n\t").append(console).append(": ").append(status);
     	}
 	}
 }

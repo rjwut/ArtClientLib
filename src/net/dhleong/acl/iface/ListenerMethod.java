@@ -7,8 +7,8 @@ import java.lang.reflect.Modifier;
 import net.dhleong.acl.protocol.ArtemisPacket;
 
 /**
- * Contains all the information needed to invoke a packet listener Method
- * (annotated with @PacketListener).
+ * Contains all the information needed to invoke a listener Method (annotated
+ * with {@link Listener}).
  * @author rjwut
  */
 public class ListenerMethod {
@@ -17,7 +17,7 @@ public class ListenerMethod {
 	private Class<?> paramType;
 
 	/**
-	 * @param object The packet listener object
+	 * @param object The listener object
 	 * @param method The annotated method
 	 */
 	ListenerMethod (Object object, Method method) {
@@ -29,20 +29,20 @@ public class ListenerMethod {
 
 	/**
 	 * Throws an IllegalArgumentException if the given method is not a valid
-	 * packet listener method.
+	 * listener method.
 	 */
 	private static void validate(Method method) {
 		if (!Modifier.isPublic(method.getModifiers())) {
 			throw new IllegalArgumentException(
 					"Method " + method.getName() +
-					" must be public to be a @PacketListener"
+					" must be public to be a listener"
 			);
 		}
 
 		if (!Void.TYPE.equals(method.getReturnType())) {
 			throw new IllegalArgumentException(
 					"Method " + method.getName() +
-					" must return void to be a @PacketListener"
+					" must return void to be a listener"
 			);
 		}
 
@@ -51,41 +51,45 @@ public class ListenerMethod {
 		if (paramTypes.length != 1) {
 			throw new IllegalArgumentException(
 					"Method " + method.getName() +
-					" must have exactly one argument"
+					" must have exactly one argument to be a listener"
 			);
 		}
 
 		Class<?> paramType = paramTypes[0];
 
-		if (!ArtemisPacket.class.isAssignableFrom(paramType)) {
-			throw new IllegalArgumentException(
-					"Method " + method.getName() +
-					" argument must be an ArtemisPacket or a subtype of it"
-			);
+		if (
+				ArtemisPacket.class.isAssignableFrom(paramType) ||
+				ConnectionEvent.class.isAssignableFrom(paramType)) {
+			return;
 		}
+
+		throw new IllegalArgumentException(
+				"Method " + method.getName() +
+				" argument must be assignable to ArtemisPacket or ConnectionEvent"
+		);
 	}
 
 	/**
-	 * Returns true if this ListenerMethod accepts packets of the given class;
-	 * false otherwise.
+	 * Returns true if this ListenerMethod accepts events or packets of the
+	 * given class; false otherwise.
 	 */
-	boolean accepts(Class<? extends ArtemisPacket> clazz) {
+	boolean accepts(Class<?> clazz) {
 		return paramType.isAssignableFrom(clazz);
 	}
 
 	/**
-	 * Invokes the wrapped listener Method, passing in the indicated
-	 * ArtemisPacket, if it is type-compatible with the Method's argument;
-	 * otherwise, nothing happens. Since the listeners have been pre-validated,
-	 * no exception should occur, so we wrap the ones thrown by Method.invoke()
-	 * in a RuntimeException.
+	 * Invokes the wrapped listener Method, passing in the indicated argument,
+	 * if it is type-compatible with the Method's argument; otherwise, nothing
+	 * happens. Since the listeners have been pre-validated, no exception should
+	 * occur, so we wrap the ones thrown by Method.invoke() in a
+	 * RuntimeException.
 	 */
-	void offer(ArtemisPacket packet) {
-		Class<?> clazz = packet.getClass();
+	void offer(Object arg) {
+		Class<?> clazz = arg.getClass();
 
 		if (paramType.isAssignableFrom(clazz)) {
     		try {
-				method.invoke(object, packet);
+				method.invoke(object, arg);
 			} catch (IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			} catch (IllegalArgumentException ex) {

@@ -10,7 +10,7 @@ import net.dhleong.acl.protocol.core.ShipActionPacket;
 
 /**
  * Set the ship you want to be on. You must send this packet before
- * SetStationPacket.
+ * SetConsolePacket.
  * @author dhleong
  */
 public class SetShipPacket extends ShipActionPacket {

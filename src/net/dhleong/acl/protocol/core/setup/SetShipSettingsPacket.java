@@ -14,7 +14,7 @@ import net.dhleong.acl.protocol.core.ShipActionPacket;
 
 
 /**
- * Set the name, type and drive of ship your station has selected.
+ * Set the name, type and drive of ship your console has selected.
  * @author dhleong
  */
 public class SetShipSettingsPacket extends ShipActionPacket {

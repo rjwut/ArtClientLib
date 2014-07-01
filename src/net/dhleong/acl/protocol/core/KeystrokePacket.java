@@ -9,7 +9,7 @@ import net.dhleong.acl.protocol.ArtemisPacketException;
 
 /**
  * Sends a keystroke to the server. This should only be done for the game master
- * station, or if keystroke capture has been enabled via the
+ * console, or if keystroke capture has been enabled via the
  * KeyCaptureTogglePacket.
  * @author rjwut
  */

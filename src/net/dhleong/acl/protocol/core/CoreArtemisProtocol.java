@@ -30,7 +30,7 @@ public class CoreArtemisProtocol implements Protocol {
 		DroneUpdatePacket.register(registry);
 		GenericUpdatePacket.register(registry);
 		SoundEffectPacket.register(registry);
-		StationPacket.register(registry);
+		BasePacket.register(registry);
 		// --- rest
 		AllShipSettingsPacket.register(registry);
 		CommsIncomingPacket.register(registry);
@@ -45,7 +45,7 @@ public class CoreArtemisProtocol implements Protocol {
 		IncomingAudioPacket.register(registry);
 		JumpStatusPacket.register(registry);
 		KeyCaptureTogglePacket.register(registry);
-		StationStatusPacket.register(registry);
+		ConsoleStatusPacket.register(registry);
 		VersionPacket.register(registry);
 		WelcomePacket.register(registry);
 
@@ -81,7 +81,7 @@ public class CoreArtemisProtocol implements Protocol {
 		SetMainScreenPacket.register(registry);
 		SetShipPacket.register(registry);
 		SetShipSettingsPacket.register(registry);
-		SetStationPacket.register(registry);
+		SetConsolePacket.register(registry);
 		TogglePerspectivePacket.register(registry);
 		ToggleRedAlertPacket.register(registry);
 		UnloadTubePacket.register(registry);

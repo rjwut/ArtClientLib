@@ -222,6 +222,8 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
             obj.setUnknownProps(reader.getUnknownObjectProps());
             mObjects.add(obj);
         }
+
+    	reader.skip(4); // skip 0x00 terminator
     }
 
 	@Override

@@ -92,6 +92,8 @@ public class BasePacket extends BaseArtemisPacket implements ObjectUpdatingPacke
             base.setUnknownProps(reader.getUnknownObjectProps());
             mObjects.add(base);
         }
+
+        reader.skip(4);	// skip 0x00 terminator
     }
 
 	@Override

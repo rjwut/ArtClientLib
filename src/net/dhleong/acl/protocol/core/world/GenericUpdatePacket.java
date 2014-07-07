@@ -95,6 +95,8 @@ public class GenericUpdatePacket extends BaseArtemisPacket implements ObjectUpda
             obj.setUnknownProps(reader.getUnknownObjectProps());
             mObjects.add(obj);
         }
+
+    	reader.skip(4);	// skip 0x00 terminator
     }
 
     public GenericUpdatePacket() {

@@ -190,6 +190,8 @@ public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectU
             player.setUnknownProps(reader.getUnknownObjectProps());
             mObjects.add(player);
     	}
+
+    	reader.skip(4);	// skip 0x00 terminator
     }
 
     public MainPlayerUpdatePacket() {

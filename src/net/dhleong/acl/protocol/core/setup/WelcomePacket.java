@@ -35,10 +35,12 @@ public class WelcomePacket extends BaseArtemisPacket {
 		});
 	}
 
+	private byte[] msg = MSG;
+
 	private WelcomePacket(PacketReader reader) {
 		super(ConnectionType.SERVER, TYPE);
 		int length = reader.readInt();
-		reader.skip(length);
+		msg = reader.readBytes(length);
 	}
 
 	public WelcomePacket() {
@@ -47,7 +49,7 @@ public class WelcomePacket extends BaseArtemisPacket {
 
 	@Override
 	protected void writePayload(PacketWriter writer) {
-		writer.writeInt(MSG.length).writeBytes(MSG);
+		writer.writeInt(msg.length).writeBytes(msg);
 	}
 
 	@Override

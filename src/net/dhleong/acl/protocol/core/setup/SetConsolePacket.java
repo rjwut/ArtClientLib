@@ -12,7 +12,7 @@ import net.dhleong.acl.protocol.UnexpectedTypeException;
 import net.dhleong.acl.protocol.core.ShipActionPacket;
 
 /**
- * "Take" or "untake" a bridge console.
+ * Take or relinquish a bridge console.
  * @author dhleong
  */
 public class SetConsolePacket extends ShipActionPacket {

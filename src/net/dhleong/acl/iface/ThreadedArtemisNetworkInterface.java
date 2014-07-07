@@ -8,8 +8,8 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.ArrayDeque;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.protocol.ArtemisPacket;
@@ -147,13 +147,13 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
 	 */
 	private static class SenderThread extends Thread {
         private final Socket mSkt;
-        private final Queue<ArtemisPacket> mQueue = new ArrayDeque<ArtemisPacket>(128);
+        private final Queue<ArtemisPacket> mQueue = new ConcurrentLinkedQueue<ArtemisPacket>();
         private boolean mRunning = true;
         
         private final PacketWriter mWriter;
         private final ThreadedArtemisNetworkInterface mInterface;
         
-        private boolean mConnected = false;
+        private boolean mConnected;
         private boolean mStarted;
 
         public SenderThread(final ThreadedArtemisNetworkInterface net, final Socket skt) throws IOException {
@@ -167,7 +167,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
          * Enqueues a packet to be sent.
          */
         public boolean offer(final ArtemisPacket pkt) {
-            return mQueue.offer(pkt);
+        	return mQueue.offer(pkt);
         }
 
         @Override
@@ -180,19 +180,14 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                 } catch (final InterruptedException e) {
                 	// TODO Supposed to bail if an InterruptedException is received
                 }
-                
-                if (!mConnected) {
-                    continue;
-                }
 
-                ArtemisPacket pkt = null;
-            	pkt = mQueue.poll();
+                ArtemisPacket pkt = mQueue.poll();
 
             	if (pkt == null) {
                     // empty queue; loop back to wait
                     continue;
                 }
-            
+
                 try {
                     if (DEBUG) {
                     	System.out.println("< " + pkt);
@@ -236,11 +231,6 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         public void onPacket(final WelcomePacket pkt) {
             final boolean wasConnected = mConnected;
             mConnected = true;
-
-            // send a couple of these to prime the server
-            // TODO Is this really required?
-            //offer(new ReadyPacket2());
-            //offer(new ReadyPacket2());
 
             if (!wasConnected) {
             	mInterface.mListeners.fire(new ConnectionSuccessEvent());
@@ -322,7 +312,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
             
             mInterface.stop();
         }
-        
+
         public void end() {
             mRunning = false;
         }

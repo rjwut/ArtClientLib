@@ -34,6 +34,7 @@ public class CoreArtemisProtocol implements Protocol {
 		// --- rest
 		AllShipSettingsPacket.register(registry);
 		CommsIncomingPacket.register(registry);
+		ConsoleStatusPacket.register(registry);
 		DestroyObjectPacket.register(registry);
 		DifficultyPacket.register(registry);
 		GameMessagePacket.register(registry);
@@ -45,7 +46,7 @@ public class CoreArtemisProtocol implements Protocol {
 		IncomingAudioPacket.register(registry);
 		JumpStatusPacket.register(registry);
 		KeyCaptureTogglePacket.register(registry);
-		ConsoleStatusPacket.register(registry);
+		PausePacket.register(registry);
 		VersionPacket.register(registry);
 		WelcomePacket.register(registry);
 

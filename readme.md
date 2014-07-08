@@ -1,5 +1,6 @@
 ArtClientLib
 ============
+[![Build Status](https://secure.travis-ci.org/rjwut/ArtClientLib.svg)](http://travis-ci.org/rjwut/ArtClientLib)
 
 **ArtClientLib** is an _unofficial_ Java library for developing clients to interact with [Artemis Spaceship Bridge Simulator](http://www.artemis.eochu.com/). It was originally developed by Daniel Leong and released here on GitHub with permission of the developer of Artemis, Thom Robertson.
 

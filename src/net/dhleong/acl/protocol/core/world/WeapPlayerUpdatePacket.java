@@ -136,6 +136,8 @@ public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
         for (int i = 0; i < Artemis.MAX_TUBES; i++) {
         	mPlayer.setTubeStatus(i, tubeTimes[i], tubeContents[i]);
         }
+
+        reader.skip(4);	// skip 0x00 terminator
     }
 
 	@Override
@@ -165,6 +167,8 @@ public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
         	byte b = (byte) (content > 0 ? content : -1);
         	writer.writeByte(TUBE_TYPES[i], b, (byte) -1);
         }
+
+        writer.writeInt(0);
 	}
 
 	@Override
@@ -174,12 +178,24 @@ public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
 		}
 
 		for (int i = 0; i < Artemis.MAX_TUBES; i++) {
-			b.append("\n\tTube #").append(i).append(": ")
-			.append(mPlayer.getTubeContents(i));
-			float countdown = mPlayer.getTubeCountdown(i);
+			int contents = mPlayer.getTubeContents(i);
 
-			if (countdown > 0.01f) {
-				b.append(" (").append(countdown).append(')');
+			if (contents != Integer.MIN_VALUE) {
+				b.append("\n\tTube #").append(i).append(": ");
+				String contentsStr;
+
+				if (contents == ArtemisPlayer.TUBE_EMPTY) {
+					contentsStr = "EMPTY";
+				} else {
+					contentsStr = OrdnanceType.values()[contents].toString();
+				}
+
+				b.append(contentsStr);
+				float countdown = mPlayer.getTubeCountdown(i);
+
+				if (countdown > 0.01f) {
+					b.append(" (").append(countdown).append(')');
+				}
 			}
         }
 	}

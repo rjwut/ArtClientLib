@@ -35,6 +35,7 @@ public class CoreArtemisProtocol implements Protocol {
 		AllShipSettingsPacket.register(registry);
 		CommsIncomingPacket.register(registry);
 		ConsoleStatusPacket.register(registry);
+		DmxMessagePacket.register(registry);
 		DestroyObjectPacket.register(registry);
 		DifficultyPacket.register(registry);
 		GameMessagePacket.register(registry);
@@ -72,6 +73,7 @@ public class CoreArtemisProtocol implements Protocol {
 		ConvertTorpedoPacket.register(registry);
 		EngSendDamconPacket.register(registry);
 		EngSetAutoDamconPacket.register(registry);
+		GameMasterMessagePacket.register(registry);
 		HelmToggleReversePacket.register(registry);
 		KeystrokePacket.register(registry);
 		ReadyPacket.register(registry);

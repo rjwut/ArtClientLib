@@ -35,8 +35,8 @@ public abstract class BaseArtemisPacket implements ArtemisPacket {
     }
 
     @Override
-    public final void write(PacketWriter writer) throws IOException {
-    	writer.start(mType);
+    public final void writeTo(PacketWriter writer) throws IOException {
+    	writer.start(mConnectionType, mType);
     	writePayload(writer);
     	writer.flush();
     }

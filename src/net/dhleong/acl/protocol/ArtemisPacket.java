@@ -31,10 +31,10 @@ public interface ArtemisPacket {
      * Returns the type value for this packet, specified as the last field of
      * the preamble.
      */
-    int getType();
+    public int getType();
 
     /**
      * Writes this packet to the given PacketWriter.
      */
-    public void write(PacketWriter writer) throws IOException;
+    public void writeTo(PacketWriter writer) throws IOException;
 }

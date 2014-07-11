@@ -193,7 +193,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                     	System.out.println("< " + pkt);
                     }
 
-                    pkt.write(mWriter);
+                    pkt.writeTo(mWriter);
                 } catch (final IOException e) {
                     if (mRunning) {
                     	mInterface.disconnectCause = DisconnectEvent.Cause.IO_EXCEPTION;

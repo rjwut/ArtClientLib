@@ -32,7 +32,8 @@ public class PacketWriter {
 	private final OutputStream out;
 	private Version version;
 
-	private int packetType;
+	private ConnectionType mConnType;
+	private int mPacketType;
 	private ByteArrayOutputStream baos;
 	private ArtemisObject obj;
 	private BitField bitField;
@@ -69,8 +70,9 @@ public class PacketWriter {
 	/**
 	 * Starts a packet of the given type.
 	 */
-	public PacketWriter start(int pktType) {
-		packetType = pktType;
+	public PacketWriter start(ConnectionType connType, int packetType) {
+		mConnType = connType;
+		mPacketType = packetType;
 		baos = new ByteArrayOutputStream();
 		return this;
 	}
@@ -357,10 +359,10 @@ public class PacketWriter {
 		baos = null;
 		writeIntToStream(ArtemisPacket.HEADER);				// header
 		writeIntToStream(payload.length + 24);				// packet length
-		writeIntToStream(ConnectionType.CLIENT.toInt());	// connection type
+		writeIntToStream(mConnType.toInt());				// connection type
 		writeIntToStream(0);								// padding
 		writeIntToStream(payload.length + 4);				// remaining bytes
-		writeIntToStream(packetType);						// packet type
+		writeIntToStream(mPacketType);						// packet type
 		out.write(payload);									// payload
 		out.flush();
 	}

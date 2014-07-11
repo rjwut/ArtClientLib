@@ -43,7 +43,7 @@ public class Version implements Comparable<Version> {
 		}
 
 		int major = (int) Math.floor(version);
-		int minor = (int) Math.floor(version * 100);
+		int minor = (int) Math.floor((version - major) * 100);
 
 		if (minor < 40) {
 			minor /= 10;
@@ -101,7 +101,7 @@ public class Version implements Comparable<Version> {
 
 		if (!legacy) {
 			for (int i = 0; i < 3; i++) {
-				writer.writeFloat(getPart(mParts, i));
+				writer.writeInt(getPart(mParts, i));
 			}
 		}
 	}
@@ -126,6 +126,10 @@ public class Version implements Comparable<Version> {
 
 	@Override
 	public String toString() {
+		if (isLegacy()) {
+			return mParts[0] + "." + mParts[1];
+		}
+
 		StringBuilder b = new StringBuilder();
 
 		for (int part : mParts) {
@@ -166,6 +170,6 @@ public class Version implements Comparable<Version> {
 	 * the index is greater than that of the last part.
 	 */
 	private static int getPart(int[] parts, int index) {
-		return parts.length < index ? parts[index] : 0;
+		return parts.length > index ? parts[index] : 0;
 	}
 }

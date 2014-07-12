@@ -24,7 +24,8 @@ public class SetShipPacket extends ShipActionPacket {
     public static final int SHIP_8_DIANA	= 7;
     
 	public static void register(PacketFactoryRegistry registry) {
-		registry.register(ConnectionType.CLIENT, TYPE, new PacketFactory() {
+		registry.register(ConnectionType.CLIENT, TYPE, TYPE_SET_SHIP,
+				new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {
 				return SetShipPacket.class;

@@ -15,7 +15,8 @@ import net.dhleong.acl.protocol.core.ShipActionPacket;
  */
 public class HelmRequestDockPacket extends ShipActionPacket {
 	public static void register(PacketFactoryRegistry registry) {
-		registry.register(ConnectionType.CLIENT, TYPE, new PacketFactory() {
+		registry.register(ConnectionType.CLIENT, TYPE, TYPE_REQUEST_DOCK,
+				new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {
 				return HelmRequestDockPacket.class;

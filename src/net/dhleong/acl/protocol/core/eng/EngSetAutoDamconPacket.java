@@ -14,7 +14,8 @@ import net.dhleong.acl.protocol.core.ShipActionPacket;
  */
 public class EngSetAutoDamconPacket extends ShipActionPacket {
 	public static void register(PacketFactoryRegistry registry) {
-		registry.register(ConnectionType.CLIENT, TYPE, new PacketFactory() {
+		registry.register(ConnectionType.CLIENT, TYPE, TYPE_AUTO_DAMCON,
+				new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {
 				return EngSetAutoDamconPacket.class;

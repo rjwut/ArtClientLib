@@ -3,6 +3,7 @@ package net.dhleong.acl.iface;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.SortedMap;
 
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.protocol.ArtemisPacket;
@@ -298,7 +299,8 @@ public class PacketWriter {
 	 */
 	public PacketWriter writeUnknown(String name, byte[] defaultValue) {
 		assertObjectStarted();
-		byte[] v = obj.getUnknownProps().get(name);
+		SortedMap<String, byte[]> unknownProps = obj.getUnknownProps();
+		byte[] v = unknownProps != null ? unknownProps.get(name) : null;
 		writeBytes(baosObj, v != null ? v : defaultValue);
 		return this;
 	}
@@ -312,11 +314,15 @@ public class PacketWriter {
 	 */
 	public PacketWriter writeUnknown(Enum<?> bit) {
 		assertObjectStarted();
-		byte[] v = obj.getUnknownProps().get(bit.name());
+		SortedMap<String, byte[]> unknownProps = obj.getUnknownProps();
 
-		if (v != null) {
-			bitField.set(bit, true);
-			writeBytes(baos, v);
+		if (unknownProps != null) {
+			byte[] v = unknownProps.get(bit.name());
+	
+			if (v != null) {
+				bitField.set(bit, true);
+				writeBytes(baos, v);
+			}
 		}
 
 		return this;

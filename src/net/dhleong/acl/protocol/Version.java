@@ -153,9 +153,7 @@ public class Version implements Comparable<Version> {
 		int partCount = Math.max(mParts.length, o.mParts.length);
 
 		for (int i = 0; i < partCount; i++) {
-			int partA = getPart(mParts, i);
-			int partB = getPart(o.mParts, i);
-			int c = Integer.compare(partA, partB);
+			int c = getPart(mParts, i) - getPart(o.mParts, i);
 
 			if (c != 0) {
 				return c;

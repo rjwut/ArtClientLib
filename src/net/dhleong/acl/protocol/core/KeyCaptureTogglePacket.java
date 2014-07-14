@@ -40,13 +40,13 @@ public class KeyCaptureTogglePacket extends BaseArtemisPacket {
 
 	private KeyCaptureTogglePacket(PacketReader reader) {
 		super(ConnectionType.SERVER, TYPE);
-		int subtype = reader.readInt();
+		byte subtype = reader.readByte();
 
 		if (subtype != MSG_TYPE) {
 			throw new UnexpectedTypeException(subtype, MSG_TYPE);
 		}
 
-		mEnabled = reader.readByte() == 1;
+		mEnabled = reader.readInt() == 1;
 	}
 
 	public KeyCaptureTogglePacket(boolean enabled) {
@@ -63,7 +63,7 @@ public class KeyCaptureTogglePacket extends BaseArtemisPacket {
 
 	@Override
 	protected void writePayload(PacketWriter writer) {
-		writer.writeInt(MSG_TYPE).writeInt(mEnabled ? 1 : 0);
+		writer.writeByte(MSG_TYPE).writeInt(mEnabled ? 1 : 0);
 	}
 
 	@Override

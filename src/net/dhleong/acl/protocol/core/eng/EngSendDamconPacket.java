@@ -17,10 +17,11 @@ import net.dhleong.acl.util.GridCoord;
  */
 public class EngSendDamconPacket extends BaseArtemisPacket {
     private static final int TYPE = 0x69CC01D9;
-    private static final int SUBTYPE = 0x04;
+    private static final byte SUBTYPE = 0x04;
 
 	public static void register(PacketFactoryRegistry registry) {
-		registry.register(ConnectionType.CLIENT, TYPE, new PacketFactory() {
+		registry.register(ConnectionType.CLIENT, TYPE, SUBTYPE,
+				new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {
 				return EngSendDamconPacket.class;

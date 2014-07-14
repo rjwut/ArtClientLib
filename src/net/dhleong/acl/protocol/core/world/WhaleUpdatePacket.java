@@ -112,7 +112,8 @@ public class WhaleUpdatePacket extends BaseArtemisPacket implements ObjectUpdati
 					.writeUnknown(Bit.UNK_2_2)
 					.writeUnknown(Bit.UNK_2_3)
 					.writeUnknown(Bit.UNK_2_4)
-					.writeUnknown(Bit.UNK_2_5);
+					.writeUnknown(Bit.UNK_2_5)
+					.endObject();
 		}
 
 		writer.writeInt(0);

@@ -72,9 +72,9 @@ public class EngPlayerUpdatePacket extends PlayerUpdatePacket {
 
 	static {
 		Bit[] values = Bit.values();
-		HEAT = Arrays.copyOfRange(values, 0, Artemis.SYSTEM_COUNT);
-		ENERGY = Arrays.copyOfRange(values, Artemis.SYSTEM_COUNT, Artemis.SYSTEM_COUNT * 2);
-		COOLANT = Arrays.copyOfRange(values, Artemis.SYSTEM_COUNT * 2, Artemis.SYSTEM_COUNT * 3);
+		HEAT = Arrays.copyOfRange(values, Bit.HEAT_BEAMS.ordinal(), Bit.ENERGY_BEAMS.ordinal());
+		ENERGY = Arrays.copyOfRange(values, Bit.ENERGY_BEAMS.ordinal(), Bit.COOLANT_BEAMS.ordinal());
+		COOLANT = Arrays.copyOfRange(values, Bit.COOLANT_BEAMS.ordinal(), Bit.values().length);
 	}
 
     private EngPlayerUpdatePacket(PacketReader reader) {
@@ -87,6 +87,8 @@ public class EngPlayerUpdatePacket extends PlayerUpdatePacket {
             heat[i] = reader.readFloat(HEAT[i], -1);
         }
 
+        reader.skip(1);
+
         for (int i = 0; i < Artemis.SYSTEM_COUNT; i++) {
             sysEnergy[i] = reader.readFloat(ENERGY[i], -1);
         }
@@ -94,7 +96,7 @@ public class EngPlayerUpdatePacket extends PlayerUpdatePacket {
         for (int i = 0; i < Artemis.SYSTEM_COUNT; i++) {
             coolant[i] = reader.readByte(COOLANT[i], (byte) -1);
         }
-        
+
         mPlayer = new ArtemisPlayer(reader.getObjectId());
 
         for (int i = 0; i < Artemis.SYSTEM_COUNT; i++) {
@@ -103,6 +105,8 @@ public class EngPlayerUpdatePacket extends PlayerUpdatePacket {
             mPlayer.setSystemEnergy(sys, sysEnergy[i]);
             mPlayer.setSystemCoolant(sys, coolant[i]);
         }
+
+        reader.skip(4);
     }
 
     public EngPlayerUpdatePacket() {
@@ -111,22 +115,30 @@ public class EngPlayerUpdatePacket extends PlayerUpdatePacket {
 	@Override
 	protected void writePayload(PacketWriter writer) {
 		Bit[] bits = Bit.values();
-		writer.startObject(mPlayer, bits);
+		writer.startObject(mPlayer, ObjectType.ENGINEERING_CONSOLE, bits);
 
 		for (ShipSystem sys : ShipSystem.values()) {
-			int index = sys.ordinal();
-			writer.writeFloat(HEAT[index], mPlayer.getSystemHeat(sys), -1);
-			writer.writeFloat(ENERGY[index], mPlayer.getSystemEnergy(sys), -1);
-			writer.writeByte(COOLANT[index], (byte) mPlayer.getSystemCoolant(sys), (byte) -1);
+			writer.writeFloat(HEAT[sys.ordinal()], mPlayer.getSystemHeat(sys), -1);
+		}
+
+		writer.writeObjByte((byte) 0);
+
+		for (ShipSystem sys : ShipSystem.values()) {
+			writer.writeFloat(ENERGY[sys.ordinal()], mPlayer.getSystemEnergy(sys), -1);
+		}
+
+		for (ShipSystem sys : ShipSystem.values()) {
+			writer.writeByte(COOLANT[sys.ordinal()], (byte) mPlayer.getSystemCoolant(sys), (byte) -1);
 		}
 
 		writer.endObject();
+		writer.writeInt(0);
 	}
 
     @Override
 	protected void appendPacketDetail(StringBuilder b) {
         for (ShipSystem system : ShipSystem.values()) {
-        	b.append(system)
+        	b.append("\n\t").append(system)
         	.append(": energy=").append(mPlayer.getSystemEnergy(system))
         	.append(", heat=").append(mPlayer.getSystemHeat(system))
         	.append(", coolant=").append(mPlayer.getSystemCoolant(system));

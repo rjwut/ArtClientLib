@@ -25,6 +25,8 @@ public class GenericUpdatePacket extends BaseArtemisPacket implements ObjectUpda
 		ObjectType.TORPEDO, ObjectType.BLACK_HOLE, ObjectType.ASTEROID
 	};
 
+	private static final byte[] UNK_TORPEDO = { 0 };
+
 	public static void register(PacketFactoryRegistry registry) {
 		PacketFactory factory = new PacketFactory() {
 			@Override
@@ -79,7 +81,7 @@ public class GenericUpdatePacket extends BaseArtemisPacket implements ObjectUpda
                 name = reader.readString(Bit.NAME);
             } else {
                 name = null;
-                reader.readInt(Bit.NAME);
+                reader.readObjectUnknown(Bit.NAME, 4);
             }
 
             reader.readObjectUnknown(Bit.UNK_1_5, 4);
@@ -114,12 +116,24 @@ public class GenericUpdatePacket extends BaseArtemisPacket implements ObjectUpda
 
 		for (ArtemisObject obj : mObjects) {
 			ArtemisGenericObject gObj = (ArtemisGenericObject) obj;
-			writer	.startObject(obj, bits)
-					.writeFloat(Bit.X, gObj.getX(), Float.MIN_VALUE)
+			ObjectType type = obj.getType();
+			writer.startObject(obj, bits);
+
+        	if (type == ObjectType.TORPEDO) {
+                writer.writeUnknown("UNK_TORPEDO", UNK_TORPEDO);
+            }
+
+        	writer	.writeFloat(Bit.X, gObj.getX(), Float.MIN_VALUE)
 					.writeFloat(Bit.Y, gObj.getY(), Float.MIN_VALUE)
-					.writeFloat(Bit.Z, gObj.getZ(), Float.MIN_VALUE)
-					.writeString(Bit.NAME, gObj.getName())
-					.writeUnknown(Bit.UNK_1_5)
+					.writeFloat(Bit.Z, gObj.getZ(), Float.MIN_VALUE);
+
+            if (obj.getType().isNamed()) {
+            	writer.writeString(Bit.NAME, gObj.getName());
+            } else {
+            	writer.writeUnknown(Bit.NAME);
+            }
+
+            writer	.writeUnknown(Bit.UNK_1_5)
 					.writeUnknown(Bit.UNK_1_6)
 					.writeUnknown(Bit.UNK_1_7)
 					.writeUnknown(Bit.UNK_1_8)

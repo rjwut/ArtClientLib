@@ -15,7 +15,7 @@ import net.dhleong.acl.protocol.UnexpectedTypeException;
  */
 public class GameStartPacket extends BaseArtemisPacket {
     private static final int TYPE = 0xf754c8fe;
-    private static final byte MSG_TYPE = 0x00;
+    private static final byte MSG_TYPE = 0x08;
 
 	public static void register(PacketFactoryRegistry registry) {
 		registry.register(ConnectionType.SERVER, TYPE, MSG_TYPE,
@@ -33,9 +33,9 @@ public class GameStartPacket extends BaseArtemisPacket {
 		});
 	}
 
-    private final int mOffset;
-    
-    private GameStartPacket(PacketReader reader) {
+	private int mUnknown;
+
+	private GameStartPacket(PacketReader reader) {
         super(ConnectionType.SERVER, TYPE);
         int subtype = reader.readInt();
 
@@ -43,29 +43,20 @@ public class GameStartPacket extends BaseArtemisPacket {
 			throw new UnexpectedTypeException(subtype, MSG_TYPE);
         }
 
-        reader.readUnknown("Unknown", 4);
-        mOffset = reader.readInt();
-    }
+        mUnknown = reader.readInt();
+	}
 
     public GameStartPacket(int offset) {
         super(ConnectionType.SERVER, TYPE);
-    	mOffset = offset;
-    }
-
-    /**
-     * IDs starting offset...?
-     */
-    public int getOffset() {
-        return mOffset;
     }
 
 	@Override
 	protected void writePayload(PacketWriter writer) {
-		writer.writeInt(MSG_TYPE).writeInt(mOffset);
+		writer.writeInt(MSG_TYPE).writeInt(mUnknown);
 	}
 
 	@Override
 	protected void appendPacketDetail(StringBuilder b) {
-		b.append("Object ID offset = ").append(mOffset);
+		b.append("Unknown = ").append(mUnknown);
 	}
 }

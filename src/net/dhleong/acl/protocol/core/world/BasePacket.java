@@ -116,7 +116,8 @@ public class BasePacket extends BaseArtemisPacket implements ObjectUpdatingPacke
 					.writeUnknown(Bit.UNK_2_3)
 					.writeUnknown(Bit.UNK_2_4)
 					.writeUnknown(Bit.UNK_2_5)
-					.writeUnknown(Bit.UNK_2_6);
+					.writeUnknown(Bit.UNK_2_6)
+					.endObject();
 		}
 
 		writer.writeInt(0);

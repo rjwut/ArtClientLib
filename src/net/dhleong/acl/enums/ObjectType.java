@@ -14,7 +14,7 @@ public enum ObjectType {
 	ANOMALY(7, true),
 	NEBULA(9, false),
 	TORPEDO(10, false),
-	BLACK_HOLE(11, true),
+	BLACK_HOLE(11, false),
 	ASTEROID(12, false),
 	GENERIC_MESH(13, true),
 	MONSTER(14, true),

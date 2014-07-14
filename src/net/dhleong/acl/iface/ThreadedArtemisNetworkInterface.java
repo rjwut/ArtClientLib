@@ -24,8 +24,6 @@ import net.dhleong.acl.protocol.core.setup.WelcomePacket;
  * each stream.
  */
 public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface {
-    private static final boolean DEBUG = false;
-
     private final ConnectionType recvType;
     private final ConnectionType sendType;
     private final PacketFactoryRegistry factoryRegistry = new PacketFactoryRegistry();
@@ -35,6 +33,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
 
     private DisconnectEvent.Cause disconnectCause = DisconnectEvent.Cause.LOCAL_DISCONNECT;
     private Exception exception;
+    private Debugger mDebugger = new BaseDebugger();
 
     /**
      * Prepares an outgoing client connection to an Artemis server. The send and
@@ -189,11 +188,8 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                 }
 
                 try {
-                    if (DEBUG) {
-                    	System.out.println("< " + pkt);
-                    }
-
-                    pkt.writeTo(mWriter);
+                	mInterface.mDebugger.onSendPacket(pkt);
+                    pkt.writeTo(mWriter, mInterface.mDebugger);
                 } catch (final IOException e) {
                     if (mRunning) {
                     	mInterface.disconnectCause = DisconnectEvent.Cause.IO_EXCEPTION;
@@ -281,11 +277,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
             while (mRunning) {
                 try {
                     // read packet
-                    final ArtemisPacket pkt = mReader.readPacket();
-
-                    if (DEBUG) {
-                    	System.out.println("> " + pkt);
-                    }
+                    final ArtemisPacket pkt = mReader.readPacket(mInterface.mDebugger);
 
                     if (mRunning) {
                 		mListeners.fire(pkt);
@@ -317,4 +309,13 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
             mRunning = false;
         }
     }
+
+	@Override
+	public void attachDebugger(Debugger debugger) {
+		if (debugger == null) {
+			debugger = new BaseDebugger();
+		}
+
+		mDebugger = debugger;
+	}
 }

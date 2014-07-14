@@ -71,9 +71,10 @@ public class PacketReader {
 	}
 
 	/**
-	 * Reads a single packet and returns it.
+	 * Reads a single packet and returns it. The given Debugger will also be
+	 * notified.
 	 */
-	public ArtemisPacket readPacket() throws ArtemisPacketException {
+	public ArtemisPacket readPacket(Debugger debugger) throws ArtemisPacketException {
 		offset = 0;
 		objectType = null;
 		objectId = 0;
@@ -159,16 +160,7 @@ public class PacketReader {
 			throw new ArtemisPacketException(ex, connType, packetType);
 		}
 
-		/*
-		System.out.println(
-				">>> " + TextUtil.intToHexLE(ArtemisPacket.HEADER) + " " +
-				TextUtil.intToHexLE(len) + " " +
-				TextUtil.intToHexLE(connectionTypeValue) + " 00000000 " +
-				TextUtil.intToHexLE(remainingBytes) + " " +
-				TextUtil.intToHexLE(packetType) + " " +
-				TextUtil.byteArrayToHexString(payload)
-		);
-		*/
+		debugger.onRecvPacketBytes(connType, packetType, payload);
 
 		// Find the PacketFactory that knows how to handle this packet type
 		PacketFactory factory = null;
@@ -178,13 +170,17 @@ public class PacketReader {
 					hasMore() ? peekByte() : 0x00);
 		}
 
-		ArtemisPacket packet;
-
 		if (factory == null) {
 			// No factory can handle this; return an UnknownPacket
-			packet = new UnknownPacket(connType, packetType, payload);
-		} else if (listenerRegistry.listeningFor(factory.getFactoryClass())) {
+			UnknownPacket packet = new UnknownPacket(connType, packetType, payload);
+			debugger.onRecvUnparsedPacket(packet);
+			return packet;
+		}
+
+		if (listenerRegistry.listeningFor(factory.getFactoryClass())) {
 			// Parse it and build the packet
+			ArtemisPacket packet;
+
 			try {
 				packet = factory.build(this);
 			} catch (ArtemisPacketException ex) {
@@ -200,16 +196,19 @@ public class PacketReader {
 			int bytesLeft = payload.length - offset;
 
 			if (bytesLeft > 0) {
-				System.out.println(
-						">>> Unread bytes [" +
+				debugger.warn(
+						"Unread bytes [" +
 						packet.getClass().getSimpleName() + "]: " +
 						TextUtil.byteArrayToHexString(readBytes(bytesLeft))
 				);
 			}
-		} else {
-			packet = new UnparsedPacket(connType, packetType, payload);
+
+			debugger.onRecvParsedPacket(packet);
+			return packet;
 		}
 
+		UnparsedPacket packet = new UnparsedPacket(connType, packetType, payload);
+		debugger.onRecvUnparsedPacket(packet);
 		return packet;
 	}
 

@@ -59,4 +59,11 @@ public interface ArtemisNetworkInterface {
      * Closes the connection to the remote machine.
      */
     public void stop();
+
+    /**
+     * Attaches the given debugger to the interface. Any previously attached
+     * debugger is removed. If debugger is null, the previous debugger, if any,
+     * is removed, with no new debugger attached.
+     */
+    public void attachDebugger(Debugger debugger);
 }

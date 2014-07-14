@@ -297,10 +297,14 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
      
         @Override
         public String toString() {
-            return String.format("dc#%d(%d)@[%d->%d|%d->%d|%d->%d]==%.3f",
-                    teamNumber, members, 
-                    x, y, z, xGoal, yGoal, zGoal, 
-                    progress);
+        	StringBuilder b = new StringBuilder();
+        	b.append("Team #").append(teamNumber)
+        	.append(" (").append(members).append("): ")
+        	.append(x).append(",").append(y).append(",").append(z)
+        	.append(" => ")
+        	.append(xGoal).append(",").append(yGoal).append(",").append(zGoal)
+        	.append(" (").append(progress).append(")");
+        	return b.toString();
         }
     }
 }

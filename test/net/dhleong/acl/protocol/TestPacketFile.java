@@ -18,8 +18,6 @@ import net.dhleong.acl.iface.ListenerRegistry;
 import net.dhleong.acl.iface.PacketFactoryRegistry;
 import net.dhleong.acl.iface.PacketReader;
 import net.dhleong.acl.iface.PacketWriter;
-import net.dhleong.acl.protocol.core.GameStartPacket;
-import net.dhleong.acl.protocol.core.SkyboxPacket;
 import net.dhleong.acl.util.TextUtil;
 
 public class TestPacketFile {
@@ -90,7 +88,6 @@ public class TestPacketFile {
 				new PacketFactoryRegistry(),
 				listeners
 		);
-
 		PacketTestDebugger debugger = new PacketTestDebugger();
 
 		while (bais.available() > 0) {

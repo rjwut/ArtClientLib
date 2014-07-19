@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import net.dhleong.acl.enums.ConnectionType;
+import net.dhleong.acl.iface.Debugger;
 import net.dhleong.acl.iface.PacketWriter;
 
 /**
@@ -31,10 +32,12 @@ public interface ArtemisPacket {
      * Returns the type value for this packet, specified as the last field of
      * the preamble.
      */
-    int getType();
+    public int getType();
 
     /**
-     * Writes this packet to the given PacketWriter.
+     * Writes this packet to the given PacketWriter, then returns the array of
+     * bytes that was sent. The given Debugger will be notified of the written
+     * packet.
      */
-    public void write(PacketWriter writer) throws IOException;
+    public void writeTo(PacketWriter writer, Debugger debugger) throws IOException;
 }

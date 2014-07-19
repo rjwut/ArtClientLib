@@ -14,7 +14,7 @@ import net.dhleong.acl.enums.ShipSystem;
  * Some basic management of the internal systems grid for a Player Ship. This is
  * by no means comprehensive--we don't keep track of pixel coordinates, for
  * example, just the "grid" coordinates--but is just enough so we can get the
- * Engineering station to be more complete.
+ * Engineering console to be more complete.
  * @author dhleong
  */
 public class ShipSystemGrid {

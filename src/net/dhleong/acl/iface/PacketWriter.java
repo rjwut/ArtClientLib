@@ -3,9 +3,12 @@ package net.dhleong.acl.iface;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.SortedMap;
 
 import net.dhleong.acl.enums.ConnectionType;
+import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.protocol.ArtemisPacket;
+import net.dhleong.acl.protocol.Version;
 import net.dhleong.acl.util.BitField;
 import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.world.ArtemisObject;
@@ -29,9 +32,13 @@ import net.dhleong.acl.world.ArtemisObject;
  */
 public class PacketWriter {
 	private final OutputStream out;
-	private int packetType;
+	private ConnectionType mConnType;
+	private Version version;
+
+	private int mPacketType;
 	private ByteArrayOutputStream baos;
 	private ArtemisObject obj;
+	private ObjectType objType;
 	private BitField bitField;
 	private ByteArrayOutputStream baosObj;
 	private byte[] buffer = new byte[4];
@@ -50,23 +57,48 @@ public class PacketWriter {
 	}
 
 	/**
+	 * Returns the server version number, or null if unknown.
+	 */
+	public Version getVersion() {
+		return version;
+	}
+
+	/**
+	 * Sets the server version number. This is invoked by VersionPacket. 
+	 */
+	public void setVersion(Version version) {
+		this.version = version;
+	}
+
+	/**
 	 * Starts a packet of the given type.
 	 */
-	public PacketWriter start(int pktType) {
-		packetType = pktType;
+	public PacketWriter start(ConnectionType connType, int packetType) {
+		mConnType = connType;
+		mPacketType = packetType;
 		baos = new ByteArrayOutputStream();
 		return this;
 	}
 
 	/**
-	 * Starts writing a new entry into the packet for the given object. If
-	 * object entries for this packet have bit fields, an array of the possible
-	 * enum values (not just the ones in this packet) should be provided;
-	 * otherwise, the bits argument should be null.
+	 * Convenience method for startObject(object, object.getType(), bits).
 	 */
 	public PacketWriter startObject(ArtemisObject object, Enum<?>[] bits) {
+		return startObject(object, object.getType(), bits);
+	}
+
+	/**
+	 * Starts writing a new entry into the packet for the given object,
+	 * overriding the object's type with the specified ObjectType. If object
+	 * entries for this packet have bit fields, an array of the possible enum
+	 * values (not just the ones in this packet) should be provided; otherwise,
+	 * the bits argument should be null.
+	 */
+	public PacketWriter startObject(ArtemisObject object, ObjectType type,
+			Enum<?>[] bits) {
 		assertStarted();
 		obj = object;
+		objType = type;
 		bitField = new BitField(bits);
 		baosObj = new ByteArrayOutputStream();
 		return this;
@@ -78,6 +110,16 @@ public class PacketWriter {
 	public PacketWriter writeByte(byte v) {
 		assertStarted();
 		baos.write(v);
+		return this;
+	}
+
+	/**
+	 * Writes a single byte for the current object. You must invoke
+	 * startObject() before calling this method.
+	 */
+	public PacketWriter writeObjByte(byte v) {
+		assertObjectStarted();
+		baosObj.write(v);
 		return this;
 	}
 
@@ -279,7 +321,8 @@ public class PacketWriter {
 	 */
 	public PacketWriter writeUnknown(String name, byte[] defaultValue) {
 		assertObjectStarted();
-		byte[] v = obj.getUnknownProps().get(name);
+		SortedMap<String, byte[]> unknownProps = obj.getUnknownProps();
+		byte[] v = unknownProps != null ? unknownProps.get(name) : null;
 		writeBytes(baosObj, v != null ? v : defaultValue);
 		return this;
 	}
@@ -293,11 +336,15 @@ public class PacketWriter {
 	 */
 	public PacketWriter writeUnknown(Enum<?> bit) {
 		assertObjectStarted();
-		byte[] v = obj.getUnknownProps().get(bit.name());
+		SortedMap<String, byte[]> unknownProps = obj.getUnknownProps();
 
-		if (v != null) {
-			bitField.set(bit, true);
-			writeBytes(baos, v);
+		if (unknownProps != null) {
+			byte[] v = unknownProps.get(bit.name());
+	
+			if (v != null) {
+				bitField.set(bit, true);
+				writeBytes(baosObj, v);
+			}
 		}
 
 		return this;
@@ -311,7 +358,7 @@ public class PacketWriter {
 	 * another object.
 	 */
 	public void endObject() {
-		writeByte(obj.getType().getId());
+		writeByte(objType.getId());
 		writeInt(obj.getId());
 
 		try {
@@ -325,6 +372,7 @@ public class PacketWriter {
 
 		writeBytes(baosObj.toByteArray());
 		obj = null;
+		objType = null;
 		bitField = null;
 		baosObj = null;
 	}
@@ -332,20 +380,22 @@ public class PacketWriter {
 	/**
 	 * Writes the completed packet to the OutputStream. You must invoke start()
 	 * before calling this method. When this method returns, you will have to
-	 * call start() again before you can write more data.
+	 * call start() again before you can write more data. The given Debugger
+	 * will also be notified.
 	 */
-	public void flush() throws IOException {
+	public void flush(Debugger debugger) throws IOException {
 		assertStarted();
 		byte[] payload = baos.toByteArray();
 		baos = null;
 		writeIntToStream(ArtemisPacket.HEADER);				// header
 		writeIntToStream(payload.length + 24);				// packet length
-		writeIntToStream(ConnectionType.CLIENT.toInt());	// connection type
+		writeIntToStream(mConnType.toInt());				// connection type
 		writeIntToStream(0);								// padding
 		writeIntToStream(payload.length + 4);				// remaining bytes
-		writeIntToStream(packetType);						// packet type
+		writeIntToStream(mPacketType);						// packet type
 		out.write(payload);									// payload
 		out.flush();
+		debugger.onSendPacketBytes(mConnType, mPacketType, payload);
 	}
 
 	/**

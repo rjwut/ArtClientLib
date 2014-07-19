@@ -3,6 +3,7 @@ package net.dhleong.acl.protocol;
 import java.io.IOException;
 
 import net.dhleong.acl.enums.ConnectionType;
+import net.dhleong.acl.iface.Debugger;
 import net.dhleong.acl.iface.PacketWriter;
 
 /**
@@ -35,10 +36,10 @@ public abstract class BaseArtemisPacket implements ArtemisPacket {
     }
 
     @Override
-    public final void write(PacketWriter writer) throws IOException {
-    	writer.start(mType);
+    public final void writeTo(PacketWriter writer, Debugger debugger) throws IOException {
+    	writer.start(mConnectionType, mType);
     	writePayload(writer);
-    	writer.flush();
+    	writer.flush(debugger);
     }
 
     @Override

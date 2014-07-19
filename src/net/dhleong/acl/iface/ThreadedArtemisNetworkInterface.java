@@ -6,45 +6,44 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.ArrayDeque;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.protocol.ArtemisPacketException;
 import net.dhleong.acl.protocol.Protocol;
-import net.dhleong.acl.protocol.UnparsedPacket;
 import net.dhleong.acl.protocol.Version;
 import net.dhleong.acl.protocol.core.setup.VersionPacket;
 import net.dhleong.acl.protocol.core.setup.WelcomePacket;
-import net.dhleong.acl.util.TextUtil;
 
 /**
  * Default implementation of ArtemisNetworkInterface. Kicks off a thread for
  * each stream.
  */
 public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface {
-    private static final boolean DEBUG = false;
-
     private final ConnectionType recvType;
     private final ConnectionType sendType;
     private final PacketFactoryRegistry factoryRegistry = new PacketFactoryRegistry();
+    private final ListenerRegistry mListeners = new ListenerRegistry();
     private final ReceiverThread mReceiveThread;
     private final SenderThread mSendThread;
 
-    /** Error code, for when we disconnect */
-    private int errorCode = OnConnectedListener.ERROR_NONE;
+    private DisconnectEvent.Cause disconnectCause = DisconnectEvent.Cause.LOCAL_DISCONNECT;
+    private Exception exception;
+    private Debugger mDebugger = new BaseDebugger();
 
     /**
-     * Prepares an outgoing client connection to an Artemis server. The
-     * connection won't actually be opened until start() is called.
+     * Prepares an outgoing client connection to an Artemis server. The send and
+     * receive streams won't actually be opened until start() is called.
      * @param tgtIp The IP address to connect to
      * @param tgtPort The port to connect to (Artemis's default port is 2010)
      */
     public ThreadedArtemisNetworkInterface(final String host, final int port) 
             throws UnknownHostException, IOException {
-    	this(new Socket(host, port), ConnectionType.SERVER);
+   		this(new Socket(host, port), ConnectionType.SERVER);
     }
 
     /**
@@ -71,29 +70,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
     	skt.setKeepAlive(true);
         mSendThread = new SenderThread(this, skt);
         mReceiveThread = new ReceiverThread(this, skt);
-        mReceiveThread.addPacketListener(mSendThread);
-    }
-
-    private ThreadedArtemisNetworkInterface pair;
-    private PairingPolicy pairingPolicy;
-
-    public static void pair(
-    		ThreadedArtemisNetworkInterface iface1,
-    		ThreadedArtemisNetworkInterface iface2,
-    		PairingPolicy pairingPolicy
-    ) {
-    	if (iface1 == null || iface2 == null || pairingPolicy == null) {
-    		throw new IllegalArgumentException("All arguments are required");
-    	}
-
-    	iface1.pair = iface2;
-    	iface1.pairingPolicy = pairingPolicy;
-    	iface2.pair = iface1;
-    	iface2.pairingPolicy = pairingPolicy;
-    }
-
-    public ThreadedArtemisNetworkInterface getPair() {
-    	return pair;
+        addListener(mSendThread);
     }
 
     @Override
@@ -112,8 +89,8 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
 	}
 
     @Override
-    public void addPacketListener(final Object listener) {
-        mReceiveThread.addPacketListener(listener);
+    public void addListener(final Object listener) {
+    	mListeners.register(listener);
     }
 
     /**
@@ -163,28 +140,19 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
         mSendThread.end();
     }
 
-    /**
-     * Registers an object that will be notified when a connection to the remote
-     * machine is established or terminated.
-     */
-    public void setOnConnectedListener(final OnConnectedListener listener) {
-        mSendThread.mOnConnectedListener = listener;
-    }
-
 
     /**
 	 * Manages sending packets to the OutputStream.
 	 */
 	private static class SenderThread extends Thread {
         private final Socket mSkt;
-        private final Queue<ArtemisPacket> mQueue = new ArrayDeque<ArtemisPacket>(128);
+        private final Queue<ArtemisPacket> mQueue = new ConcurrentLinkedQueue<ArtemisPacket>();
         private boolean mRunning = true;
         
         private final PacketWriter mWriter;
         private final ThreadedArtemisNetworkInterface mInterface;
         
-        private boolean mConnected = false;
-        private OnConnectedListener mOnConnectedListener;
+        private boolean mConnected;
         private boolean mStarted;
 
         public SenderThread(final ThreadedArtemisNetworkInterface net, final Socket skt) throws IOException {
@@ -198,7 +166,7 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
          * Enqueues a packet to be sent.
          */
         public boolean offer(final ArtemisPacket pkt) {
-            return mQueue.offer(pkt);
+        	return mQueue.offer(pkt);
         }
 
         @Override
@@ -211,29 +179,21 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
                 } catch (final InterruptedException e) {
                 	// TODO Supposed to bail if an InterruptedException is received
                 }
-                
-                if (!mConnected) {
-                    continue;
-                }
 
-                ArtemisPacket pkt = null;
-            	pkt = mQueue.poll();
+                ArtemisPacket pkt = mQueue.poll();
 
             	if (pkt == null) {
                     // empty queue; loop back to wait
                     continue;
                 }
-            
-                try {
-                    if (DEBUG) {
-                    	System.out.println("< " + pkt);
-                    }
 
-                    pkt.write(mWriter);
+                try {
+                	mInterface.mDebugger.onSendPacket(pkt);
+                    pkt.writeTo(mWriter, mInterface.mDebugger);
                 } catch (final IOException e) {
                     if (mRunning) {
-                        e.printStackTrace();
-                        mInterface.errorCode = OnConnectedListener.ERROR_IO;
+                    	mInterface.disconnectCause = DisconnectEvent.Cause.IO_EXCEPTION;
+                    	mInterface.exception = e;
                     }
 
                     break;
@@ -252,50 +212,38 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
             } catch (final IOException e) {
             	// DON'T CARE
             }
-            
-            if (mOnConnectedListener != null) {
-                mOnConnectedListener.onDisconnected(mInterface.errorCode);
-    
-                // not interested in listening anymore
-                mOnConnectedListener = null;
-            }
+
+            mInterface.mListeners.fire(new DisconnectEvent(
+            		mInterface.disconnectCause,
+            		mInterface.exception
+            ));
         }
 
         public void end() {
             mRunning = false;
         }
 
-        @PacketListener
+        @Listener
         public void onPacket(final WelcomePacket pkt) {
             final boolean wasConnected = mConnected;
             mConnected = true;
 
-            // send a couple of these to prime the server
-            // TODO Is this really required?
-            //offer(new ReadyPacket2());
-            //offer(new ReadyPacket2());
-            
-            if (!wasConnected && mOnConnectedListener != null) {
-                mOnConnectedListener.onConnected();
+            if (!wasConnected) {
+            	mInterface.mListeners.fire(new ConnectionSuccessEvent());
             }
         }
 
-        @PacketListener
+        @Listener
         public void onPacket(final VersionPacket pkt) {
             final Version version = pkt.getVersion();
 
             if (version.lt(ArtemisNetworkInterface.MIN_VERSION)) {
-                System.err.println(
-                		"Unsupported Artemis server version: " + version
-                );
-
-                if (mOnConnectedListener != null) {
-                    mOnConnectedListener.onDisconnected(
-                            OnConnectedListener.ERROR_VERSION);
-                }
+            	mInterface.mListeners.fire(new DisconnectEvent(
+            			DisconnectEvent.Cause.UNSUPPORTED_SERVER_VERSION,
+            			null
+            	));
                 
                 // go ahead and end the receive thread NOW
-                mInterface.errorCode = OnConnectedListener.ERROR_VERSION;
                 mInterface.mReceiveThread.end();
                 end();
             }
@@ -306,7 +254,6 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
 	 * Manages receiving packets from the InputStream.
 	 */
     private class ReceiverThread extends Thread {
-        private ListenerRegistry mListeners = new ListenerRegistry();
         private boolean mRunning = true;
         private final ThreadedArtemisNetworkInterface mInterface;
         private PacketReader mReader;
@@ -330,52 +277,24 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
             while (mRunning) {
                 try {
                     // read packet
-                    final ArtemisPacket pkt = mReader.readPacket();
-
-                    if (DEBUG) {
-                    	System.out.println("> " + pkt);
-                    }
+                    final ArtemisPacket pkt = mReader.readPacket(mInterface.mDebugger);
 
                     if (mRunning) {
-                    	boolean unparsed = pkt instanceof UnparsedPacket;
-                    	boolean sendToPair =
-                    			pair != null &&
-                    			(unparsed || pairingPolicy == PairingPolicy.ALL);
-
-                    	if (sendToPair) {
-                    		pair.send(pkt);
-                    	}
-
-                    	if (!unparsed) {
-                    		mListeners.fire(pkt);
-                    	}
+                		mListeners.fire(pkt);
                     }
                 } catch (final ArtemisPacketException e) {
                     if (mRunning) {
-                    	ConnectionType connType = e.getConnectionType();
-                    	System.err.println("### PACKET PARSE EXCEPTION! ###");
+                    	Throwable cause = e.getCause();
 
-                    	if (connType != null) {
-                    		System.err.println("Connection type: " + connType);
-                        	int packetType = e.getPacketType();
-
-                        	if (packetType != 0) {
-                        		System.err.println(
-                        			"    Packet type: " + packetType
-                        		);
-                        		byte[] payload = e.getPayload();
-
-                        		if (payload != null) {
-                        			System.err.println(
-                        				"        Payload: " +
-               							TextUtil.byteArrayToHexString(payload)
-                        			);
-                        		}
-                        	}
+                    	if (cause instanceof SocketException) {
+                    		// Parse failed because the connection was lost
+                    		mInterface.disconnectCause = DisconnectEvent.Cause.REMOTE_DISCONNECT;
+                        	mInterface.exception = (SocketException) cause;
+                    	} else {
+                        	mInterface.disconnectCause = DisconnectEvent.Cause.PACKET_PARSE_EXCEPTION;
+                        	mInterface.exception = e;
                     	}
 
-                        e.printStackTrace();
-                        mInterface.errorCode = OnConnectedListener.ERROR_PARSE;
                         end();
                     }
 
@@ -385,14 +304,18 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
             
             mInterface.stop();
         }
-        
+
         public void end() {
             mRunning = false;
-            mListeners.clear();
         }
-
-    	private void addPacketListener(Object object) {
-    		mListeners.register(object);
-    	}
     }
+
+	@Override
+	public void attachDebugger(Debugger debugger) {
+		if (debugger == null) {
+			debugger = new BaseDebugger();
+		}
+
+		mDebugger = debugger;
+	}
 }

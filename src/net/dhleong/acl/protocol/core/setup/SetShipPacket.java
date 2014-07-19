@@ -10,7 +10,7 @@ import net.dhleong.acl.protocol.core.ShipActionPacket;
 
 /**
  * Set the ship you want to be on. You must send this packet before
- * SetStationPacket.
+ * SetConsolePacket.
  * @author dhleong
  */
 public class SetShipPacket extends ShipActionPacket {
@@ -24,7 +24,8 @@ public class SetShipPacket extends ShipActionPacket {
     public static final int SHIP_8_DIANA	= 7;
     
 	public static void register(PacketFactoryRegistry registry) {
-		registry.register(ConnectionType.CLIENT, TYPE, new PacketFactory() {
+		registry.register(ConnectionType.CLIENT, TYPE, TYPE_SET_SHIP,
+				new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {
 				return SetShipPacket.class;

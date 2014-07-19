@@ -14,7 +14,8 @@ import net.dhleong.acl.world.ArtemisObject;
  */
 public class SciSelectPacket extends ShipActionPacket {
 	public static void register(PacketFactoryRegistry registry) {
-		registry.register(ConnectionType.CLIENT, TYPE, new PacketFactory() {
+		registry.register(ConnectionType.CLIENT, TYPE, TYPE_SCI_SELECT,
+				new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {
 				return SciSelectPacket.class;

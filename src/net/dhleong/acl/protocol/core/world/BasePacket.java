@@ -13,24 +13,24 @@ import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.protocol.ArtemisPacketException;
 import net.dhleong.acl.protocol.BaseArtemisPacket;
 import net.dhleong.acl.world.ArtemisObject;
-import net.dhleong.acl.world.ArtemisStation;
+import net.dhleong.acl.world.ArtemisBase;
 
 /**
- * Provides updates for space stations.
+ * Provides updates for bases.
  */
-public class StationPacket extends BaseArtemisPacket implements ObjectUpdatingPacket {
+public class BasePacket extends BaseArtemisPacket implements ObjectUpdatingPacket {
 	public static void register(PacketFactoryRegistry registry) {
 		registry.register(ConnectionType.SERVER, WORLD_TYPE,
-				ObjectType.SPACE_STATION.getId(), new PacketFactory() {
+				ObjectType.BASE.getId(), new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {
-				return StationPacket.class;
+				return BasePacket.class;
 			}
 
 			@Override
 			public ArtemisPacket build(PacketReader reader)
 					throws ArtemisPacketException {
-				return new StationPacket(reader);
+				return new BasePacket(reader);
 			}
 		});
 	}
@@ -55,7 +55,7 @@ public class StationPacket extends BaseArtemisPacket implements ObjectUpdatingPa
 
     private List<ArtemisObject> mObjects = new ArrayList<ArtemisObject>();
 
-    private StationPacket(PacketReader reader) {
+    private BasePacket(PacketReader reader) {
     	super(ConnectionType.SERVER, WORLD_TYPE);
         String name;
         int index;
@@ -82,16 +82,18 @@ public class StationPacket extends BaseArtemisPacket implements ObjectUpdatingPa
             reader.readObjectUnknown(Bit.UNK_2_5, 1);
             reader.readObjectUnknown(Bit.UNK_2_6, 1);
             
-            ArtemisStation station = new ArtemisStation(reader.getObjectId(), name);
-            station.setIndex(index);
-            station.setX(x);
-            station.setY(y);
-            station.setZ(z);
-            station.setShieldsFront(shieldsFront);
-            station.setShieldsRear(shieldsRear);
-            station.setUnknownProps(reader.getUnknownObjectProps());
-            mObjects.add(station);
+            ArtemisBase base = new ArtemisBase(reader.getObjectId(), name);
+            base.setIndex(index);
+            base.setX(x);
+            base.setY(y);
+            base.setZ(z);
+            base.setShieldsFront(shieldsFront);
+            base.setShieldsRear(shieldsRear);
+            base.setUnknownProps(reader.getUnknownObjectProps());
+            mObjects.add(base);
         }
+
+        reader.skip(4);	// skip 0x00 terminator
     }
 
 	@Override
@@ -99,22 +101,23 @@ public class StationPacket extends BaseArtemisPacket implements ObjectUpdatingPa
 		Bit[] bits = Bit.values();
 
 		for (ArtemisObject obj : mObjects) {
-			ArtemisStation station = (ArtemisStation) obj;
-			writer	.startObject(station, bits)
-					.writeString(Bit.NAME, station.getName())
-					.writeFloat(Bit.FORE_SHIELDS, station.getShieldsFront(), Float.MIN_VALUE)
-					.writeFloat(Bit.AFT_SHIELDS, station.getShieldsRear(), Float.MIN_VALUE)
-					.writeInt(Bit.INDEX, station.getIndex(), -1)
+			ArtemisBase base = (ArtemisBase) obj;
+			writer	.startObject(base, bits)
+					.writeString(Bit.NAME, base.getName())
+					.writeFloat(Bit.FORE_SHIELDS, base.getShieldsFront(), Float.MIN_VALUE)
+					.writeFloat(Bit.AFT_SHIELDS, base.getShieldsRear(), Float.MIN_VALUE)
+					.writeInt(Bit.INDEX, base.getIndex(), -1)
 					.writeUnknown(Bit.UNK_1_5)
-					.writeFloat(Bit.X, station.getX(), Float.MIN_VALUE)
-					.writeFloat(Bit.Y, station.getY(), Float.MIN_VALUE)
-					.writeFloat(Bit.Z, station.getZ(), Float.MIN_VALUE)
+					.writeFloat(Bit.X, base.getX(), Float.MIN_VALUE)
+					.writeFloat(Bit.Y, base.getY(), Float.MIN_VALUE)
+					.writeFloat(Bit.Z, base.getZ(), Float.MIN_VALUE)
 					.writeUnknown(Bit.UNK_2_1)
 					.writeUnknown(Bit.UNK_2_2)
 					.writeUnknown(Bit.UNK_2_3)
 					.writeUnknown(Bit.UNK_2_4)
 					.writeUnknown(Bit.UNK_2_5)
-					.writeUnknown(Bit.UNK_2_6);
+					.writeUnknown(Bit.UNK_2_6)
+					.endObject();
 		}
 
 		writer.writeInt(0);
@@ -123,7 +126,7 @@ public class StationPacket extends BaseArtemisPacket implements ObjectUpdatingPa
 	@Override
 	protected void appendPacketDetail(StringBuilder b) {
 		for (ArtemisObject obj : mObjects) {
-			b.append("\nStation #").append(obj.getId()).append(obj);
+			b.append("\nBase #").append(obj.getId()).append(obj);
 		}
 	}
 

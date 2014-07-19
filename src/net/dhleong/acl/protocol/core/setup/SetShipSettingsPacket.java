@@ -2,7 +2,7 @@ package net.dhleong.acl.protocol.core.setup;
 
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.enums.DriveType;
-import net.dhleong.acl.enums.ShipType;
+import net.dhleong.acl.enums.VesselAttribute;
 import net.dhleong.acl.iface.PacketFactory;
 import net.dhleong.acl.iface.PacketFactoryRegistry;
 import net.dhleong.acl.iface.PacketReader;
@@ -11,15 +11,18 @@ import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.protocol.ArtemisPacketException;
 import net.dhleong.acl.protocol.UnexpectedTypeException;
 import net.dhleong.acl.protocol.core.ShipActionPacket;
+import net.dhleong.acl.vesseldata.Vessel;
+import net.dhleong.acl.vesseldata.VesselData;
 
 
 /**
- * Set the name, type and drive of ship your station has selected.
+ * Set the name, type and drive of ship your console has selected.
  * @author dhleong
  */
 public class SetShipSettingsPacket extends ShipActionPacket {
 	public static void register(PacketFactoryRegistry registry) {
-		registry.register(ConnectionType.CLIENT, TYPE, new PacketFactory() {
+		registry.register(ConnectionType.CLIENT, TYPE, TYPE_SHIP_SETUP,
+				new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {
 				return SetShipSettingsPacket.class;
@@ -38,32 +41,25 @@ public class SetShipSettingsPacket extends ShipActionPacket {
 	private String mName;
 
 	/**
-	 * Use this constructor if you wish to use the ShipType enum. This may be
-	 * incompatible with changes to vesselData.xml.
-	 * @param drive The desired type of drive
-	 * @param type
-	 * @param name The desired ship name
+	 * Use this constructor if you wish to use a Vessel instance from the
+	 * VesselData class.
 	 */
-	public SetShipSettingsPacket(DriveType drive, ShipType type, String name) {
+	public SetShipSettingsPacket(DriveType drive, Vessel vessel, String name) {
         super(TYPE_SHIP_SETUP);
 
-        if (type == null) {
-        	throw new IllegalArgumentException("You must specify a ship type");
+        if (vessel == null) {
+        	throw new IllegalArgumentException("You must specify a Vessel");
         }
 
-        if (!type.isPlayerShip()) {
-        	throw new IllegalArgumentException("Can't select " + type);
+        if (!vessel.is(VesselAttribute.PLAYER)) {
+        	throw new IllegalArgumentException("Must select a player vessel");
         }
 
-        init(drive, type.getId(), name);
+        init(drive, vessel.getId(), name);
 	}
 
 	/**
-	 * Use this constructor if you wish to use a hull ID. This allows you to
-	 * select ships from a modified vesselData.xml.
-	 * @param drive The desired type of drive
-	 * @param hullId The ID for the desired ship type
-	 * @param name The desired ship name
+	 * Use this constructor if you wish to use a hull ID.
 	 */
 	public SetShipSettingsPacket(DriveType drive, int hullId, String name) {
         super(TYPE_SHIP_SETUP);
@@ -109,15 +105,9 @@ public class SetShipSettingsPacket extends ShipActionPacket {
 
 	@Override
 	protected void appendPacketDetail(StringBuilder b) {
-    	ShipType shipType = ShipType.fromId(mHullId);
-    	b.append(mName).append(": ");
-
-    	if (shipType != null) {
-        	b.append(shipType.getHullName());
-    	} else {
-        	b.append(mHullId);
-    	}
-
-    	b.append(" [").append(mDrive).append(']');
+		Vessel vessel = VesselData.get().getVessel(mHullId);
+    	b	.append(mName).append(": ")
+    		.append(vessel != null ? vessel.getName() : "UNKNOWN TYPE")
+    		.append(" [").append(mDrive).append(']');
 	}
 }

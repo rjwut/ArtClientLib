@@ -17,10 +17,11 @@ import net.dhleong.acl.world.Artemis;
  */
 public class EngSetEnergyPacket extends BaseArtemisPacket {
     private static final int TYPE = 0x0351A5AC;
-    private static final int SUBTYPE = 0x04;
+    private static final byte SUBTYPE = 0x04;
 
 	public static void register(PacketFactoryRegistry registry) {
-		registry.register(ConnectionType.CLIENT, TYPE, new PacketFactory() {
+		registry.register(ConnectionType.CLIENT, TYPE, SUBTYPE,
+				new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {
 				return EngSetEnergyPacket.class;

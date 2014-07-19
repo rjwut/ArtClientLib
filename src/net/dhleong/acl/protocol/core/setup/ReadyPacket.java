@@ -9,7 +9,7 @@ import net.dhleong.acl.protocol.ArtemisPacketException;
 import net.dhleong.acl.protocol.core.ShipActionPacket;
 
 /**
- * Signals to the server that this station is ready to join the game. If the
+ * Signals to the server that this console is ready to join the game. If the
  * ReadyPacket is sent before the game has started, the server will start
  * sending updates when the game starts. If the ReadyPacket is sent after the
  * game has started, the server sends updates immediately. Once a game has
@@ -19,7 +19,8 @@ import net.dhleong.acl.protocol.core.ShipActionPacket;
  */
 public class ReadyPacket extends ShipActionPacket {
 	public static void register(PacketFactoryRegistry registry) {
-		registry.register(ConnectionType.CLIENT, TYPE, new PacketFactory() {
+		registry.register(ConnectionType.CLIENT, TYPE, TYPE_READY,
+				new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {
 				return ReadyPacket.class;

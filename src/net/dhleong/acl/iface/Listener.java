@@ -8,20 +8,23 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation that marks methods which are to be invoked when a packet is
- * received. To be eligible to be a PacketListener, a method must: 1) be public,
- * 2) have a void return type, and 3) have exactly one argument of type
- * ArtemisPacket or any of its subtypes. The method will only be notified of
- * packets that are assignable to the argument's type.
+ * received or an event is thrown. To be eligible to be a Listener, a method
+ * must: 1) be public, 2) have a void return type, and 3) have exactly one
+ * argument of an accepted type ({@link net.dhleong.acl.protocol.ArtemisPacket},
+ * {@link net.dhleong.acl.iface.ConnectionEvent}, or any of their subtypes). The
+ * method will only be notified of packets or events that are assignable to the
+ * argument's type.
  * 
  * Annotating the method alone is not enough to get notifications; you must
  * register the object that has the annotated method with the
- * ArtemisNetworkInterface implementation that will be receiving the packets.
+ * ArtemisNetworkInterface implementation that will be receiving the packets or
+ * events.
  * 
  * @author rjwut
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Inherited
-public @interface PacketListener {
+public @interface Listener {
 	// no properties
 }

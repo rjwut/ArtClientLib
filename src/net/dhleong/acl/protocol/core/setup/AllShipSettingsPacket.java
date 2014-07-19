@@ -2,7 +2,6 @@ package net.dhleong.acl.protocol.core.setup;
 
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.enums.DriveType;
-import net.dhleong.acl.enums.ShipType;
 import net.dhleong.acl.iface.PacketFactory;
 import net.dhleong.acl.iface.PacketFactoryRegistry;
 import net.dhleong.acl.iface.PacketReader;
@@ -11,6 +10,8 @@ import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.protocol.ArtemisPacketException;
 import net.dhleong.acl.protocol.BaseArtemisPacket;
 import net.dhleong.acl.protocol.UnexpectedTypeException;
+import net.dhleong.acl.vesseldata.Vessel;
+import net.dhleong.acl.vesseldata.VesselData;
 import net.dhleong.acl.world.Artemis;
 
 /**
@@ -61,17 +62,14 @@ public class AllShipSettingsPacket extends BaseArtemisPacket {
 
 		@Override
 		public String toString() {
+        	Vessel vessel = VesselData.get().getVessel(mShipType);
 			StringBuilder b = new StringBuilder();
-        	b.append(mName).append(": ");
-        	ShipType shipType = ShipType.fromId(mShipType);
-
-        	if (shipType != null) {
-            	b.append(shipType.getHullName());
-        	} else {
-            	b.append(mShipType);
-        	}
-
-        	b.append(" [").append(mDrive).append(']');
+        	b	.append(mName)
+    			.append(" (")
+    			.append(vessel != null ? vessel.getName() : "UNKNOWN TYPE")
+    			.append(") [")
+    			.append(mDrive)
+    			.append(']');
         	return b.toString();
 		}
 	}

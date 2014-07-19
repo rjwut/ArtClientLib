@@ -83,6 +83,8 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
             addDamconUpdate(teamNumber, members, xGoal, yGoal, zGoal, x, y, z,
             		progress);
         }
+
+        reader.skip(1); // read the 0xfe byte
     }
 
     /**
@@ -119,12 +121,36 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
 
 	@Override
 	protected void writePayload(PacketWriter writer) {
-		throw new UnsupportedOperationException();
+		writer.writeByte((byte) 1);
+
+		for (GridDamage damage : mDamage) {
+			GridCoord coord = damage.coord;
+			writer	.writeByte((byte) coord.getX())
+					.writeByte((byte) coord.getY())
+					.writeByte((byte) coord.getZ())
+					.writeFloat(damage.damage);
+		}
+
+		writer.writeByte(END_GRID_MARKER);
+
+		for (DamconStatus update : mDamconUpdates) {
+			writer	.writeByte((byte) (update.teamNumber + TEAM_NUMBER_OFFSET))
+					.writeInt(update.xGoal)
+					.writeInt(update.x)
+					.writeInt(update.yGoal)
+					.writeInt(update.y)
+					.writeInt(update.zGoal)
+					.writeInt(update.z)
+					.writeFloat(update.progress)
+					.writeInt(update.members);
+		}
+
+		writer.writeByte(END_DAMCON_MARKER);
 	}
 
 	@Override
 	protected void appendPacketDetail(StringBuilder b) {
-		b.append("Damage updates:");
+		b.append("\nDamage updates:");
 
 		if (mDamage.isEmpty()) {
 			b.append("\n\tnone");
@@ -134,7 +160,7 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
 			}
 		}
 
-		b.append("DAMCON status updates:");
+		b.append("\nDAMCON status updates:");
 
 		if (mDamconUpdates.isEmpty()) {
 			b.append("\n\tnone");
@@ -271,10 +297,14 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
      
         @Override
         public String toString() {
-            return String.format("dc#%d(%d)@[%d->%d|%d->%d|%d->%d]==%.3f",
-                    teamNumber, members, 
-                    x, y, z, xGoal, yGoal, zGoal, 
-                    progress);
+        	StringBuilder b = new StringBuilder();
+        	b.append("Team #").append(teamNumber)
+        	.append(" (").append(members).append("): ")
+        	.append(x).append(",").append(y).append(",").append(z)
+        	.append(" => ")
+        	.append(xGoal).append(",").append(yGoal).append(",").append(zGoal)
+        	.append(" (").append(progress).append(")");
+        	return b.toString();
         }
     }
 }

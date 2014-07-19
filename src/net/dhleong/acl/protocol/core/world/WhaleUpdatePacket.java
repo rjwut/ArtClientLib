@@ -91,6 +91,8 @@ public class WhaleUpdatePacket extends BaseArtemisPacket implements ObjectUpdati
             obj.setUnknownProps(reader.getUnknownObjectProps());
             mObjects.add(obj);
         }
+
+    	reader.skip(4);	// skip 0x00 terminator
     }
 
 	@Override
@@ -110,7 +112,8 @@ public class WhaleUpdatePacket extends BaseArtemisPacket implements ObjectUpdati
 					.writeUnknown(Bit.UNK_2_2)
 					.writeUnknown(Bit.UNK_2_3)
 					.writeUnknown(Bit.UNK_2_4)
-					.writeUnknown(Bit.UNK_2_5);
+					.writeUnknown(Bit.UNK_2_5)
+					.endObject();
 		}
 
 		writer.writeInt(0);

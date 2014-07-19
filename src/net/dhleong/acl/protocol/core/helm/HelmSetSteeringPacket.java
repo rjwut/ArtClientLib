@@ -11,17 +11,18 @@ import net.dhleong.acl.protocol.BaseArtemisPacket;
 import net.dhleong.acl.protocol.UnexpectedTypeException;
 
 /**
- * Set steering amount. Just like the actual station, you need to send one
+ * Set steering amount. Just like the actual console, you need to send one
  * packet to start turning, then another to reset the steering angle to stop
  * turning.
  * @author dhleong
  */
 public class HelmSetSteeringPacket extends BaseArtemisPacket {
 	private static final int TYPE = 0x0351A5AC;
-    private static final int SUBTYPE = 0x01;
+    private static final byte SUBTYPE = 0x01;
 
 	public static void register(PacketFactoryRegistry registry) {
-		registry.register(ConnectionType.CLIENT, TYPE, new PacketFactory() {
+		registry.register(ConnectionType.CLIENT, TYPE, SUBTYPE,
+				new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {
 				return HelmSetSteeringPacket.class;

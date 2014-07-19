@@ -69,7 +69,7 @@ public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectU
     	AFT_SHIELDS,
     	AFT_SHIELDS_MAX,
 
-    	DOCKING_STATION,
+    	DOCKING_BASE,
     	RED_ALERT,
     	UNK_4_3,
     	MAIN_SCREEN,
@@ -121,7 +121,7 @@ public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectU
             float shieldsFrontMax = reader.readFloat(Bit.FORE_SHIELDS_MAX, -1);
             float shieldsRear = reader.readFloat(Bit.AFT_SHIELDS, Float.MIN_VALUE);
             float shieldsRearMax = reader.readFloat(Bit.AFT_SHIELDS_MAX, -1);
-            int dockingStation = reader.readInt(Bit.DOCKING_STATION, -1);
+            int dockingBase = reader.readInt(Bit.DOCKING_BASE, -1);
             BoolState redAlert = reader.readBool(Bit.RED_ALERT, 1);
 
             reader.readObjectUnknown(Bit.UNK_4_3, 4);
@@ -171,7 +171,7 @@ public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectU
             player.setHeading(heading);
             player.setVelocity(velocity);
             player.setEnergy(energy);
-            player.setDockingStation(dockingStation);
+            player.setDockingBase(dockingBase);
             player.setMainScreen(mainScreen);
             player.setBeamFrequency(beamFreq);
             player.setAvailableCoolant(availableCoolant);
@@ -190,6 +190,8 @@ public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectU
             player.setUnknownProps(reader.getUnknownObjectProps());
             mObjects.add(player);
     	}
+
+    	reader.skip(4);	// skip 0x00 terminator
     }
 
     public MainPlayerUpdatePacket() {
@@ -238,7 +240,7 @@ public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectU
 					.writeFloat(Bit.FORE_SHIELDS_MAX, player.getShieldsFrontMax(), -1)
 					.writeFloat(Bit.AFT_SHIELDS, player.getShieldsRear(), Float.MIN_VALUE)
 					.writeFloat(Bit.AFT_SHIELDS_MAX, player.getShieldsRearMax(), -1)
-					.writeInt(Bit.DOCKING_STATION, player.getDockingStation(), -1)
+					.writeInt(Bit.DOCKING_BASE, player.getDockingBase(), -1)
 					.writeBool(Bit.RED_ALERT, player.getRedAlertState(), 1)
 					.writeUnknown(Bit.UNK_4_3);
 

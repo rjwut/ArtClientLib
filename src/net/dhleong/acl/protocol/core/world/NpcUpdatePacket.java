@@ -222,6 +222,8 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
             obj.setUnknownProps(reader.getUnknownObjectProps());
             mObjects.add(obj);
         }
+
+    	reader.skip(4); // skip 0x00 terminator
     }
 
 	@Override
@@ -245,7 +247,7 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
 					.writeFloat(Bit.ROLL, npc.getRoll(), Float.MIN_VALUE)
 					.writeFloat(Bit.HEADING, npc.getHeading(), Float.MIN_VALUE)
 					.writeFloat(Bit.VELOCITY, npc.getVelocity(), -1)
-					.writeUnknown(Bit.SURRENDERED)
+					.writeBool(Bit.SURRENDERED, npc.isSurrendered(), 1)
 					.writeUnknown(Bit.UNK_2_8)
 					.writeFloat(Bit.FORE_SHIELD, npc.getShieldsFront(), Float.MIN_VALUE)
 					.writeFloat(Bit.FORE_SHIELD_MAX, npc.getShieldsFrontMax(), -1)

@@ -15,10 +15,11 @@ import net.dhleong.acl.protocol.UnexpectedTypeException;
  */
 public class ConvertTorpedoPacket extends BaseArtemisPacket {
     private static final int TYPE = 0x69CC01D9;
-    private static final int SUBTYPE = 0x03;
+    private static final byte SUBTYPE = 0x03;
 
 	public static void register(PacketFactoryRegistry registry) {
-		registry.register(ConnectionType.CLIENT, TYPE, new PacketFactory() {
+		registry.register(ConnectionType.CLIENT, TYPE, SUBTYPE,
+				new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {
 				return ConvertTorpedoPacket.class;

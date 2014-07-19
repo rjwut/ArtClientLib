@@ -9,7 +9,7 @@ import net.dhleong.acl.iface.PacketWriter;
  * (major.minor.patch), and can interpret float version numbers for backwards
  * compatibility. For robustness and to avoid duplication of code, it can handle
  * an arbitrary number of parts in the version number, not just three.
- * @author rwalker
+ * @author rjwut
  */
 public class Version implements Comparable<Version> {
 	public static final Version MODERN = new Version(2, 1);
@@ -43,13 +43,24 @@ public class Version implements Comparable<Version> {
 		}
 
 		int major = (int) Math.floor(version);
-		int minor = (int) Math.floor(version * 100);
+		int minor = (int) Math.floor((version - major) * 100);
 
 		if (minor < 40) {
 			minor /= 10;
 		}
 
 		mParts = new int[] { major, minor, 0 };
+		hash = Arrays.hashCode(mParts);
+	}
+
+	public Version(String version) {
+		String[] strParts = version.split("\\.");
+		mParts = new int[strParts.length];
+
+		for (int i = 0; i < strParts.length; i++) {
+			mParts[i] = Integer.parseInt(strParts[i]);
+		}
+
 		hash = Arrays.hashCode(mParts);
 	}
 
@@ -101,7 +112,7 @@ public class Version implements Comparable<Version> {
 
 		if (!legacy) {
 			for (int i = 0; i < 3; i++) {
-				writer.writeFloat(getPart(mParts, i));
+				writer.writeInt(getPart(mParts, i));
 			}
 		}
 	}
@@ -126,6 +137,10 @@ public class Version implements Comparable<Version> {
 
 	@Override
 	public String toString() {
+		if (isLegacy()) {
+			return mParts[0] + "." + mParts[1];
+		}
+
 		StringBuilder b = new StringBuilder();
 
 		for (int part : mParts) {
@@ -149,9 +164,7 @@ public class Version implements Comparable<Version> {
 		int partCount = Math.max(mParts.length, o.mParts.length);
 
 		for (int i = 0; i < partCount; i++) {
-			int partA = getPart(mParts, i);
-			int partB = getPart(o.mParts, i);
-			int c = Integer.compare(partA, partB);
+			int c = getPart(mParts, i) - getPart(o.mParts, i);
 
 			if (c != 0) {
 				return c;
@@ -166,6 +179,6 @@ public class Version implements Comparable<Version> {
 	 * the index is greater than that of the last part.
 	 */
 	private static int getPart(int[] parts, int index) {
-		return parts.length < index ? parts[index] : 0;
+		return parts.length > index ? parts[index] : 0;
 	}
 }

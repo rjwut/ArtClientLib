@@ -16,10 +16,10 @@ import net.dhleong.acl.protocol.UnexpectedTypeException;
  */
 public class HelmSetImpulsePacket extends BaseArtemisPacket {
     private static final int TYPE = 0x0351A5AC;
-    private static final int SUBTYPE = 0x00;
+    private static final byte SUBTYPE = 0x00;
 
 	public static void register(PacketFactoryRegistry registry) {
-		registry.register(ConnectionType.CLIENT, TYPE, new PacketFactory() {
+		registry.register(ConnectionType.CLIENT, SUBTYPE, new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {
 				return HelmSetImpulsePacket.class;

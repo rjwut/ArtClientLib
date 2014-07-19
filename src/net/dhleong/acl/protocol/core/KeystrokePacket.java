@@ -9,13 +9,14 @@ import net.dhleong.acl.protocol.ArtemisPacketException;
 
 /**
  * Sends a keystroke to the server. This should only be done for the game master
- * station, or if keystroke capture has been enabled via the
+ * console, or if keystroke capture has been enabled via the
  * KeyCaptureTogglePacket.
  * @author rjwut
  */
 public class KeystrokePacket extends ShipActionPacket {
 	public static void register(PacketFactoryRegistry registry) {
-		registry.register(ConnectionType.CLIENT, TYPE, new PacketFactory() {
+		registry.register(ConnectionType.CLIENT, TYPE, TYPE_REVERSE_ENGINES,
+				new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {
 				return KeystrokePacket.class;

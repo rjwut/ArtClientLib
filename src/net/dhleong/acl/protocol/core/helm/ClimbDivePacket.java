@@ -16,12 +16,13 @@ import net.dhleong.acl.protocol.UnexpectedTypeException;
  */
 public class ClimbDivePacket extends BaseArtemisPacket {
     private static final int TYPE = 0x0351A5AC;
-    private static final int SUBTYPE = 0x1b;
+    private static final byte SUBTYPE = 0x1b;
     private static final int UP = -1;
     private static final int DOWN = 1;
 
 	public static void register(PacketFactoryRegistry registry) {
-		registry.register(ConnectionType.CLIENT, TYPE, new PacketFactory() {
+		registry.register(ConnectionType.CLIENT, TYPE, SUBTYPE,
+				new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {
 				return ClimbDivePacket.class;

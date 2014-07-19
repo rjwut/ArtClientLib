@@ -11,8 +11,8 @@ import net.dhleong.acl.protocol.BaseArtemisPacket;
 import net.dhleong.acl.protocol.UnexpectedTypeException;
 
 /**
- * Enables/disables keystroke capture for this station. Note that the game
- * master station always captures keystrokes; all others don't by default unless
+ * Enables/disables keystroke capture for this console. Note that the game
+ * master console always captures keystrokes; all others don't by default unless
  * this packet enables it.
  * @author rjwut
  */
@@ -40,13 +40,13 @@ public class KeyCaptureTogglePacket extends BaseArtemisPacket {
 
 	private KeyCaptureTogglePacket(PacketReader reader) {
 		super(ConnectionType.SERVER, TYPE);
-		int subtype = reader.readInt();
+		byte subtype = reader.readByte();
 
 		if (subtype != MSG_TYPE) {
 			throw new UnexpectedTypeException(subtype, MSG_TYPE);
 		}
 
-		mEnabled = reader.readByte() == 1;
+		mEnabled = reader.readInt() == 1;
 	}
 
 	public KeyCaptureTogglePacket(boolean enabled) {
@@ -55,7 +55,7 @@ public class KeyCaptureTogglePacket extends BaseArtemisPacket {
 	}
 
 	/**
-	 * Returns true if this station should capture keystrokes; false otherwise.
+	 * Returns true if this console should capture keystrokes; false otherwise.
 	 */
 	public boolean isEnabled() {
 		return mEnabled;
@@ -63,7 +63,7 @@ public class KeyCaptureTogglePacket extends BaseArtemisPacket {
 
 	@Override
 	protected void writePayload(PacketWriter writer) {
-		writer.writeInt(MSG_TYPE).writeInt(mEnabled ? 1 : 0);
+		writer.writeByte(MSG_TYPE).writeInt(mEnabled ? 1 : 0);
 	}
 
 	@Override

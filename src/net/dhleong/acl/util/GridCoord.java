@@ -10,7 +10,6 @@ import java.util.Queue;
  */
 public final class GridCoord implements Comparable<GridCoord> {
     private static final int CACHE_SIZE = 50;
-    private static final boolean DEBUG = false;
     private static final Queue<GridCoord> sCache = new ArrayDeque<GridCoord>(CACHE_SIZE);
 
     private final int x, y, z;
@@ -79,11 +78,6 @@ public final class GridCoord implements Comparable<GridCoord> {
                 if (c.equals(x, y, z)) {
                     iter.remove(); // pop out so we can move it to the head
                     sCache.offer(c);
-
-                    if (DEBUG) {
-                    	System.out.println("~~ Move to head: " + c);
-                    }
-
                     return c;
                 }
             }
@@ -97,10 +91,6 @@ public final class GridCoord implements Comparable<GridCoord> {
         if (size >= CACHE_SIZE) {
             synchronized(sCache) {
                 GridCoord old = sCache.poll(); // free up space
-
-                if (DEBUG) {
-                	System.out.println("~~ Removed: " + old + " for " + c);
-                }
             }
         }
 

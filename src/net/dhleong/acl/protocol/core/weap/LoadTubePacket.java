@@ -18,10 +18,11 @@ import net.dhleong.acl.world.Artemis;
  */
 public class LoadTubePacket extends BaseArtemisPacket {
     private static final int TYPE = 0x69CC01D9;
-    private static final int SUBTYPE = 0x02;
+    private static final byte SUBTYPE = 0x02;
 
 	public static void register(PacketFactoryRegistry registry) {
-		registry.register(ConnectionType.CLIENT, TYPE, new PacketFactory() {
+		registry.register(ConnectionType.CLIENT, TYPE, SUBTYPE,
+				new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {
 				return LoadTubePacket.class;
@@ -37,6 +38,8 @@ public class LoadTubePacket extends BaseArtemisPacket {
 
     private int mTube;
     private OrdnanceType mOrdnanceType;
+    private int mUnknown0;
+    private int mUnknown1;
 
     /**
      * @param tube Index of tube to load, [0 - Artemis.MAX_TUBES)
@@ -71,17 +74,22 @@ public class LoadTubePacket extends BaseArtemisPacket {
 
         mTube = reader.readInt();
         mOrdnanceType = OrdnanceType.values()[reader.readInt()];
+        mUnknown0 = reader.readInt();
+        mUnknown1 = reader.readInt();
     }
 
 	@Override
 	protected void writePayload(PacketWriter writer) {
     	writer	.writeInt(SUBTYPE)
     			.writeInt(mTube)
-    			.writeInt(mOrdnanceType.ordinal());
+    			.writeInt(mOrdnanceType.ordinal())
+    			.writeInt(mUnknown0)
+    			.writeInt(mUnknown1);
 	}
 
 	@Override
 	protected void appendPacketDetail(StringBuilder b) {
 		b.append("Tube #").append(mTube).append(": ").append(mOrdnanceType);
+		b.append("\nUnknown: ").append(mUnknown0).append("/").append(mUnknown1);
 	}
 }

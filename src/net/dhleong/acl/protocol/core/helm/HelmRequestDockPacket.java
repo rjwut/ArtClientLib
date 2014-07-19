@@ -10,12 +10,13 @@ import net.dhleong.acl.protocol.core.ShipActionPacket;
 
 /**
  * Request to dock. The request is automatically targeted at the nearest
- * station.
+ * base.
  * @author dhleong
  */
 public class HelmRequestDockPacket extends ShipActionPacket {
 	public static void register(PacketFactoryRegistry registry) {
-		registry.register(ConnectionType.CLIENT, TYPE, new PacketFactory() {
+		registry.register(ConnectionType.CLIENT, TYPE, TYPE_REQUEST_DOCK,
+				new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {
 				return HelmRequestDockPacket.class;

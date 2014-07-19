@@ -14,7 +14,8 @@ import net.dhleong.acl.protocol.core.ShipActionPacket;
  */
 public class ToggleAutoBeamsPacket extends ShipActionPacket {
 	public static void register(PacketFactoryRegistry registry) {
-		registry.register(ConnectionType.CLIENT, TYPE, new PacketFactory() {
+		registry.register(ConnectionType.CLIENT, TYPE, TYPE_TOGGLE_AUTO_BEAMS,
+				new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {
 				return ToggleAutoBeamsPacket.class;

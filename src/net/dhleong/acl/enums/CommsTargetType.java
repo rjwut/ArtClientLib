@@ -17,10 +17,10 @@ public enum CommsTargetType {
 			return EnemyMessage.values()[id];
 		}
 	},
-	STATION {
+	BASE {
 		@Override
 		public CommsMessage messageFromId(int id) {
-			return StationMessage.values()[id];
+			return BaseMessage.values()[id];
 		}
 	},
 	OTHER {
@@ -36,8 +36,8 @@ public enum CommsTargetType {
 		switch (type) {
 		case PLAYER_SHIP:
 			return PLAYER;
-		case SPACE_STATION:
-			return STATION;
+		case BASE:
+			return BASE;
 		case NPC_SHIP:
 			BoolState enemy = ((ArtemisNpc) obj).isEnemy();
 			return BoolState.safeValue(enemy) ? ENEMY : OTHER;

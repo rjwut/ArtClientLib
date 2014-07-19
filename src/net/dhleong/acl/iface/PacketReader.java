@@ -13,6 +13,8 @@ import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.protocol.ArtemisPacketException;
 import net.dhleong.acl.protocol.UnknownPacket;
 import net.dhleong.acl.protocol.UnparsedPacket;
+import net.dhleong.acl.protocol.Version;
+import net.dhleong.acl.protocol.core.setup.VersionPacket;
 import net.dhleong.acl.util.BitField;
 import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.util.TextUtil;
@@ -30,6 +32,7 @@ public class PacketReader {
 	private boolean parse = true;
 	private PacketFactoryRegistry factoryRegistry;
 	private ListenerRegistry listenerRegistry;
+	private Version version;
 	private byte[] payload;
 	private int offset;
 	private SortedMap<String, byte[]> unknownProps;
@@ -61,9 +64,17 @@ public class PacketReader {
 	}
 
 	/**
-	 * Reads a single packet and returns it.
+	 * Returns the server Version, or null if unknown.
 	 */
-	public ArtemisPacket readPacket() throws ArtemisPacketException {
+	public Version getVersion() {
+		return version;
+	}
+
+	/**
+	 * Reads a single packet and returns it. The given Debugger will also be
+	 * notified.
+	 */
+	public ArtemisPacket readPacket(Debugger debugger) throws ArtemisPacketException {
 		offset = 0;
 		objectType = null;
 		objectId = 0;
@@ -149,16 +160,7 @@ public class PacketReader {
 			throw new ArtemisPacketException(ex, connType, packetType);
 		}
 
-		/*
-		System.out.println(
-				">>> " + TextUtil.intToHexLE(ArtemisPacket.HEADER) + " " +
-				TextUtil.intToHexLE(len) + " " +
-				TextUtil.intToHexLE(connectionTypeValue) + " 00000000 " +
-				TextUtil.intToHexLE(remainingBytes) + " " +
-				TextUtil.intToHexLE(packetType) + " " +
-				TextUtil.byteArrayToHexString(payload)
-		);
-		*/
+		debugger.onRecvPacketBytes(connType, packetType, payload);
 
 		// Find the PacketFactory that knows how to handle this packet type
 		PacketFactory factory = null;
@@ -168,13 +170,17 @@ public class PacketReader {
 					hasMore() ? peekByte() : 0x00);
 		}
 
-		ArtemisPacket packet;
-
 		if (factory == null) {
 			// No factory can handle this; return an UnknownPacket
-			packet = new UnknownPacket(connType, packetType, payload);
-		} else if (listenerRegistry.listeningFor(factory.getFactoryClass())) {
+			UnknownPacket packet = new UnknownPacket(connType, packetType, payload);
+			debugger.onRecvUnparsedPacket(packet);
+			return packet;
+		}
+
+		if (listenerRegistry.listeningFor(factory.getFactoryClass())) {
 			// Parse it and build the packet
+			ArtemisPacket packet;
+
 			try {
 				packet = factory.build(this);
 			} catch (ArtemisPacketException ex) {
@@ -183,19 +189,26 @@ public class PacketReader {
 				throw new ArtemisPacketException(ex, connType, packetType, payload);
 			}
 
+			if (packet instanceof VersionPacket) {
+				version = ((VersionPacket) packet).getVersion();
+			}
+
 			int bytesLeft = payload.length - offset;
 
 			if (bytesLeft > 0) {
-				System.out.println(
-						">>> Unread bytes [" +
+				debugger.warn(
+						"Unread bytes [" +
 						packet.getClass().getSimpleName() + "]: " +
 						TextUtil.byteArrayToHexString(readBytes(bytesLeft))
 				);
 			}
-		} else {
-			packet = new UnparsedPacket(connType, packetType, payload);
+
+			debugger.onRecvParsedPacket(packet);
+			return packet;
 		}
 
+		UnparsedPacket packet = new UnparsedPacket(connType, packetType, payload);
+		debugger.onRecvUnparsedPacket(packet);
 		return packet;
 	}
 

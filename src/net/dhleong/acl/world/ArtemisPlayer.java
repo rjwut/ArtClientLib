@@ -9,6 +9,7 @@ import net.dhleong.acl.enums.MainScreenView;
 import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.enums.OrdnanceType;
 import net.dhleong.acl.enums.ShipSystem;
+import net.dhleong.acl.enums.TubeState;
 import net.dhleong.acl.util.BoolState;
 
 /**
@@ -16,22 +17,17 @@ import net.dhleong.acl.util.BoolState;
  * @author dhleong
  */
 public class ArtemisPlayer extends BaseArtemisShip {
-    /** constant result of getTubeContents(), means NOTHING */
-    public static final int TUBE_EMPTY = -1;
-
-    /** constant result of getTubeContents(), means we DON'T KNOW */
-    public static final int TUBE_UNKNOWN = Integer.MIN_VALUE;
-
     private BoolState mAutoBeams, mRedAlert, mShields;
     private int mShipNumber = -1;
     private final float[] mHeat = new float[Artemis.SYSTEM_COUNT];
     private final float[] mSystems = new float[Artemis.SYSTEM_COUNT];
     private final int[] mCoolant = new int[Artemis.SYSTEM_COUNT];
     private final int[] mTorpedos = new int[OrdnanceType.COUNT];
-    private final float[] mTubeTimes = new float[Artemis.MAX_TUBES]; 
-    private final int[] mTubeTypes = new int[Artemis.MAX_TUBES];
+    private final float[] mTubeTimes = new float[Artemis.MAX_TUBES];
+    private final TubeState[] mTubeState = new TubeState[Artemis.MAX_TUBES];
+    private final byte[] mTubeContents = new byte[Artemis.MAX_TUBES];
     private float mEnergy = -1;
-    private int mDockingStation = -1;
+    private int mDockingBase = -1;
     private MainScreenView mMainScreen;
     private int mAvailableCoolant = -1;
     private float mImpulse = -1;
@@ -75,7 +71,6 @@ public class ArtemisPlayer extends BaseArtemisShip {
         }
 
         Arrays.fill(mTorpedos, -1);
-        Arrays.fill(mTubeTypes, TUBE_UNKNOWN);
         Arrays.fill(mTubeTimes, -1);
     }
 
@@ -176,20 +171,20 @@ public class ArtemisPlayer extends BaseArtemisShip {
     }
 
     /**
-     * Get the ID of the station at which we're docking. Note that this property
-     * is only updated in a packet when the docking process commences; undocking
+     * Get the ID of the base at which we're docking. Note that this property is
+     * only updated in a packet when the docking process commences; undocking
      * does not update this property. However, if an existing ArtemisPlayer
      * object is docked, is updated by another one, and the update has the ship
      * engaging impulse or warp drive, this property will be set to 0 to
      * indicate that the ship has undocked.
      * Unspecified: -1
      */
-    public int getDockingStation() {
-        return mDockingStation;
+    public int getDockingBase() {
+        return mDockingBase;
     }
 
-    public void setDockingStation(int stationId) {
-        mDockingStation = stationId;
+    public void setDockingBase(int baseId) {
+        mDockingBase = baseId;
     }
 
     /**
@@ -216,27 +211,76 @@ public class ArtemisPlayer extends BaseArtemisShip {
     }
 
     /**
-     * Returns BoolState.TRUE if the indicated tube is occupied, BoolState.FALSE
-     * if it's unoccupied, and BoolState.UNKNOWN if unspecified.
+     * The loading state of the given tube.
+     * Unspecified: null
      */
-    public BoolState getTubeOccupied(int tube) {
-    	int content = mTubeTypes[tube];
+    public TubeState getTubeState(int tube) {
+    	return mTubeState[tube];
+    }
 
-    	if (content == TUBE_UNKNOWN) {
-    		return BoolState.UNKNOWN;
-    	}
-
-    	return BoolState.from(content != TUBE_EMPTY);
+    public void setTubeState(int tube, TubeState state) {
+    	mTubeState[tube] = state;
     }
 
     /**
-     * The type of ordnance in the given tube. If the tube is empty, this method
-     * returns TUBE_EMPTY. If it's not, it returns OrdnanceType.ordinal() for
-     * the type of ordnance that's in the tube.
-     * Unspecified: Integer.MIN_VALUE (TUBE_UNKNOWN)
+     * Returns a value indicating the contents of the tube. If the tube's state
+     * is TubeState.UNLOADED, 0 means that the tube is empty. In any other
+     * state, the number will be the ordinal value of the OrdnanceType in the
+     * tube.
+     * Unspecified: any negative number
      */
-    public int getTubeContents(int tube) {
-    	return mTubeTypes[tube];
+    public byte getTubeContentsValue(int tube) {
+    	return mTubeContents[tube];
+    }
+
+    public void setTubeContentsValue(int tube, byte value) {
+    	mTubeContents[tube] = value;
+    }
+
+    /**
+     * Returns an OrdnanceType value indicating the contents of the tube. This
+     * method will return null if the tube contents are unspecified, or if the
+     * tube is empty.
+     */
+    public OrdnanceType getTubeContents(int tube) {
+    	TubeState state = mTubeState[tube];
+    	int contents = mTubeContents[tube];
+
+    	if (state == null || contents < 0) {
+    		return null;
+    	}
+
+    	return state == TubeState.UNLOADED ? null : OrdnanceType.values()[contents];
+    }
+
+    /**
+     * Sents the contents of the given tube. The tube state must be set to a
+     * value other than TubeState.UNLOADED before invoking this method.
+     */
+    public void setTubeContents(int tube, OrdnanceType type) {
+    	TubeState state = mTubeState[tube];
+
+    	if (state == null) {
+    		throw new IllegalStateException("Tube state not set"); 
+    	}
+
+    	if (state == TubeState.UNLOADED) {
+    		if (type != null) {
+    			throw new IllegalArgumentException(
+    					"Unloaded tubes cannot contain ordnance"
+    			);
+    		}
+
+    		mTubeContents[tube] = 0;
+    	} else {
+    		if (type == null) {
+    			throw new IllegalArgumentException(
+    					"No OrdnanceType specified for " + state + " tube state"
+    			);
+    		}
+
+    		mTubeContents[tube] = (byte) type.ordinal();
+    	}
     }
 
     /**
@@ -248,24 +292,10 @@ public class ArtemisPlayer extends BaseArtemisShip {
         return mTubeTimes[tube];
     }
 
-    public void setTubeContents(int tube, OrdnanceType type) {
-        mTubeTypes[tube] = type != null ? type.ordinal() : TUBE_EMPTY;
+    public void setTubeCountdown(int tube, float seconds) {
+    	mTubeTimes[tube] = seconds;
     }
 
-    /**
-     * Set by PlayerUpdatePacket. 
-     * @param tube Tube index number [0, Artemis.MAX_TUBES)
-     * @param countdown Time in seconds until it's (un)loaded
-     * @param type Type of torpedo being loaded. This is only set when
-     * 		the process first begins. This value should be one of:
-     * 		OrdnanceType.ordinal() (if loaded and type is known), TUBE_EMPTY or
-     * 		TUBE_UNKNOWN.
-     */
-    public void setTubeStatus(int tube, float countdown, int type) {
-        mTubeTimes[tube] = countdown;
-        mTubeTypes[tube] = type;
-    }
-    
     /**
      * Amount of coolant in the ship's reserves.
      * Unspecified: -1
@@ -426,10 +456,10 @@ public class ArtemisPlayer extends BaseArtemisShip {
             	mWarp = plr.mWarp;
             }
 
-            if (plr.mDockingStation != -1) {
-                mDockingStation = plr.mDockingStation;
+            if (plr.mDockingBase != -1) {
+                mDockingBase = plr.mDockingBase;
             } else if (plr.mImpulse != -1 || plr.mWarp != -1) {
-            	mDockingStation = 0;
+            	mDockingBase = 0;
             }
 
             if (plr.mBeamFreq != null) {
@@ -477,18 +507,27 @@ public class ArtemisPlayer extends BaseArtemisShip {
             }
 
             for (int i = 0; i < Artemis.MAX_TUBES; i++) {
-                if (plr.mTubeTimes[i] >= 0) {
-                	float time = plr.mTubeTimes[i];
+            	float time = plr.mTubeTimes[i];
+
+            	if (time >= 0) {
                 	mTubeTimes[i] = time < 0.05f ? 0 : time;
                 }
 
-                int type = plr.mTubeTypes[i];
+                TubeState state = plr.mTubeState[i];
 
-                if (type != TUBE_UNKNOWN) {
-                    mTubeTypes[i] = type;
+                if (state != null) {
+                	mTubeState[i] = state;
+                }
+
+                byte contents = plr.mTubeContents[i];
+
+                if (contents != -1) {
+                	mTubeContents[i] = contents;
+                } else if (state == TubeState.UNLOADED) {
+                	mTubeContents[i] = 0;
                 }
             }
-            
+
             if (plr.mMainScreen != null) {
                 mMainScreen = plr.mMainScreen;
             }
@@ -538,23 +577,26 @@ public class ArtemisPlayer extends BaseArtemisShip {
     	}
 
     	for (int i = 0; i < Artemis.MAX_TUBES; i++) {
-    		int ordType = mTubeTypes[i];
-    		String ordName;
+    		TubeState state = mTubeState[i];
+    		int contents = mTubeContents[i];
+    		putProp(props, "Tube " + i + " state", state, includeUnspecified);
+    		String contentsStr;
 
-    		if (ordType == -1) {
-				ordName = "empty";
-			} else if (ordType == TUBE_UNKNOWN) {
-				ordName = null;
-			} else {
-				ordName = ordValues[ordType].toString();
-			}
+    		if (state != null && contents != -1) {
+    			if (state == TubeState.UNLOADED) {
+    				contentsStr = "EMPTY";
+    			} else {
+    				contentsStr = OrdnanceType.values()[contents].name();
+    			}
 
-    		putProp(props, "Tube " + i + " contents", ordName, includeUnspecified);
+    			putProp(props, "Tube " + i + " contents", contentsStr, includeUnspecified);
+    		}
+
     		putProp(props, "Tube " + i + " countdown", mTubeTimes[i], -1, includeUnspecified);
     	}
 
     	putProp(props, "Energy", mEnergy, -1, includeUnspecified);
-    	putProp(props, "Docking station", mDockingStation, -1, includeUnspecified);
+    	putProp(props, "Docking base", mDockingBase, -1, includeUnspecified);
     	putProp(props, "Main screen view", mMainScreen, includeUnspecified);
     	putProp(props, "Coolant", mAvailableCoolant, -1, includeUnspecified);
     	putProp(props, "Impulse", mImpulse, -1, includeUnspecified);

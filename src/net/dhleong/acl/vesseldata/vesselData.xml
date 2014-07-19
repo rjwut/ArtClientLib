@@ -1,0 +1,687 @@
+﻿<!-- vessel_data is the big wrapper for all the vessel objects -->
+<vessel_data version="2.1">
+
+  <hullRace ID="0" name="TSN" keys="player">
+    <taunt immunity="is uncultured" text="Hey donkey breath! Make like Romeo and kill thyself!"/>
+    <taunt immunity="is disrespectful" text="Your brother is so ugly he taught the Horsehead Nebula to whinny!"/>
+    <taunt immunity="is humble" text="You call that a ship? It should be hauled away AS garbage!"/>
+  </hullRace>
+  <hullRace ID="1" name="TSN" keys="friendly">
+    <taunt immunity="is uncultured" text="Hey donkey breath! Make like Romeo and kill thyself!"/>
+    <taunt immunity="is disrespectful" text="Your brother is so ugly he taught the Horsehead Nebula to whinny!"/>
+    <taunt immunity="is humble" text="You call that a ship? It should be hauled away AS garbage!"/>
+  </hullRace>
+  <hullRace ID="2" name="Kralien" keys="enemy standard">
+    <taunt immunity="does not practice the Kralien religion faithfully" text="Hey wormface! Can I borrow your Holy Scroll of Amborax? I need to wipe my stinky feet!"/>
+    <taunt immunity="complained to Kralien High Command that Kralien ships are too weak" text="You call that a warship? I could crush that toy with my bare hands."/>
+    <taunt immunity="is unmarried" text="You're so ugly that your husband will thank me for killing you!"/>
+  </hullRace>
+  <hullRace ID="3" name="Arvonian" keys="enemy support whalelover">
+    <taunt immunity="openly dislikes the Arvonian Royal Family" text="Queen Marah looks like a hideous pustule and smells like a flatulent Space Whale."/>
+    <taunt immunity="is unmarried" text="Your husband dresses like a Situlan scum slug!"/>
+    <taunt immunity="does not care about space whales" text="I'll kill you later, Arvonian. Right now I'm enjoying a bowl of space whale soup."/>
+  </hullRace>
+  <hullRace ID="4" name="Torgoth" keys="enemy support whalehater">
+    <taunt immunity="runs a tidy ship and has no insecurity about hygiene" text="Do us all a favor and take a bath, you fungus-infested pachyderm!"/>
+    <taunt immunity="has already mourned his dead mother and will not react to taunts about her" text="Your father is a Space Whale!"/>
+    <taunt immunity="has the highest Torgoth efficiency rating and will not react to taunts about his ship's condition" text="That broken down rust bucket guarantees victory for Earth."/>
+  </hullRace>
+  <hullRace ID="5" name="Skaraan" keys="enemy loner elite">
+    <taunt immunity="has no living family" text="Your brother is a flea-bitten Matarian mule!"/>
+    <taunt immunity="believes his ship is attractive and will not react to taunts about his ship's appearance" text="Your ship is so ugly my eyeballs burn just looking at it!"/>
+    <taunt immunity="sometimes disagrees with Skaraan corporate leadership" text="Your corporate bosses are a bunch of money-losing morons!"/>
+  </hullRace>
+  <hullRace ID="6" name="BioMech" keys="enemy loner biomech">
+    <taunt immunity="smnewi4f5jH#5ld3@(#k"     text="3.14159265358979"/>
+    <taunt immunity="Mk40gH(*HGl45gj3p;32ll0-" text="We are not your enemy!"/>
+    <taunt immunity="NNRnjh3h49@98%^km%%%m"    text="Please communicate with us."/>
+  </hullRace>
+
+
+
+  <!-- vessel is the definition for a single type of vessel -->
+  <vessel    uniqueID="0"    side="0"       classname="Light Cruiser" broadType="player">
+    <art     meshfile="dat/artemis.dxs"    diffuseFile="dat/artemis_diffuse.png"    
+             glowFile="dat/artemis_illum.png"    specularFile="dat/artemis_specular.png" scale="0.2" pushRadius="150"/>
+    <internal_data file="dat/artemis.snt"/>
+    <shields front="80" back="80"/>
+    <performance turnrate="0.004" topspeed="0.6" efficiency="1.0"/>
+    <beam_port x="-102.14" y="8.35" z="258.74" damage="12" arcwidth="0.4" cycletime="6.0" range="1000"/>
+    <beam_port x=" 102.14" y="8.35" z="258.74" damage="12" arcwidth="0.4" cycletime="6.0" range="1000"/>
+    <torpedo_tube x="0" y="8.35" z="258.74"/>
+    <torpedo_tube x="0" y="8.35" z="258.74"/>
+    <torpedo_storage type="0" amount="8"/>  <!-- Type 1 Homing"-->
+    <torpedo_storage type="1" amount="2"/>  <!-- Type 4 LR Nuke-->
+    <torpedo_storage type="2" amount="6"/>  <!-- Type 6 Mine"-->
+    <torpedo_storage type="3" amount="4"/>  <!-- Type 9 ECM"-->
+    <engine_port x=" 82.93" y="5" z="-240.89"/>
+    <engine_port x="-82.93" y="5" z="-240.89"/>
+    <engine_port x="0" y="-9.22" z="-300"/>
+    <engine_port x="0" y="29.64" z="-300"/>
+    <long_desc text="TSN Cruiser^Standard long patrol vessel of the TSN.^2 forward beams^2 Torpedo tubes^Stores for 2 nukes, 8 homing, 6 mines, 4 ECM."/>
+  </vessel>
+
+  <vessel    uniqueID="1"    side="0"       classname="Scout" broadType="player">
+    <art     meshfile="dat/artemis-scout.dxs"    diffuseFile="dat/artemis_diffuse.png"
+             glowFile="dat/artemis_illum.png"    specularFile="dat/artemis_specular.png" scale="0.2" pushRadius="150"/>
+    <internal_data file="dat/artemis-scout.snt"/>
+    <shields front="60" back="60"/>
+    <performance turnrate="0.006" topspeed="0.8"  efficiency="1.3" />
+    <beam_port x="0" y="17.8" z="289.0" damage="12" arcwidth="0.4" cycletime="6.0" range="1000"/>
+    <torpedo_tube x="0" y="8.35" z="258.74"/>
+    <torpedo_storage type="0" amount="6"/>   <!-- Type 1 Homing"-->
+    <torpedo_storage type="1" amount="0"/>   <!-- Type 4 LR Nuke-->
+    <torpedo_storage type="2" amount="2"/>   <!-- Type 6 Mine"-->
+    <torpedo_storage type="3" amount="2"/>   <!-- Type 9 ECM"-->
+    <engine_port x="0" y="-9.22" z="-300"/>
+    <engine_port x="0" y="29.64" z="-300"/>
+    <long_desc text="TSN Scout^Long range scout vessel of the TSN.^1 forward beam^1 Torpedo tube^Stores for 6 homing, 2 mines, 2 ECM."/>
+  </vessel>
+
+  <vessel    uniqueID="2"    side="0"       classname="Battleship" broadType="player">
+    <art     meshfile="dat/artemis-3.dxs"    diffuseFile="dat/artemis_diffuse.png"
+             glowFile="dat/artemis_illum.png"    specularFile="dat/artemis_specular.png" scale="0.2"/>
+    <internal_data file="dat/artemis-3.snt"/>
+    <shields front="250" back="150"/>
+    <performance turnrate="0.004" topspeed="0.6"  efficiency="0.9" />
+    <beam_port x="-124.175636" y="20.132629" z="239.393555" damage="12" arcwidth="0.4" cycletime="6.0" range="1000"/>
+    <beam_port x=" 124.175636" y="20.132629" z="239.393555" damage="12" arcwidth="0.4" cycletime="6.0" range="1000"/>
+    <beam_port x="-41.764229" y="20.665134" z="282.250519" damage="12" arcwidth="0.4" cycletime="6.0" range="1000"/>
+    <beam_port x=" 41.764229" y="20.665134" z="282.250519" damage="12" arcwidth="0.4" cycletime="6.0" range="1000"/>
+    <torpedo_tube x="0" y="8.35" z="258.74"/>
+    <torpedo_tube x="0" y="8.35" z="258.74"/>
+    <torpedo_storage type="0" amount="8"/>    <!-- Type 1 Homing"-->
+    <torpedo_storage type="1" amount="2"/>    <!-- Type 4 LR Nuke-->
+    <torpedo_storage type="2" amount="6"/>    <!-- Type 6 Mine"-->
+    <torpedo_storage type="3" amount="4"/>    <!-- Type 9 ECM"-->
+    <engine_port x="0" y="-9.22" z="-300"/>
+    <engine_port x="0" y="29.64" z="-300"/>
+    <engine_port x="-111.755783" y="-44.202168" z="-242.740082"/>
+    <engine_port x="111.755783" y="-44.202168" z="-242.740082"/>
+    <engine_port x="0" y="97.875313" z="-181.449524"/>
+    <long_desc text="TSN Battleship^Beam-heavy combat vessel of the TSN.^4 forward beams^2 Torpedo tubes^Stores for 2 nukes, 8 homing, 6 mines, 4 ECM."/>
+  </vessel>
+
+  <vessel    uniqueID="3"    side="0"       classname="Missile Cruiser" broadType="player">
+    <art     meshfile="dat/artemis-4.dxs"    diffuseFile="dat/artemis_diffuse.png"
+             glowFile="dat/artemis_illum.png"    specularFile="dat/artemis_specular.png" scale="0.2" pushRadius="150"/>
+    <internal_data file="dat/artemis-4.snt"/>
+    <shields front="110" back="80"/>
+    <performance turnrate="0.004" topspeed="0.6"  efficiency="1.0" />
+    <torpedo_tube x="0" y="8.35" z="258.74"/>
+    <torpedo_tube x="0" y="8.35" z="258.74"/>
+    <torpedo_tube x="0" y="8.35" z="258.74"/>
+    <torpedo_tube x="0" y="8.35" z="258.74"/>
+    <torpedo_storage type="0" amount="20"/>    <!-- Type 1 Homing"-->
+    <torpedo_storage type="1" amount="8"/>    <!-- Type 4 LR Nuke-->
+    <torpedo_storage type="2" amount="14"/>    <!-- Type 6 Mine"-->
+    <torpedo_storage type="3" amount="12"/>    <!-- Type 9 ECM"-->
+    <engine_port x=" 82.93" y="5" z="-240.89"/>
+    <engine_port x="-82.93" y="5" z="-240.89"/>
+    <engine_port x="0" y="-9.22" z="-300"/>
+    <engine_port x="0" y="29.64" z="-300"/>
+    <engine_port x="0" y="99.1" z="-176.5"/>
+    <engine_port x="0" y="-81.0" z="-173.7"/>
+    <long_desc text="TSN Missile Cruiser^Specialized vessel of the TSN.^4 Torpedo tubes^Stores for 8 nukes, 20 homing, 14 mines, and 12 ECM."/>
+  </vessel>
+
+  <vessel    uniqueID="4"    side="0"       classname="Dreadnought" broadType="player">
+    <art     meshfile="dat/artemis-5.dxs"    diffuseFile="dat/artemis_diffuse.png"
+             glowFile="dat/artemis_illum.png"    specularFile="dat/artemis_specular.png" scale="0.25" pushRadius="150"/>
+    <internal_data file="dat/artemis-5.snt"/>
+    <shields front="200" back="200"/>
+    <performance turnrate="0.003" topspeed="0.5"  efficiency="0.8" />
+    <beam_port x="0" y="-6.1" z="278.9" damage="20" arcwidth="0.2" cycletime="6.0" range="2000"/>
+    <beam_port x="99.4" y="8.3" z="165.2" damage="12" arcwidth="0.4" cycletime="6.0" range="1000"/>
+    <beam_port x="-99.4" y="8.3" z="165.2" damage="12" arcwidth="0.4" cycletime="6.0" range="1000"/>
+    <beam_port x="0" y="56.4" z="-295.6" damage="12" arcwidth="0.4" cycletime="6.0" range="1000"/>
+    <torpedo_tube x="0" y="8.35" z="258.74"/>
+    <torpedo_tube x="0" y="8.35" z="258.74"/>
+    <torpedo_tube x="0" y="8.35" z="258.74"/>
+    <torpedo_storage type="0" amount="10"/>    <!-- Type 1 Homing"-->
+    <torpedo_storage type="1" amount="4"/>    <!-- Type 4 LR Nuke-->
+    <torpedo_storage type="2" amount="8"/>    <!-- Type 6 Mine"-->
+    <torpedo_storage type="3" amount="5"/>    <!-- Type 9 ECM"-->
+    <engine_port x="0" y="-9.22" z="-300"/>
+    <engine_port x="0" y="29.64" z="-300"/>
+    <engine_port x="-81.6" y="5.1" z="-235.4"/>
+    <engine_port x="81.6" y="5.1" z="-235.4"/>
+    <engine_port x="-153.0" y="10.9" z="-187.4"/>
+    <engine_port x="153.0" y="10.9" z="-187.4"/>
+    <long_desc text="TSN Dreadnought^Ultimate wartime vessel of the TSN.^3 primary beams^1 main beam cannon^3 Torpedo tubes^Stores for 4 nukes, 10 homing, 8 mines, and 5 ECM."/>
+  </vessel>
+
+
+  <!-- ****************************** unmoving bases **************************************** -->
+
+  <vessel    uniqueID="1000"    side="1"       classname="Deep Space Base" broadType="base">
+    <!-- the player's standard base -->
+    <art     meshfile="dat/stationPipes.dxs"    diffuseFile="dat/stationA_pipes_diffuse.png" specularFile="dat/stationA_pipes_specular.png" />
+    <art     meshfile="dat/stationTower.dxs"    diffuseFile="dat/stationA_tower_diffuse.png"
+             glowFile="dat/stationA_tower_illum.png"    specularFile="dat/stationA_tower_specular.png" scale="0.3" pushRadius="250"/>
+    <art     meshfile="dat/stationWings.dxs"    diffuseFile="dat/stationA_wings_diffuse.png"
+             glowFile="dat/stationA_wings_illum.png"    specularFile="dat/stationA_wings_specular.png" />
+    <shields front="400" back="0"/>
+    <!-- the base has only one shield facing, the "front" -->
+    <beam_port x="0" y="250" z="0" damage="7" arcwidth="0.4" cycletime="6.0" range="1000"/>
+    <long_desc text="TSN Starbase with strong shields. It is unarmed, but can manufacture torpedos for your ship. Stations need help if attacked."/>
+    <production coeff="1.0"/>
+  </vessel>
+
+  <vessel    uniqueID="1001"    side="1"       classname="Civilian Base" broadType="base">
+    <!-- the player's base -->
+    <art     meshfile="dat/station-4donuts.dxs"    diffuseFile="dat/player_station_color_04.png"
+             glowFile="dat/player_station_glow_04.png"    specularFile="dat/player_station_spec_04.png" scale="0.6" pushRadius="250"/>
+    <shields front="400" back="0"/>
+    <!-- the base has only one shield facing, the "front" -->
+    <long_desc text="TSN Starbase with strong shields. It is unarmed, but can manufacture torpedos for your ship. Stations need help if attacked."/>
+    <production coeff="0.5"/>
+  </vessel>
+
+  <vessel    uniqueID="1002"    side="1"       classname="Command Base" broadType="base">
+    <!-- the player's base -->
+    <art     meshfile="dat/station-starfish.dxs"    diffuseFile="dat/player_station_color_03.png"
+             glowFile="dat/player_station_glow_03.png"    specularFile="dat/player_station_spec_03.png" scale="0.3" pushRadius="250"/>
+    <shields front="800" back="0"/>
+    <!-- the base has only one shield facing, the "front" -->
+    <long_desc text="TSN COmmand Starbase with strong shields. It is unarmed, but can manufacture torpedos for your ship. Stations need help if attacked."/>
+    <beam_port x="0" y="150" z="0" damage="7" arcwidth="0.4" cycletime="6.0" range="1000"/>
+    <torpedo_station_port x="0" y="-10" z="0" damage="30.0" cycletime="30.0" range="5000"/>
+    <production coeff="2.0"/>
+  </vessel>
+
+  <vessel    uniqueID="1003"    side="1"       classname="Industrial Base" broadType="base">
+    <!-- the player's base -->
+    <art     meshfile="dat/station-big1.dxs"    diffuseFile="dat/player_station_color_02.png"
+             glowFile="dat/player_station_glow_02.png"    specularFile="dat/player_station_spec_02.png" scale="0.6" pushRadius="400"/>
+    <shields front="400" back="0"/>
+    <!-- the base has only one shield facing, the "front" -->
+    <long_desc text="TSN Starbase with strong shields. It is unarmed, but can manufacture torpedos for your ship. Stations need help if attacked."/>
+    <production coeff="3.0"/>
+  </vessel>
+
+  <vessel    uniqueID="1004"    side="1"       classname="Science Base" broadType="base">
+    <!-- the player's base -->
+    <art     meshfile="dat/station-science.dxs"    diffuseFile="dat/player_station_color_01.png"
+             glowFile="dat/player_station_glow_01.png"    specularFile="dat/player_station_spec_01.png" scale="0.3" pushRadius="400"/>
+    <shields front="400" back="0"/>
+    <!-- the base has only one shield facing, the "front" -->
+    <long_desc text="TSN Starbase with strong shields. It is unarmed, but can manufacture torpedos for your ship. Stations need help if attacked."/>
+    <production coeff="0.5"/>
+  </vessel>
+
+
+  <!-- bases of other races -->
+  <vessel    uniqueID="1005"    side="2"       classname="Base" broadType="base">
+    <art     meshfile="dat/kralien-station.dxs"    diffuseFile="dat/kraliens_station_color.png"
+             glowFile="dat/kraliens_station_glow.png"    specularFile="dat/kraliens_station_spec.png" scale="0.3" pushRadius="250"/>
+    <shields front="400" back="0"/>
+    <!-- the base has only one shield facing, the "front" -->
+    <long_desc text="TSN Starbase with strong shields. It is unarmed, but can manufacture torpedos for your ship. Stations need help if attacked."/>
+    <beam_port x="0" y="300" z="0" damage="7" arcwidth="0.4" cycletime="6.0" range="1000"/>
+  </vessel>
+
+  <vessel    uniqueID="1006"    side="3"       classname="Base" broadType="base carrier">
+    <art     meshfile="dat/arvonian-station.dxs"    diffuseFile="dat/arvonian_station_color.png"
+             glowFile="dat/arvonian_station_glow.png"    specularFile="dat/arvonian_station_spec.png" scale="0.3" pushRadius="450"/>
+    <shields front="500" back="0"/>
+    <!-- the base has only one shield facing, the "front" -->
+    <long_desc text="TSN Starbase with strong shields. It is unarmed, but can manufacture torpedos for your ship. Stations need help if attacked."/>
+    <beam_port x="0" y="55" z="0" damage="7" arcwidth="0.4" cycletime="6.0" range="1000"/>
+    <carrier complement="10"/>
+  </vessel>
+
+  <vessel    uniqueID="1007"    side="4"       classname="Base" broadType="base">
+    <art     meshfile="dat/torgoth-station.dxs"    diffuseFile="dat/torgoth_color.png"
+             glowFile="dat/torgoth_glow.png"    specularFile="dat/torgoth_spec.png" scale="0.3" pushRadius="450"/>
+    <shields front="800" back="0"/>
+    <!-- the base has only one shield facing, the "front" -->
+    <long_desc text="TSN Starbase with strong shields. It is unarmed, but can manufacture torpedos for your ship. Stations need help if attacked."/>
+    <beam_port x="0" y="2100" z="0" damage="7" arcwidth="0.4" cycletime="6.0" range="1500"/>
+    <drone_port x="0" y="-10" z="0" damage="30.0" cycletime="15.0" range="5000"/>
+  </vessel>
+
+  <vessel    uniqueID="1008"    side="5"       classname="Base" broadType="base">
+    <art     meshfile="dat/skaraan-station.dxs"    diffuseFile="dat/skaraan_station_color.png"
+             glowFile="dat/skaraan_station_glow.png"    specularFile="dat/skaraan_station_spec.png" scale="0.3" pushRadius="250"/>
+    <shields front="600" back="0"/>
+    <!-- the base has only one shield facing, the "front" -->
+    <long_desc text="TSN Starbase with strong shields. It is unarmed, but can manufacture torpedos for your ship. Stations need help if attacked."/>
+    <beam_port x="0" y="300" z="0" damage="7" arcwidth="0.4" cycletime="6.0" range="1000"/>
+    <beam_port x="0" y="-200" z="0" damage="7" arcwidth="0.4" cycletime="6.0" range="1000"/>
+  </vessel>
+
+
+
+  <!-- ****************************** CIVILIAN VESSELS **************************************** -->
+
+  <vessel    uniqueID="1500"    side="1"       classname="Escort" broadType="small warship">
+    <!-- TSN Escort -->
+    <art     meshfile="dat/civilian1.dxs"    diffuseFile="dat/civilian1_diffuse.png"
+             glowFile="dat/artemis_illum.png"    specularFile="dat/artemis_specular.png" scale="0.2" pushRadius="150"/>
+    <shields front="40" back="40"/>
+    <performance turnrate="0.004" topspeed="0.9"/>
+    <fleet_ai commonality="100"/>
+    <beam_port x="-102.14" y="8.35" z="258.74" damage="7" arcwidth="0.4" cycletime="6.0" range="1000"/>
+    <beam_port x=" 102.14" y="8.35" z="258.74" damage="7" arcwidth="0.4" cycletime="6.0" range="1000"/>
+    <engine_port x="0" y="-9.22" z="-300"/>
+    <engine_port x="0" y="29.64" z="-300"/>
+    <long_desc text="Light warship with forward beam weapons. Used to escort Earth's important cargos."/>
+  </vessel>
+
+  <vessel    uniqueID="1501"    side="1"       classname="Destroyer" broadType="medium warship">
+    <!-- TSN Destroyer -->
+    <art     meshfile="dat/civilian2.dxs"    diffuseFile="dat/civilian2_diffuse.png"
+             glowFile="dat/artemis_illum.png"    specularFile="dat/artemis_specular.png" scale="0.2" pushRadius="150"/>
+    <shields front="120" back="100"/>
+    <performance turnrate="0.003" topspeed="0.9"/>
+    <fleet_ai commonality="100"/>
+    <engine_port x="0" y="29.64" z="-200"/>
+    <beam_port x="-102.14" y="8.35" z="258.74" damage="7" arcwidth="0.4" cycletime="2.0" range="1000"/>
+    <beam_port x=" 102.14" y="8.35" z="258.74" damage="7" arcwidth="0.4" cycletime="2.0" range="1000"/>
+
+    <long_desc text="Medium warship with forward beam weapons. Used for wartime patrols."/>
+
+  </vessel>
+
+  <vessel    uniqueID="1502"    side="1"       classname="Science Vessel" broadType="science">
+    <!-- TSN Science -->
+    <art     meshfile="dat/science-vessel.dxs"    diffuseFile="dat/Science_Vessel_color.png"
+             glowFile="dat/Science_Vessel_glow.png"    specularFile="dat/Science_Vessel_spec.png" scale="0.32" pushRadius="150"/>
+    <shields front="30" back="30"/>
+    <performance turnrate="0.002" topspeed="0.7"/>
+    <fleet_ai commonality="100"/>
+    <engine_port x="-51" y="-3.155422" z="26.135927"/>
+    <engine_port x=" 51" y="-3.155422" z="26.135927"/>
+    <long_desc text="An unarmed, long-range exploration ship. The hull is a Ximni design."/>
+  </vessel>
+
+  <vessel    uniqueID="1503"    side="1"       classname="Bulk Cargo" broadType="cargo">
+    <!-- TSN Bulk Cargo -->
+    <art     meshfile="dat/cargo_vessel.dxs"    diffuseFile="dat/cargo_vessel_color.png"
+             glowFile="dat/cargo_vessel_glow.png"    specularFile="dat/cargo_vessel_spec.png" scale="0.4" pushRadius="150"/>
+    <shields front="30" back="30"/>
+    <performance turnrate="0.002" topspeed="0.4"/>
+    <fleet_ai commonality="100"/>
+    <engine_port x="-36.569798" y="1.519395" z="-261.916901"/>
+    <engine_port x="-63.478695" y="1.709533" z="-240.778183"/>
+    <engine_port x="-91.280312" y="2.732927" z="-226.381104"/>
+    <engine_port x="-91.280312" y="2.732927" z="-226.381104"/>
+    <engine_port x="36.569798" y="1.519395" z="-261.916901"/>
+    <engine_port x="63.478695" y="1.709533" z="-240.778183"/>
+    <engine_port x="91.280312" y="2.732927" z="-226.381104"/>
+    <engine_port x="91.280312" y="2.732927" z="-226.381104"/>
+    <long_desc text="An unarmed bulk frieghter, slowly moving cheap cargo between the stars."/>
+  </vessel>
+
+  <vessel    uniqueID="1504"    side="1"       classname="Luxury Liner" broadType="luxury">
+    <!-- TSN Luxury Liner -->
+    <art     meshfile="dat/luxury-vessel.dxs"    diffuseFile="dat/leisure_vessel_color.png"
+             glowFile="dat/leisure_vessel_glow.png"    specularFile="dat/leisure_vessel_spec.png" scale="0.3" pushRadius="150"/>
+    <shields front="30" back="30"/>
+    <performance turnrate="0.002" topspeed="0.3"/>
+    <fleet_ai commonality="100"/>
+    <engine_port x="0.077280" y="11.006388" z="-252.707397"/>
+    <engine_port x="0.197185" y="31.179333" z="-265.912628"/>
+    <engine_port x="-14.653028" y="-57.441185" z="-13.352610"/>
+    <engine_port x="-38.461231" y="-39.984001" z="-13.113809"/>
+    <engine_port x="14.653028" y="-57.441185" z="-13.352610"/>
+    <engine_port x="38.461231" y="-39.984001" z="-13.113809"/>
+    <long_desc text="An unarmed travelling playground of the rich and powerful."/>
+  </vessel>
+
+  <vessel    uniqueID="1505"    side="1"       classname="Transport" broadType="transport">
+    <art     meshfile="dat/transport-vessel.dxs"    diffuseFile="dat/transport_vessel_color.png"
+             glowFile="dat/transport_vessel_glow.png"    specularFile="dat/transport_vessel_spec.png" scale="0.2" pushRadius="150"/>
+    <shields front="80" back="80"/>
+    <performance turnrate="0.002" topspeed="0.3"/>
+    <fleet_ai commonality="100"/>
+    <engine_port x="-57.877796" y="0.839157" z="-284.658264"/>
+    <engine_port x="-136.553009" y="0.466896" z="-261.411255"/>
+    <engine_port x="-213.412323" y="1.201706" z="-239.373917"/>
+    <engine_port x="57.877796" y="0.839157" z="-284.658264"/>
+    <engine_port x="136.553009" y="0.466896" z="-261.411255"/>
+    <engine_port x="213.412323" y="1.201706" z="-239.373917"/>
+  </vessel>
+
+
+  <!-- ****************************** KRALIEN VESSELS **************************************** -->
+
+  <vessel    uniqueID="2000"    side="2"       classname="Cruiser" broadType="small">
+    <art     meshfile="dat/ENE_RoundA.dxs"    diffuseFile="dat/roundA_diffuse.png"
+             glowFile="dat/roundA_illum.png"    specularFile="dat/roundA_specular.png" scale="0.2" pushRadius="150"/>
+    <shields front="40" back="40"/>
+    <performance turnrate="0.002" topspeed="0.3"/>
+    <fleet_ai commonality="100"/>
+    <beam_port x=" 84" y="-3" z="286" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1000"/>
+    <beam_port x="-84" y="-3" z="286" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1000"/>
+    <engine_port x="-72.43" y="27.65" z="-260"/>
+    <engine_port x=" 72.43" y="27.65" z="-260"/>
+    <engine_port x="-76.22" y="-18.78" z="-250"/>
+    <engine_port x=" 76.22" y="-18.78" z="-250"/>
+    <impulse_point x="104.414703" y="42.085434" z="-166.859009"/>
+    <impulse_point x="-104.414703" y="42.085434" z="-166.859009"/>
+    <maneuver_point x="173.576767" y="-0.981873" z="158.842682"/>
+    <maneuver_point x="-173.576767" y="-0.981873" z="158.842682"/>
+    <long_desc text="Displacement: 9 kt. Armamant: 2 x standard beams. The most common vessel in the known universe."/>
+  </vessel>
+
+
+
+  <vessel    uniqueID="2001"    side="2"       classname="Battleship" broadType="medium">
+    <art     meshfile="dat/ENE_RoundB.dxs"    diffuseFile="dat/roundB_diffuse.png"
+             glowFile="dat/roundB_selfIllum.png"    specularFile="dat/roundB_specular.png" scale="0.25" pushRadius="150"/>
+    <shields front="80" back="80"/>
+    <performance turnrate="0.002" topspeed="0.3"/>
+    <fleet_ai commonality="50"/>
+    <beam_port x=" 78" y="-15" z="163" damage="1.0" arcwidth="0.3" cycletime="3.0" range="1000"/>
+    <beam_port x="-78" y="-15" z="163" damage="1.0" arcwidth="0.3" cycletime="3.0" range="1000"/>
+    <engine_port x=" 70.35" y="8.7" z="-240"/>
+    <engine_port x="-70.35" y="8.7" z="-240"/>
+    <impulse_point x="-96.062263" y="-10.102722" z="-77.436584"/>
+    <impulse_point x="96.062263" y="-10.102722" z="-77.436584"/>
+    <maneuver_point x="-3.419852" y="-48.397114" z="82.551994"/>
+    <long_desc text="Displacement: 17 kt. Armament: 2 x rapid-fire beams. Heart of the Kralien fleet,"/>
+  </vessel>
+
+
+
+  <vessel    uniqueID="2002"    side="2"       classname="Dreadnought" broadType="large">
+    <art     meshfile="dat/ENE_RoundC.dxs"    diffuseFile="dat/RoundC_Diffuse.png"
+             glowFile="dat/roundC_illum.png"    specularFile="dat/roundC_specular.png" scale="0.3" pushRadius="150"/>
+    <shields front="120" back="120"/>
+    <performance turnrate="0.002" topspeed="0.3"/>
+    <fleet_ai commonality="25"/>
+    <beam_port x="-116" y="-20" z="94" damage="1.0" arcwidth="0.3" cycletime="3.0" range="1000"/>
+    <beam_port x=" 116" y="-20" z="94" damage="1.0" arcwidth="0.3" cycletime="3.0" range="1000"/>
+    <beam_port x="0" y="-6.5" z="-173" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1400"/>
+    <engine_port x=" 35.77" y="-7.76" z="-200"/>
+    <engine_port x="-35.77" y="-7.76" z="-200"/>
+    <engine_port x="115" y="-20.27" z="-80"/>
+    <engine_port x="-115" y="-20.27" z="-80"/>
+    <impulse_point x="-57.151264" y="-7.934345" z="-119.779823"/>
+    <impulse_point x="57.151264" y="-7.934345" z="-119.779823"/>
+    <maneuver_point x="-61.429497" y="-19.089073" z="170.379669"/>
+    <maneuver_point x="61.429497" y="-19.089073" z="170.379669"/>
+    <long_desc text="Displacement: 25 kt.  Armament: 2 rapid fire beams, 1 heavy beam. The most dangerous Kralien ship."/>
+  </vessel>
+
+
+
+  <!-- ****************************** Arvonian VESSELS **************************************** -->
+
+  <vessel    uniqueID="3000"    side="3"       classname="Fighter" broadType="fighter">
+    <art     meshfile="dat/ENE_Matt3A.dxs"    diffuseFile="dat/ship4A_diffuse.png"
+             glowFile="dat/ship4A_glow.png"    specularFile="dat/ship4A_specular.png" scale="0.05" pushRadius="80"/>
+    <shields front="15" back="15"/>
+    <performance turnrate="0.01" topspeed="1.2"/>
+    <fleet_ai commonality="100"/>
+    <beam_port x=" 111" y="-1" z="217" damage="1" arcwidth="0.3" cycletime="5.0" range="800"/>
+    <beam_port x="-111" y="-1" z="217" damage="1" arcwidth="0.3" cycletime="5.0" range="800"/>
+    <engine_port x="0" y="0" z="-230"/>
+    <engine_port x="92" y="-7" z="-240"/>
+    <engine_port x="-92" y="-7" z="-240"/>
+    <impulse_point x="-124" y="-6" z="-248"/>
+    <impulse_point x=" 124" y="-6" z="-248"/>
+    <maneuver_point x="-177" y="-6" z="-132"/>
+    <maneuver_point x=" 177" y="-6" z="-132"/>
+    <long_desc text="Displacement: 0.015 kt. Armament: 2 light beams."/>
+  </vessel>
+
+
+
+  <vessel    uniqueID="3001"    side="3"       classname="Light Carrier" broadType="carrier">
+    <art     meshfile="dat/ENE_Matt3B.dxs"    diffuseFile="dat/ship4B_diffuse.png"
+             glowFile="dat/ship4B_glow.png"    specularFile="dat/ship4B_specular.png" scale="0.2" pushRadius="200"/>
+    <shields front="120" back="120"/>
+    <performance turnrate="0.003" topspeed="0.3"/>
+    <carrier complement="4"/>
+    <fleet_ai commonality="50"/>
+    <beam_port x=" 116" y="-7" z="246" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1200"/>
+    <beam_port x="-116" y="-7" z="246" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1200"/>
+    <beam_port x=" 165" y="-35" z="-128" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1200"/>
+    <beam_port x="-165" y="-35" z="-128" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1200"/>
+    <engine_port x=" 136" y="-18" z="-284"/>
+    <engine_port x="-136" y="-18" z="-284"/>
+    <engine_port x=" 23" y="5" z="-165"/>
+    <engine_port x="-23" y="5" z="-165"/>
+    <impulse_point x=" 168" y="-27" z="-76"/>
+    <impulse_point x="-168" y="-27" z="-76"/>
+    <maneuver_point x=" 162" y="-26" z="79"/>
+    <maneuver_point x="-162" y="-26" z="79"/>
+    <long_desc text="Displacement: 25 kt. Armament: 4 medium beams. Compliment: 4 fighters."/>
+  </vessel>
+
+
+
+  <vessel    uniqueID="3002"    side="3"       classname="Carrier" broadType="carrier">
+    <art     meshfile="dat/ENE_Matt3C.dxs"    diffuseFile="dat/ship4C_diffuse.png"
+             glowFile="dat/ship4C_glow.png"    specularFile="dat/ship4C_specular.png"  scale="0.3" pushRadius="200"/>
+    <shields front="200" back="200"/>
+    <performance turnrate="0.003" topspeed="0.3"/>
+    <carrier complement="6"/>
+    <fleet_ai commonality="25"/>
+    <beam_port x=" 125" y="-17" z="139" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1400"/>
+    <beam_port x="-125" y="-17" z="139" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1400"/>
+    <beam_port x=" 125" y="-18" z="6" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1400"/>
+    <beam_port x="-125" y="-18" z="6" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1400"/>
+    <beam_port x=" 117" y="-7" z="-89" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1400"/>
+    <beam_port x="-117" y="-7" z="-89" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1400"/>
+    <engine_port x="0" y="-1" z="-185"/>
+    <engine_port x=" 97" y="-22" z="-257"/>
+    <engine_port x="-97" y="-22" z="-257"/>
+    <impulse_point x=" 82" y="9" z="149"/>
+    <impulse_point x="-82" y="9" z="149"/>
+    <maneuver_point x=" 140" y="-22" z="-166"/>
+    <maneuver_point x="-140" y="-22" z="-166"/>
+    <long_desc text="Displacement: 45 kt. Armament: 6 long-range beams. Compliment: 6 fighters."/>
+  </vessel>
+
+
+
+  <!-- ****************************** Torgoth VESSELS **************************************** -->
+
+  <vessel    uniqueID="4000"    side="4"       classname="Goliath" broadType="small">
+    <art     meshfile="dat/ENE_LeeA.dxs"    diffuseFile="dat/ship1_color_1024.png"
+             glowFile="dat/ship1_glow_1024.png"    specularFile="dat/ship1_spec_1024.png" scale="0.3" pushRadius="150"/>
+    <shields front="350" back="350"/>
+    <performance turnrate="0.002" topspeed="0.3"/>
+    <fleet_ai commonality="100"/>
+    <beam_port x="-130" y="-6" z="-13" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1200"/>
+    <beam_port x=" 130" y="-6" z="-13" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1200"/>
+    <beam_port x="-128" y="-6" z=" 69" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1200"/>
+    <beam_port x=" 128" y="-6" z=" 69" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1200"/>
+    <beam_port x=" -81" y="-6" z="244" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1200"/>
+    <beam_port x="  81" y="-6" z="244" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1200"/>
+    <drone_port x="0" y="-10" z="0" damage="30.0" cycletime="30.0" range="5000"/>
+    <engine_port x="-107" y="36" z="-328"/>
+    <engine_port x=" 107" y="36" z="-328"/>
+    <engine_port x="-134" y="-14" z="-328"/>
+    <engine_port x=" 134" y="-14" z="-328"/>
+    <impulse_point x="-111" y="10" z="-151"/>
+    <impulse_point x=" 111" y="10" z="-151"/>
+    <maneuver_point x="-117" y="8" z="12"/>
+    <maneuver_point x=" 117" y="8" z="12"/>
+    <long_desc text="Displacement: 80 kt. Armament: 6 medium beams, 1 drone launcher."/>
+  </vessel>
+
+
+
+  <vessel    uniqueID="4001"    side="4"       classname="Leviathan" broadType="medium">
+    <art     meshfile="dat/ENE_LeeB.dxs"    diffuseFile="dat/ship2_color_1024.png"
+             glowFile="dat/ship2_glow_1024.png"    specularFile="dat/ship2_spec_1024.png" scale="0.35" pushRadius="200"/>
+    <shields front="400" back="400"/>
+    <performance turnrate="0.002" topspeed="0.3"/>
+    <fleet_ai commonality="50"/>
+    <beam_port x=" 98" y="-12" z="270" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1100"/>
+    <beam_port x="-98" y="-12" z="270" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1100"/>
+    <beam_port x="0" y="-11" z="367" damage="2.0" arcwidth="0.2" cycletime="6.0" range="2000"/>
+    <beam_port x=" 59" y="40" z="-30" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1100"/>
+    <beam_port x="-59" y="40" z="-30" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1100"/>
+    <drone_port x="0" y="-10" z="0" damage="30.0" cycletime="30.0" range="5000"/>
+    <engine_port x=" 125" y="18" z="-178"/>
+    <engine_port x="-125" y="18" z="-178"/>
+    <engine_port x=" 166" y="-11" z="-369"/>
+    <engine_port x="-166" y="-11" z="-369"/>
+    <impulse_point x="-136" y="18" z="84"/>
+    <impulse_point x=" 136" y="18" z="84"/>
+    <maneuver_point x="-176" y="-10" z="-97"/>
+    <maneuver_point x=" 176" y="-10" z="-97"/>
+    <long_desc text="Displacement: 90 kt. Armament: 4 medium beams, 1 heavy beam, 1 drone launcher."/>
+  </vessel>
+
+
+
+  <vessel    uniqueID="4002"    side="4"       classname="Behemoth" broadType="large">
+    <art     meshfile="dat/ENE_LeeC.dxs"    diffuseFile="dat/ship3_color_1024.png"
+             glowFile="dat/ship3_glow_1024.png"    specularFile="dat/ship3_spec_1024.png"  scale="0.4" pushRadius="250"/>
+    <shields front="600" back="600"/>
+    <performance turnrate="0.002" topspeed="0.3"/>
+    <fleet_ai commonality="25"/>
+    <beam_port x="-124" y="0" z="   8" damage="1.0" arcwidth="0.3" cycletime="4.0" range="1000"/>
+    <beam_port x=" 124" y="0" z="   8" damage="1.0" arcwidth="0.3" cycletime="4.0" range="1000"/>
+    <beam_port x=" -98" y="0" z=" -57" damage="1.0" arcwidth="0.3" cycletime="4.0" range="1000"/>
+    <beam_port x="  98" y="0" z=" -57" damage="1.0" arcwidth="0.3" cycletime="4.0" range="1000"/>
+    <beam_port x=" -80" y="0" z="-167" damage="1.0" arcwidth="0.3" cycletime="4.0" range="1000"/>
+    <beam_port x="  80" y="0" z="-167" damage="1.0" arcwidth="0.3" cycletime="4.0" range="1000"/>
+    <beam_port x="-128" y="0" z=" 144" damage="1.0" arcwidth="0.3" cycletime="4.0" range="1000"/>
+    <beam_port x=" 128" y="0" z=" 144" damage="1.0" arcwidth="0.3" cycletime="4.0" range="1000"/>
+    <beam_port x=" -96" y="0" z=" 288" damage="1.0" arcwidth="0.3" cycletime="4.0" range="1000"/>
+    <beam_port x="  96" y="0" z=" 288" damage="1.0" arcwidth="0.3" cycletime="4.0" range="1000"/>
+    <drone_port x="0" y="-10" z="0" damage="30.0" cycletime="30.0" range="5000"/>
+    <engine_port x=" 66" y="22" z="-383"/>
+    <engine_port x="-66" y="22" z="-383"/>
+    <engine_port x=" 54" y="41" z="-370"/>
+    <engine_port x="-54" y="41" z="-370"/>
+    <impulse_point x=" 76" y="39" z="-319"/>
+    <impulse_point x="-76" y="39" z="-319"/>
+    <maneuver_point x=" 98" y="31" z="162"/>
+    <maneuver_point x="-98" y="31" z="162"/>
+    <long_desc text="Displacement: 150 kt. Armement: 10 standard beams, 1 drone launcher"/>
+  </vessel>
+
+
+  <!-- ****************************** Skaraan VESSELS **************************************** -->
+
+
+  <vessel    uniqueID="5000"    side="5"       classname="Defiler" broadType="small">
+    <art     meshfile="dat/ENE_EliteC.dxs"    diffuseFile="dat/ship1C_diffuse.png"
+             glowFile="dat/ship1C_illum.png"    specularFile="dat/ship1C_specular.png" scale="0.25" pushRadius="150"/>
+    <shields front="250" back="100"/>
+    <performance turnrate="0.004" topspeed="0.8"/>
+    <fleet_ai commonality="25"/>
+    <beam_port x="-35" y="12" z="223" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1200"/>
+    <beam_port x=" 35" y="12" z="223" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1200"/>
+    <engine_port x=" 22" y="3" z="-211"/>
+    <engine_port x="-22" y="3" z="-211"/>
+    <engine_port x=" 90" y="6" z="-83"/>
+    <engine_port x="-90" y="6" z="-83"/>
+    <impulse_point x="-121.355705" y="30.381374" z="-20.283379"/>
+    <impulse_point x="121.355705" y="30.381374" z="-20.283379"/>
+    <maneuver_point x="-52.359570" y="7.509293" z="98.323151"/>
+    <maneuver_point x="52.359570" y="7.509293" z="98.323151"/>
+    <long_desc text="Displacement: 40 kt. Armament: 2 medium beams. The Skaraan's lightest warship."/>
+  </vessel>
+
+  <vessel    uniqueID="5001"    side="5"       classname="Enforcer" broadType="medium">
+    <art     meshfile="dat/ENE_EliteA.dxs"    diffuseFile="dat/ship1A_diffuse.png"
+             glowFile="dat/ship1A_illum.png"    specularFile="dat/ship1A_specular.png" scale="0.25" pushRadius="150"/>
+    <shields front="300" back="150"/>
+    <performance turnrate="0.004" topspeed="0.8"/>
+    <fleet_ai commonality="100"/>
+    <beam_port x=" -155" y="-11" z="-111" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1000"/>
+    <beam_port x="  155" y="-11" z="-111" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1000"/>
+    <beam_port x=" -67" y="-18" z="217" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1000"/>
+    <beam_port x="  67" y="-18" z="217" damage="1.0" arcwidth="0.3" cycletime="6.0" range="1000"/>
+    <engine_port x="112" y="-15" z="-230"/>
+    <engine_port x="-112" y="-15" z="-230"/>
+    <impulse_point x="-155.619507" y="-11.701264" z="-115.636658"/>
+    <impulse_point x="155.619507" y="-11.701264" z="-115.636658"/>
+    <maneuver_point x="-76.506653" y="-8.193658" z="35.771889"/>
+    <maneuver_point x="76.506653" y="-8.193658" z="35.771889"/>
+    <long_desc text="Displacement: 50 kt. Armament: 4 standard beams. Usually travels alone."/>
+  </vessel>
+
+
+
+  <vessel    uniqueID="5002"    side="5"       classname="Executor" broadType="large">
+    <art     meshfile="dat/ENE_EliteB.dxs"    diffuseFile="dat/ship1B_diffuse.png"
+             glowFile="dat/ship1B_illum.png"    specularFile="dat/ship1B_specular.png" scale="0.25" pushRadius="150"/>
+    <shields front="350" back="300"/>
+    <performance turnrate="0.004" topspeed="0.8"/>
+    <fleet_ai commonality="50"/>
+    <beam_port x="-94" y="34" z="310" damage="3.0" arcwidth="0.2" cycletime="6.0" range="2000"/>
+    <beam_port x=" 94" y="34" z="310" damage="3.0" arcwidth="0.2" cycletime="6.0" range="2000"/>
+    <beam_port x="0" y="0" z="-250" damage="3.0" arcwidth="0.4" cycletime="4.0" range="1400"/>
+    <engine_port x=" 142.35" y="-2" z="-263"/>
+    <engine_port x="-142.35" y="-2" z="-263"/>
+    <impulse_point x="189.647034" y="-1.964812" z="-228.977081"/>
+    <impulse_point x="-189.647034" y="-1.964812" z="-228.977081"/>
+    <maneuver_point x="-33.807400" y="-30.912567" z="83.769875"/>
+    <maneuver_point x="33.807400" y="-30.912567" z="83.769875"/>
+    <long_desc text="Displacement: 70 kt. Armament: 2 super-heavy beams, 1 medium beam. Very dangerous."/>
+  </vessel>
+
+
+
+  <!-- ****************************** biomech VESSELS **************************************** -->
+
+
+  <vessel    uniqueID="6000"    side="6"       classname="Stage 1" broadType="small asteroideater">
+    <art     meshfile="dat/z-drone3.dxs"    diffuseFile="dat/drone3_color.png"
+             glowFile="dat/drone3_glow.png"    specularFile="dat/drone3_spec.png" scale="0.25" pushRadius="150"/>
+    <shields front="50" back="50"/>
+    <performance turnrate="0.008" topspeed="1.8"/>
+    <fleet_ai commonality="100"/>
+    <beam_port x="0" y="193.177277" z="172.715805" damage="0.3" arcwidth="0.2" cycletime="6.0" range="700"/>
+    <long_desc text="Infant stage of BioMech development. Typically docile, occasionally aggressive."/>
+  </vessel>
+
+  <vessel    uniqueID="6001"    side="6"       classname="Stage 2" broadType="medium asteroideater">
+    <art     meshfile="dat/z-drone4.dxs"    diffuseFile="dat/drone4_color.png"
+             glowFile="dat/drone4_glow.png"    specularFile="dat/drone4_spec.png" scale="0.25" pushRadius="150"/>
+    <shields front="150" back="50"/>
+    <performance turnrate="0.008" topspeed="1.8"/>
+    <fleet_ai commonality="50"/>
+    <beam_port x="0" y="91.591263"  z="160.940979" damage="0.5" arcwidth="0.4" cycletime="6.0" range="1000"/>
+    <beam_port x="0" y="1.109237"   z="182.847137" damage="0.5" arcwidth="0.4" cycletime="6.0" range="1000"/>
+    <beam_port x="0" y="-92.296532" z="160.854889" damage="0.5" arcwidth="0.4" cycletime="6.0" range="1000"/>
+    <engine_port x="0" y=" 233" z="0"/>
+    <engine_port x="0" y="-228" z="0"/>
+    <long_desc text="A BioMech in the childhood stage. Will eventually mature into an adult."/>
+  </vessel>
+
+  <vessel    uniqueID="6002"    side="6"       classname="Stage 3" broadType="large anomalyeater">
+    <art     meshfile="dat/z-drone2.dxs"    diffuseFile="dat/drone2_color.png"
+             glowFile="dat/drone2_glow.png"    specularFile="dat/drone2_spec.png" scale="0.35" pushRadius="200"/>
+    <shields front="350" back="350"/>
+    <performance turnrate="0.008" topspeed="1.8"/>
+    <fleet_ai commonality="15"/>
+    <beam_port x="-58.056915" y=" 39.918091" z="134.605820" damage="1.0" arcwidth="0.4" cycletime="6.0" range="1200"/>
+    <beam_port x="-57.419849" y="-39.788464" z="135.062057" damage="1.0" arcwidth="0.4" cycletime="6.0" range="1200"/>
+    <beam_port x=" 58.056915" y=" 39.918091" z="134.605820" damage="1.0" arcwidth="0.4" cycletime="6.0" range="1200"/>
+    <beam_port x=" 57.419849" y="-39.788464" z="135.062057" damage="1.0" arcwidth="0.4" cycletime="6.0" range="1200"/>
+    <engine_port x="-311.516846" y="-67.804581" z="-62"/>
+    <engine_port x=" 311.516846" y="-67.804581" z="-62"/>
+    <long_desc text="Young adult BioMech. This is the most aggressive stage of development. Proceed with caution."/>
+  </vessel>
+
+  <vessel    uniqueID="6003"    side="6"       classname="Type 4" broadType="large sentient">
+    <art     meshfile="dat/z-drone1.dxs"    diffuseFile="dat/drone1_color.png"
+             glowFile="dat/drone1_glow.png"    specularFile="dat/drone1_spec.png" scale="0.45" pushRadius="250"/>
+    <shields front="550" back="550"/>
+    <performance turnrate="0.008" topspeed="1.8"/>
+    <fleet_ai commonality="10"/>
+    <beam_port x="0" y="-24" z="147"  damage="2.0" arcwidth="0.4" cycletime="5.0" range="2200"/>
+    <beam_port x="-91.236908" y="17.210005" z="-17.866117" damage="1.0" arcwidth="0.4" cycletime="6.0" range="1200"/>
+    <beam_port x=" 91.236908" y="17.210005" z="-17.866117" damage="1.0" arcwidth="0.4" cycletime="6.0" range="1200"/>
+    <engine_port x="0" y="268" z="-33"/>
+    <engine_port x="0" y="-228" z="-83"/>
+    <long_desc text="Full grown adult BioMech. Capable of reproduction and communication."/>
+  </vessel>
+
+
+</vessel_data>
+
+
+

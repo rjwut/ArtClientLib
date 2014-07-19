@@ -53,6 +53,17 @@ public class Version implements Comparable<Version> {
 		hash = Arrays.hashCode(mParts);
 	}
 
+	public Version(String version) {
+		String[] strParts = version.split("\\.");
+		mParts = new int[strParts.length];
+
+		for (int i = 0; i < strParts.length; i++) {
+			mParts[i] = Integer.parseInt(strParts[i]);
+		}
+
+		hash = Arrays.hashCode(mParts);
+	}
+
 	/**
 	 * Returns true if this is a legacy version number; false otherwise. Legacy
 	 * versioning was deprecated as of Artemis 2.1, so this method will return

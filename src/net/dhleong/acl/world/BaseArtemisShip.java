@@ -3,7 +3,8 @@ package net.dhleong.acl.world;
 import java.util.SortedMap;
 
 import net.dhleong.acl.enums.BeamFrequency;
-import net.dhleong.acl.enums.ShipType;
+import net.dhleong.acl.vesseldata.Vessel;
+import net.dhleong.acl.vesseldata.VesselData;
 
 /**
  * Base implementation for ships (player or NPC).
@@ -170,11 +171,11 @@ public abstract class BaseArtemisShip extends BaseArtemisShielded {
     	putProp(props, "Hull ID", mHullId, -1, includeUnspecified);
 
     	if (includeUnspecified || mHullId != -1) {
-        	ShipType shipType = ShipType.fromId(mHullId);
+    		Vessel vessel = VesselData.get().getVessel(mHullId);
     		putProp(
     				props,
-    				"Ship type",
-    				shipType != null ? shipType : null,
+    				"Vessel type",
+    				vessel != null ? vessel.getName() : Integer.toString(mHullId),
     				includeUnspecified
     		);
     	}

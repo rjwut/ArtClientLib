@@ -234,10 +234,6 @@ public class ArtemisPlayer extends BaseArtemisShip {
     }
 
     public void setTubeContentsValue(int tube, byte value) {
-    	if (value > OrdnanceType.values().length) {
-    		throw new IllegalArgumentException("Invalid tube contents value: " + value);
-    	}
-
     	mTubeContents[tube] = value;
     }
 

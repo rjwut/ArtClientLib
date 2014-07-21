@@ -48,6 +48,7 @@ public class CoreArtemisProtocol implements Protocol {
 		JumpStatusPacket.register(registry);
 		KeyCaptureTogglePacket.register(registry);
 		PausePacket.register(registry);
+		PlayerShipDamagePacket.register(registry);
 		VersionPacket.register(registry);
 		WelcomePacket.register(registry);
 

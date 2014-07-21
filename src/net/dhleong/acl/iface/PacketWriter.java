@@ -214,33 +214,6 @@ public class PacketWriter {
 	}
 
 	/**
-	 * Writes a long (eight bytes). You must invoke start() before calling this
-	 * method.
-	 */
-	public PacketWriter writeLong(int v) {
-		assertStarted();
-		writeLong(baos, v);
-		return this;
-	}
-
-	/**
-	 * If the given long is different from defaultValue, the long is written to
-	 * the packet, and the corresponding bit in the object's bit field is set;
-	 * otherwise, nothing happens. You must invoke startObject() before calling
-	 * this method.
-	 */
-	public PacketWriter writeLong(Enum<?> bit, long v, long defaultValue) {
-		assertObjectStarted();
-
-		if (v != defaultValue) {
-			bitField.set(bit, true);
-			writeLong(baosObj, v);
-		}
-
-		return this;
-	}
-
-	/**
 	 * Writes a float (four bytes). You must invoke start() before calling this
 	 * method.
 	 */
@@ -449,21 +422,6 @@ public class PacketWriter {
 		buffer[2] = (byte) ((v >> 16) & 0xff);
 		buffer[3] = (byte) ((v >> 24) & 0xff);
 		o.write(buffer, 0, 4);
-	}
-
-	/**
-	 * Writes a long to the given ByteArrayOutputStream.
-	 */
-	private void writeLong(ByteArrayOutputStream o, long v) {
-		buffer[0] = (byte) (v & 0xff);
-		buffer[1] = (byte) ((v >> 8) & 0xff);
-		buffer[2] = (byte) ((v >> 16) & 0xff);
-		buffer[3] = (byte) ((v >> 24) & 0xff);
-		buffer[4] = (byte) ((v >> 32) & 0xff);
-		buffer[5] = (byte) ((v >> 40) & 0xff);
-		buffer[6] = (byte) ((v >> 48) & 0xff);
-		buffer[7] = (byte) ((v >> 56) & 0xff);
-		o.write(buffer, 0, 8);
 	}
 
 	/**

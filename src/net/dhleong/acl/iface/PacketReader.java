@@ -322,31 +322,6 @@ public class PacketReader {
 	}
 
 	/**
-	 * Reads a long from the current packet's payload.
-	 */
-	public long readLong() {
-		long val = readLong(payload, offset);
-		offset += 8;
-		return val;
-	}
-
-	/**
-	 * Convenience method for readLong(bit, 0).
-	 */
-	public long readLong(Enum<?> bit) {
-		return readLong(bit, 0);
-	}
-
-	/**
-	 * Reads a long from the current packet's payload if the indicated bit in
-	 * the current BitField is on. Otherwise, the pointer is not moved, and the
-	 * given default value is returned.
-	 */
-	public long readLong(Enum<?> bit, long defaultValue) {
-		return bitField.get(bit) ? readLong() : defaultValue;
-	}
-
-	/**
 	 * Reads a float from the current packet's payload.
 	 */
 	public float readFloat() {
@@ -547,20 +522,6 @@ public class PacketReader {
 	 */
 	public static int readInt(byte[] bytes, int offset) {
 		return	((0xff & bytes[offset + 3]) << 24) |
-				((0xff & bytes[offset + 2]) << 16) |
-				((0xff & bytes[offset + 1]) << 8) |
-				(0xff & bytes[offset]);
-	}
-
-	/**
-	 * Reads a long from the indicated offset in the given byte array.
-	 */
-	public static long readLong(byte[] bytes, int offset) {
-		return	(((long) (0xff & bytes[offset + 7])) << 56) |
-				(((long) (0xff & bytes[offset + 6])) << 48) |
-				(((long) (0xff & bytes[offset + 5])) << 40) |
-				(((long) (0xff & bytes[offset + 4])) << 32) |
-				((0xff & bytes[offset + 3]) << 24) |
 				((0xff & bytes[offset + 2]) << 16) |
 				((0xff & bytes[offset + 1]) << 8) |
 				(0xff & bytes[offset]);

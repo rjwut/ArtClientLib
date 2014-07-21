@@ -5,9 +5,9 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -24,12 +24,12 @@ import net.dhleong.acl.protocol.core.setup.WelcomePacket;
  * each stream.
  */
 public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface {
-    private final ConnectionType recvType;
-    private final ConnectionType sendType;
-    private final PacketFactoryRegistry factoryRegistry = new PacketFactoryRegistry();
-    private final ListenerRegistry mListeners = new ListenerRegistry();
-    private final ReceiverThread mReceiveThread;
-    private final SenderThread mSendThread;
+    private ConnectionType recvType;
+    private ConnectionType sendType;
+    private PacketFactoryRegistry factoryRegistry = new PacketFactoryRegistry();
+    private ListenerRegistry mListeners = new ListenerRegistry();
+    private ReceiverThread mReceiveThread;
+    private SenderThread mSendThread;
 
     private DisconnectEvent.Cause disconnectCause = DisconnectEvent.Cause.LOCAL_DISCONNECT;
     private Exception exception;
@@ -37,13 +37,27 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
 
     /**
      * Prepares an outgoing client connection to an Artemis server. The send and
-     * receive streams won't actually be opened until start() is called.
-     * @param tgtIp The IP address to connect to
-     * @param tgtPort The port to connect to (Artemis's default port is 2010)
+     * receive streams won't actually be opened until start() is called. This
+     * constructor causes ArtClientLib to wait forever for a connection; a
+     * separate constructor is provided for specifying a timeout.
      */
-    public ThreadedArtemisNetworkInterface(final String host, final int port) 
-            throws UnknownHostException, IOException {
-   		this(new Socket(host, port), ConnectionType.SERVER);
+    public ThreadedArtemisNetworkInterface(String host, int port)
+    		throws IOException {
+    	this(host, port, 0);
+    }
+
+    /**
+     * Prepares an outgoing client connection to an Artemis server. The send and
+     * receive streams won't actually be opened until start() is called. The
+     * timeoutMs value indicates how long (in milliseconds) ArtClientLib will
+     * wait for the connection to be established before throwing an exception; 0
+     * means "wait forever."
+     */
+    public ThreadedArtemisNetworkInterface(String host, int port, int timeoutMs) 
+            throws IOException {
+    	Socket skt = new Socket();
+    	skt.connect(new InetSocketAddress(host, port), timeoutMs);
+    	init(skt, ConnectionType.SERVER);
     }
 
     /**
@@ -63,8 +77,12 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
      * 
      * @param socket The ServerSocket that has received a connection
      */
-    public ThreadedArtemisNetworkInterface(final Socket skt,
-    		final ConnectionType connType) throws IOException {
+    public ThreadedArtemisNetworkInterface(Socket skt, ConnectionType connType)
+    		throws IOException {
+    	init(skt, connType);
+    }
+
+    private void init(Socket skt, ConnectionType connType) throws IOException {
     	recvType = connType;
     	sendType = connType.opposite();
     	skt.setKeepAlive(true);

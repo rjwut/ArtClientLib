@@ -37,14 +37,26 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
 
     /**
      * Prepares an outgoing client connection to an Artemis server. The send and
-     * receive streams won't actually be opened until start() is called.
-     * @param tgtIp The IP address to connect to
-     * @param tgtPort The port to connect to (Artemis's default port is 2010)
+     * receive streams won't actually be opened until start() is called. This
+     * constructor causes ArtClientLib to wait forever for a connection; a
+     * separate constructor is provided for specifying a timeout.
      */
-    public ThreadedArtemisNetworkInterface(String host, int port, int timeout) 
+    public ThreadedArtemisNetworkInterface(String host, int port)
+    		throws IOException {
+    	this(host, port, 0);
+    }
+
+    /**
+     * Prepares an outgoing client connection to an Artemis server. The send and
+     * receive streams won't actually be opened until start() is called. The
+     * timeoutMs value indicates how long (in milliseconds) ArtClientLib will
+     * wait for the connection to be established before throwing an exception; 0
+     * means "wait forever."
+     */
+    public ThreadedArtemisNetworkInterface(String host, int port, int timeoutMs) 
             throws IOException {
     	Socket skt = new Socket();
-    	skt.connect(new InetSocketAddress(host, port), timeout);
+    	skt.connect(new InetSocketAddress(host, port), timeoutMs);
     	init(skt, ConnectionType.SERVER);
     }
 

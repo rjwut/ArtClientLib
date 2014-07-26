@@ -16,8 +16,8 @@ import net.dhleong.acl.world.Artemis;
  * Sets the amount of energy allocated to a system.
  */
 public class EngSetEnergyPacket extends BaseArtemisPacket {
-    private static final int TYPE = 0x0351A5AC;
-    private static final byte SUBTYPE = 0x04;
+    private static final int TYPE = 0x0351a5ac;
+    private static final byte SUBTYPE = 0x03;
 
 	public static void register(PacketFactoryRegistry registry) {
 		registry.register(ConnectionType.CLIENT, TYPE, SUBTYPE,
@@ -62,6 +62,9 @@ public class EngSetEnergyPacket extends BaseArtemisPacket {
         			"You cannot allocate more than 300% energy"
         	);
         }
+
+        mSystem = system;
+        mValue = value;
     }
 
     /**
@@ -88,7 +91,15 @@ public class EngSetEnergyPacket extends BaseArtemisPacket {
     	mSystem = ShipSystem.values()[reader.readInt()];
     }
 
-	@Override
+    public ShipSystem getSystem() {
+    	return mSystem;
+    }
+
+    public float getAllocation() {
+    	return mValue;
+    }
+
+    @Override
 	protected void writePayload(PacketWriter writer) {
     	writer	.writeInt(SUBTYPE)
 				.writeFloat(mValue)

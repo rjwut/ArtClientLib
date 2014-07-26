@@ -173,6 +173,7 @@ public class PacketReader {
 		if (factory == null) {
 			// No factory can handle this; return an UnknownPacket
 			UnknownPacket packet = new UnknownPacket(connType, packetType, payload);
+			offset = payload.length;
 			debugger.onRecvUnparsedPacket(packet);
 			return packet;
 		}

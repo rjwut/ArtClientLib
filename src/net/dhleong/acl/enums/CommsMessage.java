@@ -13,7 +13,7 @@ public interface CommsMessage {
 	/**
 	 * Returns the CommsTargetType that can recieve this CommsMessage.
 	 */
-	public CommsTargetType getTargetType();
+	public CommsRecipientType getRecipientType();
 
 	/**
 	 * Returns whether or not this message has an argument.

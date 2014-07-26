@@ -40,7 +40,7 @@ public enum PlayerMessage implements CommsMessage {
 	}
 
 	@Override
-	public CommsTargetType getTargetType() {
-		return CommsTargetType.PLAYER;
+	public CommsRecipientType getRecipientType() {
+		return CommsRecipientType.PLAYER;
 	}
 }

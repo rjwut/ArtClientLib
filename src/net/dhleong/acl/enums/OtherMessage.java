@@ -60,7 +60,7 @@ public enum OtherMessage implements CommsMessage {
 	}
 
 	@Override
-	public CommsTargetType getTargetType() {
-		return CommsTargetType.OTHER;
+	public CommsRecipientType getRecipientType() {
+		return CommsRecipientType.OTHER;
 	}
 }

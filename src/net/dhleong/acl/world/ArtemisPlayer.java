@@ -65,7 +65,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
         
         // pre-fill
         for (int i = 0; i < Artemis.SYSTEM_COUNT; i++) {
-            mHeat[i] = -1;
+        	mHeat[i] = -1;
             mSystems[i] = -1;
             mCoolant[i] = -1;
         }

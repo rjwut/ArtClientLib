@@ -82,12 +82,11 @@ public class EngPlayerUpdatePacket extends PlayerUpdatePacket {
         float[] sysEnergy = new float[ Artemis.SYSTEM_COUNT ];
         int[] coolant = new int[ Artemis.SYSTEM_COUNT ];
         reader.startObject(Bit.values());
+        reader.skip(1);
     
         for (int i = 0; i < Artemis.SYSTEM_COUNT; i++) {
             heat[i] = reader.readFloat(HEAT[i], -1);
         }
-
-        reader.skip(1);
 
         for (int i = 0; i < Artemis.SYSTEM_COUNT; i++) {
             sysEnergy[i] = reader.readFloat(ENERGY[i], -1);
@@ -116,12 +115,11 @@ public class EngPlayerUpdatePacket extends PlayerUpdatePacket {
 	protected void writePayload(PacketWriter writer) {
 		Bit[] bits = Bit.values();
 		writer.startObject(mPlayer, ObjectType.ENGINEERING_CONSOLE, bits);
+		writer.writeObjByte((byte) 0);
 
 		for (ShipSystem sys : ShipSystem.values()) {
 			writer.writeFloat(HEAT[sys.ordinal()], mPlayer.getSystemHeat(sys), -1);
 		}
-
-		writer.writeObjByte((byte) 0);
 
 		for (ShipSystem sys : ShipSystem.values()) {
 			writer.writeFloat(ENERGY[sys.ordinal()], mPlayer.getSystemEnergy(sys), -1);

@@ -17,7 +17,7 @@ import net.dhleong.acl.world.Artemis;
  */
 public class EngSetEnergyPacket extends BaseArtemisPacket {
     private static final int TYPE = 0x0351a5ac;
-    private static final byte SUBTYPE = 0x03;
+    private static final byte SUBTYPE = 0x04;
 
 	public static void register(PacketFactoryRegistry registry) {
 		registry.register(ConnectionType.CLIENT, TYPE, SUBTYPE,
@@ -59,7 +59,8 @@ public class EngSetEnergyPacket extends BaseArtemisPacket {
 
         if (value > 1) {
         	throw new IllegalArgumentException(
-        			"You cannot allocate more than 300% energy"
+        			"You cannot allocate more than " +
+        			Artemis.MAX_ENERGY_ALLOCATION_PERCENT + "% energy"
         	);
         }
 
@@ -108,6 +109,7 @@ public class EngSetEnergyPacket extends BaseArtemisPacket {
 
 	@Override
 	protected void appendPacketDetail(StringBuilder b) {
-		b.append(mSystem).append(" = ").append(mValue * 300).append('%');
+		b	.append(mSystem).append(" = ")
+			.append(mValue * Artemis.MAX_ENERGY_ALLOCATION_PERCENT).append('%');
 	}
 }

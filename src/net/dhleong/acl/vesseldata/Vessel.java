@@ -61,6 +61,10 @@ public class Vessel {
 		return side;
 	}
 
+	public Faction getFaction() {
+		return VesselData.get().getFaction(side);
+	}
+
 	public String getName() {
 		return name;
 	}

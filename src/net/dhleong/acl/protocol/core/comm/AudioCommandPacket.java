@@ -13,7 +13,7 @@ import net.dhleong.acl.protocol.BaseArtemisPacket;
  * Plays or deletes an audio message.
  */
 public class AudioCommandPacket extends BaseArtemisPacket {
-    private static final int TYPE = 0x6AADC57F;
+    private static final int TYPE = 0x6aadc57f;
 
 	public static void register(PacketFactoryRegistry registry) {
 		registry.register(ConnectionType.CLIENT, TYPE, new PacketFactory() {
@@ -58,7 +58,15 @@ public class AudioCommandPacket extends BaseArtemisPacket {
     	cmd = Command.values()[reader.readInt()];
     }
 
-	@Override
+    public int getAudioId() {
+    	return audioId;
+    }
+
+    public Command getCommand() {
+    	return cmd;
+    }
+
+    @Override
 	protected void writePayload(PacketWriter writer) {
     	writer.writeInt(audioId).writeInt(cmd.ordinal());
 	}

@@ -16,7 +16,7 @@ import net.dhleong.acl.world.Artemis;
  * Sets the amount of energy allocated to a system.
  */
 public class EngSetEnergyPacket extends BaseArtemisPacket {
-    private static final int TYPE = 0x0351A5AC;
+    private static final int TYPE = 0x0351a5ac;
     private static final byte SUBTYPE = 0x04;
 
 	public static void register(PacketFactoryRegistry registry) {
@@ -59,9 +59,13 @@ public class EngSetEnergyPacket extends BaseArtemisPacket {
 
         if (value > 1) {
         	throw new IllegalArgumentException(
-        			"You cannot allocate more than 300% energy"
+        			"You cannot allocate more than " +
+        			Artemis.MAX_ENERGY_ALLOCATION_PERCENT + "% energy"
         	);
         }
+
+        mSystem = system;
+        mValue = value;
     }
 
     /**
@@ -88,7 +92,15 @@ public class EngSetEnergyPacket extends BaseArtemisPacket {
     	mSystem = ShipSystem.values()[reader.readInt()];
     }
 
-	@Override
+    public ShipSystem getSystem() {
+    	return mSystem;
+    }
+
+    public float getAllocation() {
+    	return mValue;
+    }
+
+    @Override
 	protected void writePayload(PacketWriter writer) {
     	writer	.writeInt(SUBTYPE)
 				.writeFloat(mValue)
@@ -97,6 +109,7 @@ public class EngSetEnergyPacket extends BaseArtemisPacket {
 
 	@Override
 	protected void appendPacketDetail(StringBuilder b) {
-		b.append(mSystem).append(" = ").append(mValue * 300).append('%');
+		b	.append(mSystem).append(" = ")
+			.append(mValue * Artemis.MAX_ENERGY_ALLOCATION_PERCENT).append('%');
 	}
 }

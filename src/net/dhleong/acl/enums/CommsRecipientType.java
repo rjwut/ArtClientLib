@@ -4,7 +4,7 @@ import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.world.ArtemisNpc;
 import net.dhleong.acl.world.ArtemisObject;
 
-public enum CommsTargetType {
+public enum CommsRecipientType {
 	PLAYER {
 		@Override
 		public CommsMessage messageFromId(int id) {
@@ -30,7 +30,7 @@ public enum CommsTargetType {
 		}
 	};
 
-	public static CommsTargetType fromObject(ArtemisObject obj) {
+	public static CommsRecipientType fromObject(ArtemisObject obj) {
 		ObjectType type = obj.getType();
 
 		switch (type) {

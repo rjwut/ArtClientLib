@@ -32,7 +32,7 @@ public enum EnemyMessage implements CommsMessage {
 	}
 
 	@Override
-	public CommsTargetType getTargetType() {
-		return CommsTargetType.ENEMY;
+	public CommsRecipientType getRecipientType() {
+		return CommsRecipientType.ENEMY;
 	}
 }

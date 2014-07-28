@@ -34,7 +34,7 @@ public enum BaseMessage implements CommsMessage {
 	}
 
 	@Override
-	public CommsTargetType getTargetType() {
-		return CommsTargetType.BASE;
+	public CommsRecipientType getRecipientType() {
+		return CommsRecipientType.BASE;
 	}
 }

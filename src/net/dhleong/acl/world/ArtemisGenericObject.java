@@ -5,8 +5,8 @@ import net.dhleong.acl.enums.ObjectType;
 /**
  * There are many "generic" objects which are very similar in implementation.
  * They are all handled by this class. Specifically, the objects implemented by
- * this class are: mines, anomalies, nebulae, torpedoes, black holes, asteroids
- * and space monsters.
+ * this class are: mines, anomalies, torpedoes, black holes, asteroids and space
+ * monsters.
  * @author dhleong
  */
 public class ArtemisGenericObject extends BaseArtemisObject {

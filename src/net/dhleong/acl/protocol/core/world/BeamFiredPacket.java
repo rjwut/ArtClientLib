@@ -36,15 +36,19 @@ public class BeamFiredPacket extends BaseArtemisPacket {
 	private float mImpactY;
 	private float mImpactZ;
 	private boolean mAutoFired;
+	private byte[] unknown1 = DEFAULT_UNKNOWN_VALUE;
+	private byte[] unknown2 = DEFAULT_UNKNOWN_VALUE;
+	private byte[] unknown3 = DEFAULT_UNKNOWN_VALUE;
+	private byte[] unknown4 = DEFAULT_UNKNOWN_VALUE;
 
 	private BeamFiredPacket(PacketReader reader) {
 		super(ConnectionType.SERVER, TYPE);
 		mBeamId = reader.readInt();
-		reader.readUnknown("Unknown 1", 4);
-		reader.readUnknown("Unknown 2", 4);
+		unknown1 = reader.readBytes(4);
+		unknown2 = reader.readBytes(4);
 		mBeamPortIndex = reader.readInt();
-		reader.readUnknown("Unknown 3", 4);
-		reader.readUnknown("Unknown 4", 4);
+		unknown3 = reader.readBytes(4);
+		unknown4 = reader.readBytes(4);
 		mOriginId = reader.readInt();
 		mTargetId = reader.readInt();
 		mImpactX = reader.readFloat();
@@ -158,11 +162,11 @@ public class BeamFiredPacket extends BaseArtemisPacket {
 	protected void writePayload(PacketWriter writer) {
 		writer
 			.writeInt(mBeamId)
-			.writeUnknown("Unknown 1", DEFAULT_UNKNOWN_VALUE)
-			.writeUnknown("Unknown 2", DEFAULT_UNKNOWN_VALUE)
+			.writeBytes(unknown1)
+			.writeBytes(unknown2)
 			.writeInt(mBeamPortIndex)
-			.writeUnknown("Unknown 3", DEFAULT_UNKNOWN_VALUE)
-			.writeUnknown("Unknown 4", DEFAULT_UNKNOWN_VALUE)
+			.writeBytes(unknown3)
+			.writeBytes(unknown4)
 			.writeInt(mOriginId)
 			.writeInt(mTargetId)
 			.writeFloat(mImpactX)

@@ -11,48 +11,45 @@ import net.dhleong.acl.protocol.BaseArtemisPacket;
 import net.dhleong.acl.protocol.UnexpectedTypeException;
 
 /**
- * Set steering amount. Just like the actual console, you need to send one
- * packet to start turning, then another to reset the steering angle to stop
- * turning.
- * @author dhleong
+ * Set climb/dive.
  */
-public class HelmSetSteeringPacket extends BaseArtemisPacket {
+public class HelmSetClimbDivePacket extends BaseArtemisPacket {
 	private static final int TYPE = 0x0351A5AC;
-    private static final byte SUBTYPE = 0x01;
+    private static final byte SUBTYPE = 0x02;
 
 	public static void register(PacketFactoryRegistry registry) {
 		registry.register(ConnectionType.CLIENT, TYPE, SUBTYPE,
 				new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {
-				return HelmSetSteeringPacket.class;
+				return HelmSetClimbDivePacket.class;
 			}
 
 			@Override
 			public ArtemisPacket build(PacketReader reader)
 					throws ArtemisPacketException {
-				return new HelmSetSteeringPacket(reader);
+				return new HelmSetClimbDivePacket(reader);
 			}
 		});
 	}
 
-    private float mSteering;
+    private float mPitchSteering;
 
     /**
-     * @param steering float in [0, 1], where 0.5 is "centered" (no turning),
-     * 0.0 is left (hard to port), 1.0 is right (hard to starboard)
+     * @param pitch steering float in [-1, 1], where 0.0 is "centered" (neither
+     * climbing nor diving, 1.0 is hard dive, -1.0 is hard climb
      */
-    public HelmSetSteeringPacket(float steering) {
+    public HelmSetClimbDivePacket(float pitchSteering) {
         super(ConnectionType.CLIENT, TYPE);
 
-        if (steering < 0 || steering > 1) {
-        	throw new IllegalArgumentException("Steering out of range");
+        if (pitchSteering < -1 || pitchSteering > 1) {
+        	throw new IllegalArgumentException("Pitch steering out of range");
         }
         
-        mSteering = steering;
+        mPitchSteering = pitchSteering;
     }
 
-    private HelmSetSteeringPacket(PacketReader reader) {
+    private HelmSetClimbDivePacket(PacketReader reader) {
         super(ConnectionType.CLIENT, TYPE);
     	int subtype = reader.readInt();
 
@@ -60,16 +57,16 @@ public class HelmSetSteeringPacket extends BaseArtemisPacket {
         	throw new UnexpectedTypeException(subtype, SUBTYPE);
     	}
 
-    	mSteering = reader.readFloat();
+    	mPitchSteering = reader.readFloat();
     }
 
 	@Override
 	protected void writePayload(PacketWriter writer) {
-    	writer.writeInt(SUBTYPE).writeFloat(mSteering);
+    	writer.writeInt(SUBTYPE).writeFloat(mPitchSteering);
 	}
 
 	@Override
 	protected void appendPacketDetail(StringBuilder b) {
-		b.append(mSteering);
+		b.append(mPitchSteering);
 	}
 }

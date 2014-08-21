@@ -53,6 +53,9 @@ public class HelmJumpPacket extends BaseArtemisPacket {
         if (distance < 0 || distance > 1) {
         	throw new IllegalArgumentException("Distance out of range");
         }
+        
+        mHeading = heading;
+        mDistance = mDistance;
     }
 
     private HelmJumpPacket(PacketReader reader) {

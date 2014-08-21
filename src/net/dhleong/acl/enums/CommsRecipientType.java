@@ -1,6 +1,7 @@
 package net.dhleong.acl.enums;
 
 import net.dhleong.acl.util.BoolState;
+import net.dhleong.acl.vesseldata.Vessel;
 import net.dhleong.acl.world.ArtemisNpc;
 import net.dhleong.acl.world.ArtemisObject;
 
@@ -39,8 +40,17 @@ public enum CommsRecipientType {
 		case BASE:
 			return BASE;
 		case NPC_SHIP:
-			BoolState enemy = ((ArtemisNpc) obj).isEnemy();
-			return BoolState.safeValue(enemy) ? ENEMY : OTHER;
+			ArtemisNpc npc = (ArtemisNpc) obj;
+			Vessel vessel = npc.getVessel();
+			boolean enemy;
+
+			if (vessel != null) {
+				enemy = vessel.getFaction().is(FactionAttribute.ENEMY);
+			} else {
+				enemy = BoolState.safeValue(npc.isEnemy());
+			}
+
+			return enemy ? ENEMY : OTHER;
 		default:
 			return null;
 		}

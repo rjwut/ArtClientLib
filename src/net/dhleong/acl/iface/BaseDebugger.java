@@ -7,7 +7,7 @@ import net.dhleong.acl.protocol.RawPacket;
 /**
  * A no-op implementation of the Debugger interface. You can extend this class
  * so as to not have to implement all the methods.
- * @author rwalker
+ * @author rjwut
  */
 public class BaseDebugger implements Debugger {
 	@Override

@@ -19,7 +19,7 @@ public class HelmSetImpulsePacket extends BaseArtemisPacket {
     private static final byte SUBTYPE = 0x00;
 
 	public static void register(PacketFactoryRegistry registry) {
-		registry.register(ConnectionType.CLIENT, SUBTYPE, new PacketFactory() {
+		registry.register(ConnectionType.CLIENT, TYPE, SUBTYPE, new PacketFactory() {
 			@Override
 			public Class<? extends ArtemisPacket> getFactoryClass() {
 				return HelmSetImpulsePacket.class;

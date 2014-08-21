@@ -3,14 +3,11 @@ package net.dhleong.acl.world;
 import java.util.SortedMap;
 
 import net.dhleong.acl.enums.BeamFrequency;
-import net.dhleong.acl.vesseldata.Vessel;
-import net.dhleong.acl.vesseldata.VesselData;
 
 /**
  * Base implementation for ships (player or NPC).
  */
 public abstract class BaseArtemisShip extends BaseArtemisShielded {
-    private int mHullId = -1;
     private float mVelocity = -1;
     private float mShieldsFrontMax = -1;
     private float mShieldsRearMax = -1;
@@ -20,27 +17,11 @@ public abstract class BaseArtemisShip extends BaseArtemisShielded {
     private float mTurnRate = -1;
 
     public BaseArtemisShip(int objId, String name, int hullId) {
-        super(objId, name);
-        mHullId = hullId;
+        super(objId, name, hullId);
 
         for (int i = 0; i < 5; i++) {
         	mShieldFreqs[i] = -1;
         }
-    }
-
-    /**
-     * Identifies the type of ship this is. This corresponds to the uniqueID
-     * attribute of vessel elements in vesselData.xml. In a stock install of
-     * Artemis, where vesselData.xml hasn't been modified, this value will
-     * correspond to a value in the ShipType enumeration.
-     * Unspecified: -1
-     */
-    public int getHullId() {
-        return mHullId;
-    }
-    
-    public void setHullId(int hullId) {
-        mHullId = hullId;
     }
     
     public float getVelocity() {
@@ -126,10 +107,6 @@ public abstract class BaseArtemisShip extends BaseArtemisShielded {
         
         if (eng instanceof BaseArtemisShip) {
             BaseArtemisShip ship = (BaseArtemisShip) eng;
-
-            if (ship.mHullId != -1) {
-                mHullId = ship.mHullId;
-            }
             
             if (ship.mSteering != -1) {
                 mSteering = ship.mSteering;
@@ -168,18 +145,6 @@ public abstract class BaseArtemisShip extends BaseArtemisShielded {
     @Override
 	public void appendObjectProps(SortedMap<String, Object> props, boolean includeUnspecified) {
     	super.appendObjectProps(props, includeUnspecified);
-    	putProp(props, "Hull ID", mHullId, -1, includeUnspecified);
-
-    	if (includeUnspecified || mHullId != -1) {
-    		Vessel vessel = VesselData.get().getVessel(mHullId);
-    		putProp(
-    				props,
-    				"Vessel type",
-    				vessel != null ? vessel.getName() : Integer.toString(mHullId),
-    				includeUnspecified
-    		);
-    	}
-
     	putProp(props, "Velocity", mVelocity, -1, includeUnspecified);
     	putProp(props, "Shields: fore max", mShieldsFrontMax, -1, includeUnspecified);
     	putProp(props, "Shields: aft max", mShieldsRearMax, -1, includeUnspecified);

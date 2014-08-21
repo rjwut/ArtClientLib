@@ -4,10 +4,14 @@ import java.util.Set;
 import java.util.SortedMap;
 
 import net.dhleong.acl.enums.EliteAbility;
+import net.dhleong.acl.enums.FactionAttribute;
 import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.enums.ShipSystem;
 import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.util.Util;
+import net.dhleong.acl.vesseldata.Faction;
+import net.dhleong.acl.vesseldata.Vessel;
+import net.dhleong.acl.vesseldata.VesselData;
 
 /**
  * An NPC ship; they may have special abilities, and can be scanned.
@@ -180,13 +184,21 @@ public class ArtemisNpc extends BaseArtemisShip {
             if (cast.mScanLevel != -1) {
                 setScanLevel(cast.mScanLevel);
             }
-            
+
+            boolean elite = false;
+            Vessel vessel = getVessel();
+
+        	if (vessel != null) {
+        		Faction faction = vessel.getFaction();
+    			elite = faction.is(FactionAttribute.ELITE);
+        	}
+
             if (cast.mElite != -1) {
-                setEliteBits(cast.mElite);
+            	setEliteBits(elite ? cast.mElite : 0);
             }
 
             if (cast.mEliteState != -1) {
-                setEliteStateBits(cast.mEliteState);
+                setEliteStateBits(elite ? cast.mEliteState : 0);
             }
 
             if (cast.mIntel != null) {

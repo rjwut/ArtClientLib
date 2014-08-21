@@ -12,7 +12,7 @@ import net.dhleong.acl.iface.PacketWriter;
  * @author rjwut
  */
 public class Version implements Comparable<Version> {
-	public static final Version MODERN = new Version(2, 1);
+	public static final Version MODERN = new Version("2.1");
 
 	private int[] mParts;
 	private int hash;
@@ -53,6 +53,10 @@ public class Version implements Comparable<Version> {
 		hash = Arrays.hashCode(mParts);
 	}
 
+	/**
+	 * Constructs a Version from a String. This constructor can be used to
+	 * create both modern and legacy version numbers.
+	 */
 	public Version(String version) {
 		String[] strParts = version.split("\\.");
 		mParts = new int[strParts.length];

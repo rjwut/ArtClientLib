@@ -10,8 +10,8 @@ import net.dhleong.acl.enums.ObjectType;
 public class ArtemisBase extends BaseArtemisShielded {
 	private int mIndex = -1;
 
-	public ArtemisBase(int objId, String name) {
-        super(objId, name);
+	public ArtemisBase(int objId, String name, int hullId) {
+        super(objId, name, hullId);
     }
 
 	@Override

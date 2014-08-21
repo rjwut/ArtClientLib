@@ -84,6 +84,22 @@ public class EngSendDamconPacket extends BaseArtemisPacket {
         mZ = reader.readInt();
     }
 
+    public int getTeamNumber() {
+    	return mTeamNumber;
+    }
+
+    public int getX() {
+    	return mX;
+    }
+
+    public int getY() {
+    	return mY;
+    }
+
+    public int getZ() {
+    	return mZ;
+    }
+
 	@Override
 	protected void writePayload(PacketWriter writer) {
 		writer	.writeInt(SUBTYPE)

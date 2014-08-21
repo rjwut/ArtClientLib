@@ -11,7 +11,6 @@ import net.dhleong.acl.enums.ShipSystem;
 import net.dhleong.acl.protocol.core.setup.AbstractPacketTester;
 
 public class EngSetEnergyPacketTest extends AbstractPacketTester<EngSetEnergyPacket> {
-	private static final float EPSILON = 0.00000001f;
 	private static final float DEFAULT_ENERGY_ALLOCATION = 1.0f / 3;
 
 	@Test

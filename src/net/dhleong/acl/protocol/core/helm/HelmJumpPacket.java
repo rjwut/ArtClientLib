@@ -55,7 +55,7 @@ public class HelmJumpPacket extends BaseArtemisPacket {
         }
         
         mHeading = heading;
-        mDistance = mDistance;
+        mDistance = distance;
     }
 
     private HelmJumpPacket(PacketReader reader) {

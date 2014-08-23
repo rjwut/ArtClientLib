@@ -30,14 +30,18 @@ public class EngSetAutoDamconPacket extends ShipActionPacket {
 	}
 
 	/**
-	 * @param useAutonomous Whether DAMCON teams should be autonomous
+	 * @param autonomous Whether DAMCON teams should be autonomous
 	 */
-    public EngSetAutoDamconPacket(boolean useAutonomous) {
-        super(TYPE_AUTO_DAMCON, useAutonomous ? 1 : 0);
+    public EngSetAutoDamconPacket(boolean autonomous) {
+        super(TYPE_AUTO_DAMCON, autonomous ? 1 : 0);
     }
 
     private EngSetAutoDamconPacket(PacketReader reader) {
         super(TYPE_AUTO_DAMCON, reader);
+    }
+
+    public boolean isAutonomous() {
+    	return mArg == 1;
     }
 
     @Override

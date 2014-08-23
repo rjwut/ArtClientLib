@@ -15,7 +15,7 @@ import net.dhleong.acl.protocol.UnexpectedTypeException;
  * @author rjwut
  */
 public class ClimbDivePacket extends BaseArtemisPacket {
-    private static final int TYPE = 0x0351A5AC;
+    private static final int TYPE = 0x4C821D3C;
     private static final byte SUBTYPE = 0x1b;
     private static final int UP = -1;
     private static final int DOWN = 1;

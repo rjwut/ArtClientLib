@@ -60,12 +60,12 @@ public class ConvertTorpedoPacket extends BaseArtemisPacket {
         	throw new UnexpectedTypeException(subtype, SUBTYPE);
         }
 
-        mDirection = Direction.values()[reader.readInt()];
+        mDirection = Direction.values()[(int)reader.readFloat()];
     }
 
 	@Override
 	protected void writePayload(PacketWriter writer) {
-		writer.writeInt(SUBTYPE).writeInt(mDirection.ordinal());
+		writer.writeInt(SUBTYPE).writeFloat(mDirection.ordinal());
 	}
 
 	@Override

@@ -33,20 +33,20 @@ public class HelmSetClimbDivePacket extends BaseArtemisPacket {
 		});
 	}
 
-    private float mPitchSteering;
+    private float mPitch;
 
     /**
      * @param pitch steering float in [-1, 1], where 0.0 is "centered" (neither
      * climbing nor diving, 1.0 is hard dive, -1.0 is hard climb
      */
-    public HelmSetClimbDivePacket(float pitchSteering) {
+    public HelmSetClimbDivePacket(float pitch) {
         super(ConnectionType.CLIENT, TYPE);
 
-        if (pitchSteering < -1 || pitchSteering > 1) {
-        	throw new IllegalArgumentException("Pitch steering out of range");
+        if (pitch < -1 || pitch > 1) {
+        	throw new IllegalArgumentException("Pitch out of range");
         }
         
-        mPitchSteering = pitchSteering;
+        mPitch = pitch;
     }
 
     private HelmSetClimbDivePacket(PacketReader reader) {
@@ -57,16 +57,20 @@ public class HelmSetClimbDivePacket extends BaseArtemisPacket {
         	throw new UnexpectedTypeException(subtype, SUBTYPE);
     	}
 
-    	mPitchSteering = reader.readFloat();
+    	mPitch = reader.readFloat();
     }
+
+	public float getPitch() {
+		return mPitch;
+	}
 
 	@Override
 	protected void writePayload(PacketWriter writer) {
-    	writer.writeInt(SUBTYPE).writeFloat(mPitchSteering);
+    	writer.writeInt(SUBTYPE).writeFloat(mPitch);
 	}
 
 	@Override
 	protected void appendPacketDetail(StringBuilder b) {
-		b.append(mPitchSteering);
+		b.append(mPitch);
 	}
 }

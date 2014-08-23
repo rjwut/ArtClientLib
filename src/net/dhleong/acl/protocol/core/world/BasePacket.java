@@ -40,7 +40,8 @@ public class BasePacket extends BaseArtemisPacket implements ObjectUpdatingPacke
 		FORE_SHIELDS,
 		AFT_SHIELDS,
 		INDEX,
-		UNK_1_5,
+		//UNK_1_5,
+		HULL_ID,
 		X,
 		Y,
 		Z,
@@ -58,7 +59,7 @@ public class BasePacket extends BaseArtemisPacket implements ObjectUpdatingPacke
     private BasePacket(PacketReader reader) {
     	super(ConnectionType.SERVER, WORLD_TYPE);
         String name;
-        int index;
+        int index, hullId;
         float x, y, z;
         float shieldsFront, shieldsRear;
 
@@ -67,10 +68,9 @@ public class BasePacket extends BaseArtemisPacket implements ObjectUpdatingPacke
             name = reader.readString(Bit.NAME);
             shieldsFront = reader.readFloat(Bit.FORE_SHIELDS, Float.MIN_VALUE);
             shieldsRear = reader.readFloat(Bit.AFT_SHIELDS, Float.MIN_VALUE);
-
             index = reader.readInt(Bit.INDEX, -1);
-            reader.readObjectUnknown(Bit.UNK_1_5, 4); // hull ID?
-
+            hullId = reader.readInt(Bit.HULL_ID, -1);
+            //reader.readObjectUnknown(Bit.UNK_1_5, 4); // hull ID?
             x = reader.readFloat(Bit.X, Float.MIN_VALUE);
             y = reader.readFloat(Bit.Y, Float.MIN_VALUE);
             z = reader.readFloat(Bit.Z, Float.MIN_VALUE);
@@ -82,7 +82,7 @@ public class BasePacket extends BaseArtemisPacket implements ObjectUpdatingPacke
             reader.readObjectUnknown(Bit.UNK_2_5, 1);
             reader.readObjectUnknown(Bit.UNK_2_6, 1);
             
-            ArtemisBase base = new ArtemisBase(reader.getObjectId(), name);
+            ArtemisBase base = new ArtemisBase(reader.getObjectId(), name, hullId);
             base.setIndex(index);
             base.setX(x);
             base.setY(y);
@@ -107,7 +107,7 @@ public class BasePacket extends BaseArtemisPacket implements ObjectUpdatingPacke
 					.writeFloat(Bit.FORE_SHIELDS, base.getShieldsFront(), Float.MIN_VALUE)
 					.writeFloat(Bit.AFT_SHIELDS, base.getShieldsRear(), Float.MIN_VALUE)
 					.writeInt(Bit.INDEX, base.getIndex(), -1)
-					.writeUnknown(Bit.UNK_1_5)
+					.writeInt(Bit.HULL_ID, base.getHullId(), -1)
 					.writeFloat(Bit.X, base.getX(), Float.MIN_VALUE)
 					.writeFloat(Bit.Y, base.getY(), Float.MIN_VALUE)
 					.writeFloat(Bit.Z, base.getZ(), Float.MIN_VALUE)

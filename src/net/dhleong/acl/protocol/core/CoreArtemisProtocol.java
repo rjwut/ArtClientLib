@@ -76,6 +76,7 @@ public class CoreArtemisProtocol implements Protocol {
 		EngSendDamconPacket.register(registry);
 		EngSetAutoDamconPacket.register(registry);
 		GameMasterMessagePacket.register(registry);
+		HelmSetClimbDivePacket.register(registry);
 		HelmToggleReversePacket.register(registry);
 		KeystrokePacket.register(registry);
 		ReadyPacket.register(registry);

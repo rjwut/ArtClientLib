@@ -11,7 +11,7 @@ import net.dhleong.acl.protocol.core.CoreArtemisProtocol;
  * receive packets.
  */
 public interface ArtemisNetworkInterface {
-	public static final Version MIN_VERSION = new Version(2, 0);
+	public static final Version MIN_VERSION = new Version("2.0");
 
 	/**
      * Returns the ConnectionType of the packets this interface can receive. An

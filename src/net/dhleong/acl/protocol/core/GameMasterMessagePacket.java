@@ -13,7 +13,7 @@ import net.dhleong.acl.protocol.BaseArtemisPacket;
 /**
  * A packet sent by the game master console to the server which causes a message
  * to be displayed on a client.
- * @author rwalker
+ * @author rjwut
  */
 public class GameMasterMessagePacket extends BaseArtemisPacket {
     private static final int TYPE = 0x809305a7;

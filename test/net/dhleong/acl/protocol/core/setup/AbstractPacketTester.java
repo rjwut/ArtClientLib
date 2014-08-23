@@ -22,6 +22,8 @@ import net.dhleong.acl.protocol.TestPacketFile;
 public abstract class AbstractPacketTester<T extends ArtemisPacket> {
 	private static final boolean DEBUG = ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("jdwp") >= 0;
 
+	protected static final float EPSILON = 0.00000001f;
+
 	protected abstract void testPackets(List<T> packets);
 
 	private Debugger debugger = DEBUG ? new OutputStreamDebugger() : new BaseDebugger();

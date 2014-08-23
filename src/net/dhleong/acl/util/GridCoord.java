@@ -90,7 +90,7 @@ public final class GridCoord implements Comparable<GridCoord> {
 
         if (size >= CACHE_SIZE) {
             synchronized(sCache) {
-                GridCoord old = sCache.poll(); // free up space
+                sCache.poll(); // free up space
             }
         }
 

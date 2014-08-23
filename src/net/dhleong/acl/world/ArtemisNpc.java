@@ -11,7 +11,6 @@ import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.util.Util;
 import net.dhleong.acl.vesseldata.Faction;
 import net.dhleong.acl.vesseldata.Vessel;
-import net.dhleong.acl.vesseldata.VesselData;
 
 /**
  * An NPC ship; they may have special abilities, and can be scanned.

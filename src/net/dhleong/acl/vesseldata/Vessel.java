@@ -74,7 +74,7 @@ public class Vessel {
 	}
 
 	public VesselAttribute[] getAttributes() {
-		return (VesselAttribute[]) attributes.toArray();
+		return attributes.toArray(new VesselAttribute[attributes.size()]);
 	}
 
 	public boolean is(VesselAttribute attribute) {
@@ -134,11 +134,11 @@ public class Vessel {
 	}
 
 	public BeamPort[] getBeamPorts() {
-		return (BeamPort[]) beamPorts.toArray();
+		return beamPorts.toArray(new BeamPort[beamPorts.size()]);
 	}
 
 	public VesselPoint[] getTorepedoTubes() {
-		return (BeamPort[]) torpedoTubes.toArray();
+		return torpedoTubes.toArray(new VesselPoint[torpedoTubes.size()]);
 	}
 
 	public int getTorpedoStorage(OrdnanceType type) {
@@ -150,14 +150,14 @@ public class Vessel {
 	}
 
 	public VesselPoint[] getEnginePorts() {
-		return (VesselPoint[]) enginePorts.toArray();
+		return enginePorts.toArray(new VesselPoint[enginePorts.size()]);
 	}
 
 	public VesselPoint[] getImpulsePoints() {
-		return (VesselPoint[]) impulsePoints.toArray();
+		return impulsePoints.toArray(new VesselPoint[impulsePoints.size()]);
 	}
 
 	public VesselPoint[] getManeuverPoints() {
-		return (VesselPoint[]) maneuverPoints.toArray();
+		return maneuverPoints.toArray(new VesselPoint[maneuverPoints.size()]);
 	}
 }

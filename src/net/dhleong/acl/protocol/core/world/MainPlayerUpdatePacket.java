@@ -42,7 +42,7 @@ public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectU
 	}
 
     private enum Bit {
-    	UNK_1_1,
+    	WEAPONS_TARGET,
     	IMPULSE,
     	RUDDER,
     	TOP_SPEED,
@@ -94,8 +94,8 @@ public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectU
 
     	while (reader.hasMore()) {
     		reader.startObject(Bit.values());
-    		reader.readObjectUnknown(Bit.UNK_1_1, 4);
 
+            int weaponsTarget = reader.readInt(Bit.WEAPONS_TARGET, -1);
     		float impulseSlider = reader.readFloat(Bit.IMPULSE, -1); 
             float steeringSlider = reader.readFloat(Bit.RUDDER, -1);
             float topSpeed = reader.readFloat(Bit.TOP_SPEED, -1);
@@ -177,6 +177,7 @@ public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectU
             player.setAvailableCoolant(availableCoolant);
             player.setScienceTarget(scanTarget);
             player.setCaptainTarget(captainTarget);
+            player.setWeaponsTarget(weaponsTarget);
             player.setScanObjectId(scanningId);
             player.setScanProgress(scanProgress);
             player.setShieldsFront(shieldsFront);
@@ -216,7 +217,7 @@ public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectU
 			int shipIndex = player.getShipIndex();
 			int shipNumber = shipIndex == -1 ? -1 : shipIndex + 1;
 			writer	.startObject(obj, bits)
-					.writeUnknown(Bit.UNK_1_1)
+					.writeInt(Bit.WEAPONS_TARGET, player.getWeaponsTarget(), -1)
 					.writeFloat(Bit.IMPULSE, player.getImpulse(), -1)
 					.writeFloat(Bit.RUDDER, player.getSteering(), -1)
 					.writeFloat(Bit.TOP_SPEED, player.getTopSpeed(), -1)

@@ -22,7 +22,7 @@ import net.dhleong.acl.world.ArtemisObject;
 public class GenericUpdatePacket extends BaseArtemisPacket implements ObjectUpdatingPacket {
 	private static ObjectType[] GENERIC_TYPES = {
 		ObjectType.MINE, ObjectType.ANOMALY, ObjectType.TORPEDO,
-		ObjectType.BLACK_HOLE, ObjectType.ASTEROID
+		ObjectType.BLACK_HOLE, ObjectType.ASTEROID, ObjectType.MONSTER
 	};
 
 	private static final byte[] UNK_TORPEDO = { 0 };

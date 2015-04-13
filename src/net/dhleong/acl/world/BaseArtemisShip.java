@@ -90,7 +90,8 @@ public abstract class BaseArtemisShip extends BaseArtemisShielded {
 
     /**
      * A value between 0 and 1 indicating the shields' resistance to the given
-     * BeamFrequency.
+     * BeamFrequency. Higher values indicate that the shields are more resistant
+     * to that frequency.
      * Unspecified: -1
      */
     public float getShieldFreq(BeamFrequency freq) {

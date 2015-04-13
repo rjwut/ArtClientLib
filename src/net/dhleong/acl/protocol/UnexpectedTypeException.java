@@ -1,5 +1,11 @@
 package net.dhleong.acl.protocol;
 
+/**
+ * Thrown if ArtClientLib encounters a different packet type than it expected.
+ * This is almost certainly caused by a bug in the PacketFactory that
+ * constructed the packet.
+ * @author rjwut
+ */
 public class UnexpectedTypeException extends IllegalArgumentException {
 	private static final long serialVersionUID = -5961855010011595291L;
 

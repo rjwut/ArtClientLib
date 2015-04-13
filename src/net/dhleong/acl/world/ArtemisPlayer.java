@@ -254,7 +254,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
     }
 
     /**
-     * Sents the contents of the given tube. The tube state must be set to a
+     * Sets the contents of the given tube. The tube state must be set to a
      * value other than TubeState.UNLOADED before invoking this method.
      */
     public void setTubeContents(int tube, OrdnanceType type) {
@@ -409,7 +409,8 @@ public class ArtemisPlayer extends BaseArtemisShip {
     /**
      * The ID of the object being scanned. Note that this is distinct from the
      * science target: science can start a scan then change targets, but the
-     * scan continues on the original target.
+     * scan continues on the original target as long as science has not
+     * initiated a new scan.
      * Unspecified: -1
      */
     public int getScanObjectId() {

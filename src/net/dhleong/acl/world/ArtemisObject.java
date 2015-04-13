@@ -5,9 +5,9 @@ import java.util.SortedMap;
 import net.dhleong.acl.enums.ObjectType;
 
 /**
- * This class represents information about an object in the game world. It may
- * contain all the information known about that object, or just updates. Every
- * object has the following:
+ * This interface represents information about an object in the game world. It
+ * may contain all the information known about that object, or just updates.
+ * Every object has the following:
  * 
  * - an ID
  * - a type
@@ -41,9 +41,9 @@ import net.dhleong.acl.enums.ObjectType;
  * 
  * Updating objects
  *
- * Most packets which update object information produce instances of this class.
- * These instances will contain only the property values that were updated by
- * that packet; all other values will be unspecified. You can use the
+ * Most packets which update object information produce objects which implement
+ * this interface. These objects will contain only the property values that were
+ * updated by that packet; all other values will be unspecified. You can use the
  * updateFrom() method to transfer all specified properties from one object to
  * another; this allows you to keep around a single instance that always has the
  * latest known state for that world object.

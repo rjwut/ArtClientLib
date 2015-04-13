@@ -8,6 +8,9 @@ package net.dhleong.acl.vesseldata;
 public class BeamPort extends WeaponPort {
 	float arcWidth;
 
+	/**
+	 * Returns the width of the beam arc in radians.
+	 */
 	public float getArcWidth() {
 		return arcWidth;
 	}

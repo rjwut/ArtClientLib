@@ -9,9 +9,9 @@ import java.util.Set;
 import net.dhleong.acl.enums.OrdnanceType;
 import net.dhleong.acl.enums.VesselAttribute;
 
-
 /**
- * Corresponds to the <vessel> element in vesselData.xml.
+ * Corresponds to the <vessel> element in vesselData.xml. Note that this
+ * represents an entire class of ships, not an individual one.
  * @author rjwut
  */
 public class Vessel {
@@ -53,110 +53,205 @@ public class Vessel {
 		}
 	}
 
+	/**
+	 * Returns the Vessel's ID.
+	 */
 	public int getId() {
 		return id;
 	}
 
+	/**
+	 * Returns the Vessel's Faction ID. 
+	 */
 	public int getSide() {
 		return side;
 	}
 
+	/**
+	 * Returns the Faction to which this Vessel belongs.
+	 */
 	public Faction getFaction() {
 		return VesselData.get().getFaction(side);
 	}
 
+	/**
+	 * Returns this Vessel's name.
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Returns a short description of this Vessel.
+	 */
 	public String getDescription() {
 		return description;
 	}
 
+	/**
+	 * Returns an array of this Vessel's VesselAttributes.
+	 */
 	public VesselAttribute[] getAttributes() {
 		return (VesselAttribute[]) attributes.toArray();
 	}
 
+	/**
+	 * Returns true if this Vessel has the given VesselAttribute; false
+	 * otherwise.
+	 */
 	public boolean is(VesselAttribute attribute) {
 		return attributes.contains(attribute);
 	}
 
+	/**
+	 * Returns the 3D mesh filename.
+	 */
 	public String getMeshFile() {
 		return meshFile;
 	}
 
+	/**
+	 * Returns the diffuse image filename.
+	 */
 	public String getDiffuseFile() {
 		return diffuseFile;
 	}
 
+	/**
+	 * Returns the glow image filename.
+	 */
 	public String getGlowFile() {
 		return glowFile;
 	}
 
+	/**
+	 * Returns the specular image filename.
+	 */
 	public String getSpecularFile() {
 		return specularFile;
 	}
 
+	/**
+	 * Returns this Vessel's scale value. This presumably controls how large it
+	 * is.
+	 */
 	public float getScale() {
 		return scale;
 	}
 
+	/**
+	 * Returns this Vessel's push radius. This presumably how close other
+	 * objects can get before they are considered to have collided with this
+	 * Vessel.
+	 */
 	public int getPushRadius() {
 		return pushRadius;
 	}
 
+	/**
+	 * Returns the initial strength of this Vessel's forward shields.
+	 */
 	public int getForeShields() {
 		return foreShields;
 	}
 
+	/**
+	 * Returns the initial strength of this Vessel's aft shields.
+	 */
 	public int getAftShields() {
 		return aftShields;
 	}
 
+	/**
+	 * Returns this Vessel's turn rate.
+	 */
 	public float getTurnRate() {
 		return turnRate;
 	}
 
+	/**
+	 * Returns this Vessel's top (impulse) speed.
+	 */
 	public float getTopSpeed() {
 		return topSpeed;
 	}
 
+	/**
+	 * Returns this Vessel's efficiency rating.
+	 */
 	public float getEfficiency() {
 		return efficiency;
 	}
 
+	/**
+	 * Returns this Vessel's fleet AI commonality value. It is unknown what
+	 * exactly this value does.
+	 */
 	public int getFleetAiCommonality() {
 		return fleetAiCommonality;
 	}
 
+	/**
+	 * Returns the number of fighters this Vessel has. Only Vessels that were
+	 * declared with the <carrier> element will have fighters, and presumably
+	 * only those with VesselAttribute.CARRIER.
+	 */
 	public int getFighterCount() {
 		return fighterCount;
 	}
 
+	/**
+	 * Returns an array of BeamPort objects describing the beams with which this
+	 * Vessel is equipped.
+	 */
 	public BeamPort[] getBeamPorts() {
 		return (BeamPort[]) beamPorts.toArray();
 	}
 
+	/**
+	 * Returns an array of VesselPoint objects describing the locations of the
+	 * Vessel's torpedo tubes.
+	 */
 	public VesselPoint[] getTorepedoTubes() {
 		return (BeamPort[]) torpedoTubes.toArray();
 	}
 
+	/**
+	 * Returns the number of units of the given OrdnanceType this Vessel can
+	 * carry.
+	 */
 	public int getTorpedoStorage(OrdnanceType type) {
 		return torpedoStorage.get(type).intValue();
 	}
 
+	/**
+	 * Returns true if this Vessel is capable of carrying torpedoes; false
+	 * otherwise.
+	 */
 	public boolean hasTorpedoes() {
 		return !torpedoTubes.isEmpty() && !torpedoStorage.isEmpty();
 	}
 
+	/**
+	 * Returns an array of VesselPoint objects describing the locations of the
+	 * Vessel's engine ports.
+	 */
 	public VesselPoint[] getEnginePorts() {
 		return (VesselPoint[]) enginePorts.toArray();
 	}
 
+	/**
+	 * Returns an array of VesselPoint objects describing the locations of the
+	 * Vessel's impulse points.
+	 */
 	public VesselPoint[] getImpulsePoints() {
 		return (VesselPoint[]) impulsePoints.toArray();
 	}
 
+	/**
+	 * Returns an array of VesselPoint objects describing the locations of the
+	 * Vessel's maneuver points.
+	 */
 	public VesselPoint[] getManeuverPoints() {
 		return (VesselPoint[]) maneuverPoints.toArray();
 	}

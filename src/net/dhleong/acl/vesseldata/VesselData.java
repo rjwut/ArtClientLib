@@ -25,11 +25,21 @@ import net.dhleong.acl.protocol.Version;
 public class VesselData {
 	private static VesselData instance;
 
+	/**
+	 * Loads the vesselData.xml file from the Artemis installation found at the
+	 * given path.
+	 */
 	public static void load(File artemisInstallPath) throws VesselDataException {
 		File xml = new File(artemisInstallPath, "dat" + File.separatorChar + "vesselData.xml");
 		load(xml.toURI());
 	}
 
+	/**
+	 * Returns the VesselData instance. If load(File) has been invoked, the
+	 * VesselData object will reflect whatever customizations have been made on
+	 * that Artemis installation. Otherwise, it will contain the values for a
+	 * stock Artemis install.
+	 */
 	public static VesselData get() {
 		if (instance == null) {
 			load();
@@ -38,6 +48,10 @@ public class VesselData {
 		return instance;
 	}
 
+	/**
+	 * Loads the default vesselData.xml packaged with ArtClientLib. This is
+	 * invoked when get() is called without calling load(File) first.
+	 */
 	private static void load() {
 		try {
 			load(VesselData.class.getResource("vesselData.xml").toURI());
@@ -48,6 +62,10 @@ public class VesselData {
 		}
 	}
 
+	/**
+	 * Parses the vessel data XML file at the given URI and stores the result
+	 * in the VesselData.instance static field.
+	 */
 	private static void load(URI uri) throws VesselDataException {
 		try {
 			SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -74,14 +92,26 @@ public class VesselData {
 		this.version = new Version(version);
 	}
 
+	/**
+	 * Returns the version of Artemis reported by vesselData.xml. Note that this
+	 * does not neccessarily match the version reported by the protocol; the
+	 * version in vesselData.xml is known to lag behind the actual version
+	 * number.
+	 */
 	public Version getVersion() {
 		return version;
 	}
 
+	/**
+	 * Returns the Faction represented by the given ID.
+	 */
 	public Faction getFaction(int id) {
 		return factions.get(id);
 	}
 
+	/**
+	 * Returns the Vessel represented by the given ID.
+	 */
 	public Vessel getVessel(int id) {
 		return vessels.get(Integer.valueOf(id));
 	}

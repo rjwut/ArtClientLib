@@ -63,7 +63,7 @@ public class BitField {
 	}
 
 	/**
-	 * Returns a hex encoded String of the bytes composing this BitField.
+	 * Returns a hex encoded String of the bytes that comprise this BitField.
 	 */
 	@Override
 	public String toString() {

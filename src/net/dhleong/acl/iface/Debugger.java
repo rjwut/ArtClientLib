@@ -5,8 +5,8 @@ import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.protocol.RawPacket;
 
 /**
- * Interface for objects which can attached to an ArtemisNetworkInterface to get
- * notified of debugging-related events.
+ * Interface for objects which can be attached to an ArtemisNetworkInterface to
+ * get notified of debugging-related events.
  * @author rjwut
  */
 public interface Debugger {

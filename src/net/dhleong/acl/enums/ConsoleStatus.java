@@ -5,5 +5,7 @@ package net.dhleong.acl.enums;
  * @author rjwut
  */
 public enum ConsoleStatus {
-	AVAILABLE, YOURS, UNAVAILABLE;
+	AVAILABLE,   // you can claim this station
+	YOURS,       // you have already claimed this station
+	UNAVAILABLE; // you cannot claim this station
 }

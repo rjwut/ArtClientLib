@@ -8,22 +8,40 @@ import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.protocol.RawPacket;
 import net.dhleong.acl.util.TextUtil;
 
+/**
+ * Debugger implementation that simply writes all packets to an OutputStream.
+ * @author rjwut
+ */
 public class OutputStreamDebugger implements Debugger {
 	private String name;
 	private PrintStream out;
 
+	/**
+	 * Convenience constructor for new OutputStreamDebugger("", System.out);
+	 */
 	public OutputStreamDebugger() {
 		this("", System.out);
 	}
 
+	/**
+	 * Convenience constructor for new OutputStreamDebugger(name, System.out);
+	 */
 	public OutputStreamDebugger(String name) {
 		this(name, System.out);
 	}
 
+	/**
+	 * Convenience constructor for new OutputStreamDebugger("", out);
+	 */
 	public OutputStreamDebugger(OutputStream out) {
 		this("", out);
 	}
 
+	/**
+	 * Creates an OutputStreamDebugger with the indicated name that writes to
+	 * the given OutputStream. The name is prefixed to each event that is
+	 * written to the stream so you can tell which Debugger is reporting it.
+	 */
 	public OutputStreamDebugger(String name, OutputStream out) {
 		this.name = name;
 		this.out = out instanceof PrintStream ? (PrintStream) out : new PrintStream(out);
@@ -61,6 +79,9 @@ public class OutputStreamDebugger implements Debugger {
 		out.println((name != "" ? (name + ": ") : "") + "WARNING: "  + msg);
 	}
 
+	/**
+	 * Writes the bytes for the given packet to the OutputStream.
+	 */
 	private void printPacketBytes(boolean send, ConnectionType connType,
 			int pktType, byte[] payload) {
 		out.println(

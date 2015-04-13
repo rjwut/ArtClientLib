@@ -27,6 +27,10 @@ public enum FactionAttribute {
 	// elite
 	ELITE;
 
+	/**
+	 * Returns a Set containing the FactionAttributes that correspond to the
+	 * space-delimited list of attribute names in the given String.
+	 */
 	public static Set<FactionAttribute> build(String keys) {
 		String[] tokens = keys.split(" ");
 		Set<FactionAttribute> attrs = new HashSet<FactionAttribute>();

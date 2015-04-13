@@ -57,7 +57,7 @@ public class PacketReader {
 	 * If set to false, all packets will be returned as UnknownPackets. This is
 	 * useful for testing purposes to easily capture packet payloads in their
 	 * raw form without bothering to parse any of them. By default, this
-	 * property is true, meaning that all packets will be parsed.
+	 * property is true, meaning that all known packets will be parsed.
 	 */
 	public void setParsePackets(boolean parse) {
 		this.parse = parse;
@@ -179,7 +179,7 @@ public class PacketReader {
 		}
 
 		if (listenerRegistry.listeningFor(factory.getFactoryClass())) {
-			// Parse it and build the packet
+			// We're interested in this packet; parse and build it
 			ArtemisPacket packet;
 
 			try {
@@ -191,6 +191,7 @@ public class PacketReader {
 			}
 
 			if (packet instanceof VersionPacket) {
+				// We got a VersionPacket; store the version
 				version = ((VersionPacket) packet).getVersion();
 			}
 
@@ -208,6 +209,7 @@ public class PacketReader {
 			return packet;
 		}
 
+		// We don't have any listeners for this packet
 		UnparsedPacket packet = new UnparsedPacket(connType, packetType, payload);
 		debugger.onRecvUnparsedPacket(packet);
 		return packet;

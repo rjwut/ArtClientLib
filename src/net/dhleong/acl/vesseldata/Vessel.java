@@ -92,7 +92,7 @@ public class Vessel {
 	 * Returns an array of this Vessel's VesselAttributes.
 	 */
 	public VesselAttribute[] getAttributes() {
-		return (VesselAttribute[]) attributes.toArray();
+		return attributes.toArray(new VesselAttribute[attributes.size()]);
 	}
 
 	/**
@@ -205,7 +205,7 @@ public class Vessel {
 	 * Vessel is equipped.
 	 */
 	public BeamPort[] getBeamPorts() {
-		return (BeamPort[]) beamPorts.toArray();
+		return beamPorts.toArray(new BeamPort[beamPorts.size()]);
 	}
 
 	/**
@@ -213,7 +213,7 @@ public class Vessel {
 	 * Vessel's torpedo tubes.
 	 */
 	public VesselPoint[] getTorepedoTubes() {
-		return (BeamPort[]) torpedoTubes.toArray();
+		return torpedoTubes.toArray(new BeamPort[torpedoTubes.size()]);
 	}
 
 	/**
@@ -237,7 +237,7 @@ public class Vessel {
 	 * Vessel's engine ports.
 	 */
 	public VesselPoint[] getEnginePorts() {
-		return (VesselPoint[]) enginePorts.toArray();
+		return enginePorts.toArray(new VesselPoint[enginePorts.size()]);
 	}
 
 	/**
@@ -245,7 +245,7 @@ public class Vessel {
 	 * Vessel's impulse points.
 	 */
 	public VesselPoint[] getImpulsePoints() {
-		return (VesselPoint[]) impulsePoints.toArray();
+		return impulsePoints.toArray(new VesselPoint[impulsePoints.size()]);
 	}
 
 	/**
@@ -253,6 +253,6 @@ public class Vessel {
 	 * Vessel's maneuver points.
 	 */
 	public VesselPoint[] getManeuverPoints() {
-		return (VesselPoint[]) maneuverPoints.toArray();
+		return maneuverPoints.toArray(new VesselPoint[maneuverPoints.size()]);
 	}
 }

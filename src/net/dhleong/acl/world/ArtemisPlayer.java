@@ -30,6 +30,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
     private int mDockingBase = -1;
     private MainScreenView mMainScreen;
     private int mAvailableCoolant = -1;
+    private int mWeaponsTarget = -1;
     private float mImpulse = -1;
     private byte mWarp = -1;
     private BeamFrequency mBeamFreq;
@@ -407,6 +408,19 @@ public class ArtemisPlayer extends BaseArtemisShip {
     }
 
     /**
+     * The ID of the object targeted by the weapons officer. If the target is
+     * cleared, this method returns 1.
+     * Unspecified: -1
+     */
+    public int getWeaponsTarget() {
+    	return mWeaponsTarget;
+    }
+
+    public void setWeaponsTarget(int weaponsTarget) {
+    	mWeaponsTarget = weaponsTarget;
+    }
+
+    /**
      * The ID of the object being scanned. Note that this is distinct from the
      * science target: science can start a scan then change targets, but the
      * scan continues on the original target as long as science has not
@@ -447,6 +461,10 @@ public class ArtemisPlayer extends BaseArtemisShip {
             
             if (BoolState.isKnown(plr.mAutoBeams)) {
             	mAutoBeams = plr.mAutoBeams;
+            }
+
+            if (plr.mWeaponsTarget != -1) {
+                mWeaponsTarget = plr.mWeaponsTarget;
             }
 
             if (plr.mImpulse != -1) {
@@ -608,6 +626,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
     	putProp(props, "Scan target", mScienceTarget, -1, includeUnspecified);
     	putProp(props, "Scan progress", mScanProgress, -1, includeUnspecified);
     	putProp(props, "Scan object ID", mScanningId, -1, includeUnspecified);
+    	putProp(props, "Weapons target", mWeaponsTarget, -1, includeUnspecified);
     	putProp(props, "Captain target", mCaptainTarget, -1, includeUnspecified);
     }
 }

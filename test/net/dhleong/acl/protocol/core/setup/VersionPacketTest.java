@@ -2,6 +2,8 @@ package net.dhleong.acl.protocol.core.setup;
 
 import java.util.List;
 
+import junit.framework.Assert;
+
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.protocol.Version;
 
@@ -18,7 +20,7 @@ public class VersionPacketTest extends AbstractPacketTester<VersionPacket> {
 
 	@Override
 	protected void testPackets(List<VersionPacket> packets) {
-		VERSION_2_0.equals(packets.get(0));
-		VERSION_2_1_1.equals(packets.get(1));
+		Assert.assertEquals(VERSION_2_0, packets.get(0).getVersion());
+		Assert.assertEquals(VERSION_2_1_1, packets.get(1).getVersion());
 	}
 }

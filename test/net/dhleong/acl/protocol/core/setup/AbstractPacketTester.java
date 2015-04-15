@@ -19,18 +19,34 @@ import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.protocol.ArtemisPacketException;
 import net.dhleong.acl.protocol.TestPacketFile;
 
+/**
+ * Abstract class that can be extended for testing individual packet types.
+ */
 public abstract class AbstractPacketTester<T extends ArtemisPacket> {
 	private static final boolean DEBUG = ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("jdwp") >= 0;
 
 	protected static final float EPSILON = 0.00000001f;
 
+	/**
+	 * Invoked by AbstractPacketTester when it has successfully parsed the
+	 * desired number of packets with no bytes left over. The resulting packets
+	 * are passed in; subclasses should evaluate them to ensure that they
+	 * contain the expected data and throw an assert if not.
+	 */
 	protected abstract void testPackets(List<T> packets);
 
 	private Debugger debugger = DEBUG ? new OutputStreamDebugger() : new BaseDebugger();
 
+	/**
+	 * Loads the test packet file at the indicated path and reads the given
+	 * number of packets from it. They are then passed to testPackets();
+	 * subclasses will override this to perform type-specific tests for those
+	 * packets. Finally, the packets will be written out to a stream, and the
+	 * resulting bytes compared to the original file.
+	 */
 	protected void execute(String resourcePath, ConnectionType type, int packetCount) {
 		try {
-			List<T> list = new ArrayList<T>(packetCount);
+			// Load test packet file
 			URL url = TestPacketFile.class.getResource(resourcePath);
 			TestPacketFile file = new TestPacketFile(url);
 
@@ -38,7 +54,9 @@ public abstract class AbstractPacketTester<T extends ArtemisPacket> {
 				System.out.println("### " + resourcePath + " ###");
 			}
 
+			// Parse the desired number of packets
 			PacketReader reader = file.toPacketReader(type);
+			List<T> list = new ArrayList<T>(packetCount);
 	
 			for (int i = 0; i < packetCount; i++) {
 				T pkt = (T) reader.readPacket(debugger);
@@ -46,8 +64,13 @@ public abstract class AbstractPacketTester<T extends ArtemisPacket> {
 				list.add(pkt);
 			}
 
+			// Any bytes left over?
 			Assert.assertFalse(reader.hasMore());
+
+			// Do type-specific tests
 			testPackets(list);
+
+			// Write packets back out and compare bytes
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			PacketWriter writer = new PacketWriter(baos);
 	

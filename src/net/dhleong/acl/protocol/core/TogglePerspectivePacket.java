@@ -8,7 +8,9 @@ import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.protocol.ArtemisPacketException;
 
 /**
- * Toggles between first- and third-person perspectives on the main screen.
+ * Toggles between first- and third-person perspectives on the main screen. Note
+ * that you cannot specify which perspective you want; you can only indicate
+ * that you want to switch from the current one to the other.
  * @author rjwut
  */
 public class TogglePerspectivePacket extends ShipActionPacket {

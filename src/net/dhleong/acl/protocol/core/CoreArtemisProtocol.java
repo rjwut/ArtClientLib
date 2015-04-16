@@ -21,18 +21,19 @@ public class CoreArtemisProtocol implements Protocol {
 		// --- prioritized
 		NpcUpdatePacket.register(registry);
 		MainPlayerUpdatePacket.register(registry);
-		WhaleUpdatePacket.register(registry);
+		DroneUpdatePacket.register(registry);
 		BeamFiredPacket.register(registry);
+		GenericUpdatePacket.register(registry);
+		BasePacket.register(registry);
 		EngGridUpdatePacket.register(registry);
 		EngPlayerUpdatePacket.register(registry);
 		WeapPlayerUpdatePacket.register(registry);
+		WhaleUpdatePacket.register(registry);
 		IntelPacket.register(registry);
-		DroneUpdatePacket.register(registry);
-		GenericUpdatePacket.register(registry);
 		SoundEffectPacket.register(registry);
-		BasePacket.register(registry);
 		// --- rest
 		AllShipSettingsPacket.register(registry);
+		EngAutoDamconUpdatePacket.register(registry);
 		CommsIncomingPacket.register(registry);
 		ConsoleStatusPacket.register(registry);
 		DmxMessagePacket.register(registry);
@@ -49,6 +50,7 @@ public class CoreArtemisProtocol implements Protocol {
 		KeyCaptureTogglePacket.register(registry);
 		NebulaUpdatePacket.register(registry);
 		PausePacket.register(registry);
+		PerspectivePacket.register(registry);
 		PlayerShipDamagePacket.register(registry);
 		VersionPacket.register(registry);
 		WelcomePacket.register(registry);
@@ -56,6 +58,7 @@ public class CoreArtemisProtocol implements Protocol {
 		// client
 		// -- prioritized
 		ToggleShieldsPacket.register(registry);
+		FireBeamPacket.register(registry);
 		FireTubePacket.register(registry);
 		ToggleAutoBeamsPacket.register(registry);
 		SetWeaponsTargetPacket.register(registry);

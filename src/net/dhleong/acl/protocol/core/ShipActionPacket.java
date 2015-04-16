@@ -29,7 +29,7 @@ public abstract class ShipActionPacket extends BaseArtemisPacket {
     protected static final byte TYPE_READY              = 0x0f;
     protected static final byte TYPE_SCI_SELECT         = 0x10; 
     protected static final byte TYPE_CAPTAIN_SELECT     = 0x11;
-
+    protected static final byte TYPE_GAME_MASTER_SELECT = 0x12;
     protected static final byte TYPE_SCI_SCAN           = 0x13;
     protected static final byte TYPE_KEYSTROKE          = 0x14;
 

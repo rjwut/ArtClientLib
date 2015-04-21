@@ -15,6 +15,7 @@ public abstract class BaseArtemisShip extends BaseArtemisShielded {
     private float mSteering = -1;
     private float mTopSpeed = -1;
     private float mTurnRate = -1;
+    private float mImpulse = -1;
 
     public BaseArtemisShip(int objId, String name, int hullId) {
         super(objId, name, hullId);
@@ -102,6 +103,18 @@ public abstract class BaseArtemisShip extends BaseArtemisShielded {
         mShieldFreqs[freq.ordinal()] = value;
     }
 
+    /**
+     * Impulse setting, as a value from 0 (all stop) and 1 (full impulse).
+     * Unspecified: -1
+     */
+    public float getImpulse() {
+        return mImpulse;
+    }
+
+    public void setImpulse(float impulseSlider) {
+        mImpulse = impulseSlider;
+    }
+
     @Override
     public void updateFrom(ArtemisObject eng) {
         super.updateFrom(eng);
@@ -132,7 +145,11 @@ public abstract class BaseArtemisShip extends BaseArtemisShielded {
             if (ship.mShieldsRearMax != -1) {
                 mShieldsRearMax = ship.mShieldsRearMax;
             }
-            
+
+            if (ship.mImpulse != -1) {
+            	mImpulse = ship.mImpulse;
+            }
+
             for (int i = 0; i < mShieldFreqs.length; i++) {
             	float value = ship.mShieldFreqs[i];
 
@@ -159,5 +176,6 @@ public abstract class BaseArtemisShip extends BaseArtemisShielded {
     	putProp(props, "Rudder", mSteering, -1, includeUnspecified);
     	putProp(props, "Top speed", mTopSpeed, -1, includeUnspecified);
     	putProp(props, "Turn rate", mTurnRate, -1, includeUnspecified);
+    	putProp(props, "Impulse", mImpulse, -1, includeUnspecified);
     }
 }

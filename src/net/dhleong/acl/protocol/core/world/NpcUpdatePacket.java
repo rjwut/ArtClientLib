@@ -40,7 +40,7 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
 
 	private enum Bit {
 		NAME,
-		UNK_1_2,
+		IMPULSE,
 		UNK_1_3,
 		MAX_IMPULSE,
 		MAX_TURN_RATE,
@@ -62,7 +62,7 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
 		AFT_SHIELD,
 		AFT_SHIELD_MAX,
 		UNK_3_5,
-		UNK_3_6,
+		FLEET_NUMBER,
 		ELITE_ABILITIES,
 		ELITE_STATE,
 
@@ -118,13 +118,14 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
     	super(ConnectionType.SERVER, WORLD_TYPE);
 
     	while (reader.hasMore()) {
-            float x, y, z, pitch, roll, heading, velocity, maxImpulse, maxTurnRate;
+            float impulse, x, y, z, pitch, roll, heading, velocity, maxImpulse, maxTurnRate;
             float[] sysDamage = new float[SYSTEM_DAMAGES.length];
             float[] freqs = new float[SHLD_FREQS.length];
             int scanned = -1;
             String name = null;
             BoolState enemy;
             int hullId = -1;
+            byte fleetNumber;
             int elite = -1;
             int eliteState = -1;
             float shieldsFront, shieldsFrontMax;
@@ -133,9 +134,8 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
 
             reader.startObject(Bit.values());
             name = reader.readString(Bit.NAME);
+            impulse = reader.readFloat(Bit.IMPULSE, -1);
 
-            // no idea what these are
-            reader.readObjectUnknown(Bit.UNK_1_2, 4);
             reader.readObjectUnknown(Bit.UNK_1_3, 4);
 
             maxImpulse = reader.readFloat(Bit.MAX_IMPULSE, -1);
@@ -160,8 +160,8 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
             shieldsRearMax = reader.readFloat(Bit.AFT_SHIELD_MAX, -1);
 
             reader.readObjectUnknown(Bit.UNK_3_5, 2);
-            reader.readObjectUnknown(Bit.UNK_3_6, 1);
 
+            fleetNumber = reader.readByte(Bit.FLEET_NUMBER, (byte) -1);
             elite = reader.readInt(Bit.ELITE_ABILITIES, -1);
             eliteState = reader.readInt(Bit.ELITE_STATE, -1);
             scanned = reader.readInt(Bit.UNK_4_1);
@@ -195,6 +195,7 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
             obj.setEliteStateBits(eliteState);
             
             // shared updates
+            obj.setImpulse(impulse);
             obj.setX(x);
             obj.setY(y);
             obj.setZ(z);
@@ -203,6 +204,7 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
             obj.setHeading(heading);
             obj.setVelocity(velocity);
             obj.setSurrendered(surrendered);
+            obj.setFleetNumber(fleetNumber);
             obj.setTopSpeed(maxImpulse);
             obj.setTurnRate(maxTurnRate);
             
@@ -234,7 +236,7 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
 			ArtemisNpc npc = (ArtemisNpc) obj;
 			writer	.startObject(obj, bits)
 					.writeString(Bit.NAME, npc.getName())
-					.writeUnknown(Bit.UNK_1_2)
+					.writeFloat(Bit.IMPULSE, npc.getImpulse(), -1)
 					.writeUnknown(Bit.UNK_1_3)
 					.writeFloat(Bit.MAX_IMPULSE, npc.getTopSpeed(), -1)
 					.writeFloat(Bit.MAX_TURN_RATE, npc.getTurnRate(), -1)
@@ -254,7 +256,7 @@ public class NpcUpdatePacket extends BaseArtemisPacket implements ObjectUpdating
 					.writeFloat(Bit.AFT_SHIELD, npc.getShieldsRear(), Float.MIN_VALUE)
 					.writeFloat(Bit.AFT_SHIELD_MAX, npc.getShieldsRearMax(), -1)
 					.writeUnknown(Bit.UNK_3_5)
-					.writeUnknown(Bit.UNK_3_6)
+					.writeByte(Bit.FLEET_NUMBER, npc.getFleetNumber(), (byte) -1)
 					.writeInt(Bit.ELITE_ABILITIES, npc.getEliteBits(), -1)
 					.writeInt(Bit.ELITE_STATE, npc.getEliteStateBits(), -1)
 					.writeInt(Bit.UNK_4_1, npc.getScanLevel(), -1)

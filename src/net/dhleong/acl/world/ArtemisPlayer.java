@@ -31,7 +31,6 @@ public class ArtemisPlayer extends BaseArtemisShip {
     private MainScreenView mMainScreen;
     private int mAvailableCoolant = -1;
     private int mWeaponsTarget = -1;
-    private float mImpulse = -1;
     private byte mWarp = -1;
     private BeamFrequency mBeamFreq;
     private DriveType mDriveType;
@@ -334,18 +333,6 @@ public class ArtemisPlayer extends BaseArtemisShip {
 	}
 
     /**
-     * Impulse setting, as a value from 0 (all stop) and 1 (full impulse).
-     * Unspecified: -1
-     */
-    public float getImpulse() {
-        return mImpulse;
-    }
-
-    public void setImpulse(float impulseSlider) {
-        mImpulse = impulseSlider;
-    }
-
-    /**
      * The type of drive system the ship has.
      * Unspecified: null
      */
@@ -467,17 +454,13 @@ public class ArtemisPlayer extends BaseArtemisShip {
                 mWeaponsTarget = plr.mWeaponsTarget;
             }
 
-            if (plr.mImpulse != -1) {
-                mImpulse = plr.mImpulse;
-            }
-
             if (plr.mWarp != -1) {
             	mWarp = plr.mWarp;
             }
 
             if (plr.mDockingBase != -1) {
                 mDockingBase = plr.mDockingBase;
-            } else if (plr.mImpulse != -1 || plr.mWarp != -1) {
+            } else if (plr.getImpulse() != -1 || plr.mWarp != -1) {
             	mDockingBase = 0;
             }
 
@@ -618,7 +601,6 @@ public class ArtemisPlayer extends BaseArtemisShip {
     	putProp(props, "Docking base", mDockingBase, -1, includeUnspecified);
     	putProp(props, "Main screen view", mMainScreen, includeUnspecified);
     	putProp(props, "Coolant", mAvailableCoolant, -1, includeUnspecified);
-    	putProp(props, "Impulse", mImpulse, -1, includeUnspecified);
     	putProp(props, "Warp", mWarp, -1, includeUnspecified);
     	putProp(props, "Beam frequency", mBeamFreq, includeUnspecified);
     	putProp(props, "Drive type", mDriveType, includeUnspecified);

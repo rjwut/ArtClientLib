@@ -20,11 +20,12 @@ public class ArtemisNpc extends BaseArtemisShip {
     // scan levels... only 2 for now
     public static final byte SCAN_LEVEL_BASIC = 1;
     public static final byte SCAN_LEVEL_FULL  = 2;
-    
+
     private byte mScanLevel = -1;
     private int mElite = -1, mEliteState = -1;
     private BoolState mEnemy = BoolState.UNKNOWN;
     private BoolState mSurrendered = BoolState.UNKNOWN;
+    private byte mFleetNumber = (byte) -1;
     private String mIntel;
     private final float[] mSysDamage = new float[8];
 
@@ -65,6 +66,18 @@ public class ArtemisNpc extends BaseArtemisShip {
 
     public void setSurrendered(BoolState surrendered) {
     	mSurrendered = surrendered;
+    }
+
+    /**
+     * Returns the ship's fleet number.
+     * Unspecified: -1
+     */
+    public byte getFleetNumber() {
+    	return mFleetNumber;
+    }
+
+    public void setFleetNumber(byte fleetNumber) {
+    	mFleetNumber = fleetNumber;
     }
 
     /**
@@ -180,6 +193,10 @@ public class ArtemisNpc extends BaseArtemisShip {
             	mSurrendered = surrendered;
             }
 
+            if (cast.mFleetNumber != (byte) -1) {
+            	setFleetNumber(cast.mFleetNumber);
+            }
+
             if (cast.mScanLevel != -1) {
                 setScanLevel(cast.mScanLevel);
             }
@@ -236,6 +253,7 @@ public class ArtemisNpc extends BaseArtemisShip {
 
     	putProp(props, "Is enemy", mEnemy, includeUnspecified);
     	putProp(props, "Surrendered", mSurrendered, includeUnspecified);
+    	putProp(props, "Fleet number", mFleetNumber, -1, includeUnspecified);
     	putProp(props, "Intel", mIntel, includeUnspecified);
     	ShipSystem[] systems = ShipSystem.values();
 

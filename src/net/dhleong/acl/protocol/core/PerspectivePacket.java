@@ -17,7 +17,7 @@ import net.dhleong.acl.protocol.UnexpectedTypeException;
  */
 public class PerspectivePacket extends BaseArtemisPacket {
 	private static final int TYPE = 0xf754c8fe;
-    private static final byte MSG_TYPE = 0x06;
+    private static final byte MSG_TYPE = 0x12;
 
 	public static void register(PacketFactoryRegistry registry) {
 		registry.register(ConnectionType.SERVER, TYPE, MSG_TYPE,

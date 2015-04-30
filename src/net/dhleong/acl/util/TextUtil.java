@@ -1,7 +1,7 @@
 package net.dhleong.acl.util;
 
 /**
- * Various utility methods for coercing between hax values and other formats.
+ * Various utility methods for coercing between hex values and other formats.
  */
 public class TextUtil {
 	/**

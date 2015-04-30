@@ -1,13 +1,17 @@
 package net.dhleong.acl.protocol;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
 
@@ -21,8 +25,8 @@ import net.dhleong.acl.iface.PacketWriter;
 import net.dhleong.acl.util.TextUtil;
 
 /**
- * Class that can slurp in a file containing packet data and store it as a byte
- * array, then perform various operations useful for testing.
+ * Class that can read and write test packet files, and perform various
+ * operations useful for testing.
  *
  * The test files don't contain the raw binary data. Instead, they contain hex-
  * encoded bytes for easier reading by humans. You can add white space for
@@ -43,6 +47,10 @@ import net.dhleong.acl.util.TextUtil;
  * @author rjwut
  */
 public class TestPacketFile {
+	public enum Mode {
+		READ, WRITE
+	}
+
 	private static final Charset UTF_8 = Charset.forName("UTF-8");
 
 	/**
@@ -56,32 +64,48 @@ public class TestPacketFile {
 		ConnectionType connType = ConnectionType.valueOf(args[1]);
 
 		try {
-			new TestPacketFile(new File(fileName)).test(connType);
+			new TestPacketFile(new File(fileName), Mode.READ).test(connType);
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
 	}
 
-	private byte[] bytes;
+	private Mode mode;
+	private byte[] bytes;               // bytes read in on read mode
+	private OutputStream os;            // destination stream for write mode
+	private ByteArrayOutputStream baos; // buffer for write mode
 
 	/**
 	 * Reads test packet data from the given File.
 	 */
-	public TestPacketFile(File file) throws IOException {
-		this(new FileInputStream(file));
+	public TestPacketFile(File file, Mode mode) throws IOException {
+		if (mode == Mode.READ) {
+			initRead(new FileInputStream(file));
+		} else if (mode == Mode.WRITE) {
+			initWrite(new FileOutputStream(file));
+		}
 	}
 
 	/**
 	 * Reads test packet data from the given URL.
 	 */
 	public TestPacketFile(URL url) throws IOException {
-		this(url.openStream());
+		initRead(url.openStream());
 	}
 
 	/**
 	 * Reads test packet data from the given InputStream.
 	 */
 	public TestPacketFile(InputStream is) throws IOException {
+		initRead(is);
+	}
+
+	public TestPacketFile(OutputStream os) {
+		initWrite(os);
+	}
+
+	private void initRead(InputStream is) throws IOException {
+		mode = Mode.READ;
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is, UTF_8));
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		String line;
@@ -107,15 +131,11 @@ public class TestPacketFile {
 		bytes = baos.toByteArray();
 	}
 
-	/**
-	 * Writes an int to the given byte array at the indicated offset.
-	 */
-	private static int writeInt(int v, byte[] bytes, int offset) {
-		bytes[offset++] = (byte) (v & 0xff);
-		bytes[offset++] = (byte) ((v >> 8) & 0xff);
-		bytes[offset++] = (byte) ((v >> 16) & 0xff);
-		bytes[offset++] = (byte) ((v >> 24) & 0xff);
-		return offset;
+	private void initWrite(OutputStream os) {
+		mode = Mode.WRITE;
+		this.os = os;
+		baos = new ByteArrayOutputStream();
+		
 	}
 
 	/**
@@ -124,6 +144,10 @@ public class TestPacketFile {
 	 * trace will be written out to System.err.
 	 */
 	public void test(ConnectionType connType) {
+		if (mode != Mode.READ) {
+			throw new IllegalStateException("test() only valid for read mode");
+		}
+
 		// Set up PacketReader
 		ListenerRegistry listeners = new ListenerRegistry();
 		listeners.register(this);
@@ -165,31 +189,14 @@ public class TestPacketFile {
 	}
 
 	/**
-	 * Returns true if the given byte arrays match. Otherwise, it prints out a
-	 * description of the packet and the input and output byte arrays and
-	 * returns false.
-	 */
-	private static boolean diff(ArtemisPacket pkt, byte[] in, byte[] out) {
-		boolean ok = in.length == out.length;
-
-		for (int i = 0; ok && i < in.length; i++) {
-			ok = in[i] == out[i];
-		}
-
-		if (!ok) {
-			System.out.println(pkt);
-			System.out.println("   IN: " + TextUtil.byteArrayToHexString(in));
-			System.out.println("  OUT: " + TextUtil.byteArrayToHexString(out));
-		}
-
-		return ok;
-	}
-
-	/**
 	 * Returns a PacketReader of the given type that will consume the bytes from
 	 * this file.
 	 */
 	public PacketReader toPacketReader(ConnectionType type) {
+		if (mode != Mode.READ) {
+			throw new IllegalStateException("toPacketReader() only valid for read mode");
+		}
+
 		ListenerRegistry listeners = new ListenerRegistry();
 		listeners.register(this);
 		return new PacketReader(
@@ -201,8 +208,33 @@ public class TestPacketFile {
 	}
 
 	/**
-	 * Do nothing; this simply forces all packets to be read; the actual test
-	 * work is handled by the PacketTestDebugger class.
+	 * Returns a PacketWriter of the given type to write packets to the OutputStream.
+	 */
+	public PacketWriter toPacketWriter(ConnectionType type) {
+		if (mode != Mode.WRITE) {
+			throw new IllegalStateException("toPacketWriter() only valid for write mode");
+		}
+
+		return new PacketWriter(baos);
+	}
+
+	/**
+	 * Flushes the packets which have been written to the OutputStream and closes it.
+	 */
+	public void close() throws IOException {
+		if (mode != Mode.WRITE) {
+			throw new IllegalStateException("flush() only valid for read mode");
+		}
+
+		BufferedOutputStream bos = new BufferedOutputStream(os);
+		OutputStreamWriter writer = new OutputStreamWriter(bos);
+		writer.append(TextUtil.byteArrayToHexString(baos.toByteArray()));
+		writer.close();
+	}
+
+	/**
+	 * Do nothing upon parsing a packet; this simply forces all packets to be
+	 * read; the actual test work is handled by the PacketTestDebugger class.
 	 */
 	@Listener
 	public void onPacket(ArtemisPacket pkt) {
@@ -214,6 +246,10 @@ public class TestPacketFile {
 	 * from this file; false otherwise.
 	 */
 	public boolean matches(ByteArrayOutputStream baos) {
+		if (mode != Mode.READ) {
+			throw new IllegalStateException("matches() only valid for read mode");
+		}
+
 		byte[] bytes2 = baos.toByteArray();
 
 		if (bytes.length != bytes2.length) {
@@ -231,7 +267,7 @@ public class TestPacketFile {
 
 	@Override
 	public String toString() {
-		return TextUtil.byteArrayToHexString(bytes);
+		return TextUtil.byteArrayToHexString(mode == Mode.READ ? bytes : baos.toByteArray());
 	}
 
 
@@ -262,5 +298,37 @@ public class TestPacketFile {
 		public void warn(String msg) {
 			System.out.println(msg);
 		}
+	}
+
+	/**
+	 * Writes an int to the given byte array at the indicated offset.
+	 */
+	private static int writeInt(int v, byte[] bytes, int offset) {
+		bytes[offset++] = (byte) (v & 0xff);
+		bytes[offset++] = (byte) ((v >> 8) & 0xff);
+		bytes[offset++] = (byte) ((v >> 16) & 0xff);
+		bytes[offset++] = (byte) ((v >> 24) & 0xff);
+		return offset;
+	}
+
+	/**
+	 * Returns true if the given byte arrays match. Otherwise, it prints out a
+	 * description of the packet and the input and output byte arrays and
+	 * returns false.
+	 */
+	private static boolean diff(ArtemisPacket pkt, byte[] in, byte[] out) {
+		boolean ok = in.length == out.length;
+
+		for (int i = 0; ok && i < in.length; i++) {
+			ok = in[i] == out[i];
+		}
+
+		if (!ok) {
+			System.out.println(pkt);
+			System.out.println("   IN: " + TextUtil.byteArrayToHexString(in));
+			System.out.println("  OUT: " + TextUtil.byteArrayToHexString(out));
+		}
+
+		return ok;
 	}
 }

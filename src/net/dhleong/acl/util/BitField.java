@@ -15,21 +15,27 @@ public class BitField {
 	private byte[] bytes;
 
 	/**
-	 * Creates a BitField large enough to accomodate the enumerated bits. All
+	 * Creates a BitField large enough to accommodate the enumerated bits. All
 	 * bits start at 0.
 	 */
 	public BitField(Enum<?>[] bits) {
-		int byteCount = (bits.length + 7) / 8;
-		this.bytes = new byte[byteCount];
+		this(bits.length);
 	}
 
 	/**
-	 * Creates a BitField large enough to accomodate the enumerated bits, and
+	 * Creates a BitField large enough to accommodate the enumerated bits, and
 	 * stores the indicated bytes in it.
 	 */
 	public BitField(Enum<?>[] bits, byte[] bytes, int offset) {
 		int byteCount = (bits.length + 7) / 8;
 		this.bytes = Arrays.copyOfRange(bytes, offset, offset + byteCount);
+	}
+
+	/**
+	 * Creates a BitField with the given number of bits. All bits start at 0.
+	 */
+	public BitField(int bitCount) {
+		this.bytes = new byte[(bitCount + 7) / 8];
 	}
 
 	/**

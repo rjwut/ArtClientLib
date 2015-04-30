@@ -36,27 +36,27 @@ public class EngSetCoolantPacket extends BaseArtemisPacket {
 	}
 
     private ShipSystem mSystem;
-    private int mValue;
+    private int mCoolant;
 
     /**
      * @param system The ShipSystem whose coolant level is to be set
-     * @param value The amount of coolant to allocate
+     * @param coolant The amount of coolant to allocate
      */
-    public EngSetCoolantPacket(ShipSystem system, int value) {
+    public EngSetCoolantPacket(ShipSystem system, int coolant) {
         super(ConnectionType.CLIENT, TYPE);
 
         if (system == null) {
         	throw new IllegalArgumentException("You must provide a system");
         }
 
-        if (value < 0) {
+        if (coolant < 0) {
         	throw new IllegalArgumentException(
         			"You cannot allocate a negative amount of coolant"
         	);
         }
 
         mSystem = system;
-        mValue = value;
+        mCoolant = coolant;
     }
 
     private EngSetCoolantPacket(PacketReader reader) {
@@ -68,18 +68,26 @@ public class EngSetCoolantPacket extends BaseArtemisPacket {
     	}
 
     	mSystem = ShipSystem.values()[reader.readInt()];
-    	mValue = reader.readInt();
+    	mCoolant = reader.readInt();
     }
 
-	@Override
+    public ShipSystem getSystem() {
+    	return mSystem;
+    }
+
+    public int getCoolant() {
+    	return mCoolant;
+    }
+
+    @Override
 	protected void writePayload(PacketWriter writer) {
     	writer	.writeInt(SUBTYPE)
     			.writeInt(mSystem.ordinal())
-    			.writeInt(mValue);
+    			.writeInt(mCoolant);
 	}
 
 	@Override
 	protected void appendPacketDetail(StringBuilder b) {
-		b.append(mSystem).append(" = ").append(mValue);
+		b.append(mSystem).append(" = ").append(mCoolant);
 	}
 }

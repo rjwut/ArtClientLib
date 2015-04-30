@@ -96,7 +96,7 @@ public class SystemManager {
 
         if (damages.size() > 0 && mGridDamage != null) {
             for (GridDamage d : damages) {
-                mGridDamage.put(d.coord, d.damage);
+                mGridDamage.put(d.getCoord(), d.getDamage());
             }
         }
         

@@ -121,7 +121,7 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
 
 	@Override
 	protected void writePayload(PacketWriter writer) {
-		writer.writeByte((byte) 1);
+		writer.writeByte((byte) 1); // unknown
 
 		for (GridDamage damage : mDamage) {
 			GridCoord coord = damage.coord;
@@ -135,12 +135,12 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
 
 		for (DamconStatus update : mDamconUpdates) {
 			writer	.writeByte((byte) (update.teamNumber + TEAM_NUMBER_OFFSET))
-					.writeInt(update.xGoal)
-					.writeInt(update.x)
-					.writeInt(update.yGoal)
-					.writeInt(update.y)
-					.writeInt(update.zGoal)
-					.writeInt(update.z)
+					.writeInt(update.goal.getX())
+					.writeInt(update.pos.getX())
+					.writeInt(update.goal.getY())
+					.writeInt(update.pos.getY())
+					.writeInt(update.goal.getZ())
+					.writeInt(update.pos.getZ())
 					.writeFloat(update.progress)
 					.writeInt(update.members);
 		}
@@ -177,12 +177,20 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
      * @author dhleong
 	 */
     public static final class GridDamage {
-        public final GridCoord coord;
-        public final float damage;
+        private final GridCoord coord;
+        private final float damage;
 
         private GridDamage(GridCoord coord, float damage) {
             this.coord = coord;
             this.damage = damage;
+        }
+
+        public GridCoord getCoord() {
+        	return coord;
+        }
+
+        public float getDamage() {
+        	return damage;
         }
 
         @Override
@@ -215,21 +223,17 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
      * @author dhleong
      */
     public static final class DamconStatus {
-        int teamNumber, members;
-        int xGoal, yGoal, zGoal;
-        int x, y, z;
-        float progress;
+        private int teamNumber, members;
+        private GridCoord goal;
+        private GridCoord pos;
+        private float progress;
         
         public DamconStatus(int teamNumber, int members, int xGoal,
                 int yGoal, int zGoal, int x, int y, int z, float progress) {
             this.teamNumber = teamNumber;
             this.members = members;
-            this.xGoal = xGoal;
-            this.yGoal = yGoal;
-            this.zGoal = zGoal;
-            this.x = x;
-            this.y = y;
-            this.z = z;
+            goal = GridCoord.getInstance(xGoal, yGoal, zGoal);
+            pos = GridCoord.getInstance(x, y, z);
             this.progress = progress;
         }
 
@@ -248,24 +252,17 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
         }
 
         /**
-         * The grid location of this DAMCON team on the X-axis.
+         * The coordinates of the DAMCON team's current location.
          */
-        public int getX() {
-            return x;
+        public GridCoord getPosition() {
+        	return pos;
         }
-        
+
         /**
-         * The grid location of this DAMCON team on the Y-axis.
+         * The coordinates of the DAMCON team's goal.
          */
-        public int getY() {
-            return y;
-        }
-        
-        /**
-         * The grid location of this DAMCON team on the Z-axis.
-         */
-        public int getZ() {
-            return z;
+        public GridCoord getGoal() {
+        	return goal;
         }
 
         /**
@@ -279,19 +276,12 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
             this.members = other.members;
             
             if (other.progress < PROGRESS_EPSILON && progress > 0) {
-                // we've made it to our goal!
-                this.x = xGoal;
-                this.y = yGoal;
-                this.z = zGoal;
+            	this.pos = goal;
             } else {
-                this.x = other.x;
-                this.y = other.y;
-                this.z = other.z;
+            	this.pos = other.pos;
             }
-            
-            this.xGoal = other.xGoal;
-            this.yGoal = other.yGoal;
-            this.zGoal = other.zGoal;
+
+            this.goal = other.goal;
             this.progress = other.progress;
         }
      
@@ -300,9 +290,9 @@ public class EngGridUpdatePacket extends BaseArtemisPacket {
         	StringBuilder b = new StringBuilder();
         	b.append("Team #").append(teamNumber)
         	.append(" (").append(members).append("): ")
-        	.append(x).append(",").append(y).append(",").append(z)
+        	.append(pos)
         	.append(" => ")
-        	.append(xGoal).append(",").append(yGoal).append(",").append(zGoal)
+        	.append(goal)
         	.append(" (").append(progress).append(")");
         	return b.toString();
         }

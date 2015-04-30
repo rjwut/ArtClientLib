@@ -7,7 +7,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.iface.BaseDebugger;
@@ -23,9 +23,10 @@ import net.dhleong.acl.protocol.TestPacketFile;
  * Abstract class that can be extended for testing individual packet types.
  */
 public abstract class AbstractPacketTester<T extends ArtemisPacket> {
+	// Are we running in debug mode?
 	private static final boolean DEBUG = ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("jdwp") >= 0;
 
-	protected static final float EPSILON = 0.00000001f;
+	protected static final float EPSILON = 0.00000001f; // for float equality checks
 
 	/**
 	 * Invoked by AbstractPacketTester when it has successfully parsed the
@@ -51,7 +52,7 @@ public abstract class AbstractPacketTester<T extends ArtemisPacket> {
 			TestPacketFile file = new TestPacketFile(url);
 
 			if (DEBUG) {
-				System.out.println("### " + resourcePath + " ###");
+				System.out.println("\n### " + resourcePath);
 			}
 
 			// Parse the desired number of packets
@@ -62,15 +63,17 @@ public abstract class AbstractPacketTester<T extends ArtemisPacket> {
 				T pkt = (T) reader.readPacket(debugger);
 				Assert.assertNotNull(pkt);
 				list.add(pkt);
+				Assert.assertFalse(reader.hasMore()); // Any bytes left over?
 			}
 
-			// Any bytes left over?
-			Assert.assertFalse(reader.hasMore());
-
-			// Do type-specific tests
+			// Delegate to subclass for type-specific tests
 			testPackets(list);
 
-			// Write packets back out and compare bytes
+			// Write packets back out
+			if (DEBUG) {
+				System.out.println("Writing packets...");
+			}
+
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			PacketWriter writer = new PacketWriter(baos);
 	
@@ -78,7 +81,12 @@ public abstract class AbstractPacketTester<T extends ArtemisPacket> {
 				pkt.writeTo(writer, debugger);
 			}
 
+			// Compare written bytes to originals
 			Assert.assertTrue(file.matches(baos));
+
+			if (DEBUG) {
+				System.out.println("Input and output bytes match");
+			}
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		} catch (ArtemisPacketException ex) {

@@ -2,7 +2,7 @@ package net.dhleong.acl.protocol.core.setup;
 
 import java.util.List;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import net.dhleong.acl.enums.ConnectionType;
 

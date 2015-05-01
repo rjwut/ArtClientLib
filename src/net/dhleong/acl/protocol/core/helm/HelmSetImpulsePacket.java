@@ -59,7 +59,11 @@ public class HelmSetImpulsePacket extends BaseArtemisPacket {
     	mPower = reader.readFloat();
     }
 
-	@Override
+    public float getPower() {
+    	return mPower;
+    }
+
+    @Override
 	protected void writePayload(PacketWriter writer) {
 		writer.writeInt(SUBTYPE).writeFloat(mPower);
 	}

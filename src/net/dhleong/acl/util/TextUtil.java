@@ -72,13 +72,6 @@ public class TextUtil {
     }
 
     /**
-     * Converts a hex String to an int.
-     */
-    public static int hexToInt(char byte1, char byte2) {
-        return Integer.parseInt(String.format("%c%c", byte1, byte2), 16);
-    }
-
-    /**
      * Converts a hex String to a byte array.
      */
     public static byte[] hexToByteArray(String hex) {

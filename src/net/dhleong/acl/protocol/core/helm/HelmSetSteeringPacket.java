@@ -63,7 +63,11 @@ public class HelmSetSteeringPacket extends BaseArtemisPacket {
     	mSteering = reader.readFloat();
     }
 
-	@Override
+    public float getSteering() {
+    	return mSteering;
+    }
+
+    @Override
 	protected void writePayload(PacketWriter writer) {
     	writer.writeInt(SUBTYPE).writeFloat(mSteering);
 	}

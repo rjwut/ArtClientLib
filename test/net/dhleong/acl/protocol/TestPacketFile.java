@@ -107,7 +107,7 @@ public class TestPacketFile {
 	private void initRead(InputStream is) throws IOException {
 		mode = Mode.READ;
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is, UTF_8));
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		String line;
 
 		while ((line = reader.readLine()) != null) {
@@ -124,18 +124,17 @@ public class TestPacketFile {
 				continue;	// no actual data on this line
 			}
 
-			baos.write(TextUtil.hexToByteArray(line));
+			out.write(TextUtil.hexToByteArray(line));
 		}
 
 		reader.close();
-		bytes = baos.toByteArray();
+		bytes = out.toByteArray();
 	}
 
-	private void initWrite(OutputStream os) {
+	private void initWrite(OutputStream outputStream) {
 		mode = Mode.WRITE;
-		this.os = os;
+		this.os = outputStream;
 		baos = new ByteArrayOutputStream();
-		
 	}
 
 	/**
@@ -171,10 +170,10 @@ public class TestPacketFile {
 				byte[] in = debugger.in;
 
 				// Write the bytes out to a ByteArrayOutputStream
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				PacketWriter writer = new PacketWriter(baos);
+				ByteArrayOutputStream baosOut = new ByteArrayOutputStream();
+				PacketWriter writer = new PacketWriter(baosOut);
 				pkt.writeTo(writer, debugger);
-				byte[] out = baos.toByteArray();
+				byte[] out = baosOut.toByteArray();
 
 				// Compare against original bytes
 				if (!diff(pkt, in, out)) {
@@ -245,12 +244,12 @@ public class TestPacketFile {
 	 * Returns true if the bytes in the given ByteArrayOutputStream match those
 	 * from this file; false otherwise.
 	 */
-	public boolean matches(ByteArrayOutputStream baos) {
+	public boolean matches(ByteArrayOutputStream baosOut) {
 		if (mode != Mode.READ) {
 			throw new IllegalStateException("matches() only valid for read mode");
 		}
 
-		byte[] bytes2 = baos.toByteArray();
+		byte[] bytes2 = baosOut.toByteArray();
 
 		if (bytes.length != bytes2.length) {
 			return false;

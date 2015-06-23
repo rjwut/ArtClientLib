@@ -40,10 +40,11 @@ public abstract class AbstractPacketTester<T extends ArtemisPacket> {
 
 	/**
 	 * Loads the test packet file at the indicated path and reads the given
-	 * number of packets from it. They are then passed to testPackets();
-	 * subclasses will override this to perform type-specific tests for those
-	 * packets. Finally, the packets will be written out to a stream, and the
-	 * resulting bytes compared to the original file.
+	 * number of packets from it. After building a human-readable description of
+	 * each packet, they are then passed to testPackets(); subclasses will
+	 * override this to perform type-specific tests for those packets. Finally,
+	 * the packets will be written out to a stream, and the resulting bytes
+	 * compared to the original file.
 	 */
 	protected void execute(String resourcePath, ConnectionType type, int packetCount) {
 		try {
@@ -64,6 +65,7 @@ public abstract class AbstractPacketTester<T extends ArtemisPacket> {
 				Assert.assertNotNull(pkt);
 				list.add(pkt);
 				Assert.assertFalse(reader.hasMore()); // Any bytes left over?
+				pkt.toString();
 			}
 
 			// Delegate to subclass for type-specific tests

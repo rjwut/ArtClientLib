@@ -60,7 +60,11 @@ public class ClimbDivePacket extends BaseArtemisPacket {
         mUp = reader.readInt() == UP;
     }
 
-	@Override
+    public boolean isUp() {
+    	return mUp;
+    }
+
+    @Override
 	protected void writePayload(PacketWriter writer) {
 		writer.writeInt(SUBTYPE).writeInt(mUp ? UP : DOWN);
 	}

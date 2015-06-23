@@ -30,6 +30,10 @@ public enum VesselAttribute {
 	ANOMALYEATER,
 	SENTIENT;
 
+	/**
+	 * Returns a Set containing the VesselAttributes that correspond to the
+	 * space-delimited list of attribute names in the given String.
+	 */
 	public static Set<VesselAttribute> build(String broadType) {
 		String[] tokens = broadType.split(" ");
 		Set<VesselAttribute> attrs = new HashSet<VesselAttribute>();

@@ -15,6 +15,7 @@ public abstract class BaseArtemisShip extends BaseArtemisShielded {
     private float mSteering = -1;
     private float mTopSpeed = -1;
     private float mTurnRate = -1;
+    private float mImpulse = -1;
 
     public BaseArtemisShip(int objId, String name, int hullId) {
         super(objId, name, hullId);
@@ -90,7 +91,8 @@ public abstract class BaseArtemisShip extends BaseArtemisShielded {
 
     /**
      * A value between 0 and 1 indicating the shields' resistance to the given
-     * BeamFrequency.
+     * BeamFrequency. Higher values indicate that the shields are more resistant
+     * to that frequency.
      * Unspecified: -1
      */
     public float getShieldFreq(BeamFrequency freq) {
@@ -99,6 +101,18 @@ public abstract class BaseArtemisShip extends BaseArtemisShielded {
     
     public void setShieldFreq(BeamFrequency freq, float value) {
         mShieldFreqs[freq.ordinal()] = value;
+    }
+
+    /**
+     * Impulse setting, as a value from 0 (all stop) and 1 (full impulse).
+     * Unspecified: -1
+     */
+    public float getImpulse() {
+        return mImpulse;
+    }
+
+    public void setImpulse(float impulseSlider) {
+        mImpulse = impulseSlider;
     }
 
     @Override
@@ -131,7 +145,11 @@ public abstract class BaseArtemisShip extends BaseArtemisShielded {
             if (ship.mShieldsRearMax != -1) {
                 mShieldsRearMax = ship.mShieldsRearMax;
             }
-            
+
+            if (ship.mImpulse != -1) {
+            	mImpulse = ship.mImpulse;
+            }
+
             for (int i = 0; i < mShieldFreqs.length; i++) {
             	float value = ship.mShieldFreqs[i];
 
@@ -158,5 +176,6 @@ public abstract class BaseArtemisShip extends BaseArtemisShielded {
     	putProp(props, "Rudder", mSteering, -1, includeUnspecified);
     	putProp(props, "Top speed", mTopSpeed, -1, includeUnspecified);
     	putProp(props, "Turn rate", mTurnRate, -1, includeUnspecified);
+    	putProp(props, "Impulse", mImpulse, -1, includeUnspecified);
     }
 }

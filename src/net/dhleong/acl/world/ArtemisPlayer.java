@@ -30,7 +30,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
     private int mDockingBase = -1;
     private MainScreenView mMainScreen;
     private int mAvailableCoolant = -1;
-    private float mImpulse = -1;
+    private int mWeaponsTarget = -1;
     private byte mWarp = -1;
     private BeamFrequency mBeamFreq;
     private DriveType mDriveType;
@@ -254,7 +254,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
     }
 
     /**
-     * Sents the contents of the given tube. The tube state must be set to a
+     * Sets the contents of the given tube. The tube state must be set to a
      * value other than TubeState.UNLOADED before invoking this method.
      */
     public void setTubeContents(int tube, OrdnanceType type) {
@@ -333,18 +333,6 @@ public class ArtemisPlayer extends BaseArtemisShip {
 	}
 
     /**
-     * Impulse setting, as a value from 0 (all stop) and 1 (full impulse).
-     * Unspecified: -1
-     */
-    public float getImpulse() {
-        return mImpulse;
-    }
-
-    public void setImpulse(float impulseSlider) {
-        mImpulse = impulseSlider;
-    }
-
-    /**
      * The type of drive system the ship has.
      * Unspecified: null
      */
@@ -407,9 +395,23 @@ public class ArtemisPlayer extends BaseArtemisShip {
     }
 
     /**
+     * The ID of the object targeted by the weapons officer. If the target is
+     * cleared, this method returns 1.
+     * Unspecified: -1
+     */
+    public int getWeaponsTarget() {
+    	return mWeaponsTarget;
+    }
+
+    public void setWeaponsTarget(int weaponsTarget) {
+    	mWeaponsTarget = weaponsTarget;
+    }
+
+    /**
      * The ID of the object being scanned. Note that this is distinct from the
      * science target: science can start a scan then change targets, but the
-     * scan continues on the original target.
+     * scan continues on the original target as long as science has not
+     * initiated a new scan.
      * Unspecified: -1
      */
     public int getScanObjectId() {
@@ -448,8 +450,8 @@ public class ArtemisPlayer extends BaseArtemisShip {
             	mAutoBeams = plr.mAutoBeams;
             }
 
-            if (plr.mImpulse != -1) {
-                mImpulse = plr.mImpulse;
+            if (plr.mWeaponsTarget != -1) {
+                mWeaponsTarget = plr.mWeaponsTarget;
             }
 
             if (plr.mWarp != -1) {
@@ -458,7 +460,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
 
             if (plr.mDockingBase != -1) {
                 mDockingBase = plr.mDockingBase;
-            } else if (plr.mImpulse != -1 || plr.mWarp != -1) {
+            } else if (plr.getImpulse() != -1 || plr.mWarp != -1) {
             	mDockingBase = 0;
             }
 
@@ -599,7 +601,6 @@ public class ArtemisPlayer extends BaseArtemisShip {
     	putProp(props, "Docking base", mDockingBase, -1, includeUnspecified);
     	putProp(props, "Main screen view", mMainScreen, includeUnspecified);
     	putProp(props, "Coolant", mAvailableCoolant, -1, includeUnspecified);
-    	putProp(props, "Impulse", mImpulse, -1, includeUnspecified);
     	putProp(props, "Warp", mWarp, -1, includeUnspecified);
     	putProp(props, "Beam frequency", mBeamFreq, includeUnspecified);
     	putProp(props, "Drive type", mDriveType, includeUnspecified);
@@ -607,6 +608,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
     	putProp(props, "Scan target", mScienceTarget, -1, includeUnspecified);
     	putProp(props, "Scan progress", mScanProgress, -1, includeUnspecified);
     	putProp(props, "Scan object ID", mScanningId, -1, includeUnspecified);
+    	putProp(props, "Weapons target", mWeaponsTarget, -1, includeUnspecified);
     	putProp(props, "Captain target", mCaptainTarget, -1, includeUnspecified);
     }
 }

@@ -5,25 +5,41 @@ import net.dhleong.acl.vesseldata.Vessel;
 import net.dhleong.acl.world.ArtemisNpc;
 import net.dhleong.acl.world.ArtemisObject;
 
+/**
+ * The types of ArtemisObjects to which players can send COMMs messages. 
+ * @author rjwut
+ */
 public enum CommsRecipientType {
+	/**
+	 * Other player ships
+	 */
 	PLAYER {
 		@Override
 		public CommsMessage messageFromId(int id) {
 			return PlayerMessage.values()[id];
 		}
 	},
+	/**
+	 * NCP enemy ships
+	 */
 	ENEMY {
 		@Override
 		public CommsMessage messageFromId(int id) {
 			return EnemyMessage.values()[id];
 		}
 	},
+	/**
+	 * Bases
+	 */
 	BASE {
 		@Override
 		public CommsMessage messageFromId(int id) {
 			return BaseMessage.values()[id];
 		}
 	},
+	/**
+	 * Other (civilian NPCs)
+	 */
 	OTHER {
 		@Override
 		public CommsMessage messageFromId(int id) {
@@ -31,6 +47,11 @@ public enum CommsRecipientType {
 		}
 	};
 
+	/**
+	 * Returns the CommsRecipientType that corresponds to the given
+	 * ArtemisObject; or null if the object in question cannot receive COMMs
+	 * messages.
+	 */
 	public static CommsRecipientType fromObject(ArtemisObject obj) {
 		ObjectType type = obj.getType();
 
@@ -56,5 +77,8 @@ public enum CommsRecipientType {
 		}
 	}
 
+	/**
+	 * Returns the CommsMessage value that corresponds to the given message ID.
+	 */
 	public abstract CommsMessage messageFromId(int id);
 }

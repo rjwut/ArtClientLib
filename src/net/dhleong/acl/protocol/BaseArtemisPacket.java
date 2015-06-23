@@ -10,7 +10,15 @@ import net.dhleong.acl.iface.PacketWriter;
  * Implements common packet functionality.
  */
 public abstract class BaseArtemisPacket implements ArtemisPacket {
+	/**
+	 * Causes the packet's payload to be written to the given PacketWriter.
+	 */
     protected abstract void writePayload(PacketWriter writer);
+
+    /**
+     * Writes packet type-specific details (debug info) to be written to the
+     * given StringBuilder.
+     */
     protected abstract void appendPacketDetail(StringBuilder b);
 
     private final ConnectionType mConnectionType;

@@ -36,9 +36,7 @@ public class EngSendDamconPacket extends BaseArtemisPacket {
 	}
 
     private int mTeamNumber;
-    private int mX;
-    private int mY;
-    private int mZ;
+    private GridCoord mCoord;
 
     /**
      * Send the team to grid node at x,y,z.
@@ -57,9 +55,7 @@ public class EngSendDamconPacket extends BaseArtemisPacket {
         }
 
         mTeamNumber = teamNumber;
-        mX = x;
-        mY = y;
-        mZ = z;
+        mCoord = GridCoord.getInstance(x, y, z);
     }
 
     /**
@@ -79,39 +75,28 @@ public class EngSendDamconPacket extends BaseArtemisPacket {
         }
 
         mTeamNumber = reader.readInt();
-        mX = reader.readInt();
-        mY = reader.readInt();
-        mZ = reader.readInt();
+        mCoord = GridCoord.getInstance(reader.readInt(), reader.readInt(), reader.readInt());
     }
 
     public int getTeamNumber() {
     	return mTeamNumber;
     }
 
-    public int getX() {
-    	return mX;
-    }
-
-    public int getY() {
-    	return mY;
-    }
-
-    public int getZ() {
-    	return mZ;
+    public GridCoord getDestination() {
+    	return mCoord;
     }
 
 	@Override
 	protected void writePayload(PacketWriter writer) {
 		writer	.writeInt(SUBTYPE)
 				.writeInt(mTeamNumber)
-				.writeInt(mX)
-				.writeInt(mY)
-				.writeInt(mZ);
+				.writeInt(mCoord.getX())
+				.writeInt(mCoord.getY())
+				.writeInt(mCoord.getZ());
 	}
 
 	@Override
 	protected void appendPacketDetail(StringBuilder b) {
-		b.append("Team #").append(mTeamNumber).append(" to [")
-		.append(mX).append(',').append(mY).append(',').append(mZ);
+		b.append("Team #").append(mTeamNumber).append(" to ").append(mCoord);
 	}
 }

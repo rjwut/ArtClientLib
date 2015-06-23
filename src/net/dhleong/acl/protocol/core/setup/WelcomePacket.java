@@ -18,7 +18,8 @@ import net.dhleong.acl.protocol.BaseArtemisPacket;
  */
 public class WelcomePacket extends BaseArtemisPacket {
 	private static final int TYPE = 0x6d04b3da;
-	private static final byte[] MSG = "You have connected to Thom Robertson's Artemis Bridge Simulator.  Please connect with an authorized game client.".getBytes(Charset.forName("US-ASCII"));
+	protected static final String MSG = "You have connected to Thom Robertson's Artemis Bridge Simulator.  Please connect with an authorized game client.";
+	private static final Charset ASCII = Charset.forName("US-ASCII");
 
 	public static void register(PacketFactoryRegistry registry) {
 		registry.register(ConnectionType.SERVER, TYPE, new PacketFactory() {
@@ -35,7 +36,7 @@ public class WelcomePacket extends BaseArtemisPacket {
 		});
 	}
 
-	private byte[] msg = MSG;
+	private byte[] msg = MSG.getBytes(ASCII);
 
 	private WelcomePacket(PacketReader reader) {
 		super(ConnectionType.SERVER, TYPE);
@@ -52,8 +53,15 @@ public class WelcomePacket extends BaseArtemisPacket {
 		writer.writeInt(msg.length).writeBytes(msg);
 	}
 
+	/**
+	 * Returns the welcome message sent by the server.
+	 */
+	public String getMessage() {
+		return new String(msg, ASCII);
+	}
+
 	@Override
 	protected void appendPacketDetail(StringBuilder b) {
-		// do nothing
+		b.append(getMessage());
 	}
 }

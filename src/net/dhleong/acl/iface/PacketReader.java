@@ -57,7 +57,7 @@ public class PacketReader {
 	 * If set to false, all packets will be returned as UnknownPackets. This is
 	 * useful for testing purposes to easily capture packet payloads in their
 	 * raw form without bothering to parse any of them. By default, this
-	 * property is true, meaning that all packets will be parsed.
+	 * property is true, meaning that all known packets will be parsed.
 	 */
 	public void setParsePackets(boolean parse) {
 		this.parse = parse;
@@ -179,7 +179,7 @@ public class PacketReader {
 		}
 
 		if (listenerRegistry.listeningFor(factory.getFactoryClass())) {
-			// Parse it and build the packet
+			// We're interested in this packet; parse and build it
 			ArtemisPacket packet;
 
 			try {
@@ -191,6 +191,7 @@ public class PacketReader {
 			}
 
 			if (packet instanceof VersionPacket) {
+				// We got a VersionPacket; store the version
 				version = ((VersionPacket) packet).getVersion();
 			}
 
@@ -208,6 +209,7 @@ public class PacketReader {
 			return packet;
 		}
 
+		// We don't have any listeners for this packet
 		UnparsedPacket packet = new UnparsedPacket(connType, packetType, payload);
 		debugger.onRecvUnparsedPacket(packet);
 		return packet;
@@ -489,18 +491,28 @@ public class PacketReader {
 
 	/**
 	 * Reads an int value directly from the InputStream wrapped by this object.
-	 * This is used to read values for the preamble.
+	 * This is used to read values for the preamble. This method blocks until
+	 * four bytes are read or the stream closes. In the latter case, 
+	 * ArtemisPacketException will be thrown.
 	 */
 	private int readIntFromStream() throws ArtemisPacketException {
-		try {
-			if (in.read(buffer, 0, 4) < 4) {
-				throw new EOFException("Stream is closed");
-			}
+		int totalBytesRead = 0;
 
-			return readInt(buffer, 0);
+		try {
+			do {
+				int bytesRead = in.read(buffer, totalBytesRead, 4 - totalBytesRead);
+	
+				if (bytesRead == -1) {
+					throw new EOFException("Stream is closed");
+				}
+	
+				totalBytesRead += bytesRead;
+			} while (totalBytesRead < 4);
 		} catch (IOException ex) {
 			throw new ArtemisPacketException(ex);
 		}
+
+		return readInt(buffer, 0);
 	}
 
 

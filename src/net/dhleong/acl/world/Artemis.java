@@ -45,7 +45,12 @@ public final class Artemis {
      */
     public static final int SYSTEM_COUNT = ShipSystem.values().length;
 
-	private Artemis() {
+    /**
+     * The length of the sides of the map (the X and Z dimensions).
+     */
+    public static final int MAP_SIZE = 100000;
+
+    private Artemis() {
 		// prevent instantiation of this class
 	}
 }

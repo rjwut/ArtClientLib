@@ -17,7 +17,7 @@ public interface ArtemisPacket {
 	public static final int HEADER = 0xdeadbeef;
 
 	/**
-	 * This is the Charset used to read String from packets.
+	 * This is the Charset used to read Strings from packets.
 	 */
 	public static final Charset CHARSET = Charset.forName("UTF-16LE");
 

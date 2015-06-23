@@ -6,7 +6,8 @@ package net.dhleong.acl.enums;
  */
 public interface CommsMessage {
 	/**
-	 * Returns the ID of this CommsMessage. IDs are unique per CommsTargetType.
+	 * Returns the ID of this CommsMessage. IDs are unique per
+	 * CommsRecipientType.
 	 */
 	public int getId();
 

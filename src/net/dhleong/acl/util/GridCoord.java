@@ -60,7 +60,15 @@ public final class GridCoord implements Comparable<GridCoord> {
 
     @Override
     public String toString() {
-        return String.format("[%d,%d,%d]", x, y, z);
+    	return new StringBuilder()
+    		.append('[')
+    		.append(x)
+    		.append(',')
+    		.append(y)
+    		.append(',')
+    		.append(z)
+    		.append(']')
+    		.toString();
     }
 
     /**

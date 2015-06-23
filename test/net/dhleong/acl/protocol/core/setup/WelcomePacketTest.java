@@ -2,6 +2,8 @@ package net.dhleong.acl.protocol.core.setup;
 
 import java.util.List;
 
+import org.junit.Assert;
+
 import net.dhleong.acl.enums.ConnectionType;
 
 import org.junit.Test;
@@ -14,6 +16,6 @@ public class WelcomePacketTest extends AbstractPacketTester<WelcomePacket> {
 
 	@Override
 	protected void testPackets(List<WelcomePacket> packets) {
-		// do nothing
+		Assert.assertEquals(WelcomePacket.MSG, packets.get(0).getMessage());
 	}
 }

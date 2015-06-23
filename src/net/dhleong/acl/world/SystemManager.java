@@ -60,7 +60,7 @@ public class SystemManager {
     /** Manually add an obj to the system */
     public void addObject(ArtemisObject obj) {
         synchronized(this) {
-            mObjects.put(obj.getId(), obj);
+            mObjects.put(Integer.valueOf(obj.getId()), obj);
         }
 
         mListener.onObjectCountChanged(mObjects.size());
@@ -69,7 +69,7 @@ public class SystemManager {
     @Listener
     public void onPacket(DestroyObjectPacket pkt) {
         synchronized(this) {
-            mObjects.remove(pkt.getTarget());
+            mObjects.remove(Integer.valueOf(pkt.getTarget()));
         }
 
         // signal change
@@ -96,13 +96,13 @@ public class SystemManager {
 
         if (damages.size() > 0 && mGridDamage != null) {
             for (GridDamage d : damages) {
-                mGridDamage.put(d.coord, d.damage);
+                mGridDamage.put(d.getCoord(), Float.valueOf(d.getDamage()));
             }
         }
         
         // update/init damcon teams
         for (DamconStatus s : pkt.getDamcons()) {
-            final int team = s.getTeamNumber();
+            final Integer team = Integer.valueOf(s.getTeamNumber());
 
             if (mDamcons.containsKey(team)) {
                 DamconStatus old = mDamcons.get(team);
@@ -127,7 +127,7 @@ public class SystemManager {
 
     @Listener
     public void onPacket(IntelPacket pkt) {
-    	ArtemisNpc npc = (ArtemisNpc) mObjects.get(pkt.getId());
+    	ArtemisNpc npc = (ArtemisNpc) mObjects.get(Integer.valueOf(pkt.getId()));
 
     	if (npc != null) {
     		npc.setIntel(pkt.getIntel());
@@ -136,7 +136,8 @@ public class SystemManager {
 
     @SuppressWarnings("unused")
     private boolean updateOrCreate(ArtemisObject o) {
-        ArtemisObject p = mObjects.get(o.getId());
+    	Integer id = Integer.valueOf(o.getId());
+        ArtemisObject p = mObjects.get(id);
 
         if (p != null) {
             p.updateFrom(o);
@@ -156,9 +157,9 @@ public class SystemManager {
         }
 
         synchronized(this) {
-            mObjects.put(o.getId(), o);
+            mObjects.put(id, o);
         }
-        
+
         if (o instanceof ArtemisPlayer) {
             ArtemisPlayer plr = (ArtemisPlayer) o;
 
@@ -166,12 +167,12 @@ public class SystemManager {
                 mPlayers[plr.getShipIndex()] = plr;
             }
         }
-        
+
         if (DEBUG && o.getName() == null) {
             throw new IllegalStateException("Creating " + p +" without name! " + 
                     Integer.toHexString(o.getId()));
         }
-        
+
         mListener.onObjectCountChanged(mObjects.size());
         return true;
     }
@@ -224,7 +225,7 @@ public class SystemManager {
     }
 
     public ArtemisObject getObject(int objId) {
-        return mObjects.get(objId);
+        return mObjects.get(Integer.valueOf(objId));
     }
     
     /**
@@ -257,7 +258,7 @@ public class SystemManager {
      * @return
      */
     public DamconStatus getDamcon(int teamNumber) {
-        return mDamcons.get(teamNumber);
+        return mDamcons.get(Integer.valueOf(teamNumber));
     }
     
     public GridEntry getGridAt(int x, int y, int z) {
@@ -347,12 +348,9 @@ public class SystemManager {
         if (mGridDamage == null) {
             return -1f;
         }
-        
-        if (mGridDamage.containsKey(coord)) {
-            return mGridDamage.get(coord);
-        }
-        
-        return -1f;
+
+        Float value = mGridDamage.get(coord);
+        return value != null ? value.floatValue() : -1f;
     }
 
     /**
@@ -384,7 +382,7 @@ public class SystemManager {
         
         // fill some default values
         for (GridCoord c : grid.getCoords()) {
-            mGridDamage.put(c, 0f); // default
+            mGridDamage.put(c, Float.valueOf(0f)); // default
         }
     }
 

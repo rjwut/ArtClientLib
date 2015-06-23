@@ -10,6 +10,9 @@ package net.dhleong.acl.iface;
  * @author rjwut
  */
 public class DisconnectEvent extends ConnectionEvent {
+	/**
+	 * Indicates the reason that the connection was terminated.
+	 */
 	public enum Cause {
 		/**
 		 * The connection was closed from this side; in other words, the user
@@ -55,10 +58,18 @@ public class DisconnectEvent extends ConnectionEvent {
 		this.exception = exception;
 	}
 
+	/**
+	 * Returns a Cause value describing the reason the connection was
+	 * terminated.
+	 */
 	public Cause getCause() {
 		return cause;
 	}
 
+	/**
+	 * Returns the Exception that was thrown as a result of the connection
+	 * termination, if any.
+	 */
 	public Exception getException() {
 		return exception;
 	}

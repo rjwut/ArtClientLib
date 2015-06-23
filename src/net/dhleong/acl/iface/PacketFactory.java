@@ -3,7 +3,6 @@ package net.dhleong.acl.iface;
 import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.protocol.ArtemisPacketException;
 
-
 /**
  * Interface for objects which can convert a byte array to a packet.
  * @author rjwut

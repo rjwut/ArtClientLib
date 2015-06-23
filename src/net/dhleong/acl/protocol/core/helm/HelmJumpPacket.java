@@ -70,7 +70,15 @@ public class HelmJumpPacket extends BaseArtemisPacket {
         mDistance = reader.readFloat();
     }
 
-	@Override
+    public float getHeading() {
+    	return mHeading;
+    }
+
+    public float getDistance() {
+    	return mDistance;
+    }
+
+    @Override
 	protected void writePayload(PacketWriter writer) {
     	writer	.writeInt(SUBTYPE)
 				.writeFloat(mHeading)

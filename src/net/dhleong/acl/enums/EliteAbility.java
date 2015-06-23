@@ -8,18 +8,17 @@ import java.util.Set;
  * @author rjwut
  */
 public enum EliteAbility {
-	STEALTH,		// invisible on long range or tactical views
-	LOW_VIS,		// invisible on helm or weapons views until within 3k
-	CLOAK,			// invisible on all views
-	HET,			// high energy turn
-	WARP,
-	TELEPORT,		// jump drive
-	TRACTOR,
-	DRONES,			// Torgoth drone launcher
-	ANTI_MINE,
-	ANTI_TORP,
-	SHIELD_DRAIN; 
-
+	STEALTH,      // invisible on long range or tactical views
+	LOW_VIS,      // invisible on helm or weapons views until within 3k
+	CLOAK,        // invisible on all views
+	HET,          // high energy turn
+	WARP,         // warp drive
+	TELEPORT,     // jump drive
+	TRACTOR,      // tractor beam
+	DRONES,       // Torgoth drone launcher
+	ANTI_MINE,    // can shoot mines
+	ANTI_TORP,    // can shoot torpedoes
+	SHIELD_DRAIN; // can drain your shields
 
 	/**
 	 * Returns a set containing the EliteAbility values that correspond to the
@@ -45,7 +44,7 @@ public enum EliteAbility {
 
 	/**
 	 * Given a bit field value, returns true if the bit corresponding to this
-	 * EliteAbility is turned on.
+	 * EliteAbility is turned on; false otherwise.
 	 */
 	public boolean on(int value) {
 		return (value & bit) != 0;

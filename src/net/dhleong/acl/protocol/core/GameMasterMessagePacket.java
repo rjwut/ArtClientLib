@@ -39,7 +39,7 @@ public class GameMasterMessagePacket extends BaseArtemisPacket {
 
     private GameMasterMessagePacket(PacketReader reader) {
         super(ConnectionType.CLIENT, TYPE);
-        int console = reader.readInt();
+        byte console = reader.readByte();
 
         if (console != 0) {
         	console--;
@@ -76,7 +76,7 @@ public class GameMasterMessagePacket extends BaseArtemisPacket {
     public GameMasterMessagePacket(String sender, String message, Console console) {
         super(ConnectionType.CLIENT, TYPE);
 
-        if (console.ordinal() > Console.COMMUNICATIONS.ordinal()) {
+        if (console != null && console.ordinal() > Console.COMMUNICATIONS.ordinal()) {
         	throw new IllegalArgumentException("Invalid console: " + console);
         }
 
@@ -99,7 +99,7 @@ public class GameMasterMessagePacket extends BaseArtemisPacket {
 
     @Override
 	protected void writePayload(PacketWriter writer) {
-		writer.writeInt(mConsole == null ? 0 : mConsole.ordinal() - 1);
+		writer.writeByte((byte) (mConsole == null ? 0 : mConsole.ordinal() - 1));
 	}
 
 	@Override

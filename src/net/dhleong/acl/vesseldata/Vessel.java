@@ -24,6 +24,7 @@ public class Vessel {
 	String diffuseFile;
 	String glowFile;
 	String specularFile;
+	String internalDataFile;
 	float scale;
 	int pushRadius;
 	int foreShields;
@@ -33,11 +34,13 @@ public class Vessel {
 	float efficiency;
 	int fleetAiCommonality;
 	int fighterCount;
-	float production;
+	float productionCoeff;
 	List<BeamPort> beamPorts = new ArrayList<BeamPort>();
 	List<VesselPoint> torpedoTubes = new ArrayList<VesselPoint>();
 	Map<OrdnanceType, Integer> torpedoStorage = new LinkedHashMap<OrdnanceType, Integer>();
+	int totalTorpedoStorage;
 	List<WeaponPort> dronePorts = new ArrayList<WeaponPort>();
+	List<WeaponPort> baseTorpedoPorts = new ArrayList<WeaponPort>();
 	List<VesselPoint> enginePorts = new ArrayList<VesselPoint>();
 	List<VesselPoint> impulsePoints = new ArrayList<VesselPoint>();
 	List<VesselPoint> maneuverPoints = new ArrayList<VesselPoint>();
@@ -132,6 +135,16 @@ public class Vessel {
 	}
 
 	/**
+	 * Returns the filename for the ship's .snt file, which contains information
+	 * about the ship's internal system nodes as seen in the engineering
+	 * console.
+	 * TODO Parse the .snt file
+	 */
+	public String getInternalDataFile() {
+		return internalDataFile;
+	}
+
+	/**
 	 * Returns this Vessel's scale value. This presumably controls how large it
 	 * is.
 	 */
@@ -201,6 +214,14 @@ public class Vessel {
 	}
 
 	/**
+	 * Returns the base production coefficient. This value affects how quickly
+	 * the base produces new ordnance.
+	 */
+	public float getProductionCoeff() {
+		return productionCoeff;
+	}
+
+	/**
 	 * Returns an array of BeamPort objects describing the beams with which this
 	 * Vessel is equipped.
 	 */
@@ -225,11 +246,36 @@ public class Vessel {
 	}
 
 	/**
-	 * Returns true if this Vessel is capable of carrying torpedoes; false
-	 * otherwise.
+	 * Returns true if this Vessel is capable of launching ordnance; false
+	 * otherwise. To launch ordnance, a player Vessel must have at least one
+	 * torpedo tube and storage space for at least one torpedo. Other Vessel
+	 * types must have at least one drone port or base torpedo port.
 	 */
-	public boolean hasTorpedoes() {
-		return !torpedoTubes.isEmpty() && !torpedoStorage.isEmpty();
+	public boolean canLaunchOrdnance() {
+		if (is(VesselAttribute.PLAYER)) {
+			return !torpedoTubes.isEmpty() && totalTorpedoStorage > 0;
+		}
+
+		return !dronePorts.isEmpty() || !baseTorpedoPorts.isEmpty();
+	}
+
+	/**
+	 * Returns an array of WeaponPoint objects describing the locations of the
+	 * Vessel's drone launchers.
+	 */
+	public WeaponPort[] getDronePorts() {
+		return dronePorts.toArray(new WeaponPort[dronePorts.size()]);
+	}
+
+	/**
+	 * Returns an array of WeaponPoint objects describing the locations of the
+	 * Vessel's torpedo launchers. As of this writing, only the Command Station
+	 * base has this port in the stock Artemis install; player vessels have
+	 * torpedo tubes instead, and no other vessels launch torpedoes (although
+	 * Torgoth drones are basically the same).
+	 */
+	public WeaponPort[] getBaseTorpedoPorts() {
+		return baseTorpedoPorts.toArray(new WeaponPort[baseTorpedoPorts.size()]);
 	}
 
 	/**

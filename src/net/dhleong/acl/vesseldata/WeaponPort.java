@@ -3,10 +3,11 @@ package net.dhleong.acl.vesseldata;
 /**
  * A subclass of VesselPoint for weapon ports. In addition to their location on
  * the Vessel's 3D mesh, WeaponPorts also have damage, cycle time and range
- * values. Beam ports (subclassed as BeamPort) and Torgoth drone launchers are
- * WeaponPorts. Torpedo tubes, while technically being weapon ports, are simply
- * VesselPoints, since they don't have damage, cycle time and range properties;
- * those properties are dictated by the ordnance loaded in them.
+ * values. Beam ports (subclassed as BeamPort), Torgoth drone launchers and
+ * base torpedo ports are WeaponPorts. Player ship torpedo tubes, while
+ * technically being weapon ports, are simply VesselPoints, since they don't
+ * have damage, cycle time and range properties; those properties are dictated
+ * by the ordnance loaded in them.
  * @author rjwut
  */
 public class WeaponPort extends VesselPoint {

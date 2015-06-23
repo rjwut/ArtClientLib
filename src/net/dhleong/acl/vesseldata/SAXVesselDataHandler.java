@@ -40,12 +40,14 @@ public class SAXVesselDataHandler extends DefaultHandler {
 		parsers.put("fleet_ai", new FleetAiParser());
 		parsers.put("hullRace", new HullRaceParser());
 		parsers.put("impulse_point", new ImpulsePointParser());
+		parsers.put("internal_data", new InternalDataParser());
 		parsers.put("long_desc", new LongDescParser());
 		parsers.put("maneuver_point", new ManeuverPointParser());
 		parsers.put("performance", new PerformanceParser());
 		parsers.put("production", new ProductionParser());
 		parsers.put("shields", new ShieldsParser());
 		parsers.put("taunt", new TauntParser());
+		parsers.put("torpedo_station_port", new TorpedoStationPortParser());
 		parsers.put("torpedo_storage", new TorpedoStorageParser());
 		parsers.put("torpedo_tube", new TorpedoTubeParser());
 		parsers.put("vessel", new VesselParser());
@@ -59,6 +61,8 @@ public class SAXVesselDataHandler extends DefaultHandler {
 
 		if (parser != null) {
 			parser.parse(attrs);
+		} else {
+			System.err.println("Unknown element: " + qName);
 		}
 	}
 
@@ -205,6 +209,13 @@ public class SAXVesselDataHandler extends DefaultHandler {
 		}
 	}
 
+	private class InternalDataParser implements Parser{
+		@Override
+		public void parse(Attributes attrs) {
+			vessel.internalDataFile = attrs.getValue("file");
+		}
+	}
+
 	/**
 	 * Parser for <long_desc> elements.
 	 */
@@ -245,7 +256,7 @@ public class SAXVesselDataHandler extends DefaultHandler {
 	private class ProductionParser implements Parser {
 		@Override
 		public void parse(Attributes attrs) {
-			vessel.production = parseFloat(attrs, "production");
+			vessel.productionCoeff = parseFloat(attrs, "coeff");
 		}
 	}
 
@@ -274,6 +285,18 @@ public class SAXVesselDataHandler extends DefaultHandler {
 	}
 
 	/**
+	 * Parser for <torpedo_station_port> elements.
+	 */
+	private class TorpedoStationPortParser implements Parser {
+		@Override
+		public void parse(Attributes attrs) {
+			WeaponPort port = new WeaponPort();
+			parseWeaponPort(port, attrs);
+			vessel.baseTorpedoPorts.add(port);
+		}
+	}
+
+	/**
 	 * Parser for <torpedo_storage> elements.
 	 */
 	private class TorpedoStorageParser implements Parser {
@@ -282,6 +305,7 @@ public class SAXVesselDataHandler extends DefaultHandler {
 			OrdnanceType type = OrdnanceType.values()[parseInt(attrs, "type")];
 			Integer amount = Integer.valueOf(attrs.getValue("amount"));
 			vessel.torpedoStorage.put(type, amount);
+			vessel.totalTorpedoStorage += amount.intValue();
 		}
 	}
 

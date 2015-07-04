@@ -337,19 +337,19 @@ public class PacketReader {
 	}
 
 	/**
+	 * Reads a US ASCII String from the current packet's payload.
+	 */
+	public String readUSASCIIString() {
+		return payload.readUSASCIIString();
+	}
+
+	/**
 	 * Reads a UTF-16LE String from the current packet's payload if the
 	 * indicated bit in the current BitField is on. Otherwise, the pointer is
 	 * not moved, and null is returned.
 	 */
 	public String readString(Enum<?> bit) {
 		return bitField.get(bit) ? readString() : null;
-	}
-
-	/**
-	 * Reads a US-ASCII String from the current packet's payload.
-	 */
-	public String readUSASCIIString() {
-		return payload.readUSASCIIString();
 	}
 
 	/**

@@ -1,7 +1,5 @@
 package net.dhleong.acl.protocol.core.setup;
 
-import java.nio.charset.Charset;
-
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.iface.PacketFactory;
 import net.dhleong.acl.iface.PacketFactoryRegistry;
@@ -19,7 +17,6 @@ import net.dhleong.acl.protocol.BaseArtemisPacket;
 public class WelcomePacket extends BaseArtemisPacket {
 	private static final int TYPE = 0x6d04b3da;
 	protected static final String MSG = "You have connected to Thom Robertson's Artemis Bridge Simulator.  Please connect with an authorized game client.";
-	private static final Charset ASCII = Charset.forName("US-ASCII");
 
 	public static void register(PacketFactoryRegistry registry) {
 		registry.register(ConnectionType.SERVER, TYPE, new PacketFactory() {
@@ -36,12 +33,11 @@ public class WelcomePacket extends BaseArtemisPacket {
 		});
 	}
 
-	private byte[] msg = MSG.getBytes(ASCII);
+	private String msg = MSG;
 
 	private WelcomePacket(PacketReader reader) {
 		super(ConnectionType.SERVER, TYPE);
-		int length = reader.readInt();
-		msg = reader.readBytes(length);
+		msg = reader.readUSASCIIString();
 	}
 
 	public WelcomePacket() {
@@ -50,14 +46,14 @@ public class WelcomePacket extends BaseArtemisPacket {
 
 	@Override
 	protected void writePayload(PacketWriter writer) {
-		writer.writeInt(msg.length).writeBytes(msg);
+		writer.writeUSASCIIString(msg);
 	}
 
 	/**
 	 * Returns the welcome message sent by the server.
 	 */
 	public String getMessage() {
-		return new String(msg, ASCII);
+		return msg;
 	}
 
 	@Override

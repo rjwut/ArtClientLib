@@ -42,6 +42,14 @@ public class ByteArrayReader {
 	}
 
 	/**
+	 * Reads a short (coerced to an int) from the indicated location in the
+	 * given byte array.
+	 */
+	public static int readShort(byte[] bytes, int offset) {
+		return (0xff & (bytes[offset + 1] << 8)) | (0xff & bytes[offset]);
+	}
+
+	/**
 	 * Reads an int from the indicated location in the given byte array.
 	 */
 	public static int readInt(byte[] bytes, int offset) {
@@ -51,75 +59,135 @@ public class ByteArrayReader {
 				(0xff & bytes[offset]);
 	}
 
+	/**
+	 * Reads a float from the indicated location in the given byte array.
+	 */
+	public static float readFloat(byte[] bytes, int offset) {
+		return Float.intBitsToFloat(readInt(bytes, offset));
+	}
+
 	private byte[] bytes;
 	private int offset;
 
+	/**
+	 * Constructs a new ByteArrayReader that will read the bytes from the given
+	 * array.
+	 */
 	public ByteArrayReader(byte[] bytes) {
 		this.bytes = bytes;
 	}
 
+	/**
+	 * Returns the number of unread bytes.
+	 */
 	public int getBytesLeft() {
 		return bytes.length - offset;
 	}
 
+	/**
+	 * Returns the next byte to be read from the array without moving the
+	 * pointer.
+	 */
 	public byte peek() {
 		return bytes[offset];
 	}
 
+	/**
+	 * Skips the indicated number of bytes.
+	 */
 	public void skip(int byteCount) {
 		offset += byteCount;
 	}
 
+	/**
+	 * Returns the next byte.
+	 */
 	public byte readByte() {
 		return bytes[offset++];
 	}
 
+	/**
+	 * Returns the next given number of bytes.
+	 */
 	public byte[] readBytes(int byteCount) {
 		byte[] readBytes = Arrays.copyOfRange(bytes, offset, offset + byteCount);
 		offset += byteCount;
 		return readBytes;
 	}
 
+	/**
+	 * Reads the given number of bytes, then returns true if the first byte was
+	 * 1 and false otherwise.
+	 */
 	public boolean readBoolean(int byteCount) {
 		return readBytes(byteCount)[0] == 1;
 	}
 
+	/**
+	 * Reads the given number of bytes, then returns BoolState.TRUE if the first
+	 * byte was 1 and BoolState.FALSE otherwise.
+	 */
 	public BoolState readBoolState(int byteCount) {
 		return BoolState.from(readBoolean(byteCount));
 	}
 
+	/**
+	 * Reads a short value (two bytes) and returns it coerced to an int.
+	 */
 	public int readShort() {
-		int value = (0xff & (bytes[offset + 1] << 8)) | (0xff & bytes[offset]);
+		int value = readShort(bytes, offset);
 		offset += 2;
 		return value;
 	}
 
+	/**
+	 * Reads and returns an int value (four bytes).
+	 */
 	public int readInt() {
 		int value =	readInt(bytes, offset);
 		offset += 4;
 		return value;
 	}
 
+	/**
+	 * Reads and returns a float value (four bytes).
+	 */
 	public float readFloat() {
 		return Float.intBitsToFloat(readInt());
 	}
 
+	/**
+	 * Reads and returns a BitField, presuming that the given enum values
+	 * represent the bits it stores.
+	 */
 	public BitField readBitField(Enum<?>[] bits) {
 		return new BitField(bits, bytes, offset);
 	}
 
+	/**
+	 * Reads and returns a US ASCII encoded String().
+	 */
 	public String readUSASCIIString() {
-		return readString(Util.US_ASCII, 1);
+		return readString(Util.US_ASCII, 1, false);
 	}
 
+	/**
+	 * Reads and returns a UTF-16LE encoded String().
+	 */
 	public String readUTF16LEString() {
-		return readString(Util.UTF16LE, 2);
+		return readString(Util.UTF16LE, 2, true);
 	}
 
-	private String readString(Charset charset, int bytesPerChar) {
+	/**
+	 * Reads a String in the given Charset, assuming the indicated number of
+	 * bytes per character.
+	 */
+	private String readString(Charset charset, int bytesPerChar, boolean nullTerminated) {
 		int charCount = readInt();
 		int byteCount = charCount * bytesPerChar;
-		byte[] readBytes = Arrays.copyOfRange(bytes, offset, offset + byteCount - bytesPerChar);
+		int nullLength = nullTerminated ? bytesPerChar : 0;
+		int endOffset = offset + byteCount - nullLength;
+		byte[] readBytes = Arrays.copyOfRange(bytes, offset, endOffset);
 		offset += byteCount;
 		int i = 0;
 

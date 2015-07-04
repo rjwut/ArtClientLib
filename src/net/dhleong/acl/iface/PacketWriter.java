@@ -241,12 +241,22 @@ public class PacketWriter {
 	}
 
 	/**
-	 * Writes a String. This handles writing the string length and the
-	 * terminating null character automatically. You must invoke start() before
-	 * calling this method.
+	 * Writes a UTF-16LE encoded String. This handles writing the string length
+	 * and the terminating null character automatically. You must invoke start()
+	 * before calling this method.
 	 */
 	public PacketWriter writeString(String str) {
 		writeString(str, baos);
+		return this;
+	}
+
+	/**
+	 * Writes a US-ASCII encoded String. This handles writing the string length
+	 * and the terminating null character automatically. You must invoke start()
+	 * before calling this method.
+	 */
+	public PacketWriter writeUSASCIIString(String str) {
+		writeUSASCIIString(str, baos);
 		return this;
 	}
 
@@ -431,7 +441,7 @@ public class PacketWriter {
 	}
 
 	/**
-	 * Writes a String into the given ByteArrayOutputStream.
+	 * Writes a UTF-16LE encoded String into the given ByteArrayOutputStream.
 	 */
 	private void writeString(String v, ByteArrayOutputStream outStream) {
 		int charCount = v.length() + 1;
@@ -439,5 +449,15 @@ public class PacketWriter {
 		byte[] charBytes = v.getBytes(Util.UTF16LE);
 		outStream.write(charBytes, 0, charBytes.length);
 		writeShort(0, outStream); // terminating null
+	}
+
+	/**
+	 * Writes a US ASCII encoded String into the given ByteArrayOutputStream.
+	 */
+	private void writeUSASCIIString(String v, ByteArrayOutputStream outStream) {
+		int charCount = v.length();
+		writeInt(charCount, outStream);
+		byte[] charBytes = v.getBytes(Util.US_ASCII);
+		outStream.write(charBytes, 0, charBytes.length);
 	}
 }

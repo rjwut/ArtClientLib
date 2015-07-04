@@ -8,7 +8,8 @@ public enum OrdnanceType {
 	HOMING("Homing"),
 	NUKE("Nuke"),
 	MINE("Mine"),
-	EMP("EMP");
+	EMP("EMP"),
+	PSHOCK("PlasmaShock");
 
 	public static final int COUNT = values().length;
 

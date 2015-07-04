@@ -54,6 +54,7 @@
     <torpedo_storage type="1" amount="2"/>  <!-- Type 4 LR Nuke-->
     <torpedo_storage type="2" amount="6"/>  <!-- Type 6 Mine"-->
     <torpedo_storage type="3" amount="4"/>  <!-- Type 9 ECM"-->
+    <torpedo_storage type="4" amount="2"/>  <!-- Type 8 Pshock"-->
     <engine_port x=" 82.93" y="5" z="-240.89"/>
     <engine_port x="-82.93" y="5" z="-240.89"/>
     <engine_port x="0" y="-9.22" z="-300"/>
@@ -73,6 +74,7 @@
     <torpedo_storage type="1" amount="0"/>   <!-- Type 4 LR Nuke-->
     <torpedo_storage type="2" amount="2"/>   <!-- Type 6 Mine"-->
     <torpedo_storage type="3" amount="2"/>   <!-- Type 9 ECM"-->
+    <torpedo_storage type="4" amount="1"/>   <!-- Type 8 Pshock"-->
     <engine_port x="0" y="-9.22" z="-300"/>
     <engine_port x="0" y="29.64" z="-300"/>
     <long_desc text="TSN Scout^Long range scout vessel of the TSN.^1 forward beam^1 Torpedo tube^Stores for 6 homing, 2 mines, 2 ECM."/>
@@ -94,6 +96,7 @@
     <torpedo_storage type="1" amount="2"/>    <!-- Type 4 LR Nuke-->
     <torpedo_storage type="2" amount="6"/>    <!-- Type 6 Mine"-->
     <torpedo_storage type="3" amount="4"/>    <!-- Type 9 ECM"-->
+    <torpedo_storage type="4" amount="5"/>    <!-- Type 8 Pshock"-->
     <engine_port x="0" y="-9.22" z="-300"/>
     <engine_port x="0" y="29.64" z="-300"/>
     <engine_port x="-111.755783" y="-44.202168" z="-242.740082"/>
@@ -116,6 +119,7 @@
     <torpedo_storage type="1" amount="8"/>    <!-- Type 4 LR Nuke-->
     <torpedo_storage type="2" amount="14"/>    <!-- Type 6 Mine"-->
     <torpedo_storage type="3" amount="12"/>    <!-- Type 9 ECM"-->
+    <torpedo_storage type="4" amount="6"/>    <!-- Type 8 Pshock"-->
     <engine_port x=" 82.93" y="5" z="-240.89"/>
     <engine_port x="-82.93" y="5" z="-240.89"/>
     <engine_port x="0" y="-9.22" z="-300"/>
@@ -142,6 +146,7 @@
     <torpedo_storage type="1" amount="4"/>    <!-- Type 4 LR Nuke-->
     <torpedo_storage type="2" amount="8"/>    <!-- Type 6 Mine"-->
     <torpedo_storage type="3" amount="5"/>    <!-- Type 9 ECM"-->
+    <torpedo_storage type="4" amount="4"/>    <!-- Type 8 Pshock"-->
     <engine_port x="0" y="-9.22" z="-300"/>
     <engine_port x="0" y="29.64" z="-300"/>
     <engine_port x="-81.6" y="5.1" z="-235.4"/>

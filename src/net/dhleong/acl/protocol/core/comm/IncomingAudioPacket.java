@@ -1,5 +1,6 @@
 package net.dhleong.acl.protocol.core.comm;
 
+import net.dhleong.acl.enums.AudioMode;
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.iface.PacketFactory;
 import net.dhleong.acl.iface.PacketFactoryRegistry;
@@ -31,22 +32,17 @@ public class IncomingAudioPacket extends BaseArtemisPacket {
 		});
 	}
 
-    public enum Mode {
-    	PLAYING,	// server is playing the message
-    	INCOMING	// message is available
-    }
-
     private final int mId;
-    private final Mode mMode;
+    private final AudioMode mMode;
     private final String mTitle;
     private final String mFile;
 
     private IncomingAudioPacket(PacketReader reader) {
     	super(ConnectionType.SERVER, TYPE);
         mId = reader.readInt();
-        mMode = Mode.values()[reader.readInt() - 1];
+        mMode = AudioMode.values()[reader.readInt() - 1];
 
-        if (mMode == Mode.INCOMING) {
+        if (mMode == AudioMode.INCOMING) {
             mTitle = reader.readString();
             mFile = reader.readString();
         } else {
@@ -62,7 +58,7 @@ public class IncomingAudioPacket extends BaseArtemisPacket {
     public IncomingAudioPacket(int id) {
     	super(ConnectionType.SERVER, TYPE);
     	mId = id;
-    	mMode = Mode.PLAYING;
+    	mMode = AudioMode.PLAYING;
         mTitle = null;
         mFile = null;
     }
@@ -73,7 +69,7 @@ public class IncomingAudioPacket extends BaseArtemisPacket {
     public IncomingAudioPacket(int id, String title, String file) {
     	super(ConnectionType.SERVER, TYPE);
     	mId = id;
-    	mMode = Mode.INCOMING;
+    	mMode = AudioMode.INCOMING;
         mTitle = title;
         mFile = file;
     }
@@ -112,7 +108,7 @@ public class IncomingAudioPacket extends BaseArtemisPacket {
      * Indicates whether this packet indicates that the message is available
      * (INCOMING) or playing (PLAYING).
      */
-    public Mode getAudioMode() {
+    public AudioMode getAudioMode() {
         return mMode;
     }
 
@@ -121,7 +117,7 @@ public class IncomingAudioPacket extends BaseArtemisPacket {
 		writer.writeInt(mId);
 		writer.writeInt(mMode.ordinal() + 1);
 
-        if (mMode == Mode.INCOMING) {
+        if (mMode == AudioMode.INCOMING) {
             writer.writeString(mTitle);
             writer.writeString(mFile);
         }
@@ -131,7 +127,7 @@ public class IncomingAudioPacket extends BaseArtemisPacket {
 	protected void appendPacketDetail(StringBuilder b) {
 		b.append('#').append(mId).append(' ').append(mMode);
 
-		if (mMode == Mode.INCOMING) {
+		if (mMode == AudioMode.INCOMING) {
 			b.append(": ").append(mTitle);
 		}
 	}

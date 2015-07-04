@@ -1,5 +1,6 @@
 package net.dhleong.acl.protocol.core.comm;
 
+import net.dhleong.acl.enums.AudioCommand;
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.iface.PacketFactory;
 import net.dhleong.acl.iface.PacketFactoryRegistry;
@@ -30,18 +31,14 @@ public class AudioCommandPacket extends BaseArtemisPacket {
 		});
 	}
 
-    public enum Command {
-        PLAY, DELETE;
-    }
-
     private int audioId;
-    private Command cmd;
+    private AudioCommand cmd;
 
     /**
      * @param audioId The ID of the audio message to which the command applies
      * @param cmd The command to issue (PLAY or DELETE)
      */
-    public AudioCommandPacket(int audioId, Command cmd) {
+    public AudioCommandPacket(int audioId, AudioCommand cmd) {
         super(ConnectionType.CLIENT, TYPE);
 
         if (cmd == null) {
@@ -55,14 +52,14 @@ public class AudioCommandPacket extends BaseArtemisPacket {
     private AudioCommandPacket(PacketReader reader) {
         super(ConnectionType.CLIENT, TYPE);
     	audioId = reader.readInt();
-    	cmd = Command.values()[reader.readInt()];
+    	cmd = AudioCommand.values()[reader.readInt()];
     }
 
     public int getAudioId() {
     	return audioId;
     }
 
-    public Command getCommand() {
+    public AudioCommand getCommand() {
     	return cmd;
     }
 

@@ -3,11 +3,13 @@ package net.dhleong.acl.protocol.core.world;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.dhleong.acl.enums.AlertStatus;
 import net.dhleong.acl.enums.BeamFrequency;
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.enums.DriveType;
 import net.dhleong.acl.enums.MainScreenView;
 import net.dhleong.acl.enums.ObjectType;
+import net.dhleong.acl.enums.TargetingMode;
 import net.dhleong.acl.iface.PacketFactory;
 import net.dhleong.acl.iface.PacketFactoryRegistry;
 import net.dhleong.acl.iface.PacketReader;
@@ -47,7 +49,7 @@ public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectU
     	RUDDER,
     	TOP_SPEED,
     	TURN_RATE,
-    	AUTO_BEAMS,
+    	TARGETING_MODE,
     	WARP,
     	ENERGY,
 
@@ -70,7 +72,7 @@ public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectU
     	AFT_SHIELDS_MAX,
 
     	DOCKING_BASE,
-    	RED_ALERT,
+    	ALERT_STATUS,
     	UNK_4_3,
     	MAIN_SCREEN,
     	BEAM_FREQUENCY,
@@ -99,7 +101,12 @@ public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectU
             float steeringSlider = reader.readFloat(Bit.RUDDER, -1);
             float topSpeed = reader.readFloat(Bit.TOP_SPEED, -1);
             float turnRate = reader.readFloat(Bit.TURN_RATE, -1);
-            BoolState mAutoBeams = reader.readBool(Bit.AUTO_BEAMS, 1);
+            TargetingMode targetingMode = null;
+
+            if (reader.has(Bit.TARGETING_MODE)) {
+            	targetingMode = TargetingMode.values()[reader.readByte()];
+            }
+
             byte warp = reader.readByte(Bit.WARP, (byte) -1);
             float energy = reader.readFloat(Bit.ENERGY, -1);
             BoolState shields = reader.readBool(Bit.SHIELD_STATE, 2);
@@ -121,7 +128,11 @@ public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectU
             float shieldsRear = reader.readFloat(Bit.AFT_SHIELDS, Float.MIN_VALUE);
             float shieldsRearMax = reader.readFloat(Bit.AFT_SHIELDS_MAX, -1);
             int dockingBase = reader.readInt(Bit.DOCKING_BASE, -1);
-            BoolState redAlert = reader.readBool(Bit.RED_ALERT, 1);
+            AlertStatus redAlert = null;
+
+            if (reader.has(Bit.ALERT_STATUS)) {
+                redAlert = AlertStatus.values()[reader.readByte()];
+            }
 
             reader.readObjectUnknown(Bit.UNK_4_3, 4);
 
@@ -159,7 +170,7 @@ public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectU
             player.setWeaponsTarget(weaponsTarget);
             player.setTopSpeed(topSpeed);
             player.setTurnRate(turnRate);
-            player.setAutoBeams(mAutoBeams);
+            player.setTargetingMode(targetingMode);
             player.setWarp(warp);
             player.setImpulse(impulseSlider);
             player.setSteering(steeringSlider);
@@ -220,9 +231,15 @@ public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectU
 					.writeFloat(Bit.IMPULSE, player.getImpulse(), -1)
 					.writeFloat(Bit.RUDDER, player.getSteering(), -1)
 					.writeFloat(Bit.TOP_SPEED, player.getTopSpeed(), -1)
-					.writeFloat(Bit.TURN_RATE, player.getTurnRate(), -1)
-					.writeBool(Bit.AUTO_BEAMS, player.getAutoBeams(), 1)
-					.writeByte(Bit.WARP, player.getWarp(), (byte) -1)
+					.writeFloat(Bit.TURN_RATE, player.getTurnRate(), -1);
+
+			TargetingMode targetingMode = player.getTargetingMode();
+
+			if (targetingMode != null) {
+				writer.writeByte(Bit.TARGETING_MODE, (byte) targetingMode.ordinal(), (byte) -1);
+			}
+
+			writer	.writeByte(Bit.WARP, player.getWarp(), (byte) -1)
 					.writeFloat(Bit.ENERGY, player.getEnergy(), -1)
 					.writeBool(Bit.SHIELD_STATE, player.getShieldsState(), 2)
 					.writeInt(Bit.SHIP_NUMBER, shipNumber, -1)
@@ -240,9 +257,15 @@ public class MainPlayerUpdatePacket extends BaseArtemisPacket implements ObjectU
 					.writeFloat(Bit.FORE_SHIELDS_MAX, player.getShieldsFrontMax(), -1)
 					.writeFloat(Bit.AFT_SHIELDS, player.getShieldsRear(), Float.MIN_VALUE)
 					.writeFloat(Bit.AFT_SHIELDS_MAX, player.getShieldsRearMax(), -1)
-					.writeInt(Bit.DOCKING_BASE, player.getDockingBase(), -1)
-					.writeBool(Bit.RED_ALERT, player.getRedAlertState(), 1)
-					.writeUnknown(Bit.UNK_4_3);
+					.writeInt(Bit.DOCKING_BASE, player.getDockingBase(), -1);
+
+			AlertStatus alertStatus = player.getAlertStatus();
+
+			if (alertStatus != null) {
+				writer.writeByte(Bit.ALERT_STATUS, (byte) alertStatus.ordinal(), (byte) -1);
+			}
+
+			writer.writeUnknown(Bit.UNK_4_3);
 
 			MainScreenView screen = player.getMainScreen();
 

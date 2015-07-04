@@ -3,12 +3,14 @@ package net.dhleong.acl.world;
 import java.util.Arrays;
 import java.util.SortedMap;
 
+import net.dhleong.acl.enums.AlertStatus;
 import net.dhleong.acl.enums.BeamFrequency;
 import net.dhleong.acl.enums.DriveType;
 import net.dhleong.acl.enums.MainScreenView;
 import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.enums.OrdnanceType;
 import net.dhleong.acl.enums.ShipSystem;
+import net.dhleong.acl.enums.TargetingMode;
 import net.dhleong.acl.enums.TubeState;
 import net.dhleong.acl.util.BoolState;
 
@@ -17,7 +19,9 @@ import net.dhleong.acl.util.BoolState;
  * @author dhleong
  */
 public class ArtemisPlayer extends BaseArtemisShip {
-    private BoolState mAutoBeams, mRedAlert, mShields;
+	private TargetingMode mTargetingMode;
+	private AlertStatus mAlertStatus;
+    private BoolState mShields;
     private int mShipNumber = -1;
     private final float[] mHeat = new float[Artemis.SYSTEM_COUNT];
     private final float[] mSystems = new float[Artemis.SYSTEM_COUNT];
@@ -45,7 +49,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
      * @param objId
      */
     public ArtemisPlayer(int objId) {
-        this(objId, null, -1, -1, BoolState.UNKNOWN, BoolState.UNKNOWN);
+        this(objId, null, -1, -1, null, BoolState.UNKNOWN);
     }
 
     /**
@@ -57,9 +61,9 @@ public class ArtemisPlayer extends BaseArtemisShip {
      * @param redAlert
      */
     public ArtemisPlayer(int objId, String name, int hullId, int shipNumber,
-    		BoolState redAlert, BoolState shields) {
+    		AlertStatus alertStatus, BoolState shields) {
         super(objId, name, hullId);
-        mRedAlert = redAlert;
+        mAlertStatus = alertStatus;
         mShields = shields;
         mShipNumber = shipNumber;
         
@@ -160,14 +164,14 @@ public class ArtemisPlayer extends BaseArtemisShip {
     }
 
     /**
-     * Whether or not we're at red alert.
+     * Current alert status.
      */
-    public BoolState getRedAlertState() {
-        return mRedAlert;
+    public AlertStatus getAlertStatus() {
+        return mAlertStatus;
     }
 
-    public void setRedAlert(boolean newState) {
-        mRedAlert = BoolState.from(newState);
+    public void setAlertStatus(AlertStatus alertStatus) {
+        mAlertStatus = alertStatus;
     }
 
     /**
@@ -345,15 +349,15 @@ public class ArtemisPlayer extends BaseArtemisShip {
     }
 
     /**
-     * Whether or not auto beams are enabled.
+     * Returns the current targeting mode (auto vs. manual beams).
      * Unspecified: null
      */
-    public BoolState getAutoBeams() {
-    	return mAutoBeams;
+    public TargetingMode getTargetingMode() {
+    	return mTargetingMode;
     }
 
-    public void setAutoBeams(BoolState autoBeams) {
-    	mAutoBeams = autoBeams;
+    public void setTargetingMode(TargetingMode targetingMode) {
+    	mTargetingMode = targetingMode;
     }
 
     /**
@@ -446,8 +450,8 @@ public class ArtemisPlayer extends BaseArtemisShip {
                 mShipNumber = plr.mShipNumber;
             }
             
-            if (BoolState.isKnown(plr.mAutoBeams)) {
-            	mAutoBeams = plr.mAutoBeams;
+            if (plr.mTargetingMode != null) {
+            	mTargetingMode = plr.mTargetingMode;
             }
 
             if (plr.mWeaponsTarget != -1) {
@@ -468,8 +472,8 @@ public class ArtemisPlayer extends BaseArtemisShip {
             	mBeamFreq = plr.mBeamFreq;
             }
 
-            if (BoolState.isKnown(plr.mRedAlert)) {
-                mRedAlert = plr.mRedAlert;
+            if (plr.mAlertStatus != null) {
+            	mAlertStatus = plr.mAlertStatus;
             }
 
             if (BoolState.isKnown(plr.mShields)) {
@@ -559,8 +563,8 @@ public class ArtemisPlayer extends BaseArtemisShip {
     @Override
 	public void appendObjectProps(SortedMap<String, Object> props, boolean includeUnspecified) {
     	super.appendObjectProps(props, includeUnspecified);
-    	putProp(props, "Auto beams", mAutoBeams, includeUnspecified);
-    	putProp(props, "Red alert", mRedAlert, includeUnspecified);
+    	putProp(props, "Targeting mode", mTargetingMode, includeUnspecified);
+    	putProp(props, "Alert status", mAlertStatus, includeUnspecified);
     	putProp(props, "Shield state", mShields, includeUnspecified);
     	putProp(props, "Player ship number", mShipNumber, -1, includeUnspecified);
 
@@ -588,7 +592,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
     			if (state == TubeState.UNLOADED) {
     				contentsStr = "EMPTY";
     			} else {
-    				contentsStr = OrdnanceType.values()[contents].name();
+    				contentsStr = ordValues[contents].name();
     			}
 
     			putProp(props, "Tube " + i + " contents", contentsStr, includeUnspecified);

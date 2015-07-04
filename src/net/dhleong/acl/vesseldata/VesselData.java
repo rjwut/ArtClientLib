@@ -2,7 +2,6 @@ package net.dhleong.acl.vesseldata;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -23,15 +22,32 @@ import net.dhleong.acl.protocol.Version;
  * @author rjwut
  */
 public class VesselData {
+	static PathResolver pathResolver;
 	private static VesselData instance;
 
 	/**
+	 * Loads the default vesselData.xml packaged with ArtClientLib. This is
+	 * invoked when get() is called without calling load(File) first.
+	 */
+	private static void load() {
+		pathResolver = new ClasspathResolver();
+
+		try {
+			loadInternal();
+		} catch (VesselDataException ex) {
+			throw new RuntimeException(ex); // shouldn't happen
+		}
+	}
+
+	/**
 	 * Loads the vesselData.xml file from the Artemis installation found at the
-	 * given path.
+	 * given path. This allows ArtClientLib to handle modded Artemis installs.
+	 * If get() is called without invoking this method, the default
+	 * vesselData.xml file bundled with ArtClientLib is used instead.
 	 */
 	public static void load(File artemisInstallPath) throws VesselDataException {
-		File xml = new File(artemisInstallPath, "dat" + File.separatorChar + "vesselData.xml");
-		load(xml.toURI());
+		pathResolver = new FilePathResolver(artemisInstallPath);
+		loadInternal();
 	}
 
 	/**
@@ -49,32 +65,20 @@ public class VesselData {
 	}
 
 	/**
-	 * Loads the default vesselData.xml packaged with ArtClientLib. This is
-	 * invoked when get() is called without calling load(File) first.
-	 */
-	private static void load() {
-		try {
-			load(VesselData.class.getResource("vesselData.xml").toURI());
-		} catch (URISyntaxException ex) {
-			throw new RuntimeException(ex); // shouldn't happen
-		} catch (VesselDataException ex) {
-			throw new RuntimeException(ex); // shouldn't happen
-		}
-	}
-
-	/**
 	 * Parses the vessel data XML file at the given URI and stores the result
 	 * in the VesselData.instance static field.
 	 */
-	private static void load(URI uri) throws VesselDataException {
+	private static void loadInternal() throws VesselDataException {
 		try {
 			SAXParserFactory spf = SAXParserFactory.newInstance();
 			SAXParser saxParser = spf.newSAXParser();
 			XMLReader xmlReader = saxParser.getXMLReader();
 			SAXVesselDataHandler handler = new SAXVesselDataHandler();
 			xmlReader.setContentHandler(handler);
-			xmlReader.parse(uri.toString());
+			xmlReader.parse(pathResolver.get("dat/vesselData.xml").toString());
 			instance = handler.vesselData;
+		} catch (URISyntaxException ex) { // shouldn't happen
+			throw new VesselDataException(ex);
 		} catch (SAXException ex) {
 			throw new VesselDataException(ex);
 		} catch (ParserConfigurationException ex) {

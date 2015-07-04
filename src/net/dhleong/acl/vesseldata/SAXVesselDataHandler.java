@@ -209,10 +209,13 @@ public class SAXVesselDataHandler extends DefaultHandler {
 		}
 	}
 
+	/**
+	 * Parser for <internal_data> elements.
+	 */
 	private class InternalDataParser implements Parser{
 		@Override
 		public void parse(Attributes attrs) {
-			vessel.internalDataFile = attrs.getValue("file");
+			vessel.internals = new VesselInternals(attrs.getValue("file"));
 		}
 	}
 

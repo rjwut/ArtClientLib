@@ -1,10 +1,11 @@
 package net.dhleong.acl.vesseldata;
 
 import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -25,16 +26,30 @@ public class VesselInternals implements Iterable<Map.Entry<GridCoord, VesselNode
 	private Map<GridCoord, VesselNode> map = new HashMap<GridCoord, VesselNode>();
 	private byte[] buffer = new byte[VesselNode.BLOCK_SIZE];
 
-	public VesselInternals(File sntFile) throws InterruptedException, IOException {
-		FileInputStream fis = null;
+	public VesselInternals(String sntPath) {
+		URI uri;
 
 		try {
-			fis = new FileInputStream(sntFile);
-			load(new BufferedInputStream(fis));
+			uri = VesselData.pathResolver.get(sntPath);
+		} catch (URISyntaxException ex) {
+			throw new RuntimeException(ex);
+		}
+
+		InputStream in = null;
+
+		try {
+			in = uri.toURL().openStream();
+			load(new BufferedInputStream(in));
+		} catch (MalformedURLException ex) {
+			throw new RuntimeException(ex);
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		} catch (InterruptedException ex) {
+			throw new RuntimeException(ex);
 		} finally {
-			if (fis != null) {
+			if (in != null) {
 				try {
-					fis.close();
+					in.close();
 				} catch (IOException ex) {
 					// don't care
 				}

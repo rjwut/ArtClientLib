@@ -61,6 +61,7 @@ public abstract class AbstractPacketTester<T extends ArtemisPacket> {
 			List<T> list = new ArrayList<T>(packetCount);
 	
 			for (int i = 0; i < packetCount; i++) {
+				@SuppressWarnings("unchecked")
 				T pkt = (T) reader.readPacket(debugger);
 				Assert.assertNotNull(pkt);
 				list.add(pkt);

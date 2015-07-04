@@ -1,7 +1,6 @@
 package net.dhleong.acl.protocol;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.iface.Debugger;
@@ -15,11 +14,6 @@ public interface ArtemisPacket {
 	 * The preamble of every packet starts with this value.
 	 */
 	public static final int HEADER = 0xdeadbeef;
-
-	/**
-	 * This is the Charset used to read Strings from packets.
-	 */
-	public static final Charset CHARSET = Charset.forName("UTF-16LE");
 
     /**
      * Returns a ConnectionType value indicating the type of connection from

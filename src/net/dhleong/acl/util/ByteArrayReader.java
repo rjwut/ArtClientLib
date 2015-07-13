@@ -161,7 +161,9 @@ public class ByteArrayReader {
 	 * represent the bits it stores.
 	 */
 	public BitField readBitField(Enum<?>[] bits) {
-		return new BitField(bits, bytes, offset);
+		BitField bitField = new BitField(bits, bytes, offset);
+		offset += bitField.getByteCount();
+		return bitField;
 	}
 
 	/**

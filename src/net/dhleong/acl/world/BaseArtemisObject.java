@@ -80,9 +80,8 @@ public abstract class BaseArtemisObject implements ArtemisObject {
     private float mZ = Float.MIN_VALUE;
     private SortedMap<String, byte[]> unknownProps;
 
-    public BaseArtemisObject(int objId, String name) {
+    public BaseArtemisObject(int objId) {
         mId = objId;
-        mName = name;
     }
 
     @Override
@@ -93,6 +92,10 @@ public abstract class BaseArtemisObject implements ArtemisObject {
     @Override
     public String getName() {
         return mName;
+    }
+
+    public void setName(String name) {
+    	mName = name;
     }
 
     @Override

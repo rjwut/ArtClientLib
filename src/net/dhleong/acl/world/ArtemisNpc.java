@@ -29,8 +29,8 @@ public class ArtemisNpc extends BaseArtemisShip {
     private String mIntel;
     private final float[] mSysDamage = new float[8];
 
-    public ArtemisNpc(int objId, String name, int hullId) {
-        super(objId, name, hullId);
+    public ArtemisNpc(int objId) {
+        super(objId);
 
         for (int i = 0; i < 8; i++) {
         	mSysDamage[i] = -1;

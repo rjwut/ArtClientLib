@@ -1,6 +1,6 @@
 package net.dhleong.acl.enums;
 
-public enum MonsterType {
+public enum CreatureType {
 	CLASSIC,
 	WHALE,
 	SHARK,

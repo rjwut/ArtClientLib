@@ -8,8 +8,8 @@ import java.util.SortedMap;
  */
 public abstract class BaseArtemisOrientable extends BaseArtemisObject
 		implements ArtemisOrientable {
-    public BaseArtemisOrientable(int objId, String name) {
-		super(objId, name);
+    public BaseArtemisOrientable(int objId) {
+		super(objId);
 	}
 
 	private float mHeading = Float.MIN_VALUE;

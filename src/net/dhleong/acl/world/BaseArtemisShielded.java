@@ -14,9 +14,8 @@ public abstract class BaseArtemisShielded extends BaseArtemisOrientable
     private float mShieldsFront = Float.MIN_VALUE;
     private float mShieldsRear = Float.MIN_VALUE;
 
-    public BaseArtemisShielded(int objId, String name, int hullId) {
-        super(objId, name);
-        mHullId = hullId;
+    public BaseArtemisShielded(int objId) {
+        super(objId);
     }
 
     @Override
@@ -32,6 +31,10 @@ public abstract class BaseArtemisShielded extends BaseArtemisOrientable
     @Override
     public void setHullId(int hullId) {
         mHullId = hullId;
+    }
+
+    public void setVessel(Vessel vessel) {
+    	mHullId = vessel.getId();
     }
 
     @Override
@@ -91,6 +94,13 @@ public abstract class BaseArtemisShielded extends BaseArtemisOrientable
     				"Vessel type",
     				vessel != null ? vessel.getName() : Integer.toString(mHullId),
     				includeUnspecified
+    		);
+
+    		putProp(
+    				props,
+    				"Faction",
+    				vessel != null ? vessel.getFaction().getName() : "UNKNOWN",
+					includeUnspecified
     		);
     	}
 

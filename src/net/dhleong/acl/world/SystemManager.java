@@ -15,8 +15,7 @@ import net.dhleong.acl.protocol.core.eng.EngGridUpdatePacket.DamconStatus;
 import net.dhleong.acl.protocol.core.eng.EngGridUpdatePacket.GridDamage;
 import net.dhleong.acl.protocol.core.world.DestroyObjectPacket;
 import net.dhleong.acl.protocol.core.world.IntelPacket;
-import net.dhleong.acl.protocol.core.world.ObjectUpdatingPacket;
-import net.dhleong.acl.protocol.core.world.PlayerUpdatePacket;
+import net.dhleong.acl.protocol.core.world.ObjectUpdatePacket;
 import net.dhleong.acl.util.GridCoord;
 import net.dhleong.acl.util.ShipSystemGrid;
 import net.dhleong.acl.util.ShipSystemGrid.GridEntry;
@@ -114,15 +113,10 @@ public class SystemManager {
     }
 
     @Listener
-    public void onPacket(ObjectUpdatingPacket pkt) {
+    public void onPacket(ObjectUpdatePacket pkt) {
         for (ArtemisObject p : pkt.getObjects()) {
             updateOrCreate(p);
         }
-    }
-
-    @Listener
-    public void onPacket(PlayerUpdatePacket pkt) {
-        updateOrCreate(pkt.getPlayer());
     }
 
     @Listener

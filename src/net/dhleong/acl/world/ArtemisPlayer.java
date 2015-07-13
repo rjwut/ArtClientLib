@@ -43,29 +43,9 @@ public class ArtemisPlayer extends BaseArtemisShip {
     private float mScanProgress = -1;
     private int mCaptainTarget = -1;
     private int mScanningId = -1;
-    
-    /**
-     * Special constructor for a very incomplete ArtemisPlayer
-     * @param objId
-     */
-    public ArtemisPlayer(int objId) {
-        this(objId, null, -1, -1, null, BoolState.UNKNOWN);
-    }
 
-    /**
-     * @param objId
-     * @param name
-     * @param hullId
-     * @param shipNumber The number [1,Artemis.SHIP_COUNT] of the ship,
-     *  as found in the packet. NOT the ship index!
-     * @param redAlert
-     */
-    public ArtemisPlayer(int objId, String name, int hullId, int shipNumber,
-    		AlertStatus alertStatus, BoolState shields) {
-        super(objId, name, hullId);
-        mAlertStatus = alertStatus;
-        mShields = shields;
-        mShipNumber = shipNumber;
+    public ArtemisPlayer(int objId) {
+        super(objId);
         
         // pre-fill
         for (int i = 0; i < Artemis.SYSTEM_COUNT; i++) {
@@ -82,7 +62,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
     public ObjectType getType() {
         return ObjectType.PLAYER_SHIP;
     }
-    
+
     /**
      * The ship's energy reserves.
      * Unspecified: -1
@@ -104,7 +84,11 @@ public class ArtemisPlayer extends BaseArtemisShip {
     public int getShipIndex() {
         return mShipNumber == -1 ? -1 : mShipNumber - 1;
     }
-    
+
+    public void setShipIndex(int shipIndex) {
+    	mShipNumber = shipIndex + 1;
+    }
+
     /**
      * The amount of coolant allocated to the given system.
      * Unspecified: -1

@@ -13,6 +13,7 @@ import net.dhleong.acl.protocol.UnknownPacket;
 import net.dhleong.acl.protocol.UnparsedPacket;
 import net.dhleong.acl.protocol.Version;
 import net.dhleong.acl.protocol.core.setup.VersionPacket;
+import net.dhleong.acl.protocol.core.world.ObjectUpdatePacket;
 import net.dhleong.acl.util.ByteArrayReader;
 import net.dhleong.acl.util.BitField;
 import net.dhleong.acl.util.BoolState;
@@ -159,10 +160,10 @@ public class PacketReader {
 
 		// Find the PacketFactory that knows how to handle this packet type
 		PacketFactory factory = null;
+		byte subtype = remaining > 0 ? payloadBytes[0] : 0x00;
 
 		if (parse) {
-			factory = factoryRegistry.get(connType, packetType,
-					remaining > 0 ? payloadBytes[0] : 0x00);
+			factory = factoryRegistry.get(connType, packetType, subtype);
 		}
 
 		if (factory == null) {
@@ -172,7 +173,18 @@ public class PacketReader {
 			return packet;
 		}
 
-		if (listenerRegistry.listeningFor(factory.getFactoryClass())) {
+		Class<? extends ArtemisPacket> factoryClass = factory.getFactoryClass();
+		boolean parsePacket = listenerRegistry.listeningFor(factoryClass);
+
+		if (!parsePacket && factoryClass.isAssignableFrom(ObjectUpdatePacket.class)) {
+			ObjectType type = ObjectType.fromId(subtype);
+
+			if (type != null) {
+				parsePacket = listenerRegistry.listeningFor(type.getObjectClass());
+			}
+		}
+
+		if (parsePacket) {
 			// We're interested in this packet; parse and build it
 			payload = new ByteArrayReader(payloadBytes);
 			ArtemisPacket packet;
@@ -208,6 +220,10 @@ public class PacketReader {
 		UnparsedPacket packet = new UnparsedPacket(connType, packetType, payloadBytes);
 		debugger.onRecvUnparsedPacket(packet);
 		return packet;
+	}
+
+	public int getBytesLeft() {
+		return payload.getBytesLeft();
 	}
 
 	/**
@@ -411,18 +427,12 @@ public class PacketReader {
 
 	/**
 	 * Starts reading an object from an ObjectUpdatingPacket. This will read off
-	 * an object type value (byte), an object ID (int) and (if a bits enum value
-	 * array is given) a BitField from the current packet's payload. This also
-	 * clears the unknownObjectProps property.
+	 * an object ID (int) and (if a bits enum value array is given) a BitField
+	 * from the current packet's payload. This also clears the
+	 * unknownObjectProps property. The ObjectType is then returned.
 	 */
-	public void startObject(Enum<?>[] bits) {
-		byte typeByte = readByte();
-		objectType = ObjectType.fromId(typeByte);
-
-		if (objectType == null) {
-			throw new IllegalStateException("Unknown object type: " + typeByte);
-		}
-
+	public ObjectType startObject(ObjectType type, Enum<?>[] bits) {
+		objectType = type;
 		objectId = readInt();
 
 		if (bits != null) {
@@ -432,6 +442,7 @@ public class PacketReader {
 		}
 
 		unknownObjectProps = new TreeMap<String, byte[]>();
+		return objectType;
 	}
 
 	/**

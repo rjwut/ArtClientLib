@@ -5,20 +5,29 @@ import net.dhleong.acl.enums.ObjectType;
 /**
  * There are many "generic" objects which are very similar in implementation.
  * They are all handled by this class. Specifically, the objects implemented by
- * this class are: mines, anomalies, torpedoes, black holes, asteroids and space
- * monsters.
+ * this class are: mines, torpedoes, black holes and asteroids.
  * @author dhleong
  */
 public class ArtemisGenericObject extends BaseArtemisObject {
-    private final ObjectType mType;
+    private ObjectType mType;
 
-    public ArtemisGenericObject(int objId, String name, ObjectType type) {
-        super(objId, (name == null ? type.toString() : name));
-        mType = type;
+    public ArtemisGenericObject(int objId) {
+        super(objId);
     }
 
     @Override
     public ObjectType getType() {
         return mType;
+    }
+
+    public void setType(ObjectType type) {
+    	if (type == null || type.isCompatible(this)) {
+    		throw new IllegalArgumentException(
+    				"Invalid object type for " + getClass().getName() + ": " +
+    				type
+    		);
+    	}
+
+    	mType = type;
     }
 }

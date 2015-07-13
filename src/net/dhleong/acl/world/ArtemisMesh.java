@@ -17,8 +17,8 @@ public class ArtemisMesh extends BaseArtemisObject {
     private float mShieldsFront = Float.MIN_VALUE;
     private float mShieldsRear = Float.MIN_VALUE;
 
-    public ArtemisMesh(int objId, String name) {
-        super(objId, name);
+    public ArtemisMesh(int objId) {
+        super(objId);
     }
 
     @Override

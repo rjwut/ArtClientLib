@@ -1,4 +1,4 @@
-package net.dhleong.acl.protocol;
+package net.dhleong.acl.util;
 
 import java.util.Arrays;
 

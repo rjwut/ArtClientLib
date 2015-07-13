@@ -3,8 +3,8 @@ package net.dhleong.acl.iface;
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.protocol.Protocol;
-import net.dhleong.acl.protocol.Version;
 import net.dhleong.acl.protocol.core.CoreArtemisProtocol;
+import net.dhleong.acl.util.Version;
 
 /**
  * Interface for objects which can connect to an Artemis server and send and

@@ -8,10 +8,10 @@ import java.util.SortedMap;
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.protocol.ArtemisPacket;
-import net.dhleong.acl.protocol.Version;
 import net.dhleong.acl.util.BitField;
 import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.util.Util;
+import net.dhleong.acl.util.Version;
 import net.dhleong.acl.world.ArtemisObject;
 
 /**

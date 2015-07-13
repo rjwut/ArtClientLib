@@ -15,7 +15,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-import net.dhleong.acl.protocol.Version;
+import net.dhleong.acl.util.Version;
 
 /**
  * Contains all the information extracted from the vesselData.xml file.

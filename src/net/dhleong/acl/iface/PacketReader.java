@@ -11,13 +11,13 @@ import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.protocol.ArtemisPacketException;
 import net.dhleong.acl.protocol.UnknownPacket;
 import net.dhleong.acl.protocol.UnparsedPacket;
-import net.dhleong.acl.protocol.Version;
 import net.dhleong.acl.protocol.core.setup.VersionPacket;
 import net.dhleong.acl.protocol.core.world.ObjectUpdatePacket;
 import net.dhleong.acl.util.ByteArrayReader;
 import net.dhleong.acl.util.BitField;
 import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.util.TextUtil;
+import net.dhleong.acl.util.Version;
 
 /**
  * Facilitates reading packets from an InputStream. This object may be reused to

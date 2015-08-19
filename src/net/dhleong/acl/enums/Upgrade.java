@@ -1,18 +1,20 @@
 package net.dhleong.acl.enums;
 
+import java.util.Arrays;
+
 /**
  * Upgrade types
  * @author rjwut
  */
 public enum Upgrade {
-	ANOMALY(null),                           // +500 energy (on pickup)
-	VIGORANIUM_NODULE(null),                 // resurrects 1 DAMCON (on pickup)
-	CETROCITE_HEATSINK(Console.ENGINEERING), // coolant buff
-	LATERAL_ARRAY(Console.SCIENCE),          // scanning is instantaneous
-	TAURON_FOCUSERS(Console.WEAPONS),        // +10% beam damage and cooldown buff
-	INFUSION_P_COILS(Console.HELM),          // +10% warp and impulse speed
-	CARAPACTION_COILS(Console.WEAPONS),      // +10% shield recharge rate
-	DOUBLE_AGENT(Console.COMMUNICATIONS);    // force 1 enemy to accept surrender
+	HIDENS_POWER_CELL(null),                  // +500 energy (on pickup)
+	VIGORANIUM_NODULE(null),                  // resurrects 1 DAMCON (on pickup)
+	CETROCITE_CRYSTAL(Console.ENGINEERING),   // coolant buff
+	LATERAL_ARRAY(Console.SCIENCE),           // scanning is instantaneous
+	TAURON_FOCUSER(Console.WEAPONS),          // +10% beam damage and cooldown buff
+	INFUSION_P_COIL(Console.HELM),            // +10% warp and impulse speed
+	CARPACTION_COIL(Console.WEAPONS),         // +10% shield recharge rate
+	SECRET_CODE_CASE(Console.COMMUNICATIONS); // force 1 enemy to accept surrender
 	/*
 	 * Unknown types:
 	 * HYDROGEN_RAM
@@ -31,6 +33,20 @@ public enum Upgrade {
 	 * FAST_SUPPLY
 	 * VANGUARD_REFIT (x6)
 	 */
+
+	public static final int STORABLE_UPGRADE_COUNT;
+
+	static {
+		STORABLE_UPGRADE_COUNT = getStorableUpgrades().length;
+	}
+
+	/**
+	 * Returns an array containing the Upgrade values that players can store on
+	 * the ship and use later.
+	 */
+	public static Upgrade[] getStorableUpgrades() {
+		return Arrays.copyOfRange(values(), 2, 8);
+	}
 
 	private Console activatedBy;
 

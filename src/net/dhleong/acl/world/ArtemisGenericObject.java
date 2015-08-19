@@ -21,7 +21,7 @@ public class ArtemisGenericObject extends BaseArtemisObject {
     }
 
     public void setType(ObjectType type) {
-    	if (type == null || type.isCompatible(this)) {
+    	if (type == null || !type.isCompatible(this)) {
     		throw new IllegalArgumentException(
     				"Invalid object type for " + getClass().getName() + ": " +
     				type

@@ -137,7 +137,6 @@ public class PlayerShipParser extends AbstractObjectParser {
         reader.readObjectUnknown(Bit.UNK_5_6, 5);
         reader.readObjectUnknown(Bit.UNK_5_7, 4);
 
-        player.setUnknownProps(reader.getUnknownObjectProps());
         return player;
 	}
 

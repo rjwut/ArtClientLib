@@ -57,7 +57,6 @@ public class CreatureParser extends AbstractObjectParser {
         reader.readObjectUnknown(Bit.UNK_2_4, 4);
         reader.readObjectUnknown(Bit.UNK_2_5, 4);
         reader.readObjectUnknown(Bit.UNK_2_6, 4);
-        creature.setUnknownProps(reader.getUnknownObjectProps());
         return creature;
 	}
 

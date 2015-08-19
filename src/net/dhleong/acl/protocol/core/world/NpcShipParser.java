@@ -163,7 +163,6 @@ public class NpcShipParser extends AbstractObjectParser {
         	obj.setShieldFreq(freqs[i], reader.readFloat(SHLD_FREQS[i], -1));
         }
 
-        obj.setUnknownProps(reader.getUnknownObjectProps());
         return obj;
 	}
 

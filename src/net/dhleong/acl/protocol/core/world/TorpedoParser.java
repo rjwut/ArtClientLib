@@ -45,7 +45,6 @@ public class TorpedoParser extends AbstractObjectParser {
         reader.readObjectUnknown(Bit.UNK_1_6, 4);
         reader.readObjectUnknown(Bit.UNK_1_7, 4);
         reader.readObjectUnknown(Bit.UNK_1_8, 4);
-        obj.setUnknownProps(reader.getUnknownObjectProps());
         return obj;
 	}
 

@@ -41,7 +41,6 @@ public class DroneParser extends AbstractObjectParser {
     	drone.setY(reader.readFloat(Bit.Y, Float.MIN_VALUE));
     	drone.setHeading(reader.readFloat(Bit.HEADING, Float.MIN_VALUE));
     	reader.readObjectUnknown(Bit.UNK_1_8, 4);
-        drone.setUnknownProps(reader.getUnknownObjectProps());
         return drone;
 	}
 

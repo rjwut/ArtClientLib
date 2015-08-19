@@ -29,7 +29,9 @@ public abstract class AbstractObjectParser implements ObjectParser {
 		}
 
 		reader.startObject(objectType, getBits());
-		return parseImpl(reader);
+		ArtemisObject obj = parseImpl(reader);
+		obj.setUnknownProps(reader.getUnknownObjectProps());
+		return obj;
 	}
 
 	@Override

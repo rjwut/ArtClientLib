@@ -99,7 +99,6 @@ public class GenericMeshParser extends AbstractObjectParser {
         reader.readObjectUnknown(Bit.UNK_3_8, 4);
         reader.readObjectUnknown(Bit.UNK_4_1, 4);
         reader.readObjectUnknown(Bit.UNK_4_2, 4);
-        mesh.setUnknownProps(reader.getUnknownObjectProps());
         return mesh;
 	}
 

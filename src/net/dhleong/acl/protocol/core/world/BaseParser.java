@@ -54,7 +54,6 @@ public class BaseParser extends AbstractObjectParser {
         reader.readObjectUnknown(Bit.UNK_2_4, 4);
         reader.readObjectUnknown(Bit.UNK_2_5, 1);
         reader.readObjectUnknown(Bit.UNK_2_6, 1);
-        base.setUnknownProps(reader.getUnknownObjectProps());
         return base;
 	}
 

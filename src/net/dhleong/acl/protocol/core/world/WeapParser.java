@@ -121,7 +121,6 @@ public class WeapParser extends AbstractObjectParser {
         }
 
         // last byte in bit field appears to be unused
-        player.setUnknownProps(reader.getUnknownObjectProps());
         return player;
 	}
 

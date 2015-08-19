@@ -42,7 +42,6 @@ public class NebulaParser extends AbstractObjectParser {
         		reader.readFloat(Bit.GREEN, Float.MIN_VALUE),
         		reader.readFloat(Bit.BLUE, Float.MIN_VALUE)
         );
-        obj.setUnknownProps(reader.getUnknownObjectProps());
         return obj;
 	}
 

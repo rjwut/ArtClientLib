@@ -1,5 +1,6 @@
 package net.dhleong.acl.iface;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.SortedMap;
@@ -398,6 +399,23 @@ public class PacketReader {
 	 */
 	public void readObjectUnknown(String name, int byteCount) {
 		unknownObjectProps.put(name, readBytes(byteCount));
+	}
+
+	/**
+	 * Reads bytes from the current packet's payload until the endByte value is
+	 * encountered, then puts them in the unknown object property map with the
+	 * indicated name. This method is needed for the UpgradesParser, as we do
+	 * not know the sizes of some of the fields. If we discover the sizes of the
+	 * remaining fields, this method could probably go away.
+	 */
+	public void readObjectUnknownUntil(String name, byte endByte) {
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+
+		while (hasMore() && peekByte() != endByte) {
+			bytes.write(readByte());
+		}
+
+		unknownObjectProps.put(name, bytes.toByteArray());
 	}
 
 	/**

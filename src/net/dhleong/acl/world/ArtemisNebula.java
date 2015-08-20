@@ -4,10 +4,14 @@ import net.dhleong.acl.enums.ObjectType;
 
 public class ArtemisNebula extends BaseArtemisObject {
     private boolean hasColor;
-	private int mColor;
+    private byte a;
+    private byte r;
+    private byte g;
+    private byte b;
 
 	public ArtemisNebula(int objId) {
-        super(objId, "NEBULA");
+        super(objId);
+        setName("NEBULA");
     }
 
 	@Override
@@ -25,48 +29,47 @@ public class ArtemisNebula extends BaseArtemisObject {
      * Unspecified: 0
      */
     public int getColor() {
-        return mColor;
+        return a << 24 | r << 16 | g << 8 | b;
     }
 
-    public int getAlpha() {
-    	return (mColor >>> 24) & 0xff;
+    public byte getAlpha() {
+    	return a;
     }
 
-    public int getRed() {
-    	return (mColor >>> 16) & 0xff;
+    public byte getRed() {
+    	return r;
     }
 
-    public int getGreen() {
-    	return (mColor >>> 8) & 0xff;
+    public byte getGreen() {
+    	return g;
     }
 
-    public int getBlue() {
-    	return mColor & 0xff;
+    public byte getBlue() {
+    	return b;
     }
 
     /**
      * Sets the color of the nebula, specifying each channel as a value between
      * 0 and 255.
      */
-    public void setARGB(int a, int r, int g, int b) {
-        mColor = 0;
-        mColor |= ((a & 0xff) << 24);
-        mColor |= ((r & 0xff) << 16);
-        mColor |= ((g & 0xff) << 8);
-        mColor |= (b & 0xff);
+    public void setARGB(byte a, byte r, byte g, byte b) {
+    	this.a = a;
+    	this.r = r;
+    	this.g = g;
+    	this.b = b;
     	hasColor = true;
     }
-    
+   
     /**
      * Sets the color that will be used to render this object on sensor views,
      * specifying each channel as a value between 0 and 1.
      */
     public void setARGB(float a, float r, float g, float b) {
         setARGB(
-            (int)(255 * a),
-            (int)(255 * r), 
-            (int)(255 * g), 
-            (int)(255 * b)
+            (byte) (255 * a),
+            (byte) (255 * r), 
+            (byte) (255 * g), 
+            (byte) (255 * b)
         );
     }
 }

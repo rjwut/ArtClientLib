@@ -15,9 +15,11 @@ import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.protocol.ArtemisPacketException;
 import net.dhleong.acl.protocol.Protocol;
-import net.dhleong.acl.protocol.Version;
 import net.dhleong.acl.protocol.core.setup.VersionPacket;
 import net.dhleong.acl.protocol.core.setup.WelcomePacket;
+import net.dhleong.acl.protocol.core.world.ObjectUpdatePacket;
+import net.dhleong.acl.util.Version;
+import net.dhleong.acl.world.ArtemisObject;
 
 /**
  * Default implementation of ArtemisNetworkInterface. Kicks off a thread for
@@ -299,6 +301,12 @@ public class ThreadedArtemisNetworkInterface implements ArtemisNetworkInterface 
 
                     if (mRunning) {
                 		mListeners.fire(pkt);
+
+                		if (pkt instanceof ObjectUpdatePacket) {
+                			for (ArtemisObject obj : ((ObjectUpdatePacket) pkt).getObjects()) {
+                				mListeners.fire(obj);
+                			}
+                		}
                     }
                 } catch (final ArtemisPacketException e) {
                     if (mRunning) {

@@ -5,7 +5,7 @@ import java.util.List;
 import org.junit.Assert;
 
 import net.dhleong.acl.enums.ConnectionType;
-import net.dhleong.acl.protocol.Version;
+import net.dhleong.acl.util.Version;
 
 import org.junit.Test;
 

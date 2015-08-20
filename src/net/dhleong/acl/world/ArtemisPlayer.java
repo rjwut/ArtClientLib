@@ -3,13 +3,16 @@ package net.dhleong.acl.world;
 import java.util.Arrays;
 import java.util.SortedMap;
 
+import net.dhleong.acl.enums.AlertStatus;
 import net.dhleong.acl.enums.BeamFrequency;
 import net.dhleong.acl.enums.DriveType;
 import net.dhleong.acl.enums.MainScreenView;
 import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.enums.OrdnanceType;
 import net.dhleong.acl.enums.ShipSystem;
+import net.dhleong.acl.enums.TargetingMode;
 import net.dhleong.acl.enums.TubeState;
+import net.dhleong.acl.enums.Upgrade;
 import net.dhleong.acl.util.BoolState;
 
 /**
@@ -17,7 +20,9 @@ import net.dhleong.acl.util.BoolState;
  * @author dhleong
  */
 public class ArtemisPlayer extends BaseArtemisShip {
-    private BoolState mAutoBeams, mRedAlert, mShields;
+	private TargetingMode mTargetingMode;
+	private AlertStatus mAlertStatus;
+    private BoolState mShields;
     private int mShipNumber = -1;
     private final float[] mHeat = new float[Artemis.SYSTEM_COUNT];
     private final float[] mSystems = new float[Artemis.SYSTEM_COUNT];
@@ -39,46 +44,26 @@ public class ArtemisPlayer extends BaseArtemisShip {
     private float mScanProgress = -1;
     private int mCaptainTarget = -1;
     private int mScanningId = -1;
-    
-    /**
-     * Special constructor for a very incomplete ArtemisPlayer
-     * @param objId
-     */
+    private final byte[] mUpgrades = new byte[Upgrade.STORABLE_UPGRADE_COUNT];
+
     public ArtemisPlayer(int objId) {
-        this(objId, null, -1, -1, BoolState.UNKNOWN, BoolState.UNKNOWN);
-    }
+        super(objId);
 
-    /**
-     * @param objId
-     * @param name
-     * @param hullId
-     * @param shipNumber The number [1,Artemis.SHIP_COUNT] of the ship,
-     *  as found in the packet. NOT the ship index!
-     * @param redAlert
-     */
-    public ArtemisPlayer(int objId, String name, int hullId, int shipNumber,
-    		BoolState redAlert, BoolState shields) {
-        super(objId, name, hullId);
-        mRedAlert = redAlert;
-        mShields = shields;
-        mShipNumber = shipNumber;
-        
         // pre-fill
-        for (int i = 0; i < Artemis.SYSTEM_COUNT; i++) {
-        	mHeat[i] = -1;
-            mSystems[i] = -1;
-            mCoolant[i] = -1;
-        }
-
+        Arrays.fill(mHeat, -1);
+        Arrays.fill(mSystems, -1);
+        Arrays.fill(mCoolant, -1);
         Arrays.fill(mTorpedos, -1);
         Arrays.fill(mTubeTimes, -1);
+        Arrays.fill(mTubeContents, (byte) -1);
+        Arrays.fill(mUpgrades, (byte) -1);
     }
 
     @Override
     public ObjectType getType() {
         return ObjectType.PLAYER_SHIP;
     }
-    
+
     /**
      * The ship's energy reserves.
      * Unspecified: -1
@@ -100,7 +85,11 @@ public class ArtemisPlayer extends BaseArtemisShip {
     public int getShipIndex() {
         return mShipNumber == -1 ? -1 : mShipNumber - 1;
     }
-    
+
+    public void setShipIndex(int shipIndex) {
+    	mShipNumber = shipIndex + 1;
+    }
+
     /**
      * The amount of coolant allocated to the given system.
      * Unspecified: -1
@@ -160,14 +149,14 @@ public class ArtemisPlayer extends BaseArtemisShip {
     }
 
     /**
-     * Whether or not we're at red alert.
+     * Current alert status.
      */
-    public BoolState getRedAlertState() {
-        return mRedAlert;
+    public AlertStatus getAlertStatus() {
+        return mAlertStatus;
     }
 
-    public void setRedAlert(boolean newState) {
-        mRedAlert = BoolState.from(newState);
+    public void setAlertStatus(AlertStatus alertStatus) {
+        mAlertStatus = alertStatus;
     }
 
     /**
@@ -345,15 +334,15 @@ public class ArtemisPlayer extends BaseArtemisShip {
     }
 
     /**
-     * Whether or not auto beams are enabled.
+     * Returns the current targeting mode (auto vs. manual beams).
      * Unspecified: null
      */
-    public BoolState getAutoBeams() {
-    	return mAutoBeams;
+    public TargetingMode getTargetingMode() {
+    	return mTargetingMode;
     }
 
-    public void setAutoBeams(BoolState autoBeams) {
-    	mAutoBeams = autoBeams;
+    public void setTargetingMode(TargetingMode targetingMode) {
+    	mTargetingMode = targetingMode;
     }
 
     /**
@@ -434,6 +423,26 @@ public class ArtemisPlayer extends BaseArtemisShip {
 		mWarp = warp;
 	}
 
+    /**
+     * Returns the number of upgrades of the indicated type stored on the ship.
+     * Unspecified: -1
+     */
+    public byte getUpgrades(Upgrade upgrade) {
+    	if (upgrade.getActivatedby() == null) {
+    		throw new IllegalArgumentException(upgrade + " upgrades can't be stored on the ship");
+    	}
+
+    	return mUpgrades[upgrade.ordinal() - 2];
+    }
+
+    public void setUpgrades(Upgrade upgrade, byte count) {
+    	if (upgrade.getActivatedby() == null) {
+    		throw new IllegalArgumentException(upgrade + " upgrades can't be stored on the ship");
+    	}
+
+    	mUpgrades[upgrade.ordinal() - 2] = count;
+    }
+
     @Override
     public void updateFrom(ArtemisObject eng) {
         super.updateFrom(eng);
@@ -446,8 +455,8 @@ public class ArtemisPlayer extends BaseArtemisShip {
                 mShipNumber = plr.mShipNumber;
             }
             
-            if (BoolState.isKnown(plr.mAutoBeams)) {
-            	mAutoBeams = plr.mAutoBeams;
+            if (plr.mTargetingMode != null) {
+            	mTargetingMode = plr.mTargetingMode;
             }
 
             if (plr.mWeaponsTarget != -1) {
@@ -468,8 +477,8 @@ public class ArtemisPlayer extends BaseArtemisShip {
             	mBeamFreq = plr.mBeamFreq;
             }
 
-            if (BoolState.isKnown(plr.mRedAlert)) {
-                mRedAlert = plr.mRedAlert;
+            if (plr.mAlertStatus != null) {
+            	mAlertStatus = plr.mAlertStatus;
             }
 
             if (BoolState.isKnown(plr.mShields)) {
@@ -553,14 +562,22 @@ public class ArtemisPlayer extends BaseArtemisShip {
             if (plr.mScanningId != -1) {
                 mScanningId = plr.mScanningId;
             }
+
+            for (int i = 0; i < mUpgrades.length; i++) {
+            	byte upgrade = plr.mUpgrades[i];
+
+            	if (upgrade >= 0) {
+            		mUpgrades[i] = upgrade;
+            	}
+            }
         }
     }
 
     @Override
 	public void appendObjectProps(SortedMap<String, Object> props, boolean includeUnspecified) {
     	super.appendObjectProps(props, includeUnspecified);
-    	putProp(props, "Auto beams", mAutoBeams, includeUnspecified);
-    	putProp(props, "Red alert", mRedAlert, includeUnspecified);
+    	putProp(props, "Targeting mode", mTargetingMode, includeUnspecified);
+    	putProp(props, "Alert status", mAlertStatus, includeUnspecified);
     	putProp(props, "Shield state", mShields, includeUnspecified);
     	putProp(props, "Player ship number", mShipNumber, -1, includeUnspecified);
 
@@ -588,7 +605,7 @@ public class ArtemisPlayer extends BaseArtemisShip {
     			if (state == TubeState.UNLOADED) {
     				contentsStr = "EMPTY";
     			} else {
-    				contentsStr = OrdnanceType.values()[contents].name();
+    				contentsStr = ordValues[contents].name();
     			}
 
     			putProp(props, "Tube " + i + " contents", contentsStr, includeUnspecified);
@@ -610,5 +627,11 @@ public class ArtemisPlayer extends BaseArtemisShip {
     	putProp(props, "Scan object ID", mScanningId, -1, includeUnspecified);
     	putProp(props, "Weapons target", mWeaponsTarget, -1, includeUnspecified);
     	putProp(props, "Captain target", mCaptainTarget, -1, includeUnspecified);
+    	Upgrade[] upgradeTypes = Upgrade.getStorableUpgrades();
+
+    	for (int i = 0; i < mUpgrades.length; i++) {
+    		Upgrade upgradeType = upgradeTypes[i];
+        	putProp(props, "Upgrades: " + upgradeType, mUpgrades[i], -1, includeUnspecified);
+        }
     }
 }

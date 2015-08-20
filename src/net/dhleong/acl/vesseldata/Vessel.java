@@ -24,7 +24,7 @@ public class Vessel {
 	String diffuseFile;
 	String glowFile;
 	String specularFile;
-	String internalDataFile;
+	VesselInternals internals;
 	float scale;
 	int pushRadius;
 	int foreShields;
@@ -99,11 +99,17 @@ public class Vessel {
 	}
 
 	/**
-	 * Returns true if this Vessel has the given VesselAttribute; false
+	 * Returns true if this Vessel has all the given VesselAttribute; false
 	 * otherwise.
 	 */
-	public boolean is(VesselAttribute attribute) {
-		return attributes.contains(attribute);
+	public boolean is(VesselAttribute... attrs) {
+		for (VesselAttribute attr : attrs) {
+			if (!attributes.contains(attr)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -135,13 +141,12 @@ public class Vessel {
 	}
 
 	/**
-	 * Returns the filename for the ship's .snt file, which contains information
-	 * about the ship's internal system nodes as seen in the engineering
-	 * console.
-	 * TODO Parse the .snt file
+	 * Returns the VesselInternals object describing the system node structure
+	 * for this Vessel, or null if there is none. (Only player ships will have
+	 * a VesselInternals object.)
 	 */
-	public String getInternalDataFile() {
-		return internalDataFile;
+	public VesselInternals getInternals() {
+		return internals;
 	}
 
 	/**

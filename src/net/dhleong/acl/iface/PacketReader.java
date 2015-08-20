@@ -1,9 +1,8 @@
 package net.dhleong.acl.iface;
 
-import java.io.EOFException;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -13,11 +12,13 @@ import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.protocol.ArtemisPacketException;
 import net.dhleong.acl.protocol.UnknownPacket;
 import net.dhleong.acl.protocol.UnparsedPacket;
-import net.dhleong.acl.protocol.Version;
 import net.dhleong.acl.protocol.core.setup.VersionPacket;
+import net.dhleong.acl.protocol.core.world.ObjectUpdatePacket;
+import net.dhleong.acl.util.ByteArrayReader;
 import net.dhleong.acl.util.BitField;
 import net.dhleong.acl.util.BoolState;
 import net.dhleong.acl.util.TextUtil;
+import net.dhleong.acl.util.Version;
 
 /**
  * Facilitates reading packets from an InputStream. This object may be reused to
@@ -28,13 +29,12 @@ import net.dhleong.acl.util.TextUtil;
 public class PacketReader {
 	private ConnectionType connType;
 	private InputStream in;
-	private byte[] buffer = new byte[4];
+	private byte[] intBuffer = new byte[4];
 	private boolean parse = true;
 	private PacketFactoryRegistry factoryRegistry;
 	private ListenerRegistry listenerRegistry;
 	private Version version;
-	private byte[] payload;
-	private int offset;
+	private ByteArrayReader payload;
 	private SortedMap<String, byte[]> unknownProps;
 	private ObjectType objectType;
 	private int objectId;
@@ -75,7 +75,6 @@ public class PacketReader {
 	 * notified.
 	 */
 	public ArtemisPacket readPacket(Debugger debugger) throws ArtemisPacketException {
-		offset = 0;
 		objectType = null;
 		objectId = 0;
 		bitField = null;
@@ -148,46 +147,55 @@ public class PacketReader {
 		// The preamble was 24 bytes (6 ints), so the payload size is the size
 		// of the whole packet minus 24 bytes.
 		final int remaining = len - 24;
-		payload = new byte[remaining];
+		byte[] payloadBytes = new byte[remaining];
 
 		try {
-			int bytesRead = in.read(payload, 0, remaining);
-
-			if (bytesRead < remaining) {
-				throw new EOFException("Stream is closed");
-			}
+			ByteArrayReader.readBytes(in, remaining, payloadBytes);
+		} catch (InterruptedException ex) {
+			throw new ArtemisPacketException(ex, connType, packetType);
 		} catch (IOException ex) {
 			throw new ArtemisPacketException(ex, connType, packetType);
 		}
 
-		debugger.onRecvPacketBytes(connType, packetType, payload);
+		debugger.onRecvPacketBytes(connType, packetType, payloadBytes);
 
 		// Find the PacketFactory that knows how to handle this packet type
 		PacketFactory factory = null;
+		byte subtype = remaining > 0 ? payloadBytes[0] : 0x00;
 
 		if (parse) {
-			factory = factoryRegistry.get(connType, packetType,
-					hasMore() ? peekByte() : 0x00);
+			factory = factoryRegistry.get(connType, packetType, subtype);
 		}
 
 		if (factory == null) {
 			// No factory can handle this; return an UnknownPacket
-			UnknownPacket packet = new UnknownPacket(connType, packetType, payload);
-			offset = payload.length;
+			UnknownPacket packet = new UnknownPacket(connType, packetType, payloadBytes);
 			debugger.onRecvUnparsedPacket(packet);
 			return packet;
 		}
 
-		if (listenerRegistry.listeningFor(factory.getFactoryClass())) {
+		Class<? extends ArtemisPacket> factoryClass = factory.getFactoryClass();
+		boolean parsePacket = listenerRegistry.listeningFor(factoryClass);
+
+		if (!parsePacket && factoryClass.isAssignableFrom(ObjectUpdatePacket.class)) {
+			ObjectType type = ObjectType.fromId(subtype);
+
+			if (type != null) {
+				parsePacket = listenerRegistry.listeningFor(type.getObjectClass());
+			}
+		}
+
+		if (parsePacket) {
 			// We're interested in this packet; parse and build it
+			payload = new ByteArrayReader(payloadBytes);
 			ArtemisPacket packet;
 
 			try {
 				packet = factory.build(this);
 			} catch (ArtemisPacketException ex) {
-				throw new ArtemisPacketException(ex, connType, packetType, payload);
+				throw new ArtemisPacketException(ex, connType, packetType, payloadBytes);
 			} catch (RuntimeException ex) {
-				throw new ArtemisPacketException(ex, connType, packetType, payload);
+				throw new ArtemisPacketException(ex, connType, packetType, payloadBytes);
 			}
 
 			if (packet instanceof VersionPacket) {
@@ -195,13 +203,13 @@ public class PacketReader {
 				version = ((VersionPacket) packet).getVersion();
 			}
 
-			int bytesLeft = payload.length - offset;
+			int unreadByteCount = payload.getBytesLeft();
 
-			if (bytesLeft > 0) {
+			if (unreadByteCount > 0) {
 				debugger.warn(
 						"Unread bytes [" +
 						packet.getClass().getSimpleName() + "]: " +
-						TextUtil.byteArrayToHexString(readBytes(bytesLeft))
+						TextUtil.byteArrayToHexString(readBytes(unreadByteCount))
 				);
 			}
 
@@ -210,9 +218,13 @@ public class PacketReader {
 		}
 
 		// We don't have any listeners for this packet
-		UnparsedPacket packet = new UnparsedPacket(connType, packetType, payload);
+		UnparsedPacket packet = new UnparsedPacket(connType, packetType, payloadBytes);
 		debugger.onRecvUnparsedPacket(packet);
 		return packet;
+	}
+
+	public int getBytesLeft() {
+		return payload.getBytesLeft();
 	}
 
 	/**
@@ -220,7 +232,7 @@ public class PacketReader {
 	 * otherwise.
 	 */
 	public boolean hasMore() {
-		return offset < payload.length && (bitField == null || payload[offset] != 0);
+		return payload.getBytesLeft() > 0 && (bitField == null || payload.peek() != 0);
 	}
 
 	/**
@@ -228,14 +240,14 @@ public class PacketReader {
 	 * pointer.
 	 */
 	public byte peekByte() {
-		return payload[offset];
+		return payload.peek();
 	}
 
 	/**
 	 * Reads a single byte from the current packet's payload.
 	 */
 	public byte readByte() {
-		return payload[offset++];
+		return payload.readByte();
 	}
 
 	/**
@@ -259,9 +271,7 @@ public class PacketReader {
 	 * then coerces the zeroeth byte read into a BoolState.
 	 */
 	public BoolState readBool(int byteCount) {
-		BoolState b = readBool(payload, offset);
-		offset += byteCount;
-		return b;
+		return payload.readBoolState(byteCount);
 	}
 
 	/**
@@ -278,9 +288,7 @@ public class PacketReader {
 	 * Reads a short from the current packet's payload.
 	 */
 	public int readShort() {
-		int val = readShort(payload, offset);
-		offset += 2;
-		return val;
+		return payload.readShort();
 	}
 
 	/**
@@ -303,9 +311,7 @@ public class PacketReader {
 	 * Reads an int from the current packet's payload.
 	 */
 	public int readInt() {
-		int val = readInt(payload, offset);
-		offset += 4;
-		return val;
+		return payload.readInt();
 	}
 
 	/**
@@ -328,9 +334,7 @@ public class PacketReader {
 	 * Reads a float from the current packet's payload.
 	 */
 	public float readFloat() {
-		float val = readFloat(payload, offset);
-		offset += 4;
-		return val;
+		return payload.readFloat();
 	}
 
 	/**
@@ -343,33 +347,23 @@ public class PacketReader {
 	}
 
 	/**
-	 * Reads a String from the current packet's payload.
+	 * Reads a UTF-16LE String from the current packet's payload.
 	 */
 	public String readString() {
-		int charCount = readInt();
-		int byteCount = charCount * 2;
-		byte[] bytes = Arrays.copyOfRange(payload, offset, offset + byteCount - 2);
-		int i = 0;
-
-		// check for "early" null
-		for ( ; i < bytes.length; i += 2) {
-			if (bytes[i] == 0 && bytes[i + 1] == 0) {
-				break;
-			}
-		}
-
-		if (i != bytes.length) {
-			bytes = Arrays.copyOfRange(bytes, 0, i);
-		}
-
-		offset += byteCount;
-		return new String(bytes, ArtemisPacket.CHARSET);
+		return payload.readUTF16LEString();
 	}
 
 	/**
-	 * Reads a String from the current packet's payload if the indicated bit in
-	 * the current BitField is on. Otherwise, the pointer is not moved, and null
-	 * is returned.
+	 * Reads a US ASCII String from the current packet's payload.
+	 */
+	public String readUSASCIIString() {
+		return payload.readUSASCIIString();
+	}
+
+	/**
+	 * Reads a UTF-16LE String from the current packet's payload if the
+	 * indicated bit in the current BitField is on. Otherwise, the pointer is
+	 * not moved, and null is returned.
 	 */
 	public String readString(Enum<?> bit) {
 		return bitField.get(bit) ? readString() : null;
@@ -379,9 +373,7 @@ public class PacketReader {
 	 * Reads the given number of bytes from the current packet's payload.
 	 */
 	public byte[] readBytes(int byteCount) {
-		byte[] bytes = Arrays.copyOfRange(payload, offset, offset + byteCount);
-		offset += byteCount;
-		return bytes;
+		return payload.readBytes(byteCount);
 	}
 
 	/**
@@ -410,6 +402,23 @@ public class PacketReader {
 	}
 
 	/**
+	 * Reads bytes from the current packet's payload until the endByte value is
+	 * encountered, then puts them in the unknown object property map with the
+	 * indicated name. This method is needed for the UpgradesParser, as we do
+	 * not know the sizes of some of the fields. If we discover the sizes of the
+	 * remaining fields, this method could probably go away.
+	 */
+	public void readObjectUnknownUntil(String name, byte endByte) {
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+
+		while (hasMore() && peekByte() != endByte) {
+			bytes.write(readByte());
+		}
+
+		unknownObjectProps.put(name, bytes.toByteArray());
+	}
+
+	/**
 	 * if the indicated bit in the current BitField is off, this method returns
 	 * without doing anything. Otherwise, it acts as a convenience method for
 	 * readObjectUnknown(bit.name(), byteCount).
@@ -424,7 +433,7 @@ public class PacketReader {
 	 * Skips the given number of bytes in the current packet's payload.
 	 */
 	public void skip(int byteCount) {
-		offset += byteCount;
+		payload.skip(byteCount);
 	}
 
 	/**
@@ -436,28 +445,22 @@ public class PacketReader {
 
 	/**
 	 * Starts reading an object from an ObjectUpdatingPacket. This will read off
-	 * an object type value (byte), an object ID (int) and (if a bits enum value
-	 * array is given) a BitField from the current packet's payload. This also
-	 * clears the unknownObjectProps property.
+	 * an object ID (int) and (if a bits enum value array is given) a BitField
+	 * from the current packet's payload. This also clears the
+	 * unknownObjectProps property. The ObjectType is then returned.
 	 */
-	public void startObject(Enum<?>[] bits) {
-		byte typeByte = readByte();
-		objectType = ObjectType.fromId(typeByte);
-
-		if (objectType == null) {
-			throw new IllegalStateException("Unknown object type: " + typeByte);
-		}
-
+	public ObjectType startObject(ObjectType type, Enum<?>[] bits) {
+		objectType = type;
 		objectId = readInt();
 
 		if (bits != null) {
-			bitField = new BitField(bits, payload, offset);
-	        offset += bitField.getByteCount();
+			bitField = payload.readBitField(bits);
 		} else {
 			bitField = null;
 		}
 
 		unknownObjectProps = new TreeMap<String, byte[]>();
+		return objectType;
 	}
 
 	/**
@@ -496,54 +499,13 @@ public class PacketReader {
 	 * ArtemisPacketException will be thrown.
 	 */
 	private int readIntFromStream() throws ArtemisPacketException {
-		int totalBytesRead = 0;
-
 		try {
-			do {
-				int bytesRead = in.read(buffer, totalBytesRead, 4 - totalBytesRead);
-	
-				if (bytesRead == -1) {
-					throw new EOFException("Stream is closed");
-				}
-	
-				totalBytesRead += bytesRead;
-			} while (totalBytesRead < 4);
+			ByteArrayReader.readBytes(in, 4, intBuffer);
+			return ByteArrayReader.readInt(intBuffer, 0);
+		} catch (InterruptedException ex) {
+			throw new ArtemisPacketException(ex);
 		} catch (IOException ex) {
 			throw new ArtemisPacketException(ex);
 		}
-
-		return readInt(buffer, 0);
-	}
-
-
-	/**
-	 * Reads a BoolState from the indicated offset in the given byte array.
-	 */
-	public static BoolState readBool(byte[] bytes, int offset) {
-		return BoolState.from(bytes[offset] == 1);
-	}
-
-	/**
-	 * Reads a short from the indicated offset in the given byte array.
-	 */
-	public static int readShort(byte[] bytes, int offset) {
-		return (0xff & (bytes[offset + 1] << 8)) | (0xff & bytes[offset]);
-	}
-
-	/**
-	 * Reads an int from the indicated offset in the given byte array.
-	 */
-	public static int readInt(byte[] bytes, int offset) {
-		return	((0xff & bytes[offset + 3]) << 24) |
-				((0xff & bytes[offset + 2]) << 16) |
-				((0xff & bytes[offset + 1]) << 8) |
-				(0xff & bytes[offset]);
-	}
-
-	/**
-	 * Reads a float from the indicated offset in the given byte array.
-	 */
-	public static float readFloat(byte[] bytes, int offset) {
-		return Float.intBitsToFloat(readInt(bytes, offset));
 	}
 }

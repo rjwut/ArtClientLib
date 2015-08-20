@@ -1,5 +1,6 @@
 package net.dhleong.acl.util;
 
+import java.nio.charset.Charset;
 import java.util.Set;
 
 /**
@@ -7,7 +8,10 @@ import java.util.Set;
  * worry, we love you and will find you a home.
  */
 public class Util {
-    public static final String enumSetToString(Set<? extends Enum<?>> set) {
+	public static final Charset US_ASCII = Charset.forName("US-ASCII");
+	public static final Charset UTF16LE = Charset.forName("UTF-16LE");
+
+	public static final String enumSetToString(Set<? extends Enum<?>> set) {
     	if (set.isEmpty()) {
     		return "";
     	}

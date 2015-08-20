@@ -7,14 +7,15 @@ import net.dhleong.acl.enums.ObjectType;
 /**
  * This interface represents information about an object in the game world. It
  * may contain all the information known about that object, or just updates.
- * Every object has the following:
+ * Every object has the following properties:
  * 
  * - an ID
  * - a type
  * - a position (x, y, z)
  * 
  * Many objects also have a name, but not all of them do, and the name is not
- * guaranteed to be unique.
+ * guaranteed to be unique. However, any one update is only guaranteed to
+ * specify the ID.
  * 
  * 
  * Unspecified properties vs. unknown properties

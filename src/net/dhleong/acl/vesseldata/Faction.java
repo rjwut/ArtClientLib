@@ -41,15 +41,21 @@ public class Faction {
 	 * Faction.
 	 */
 	public FactionAttribute[] getAttributes() {
-		return (FactionAttribute[]) attributes.toArray();
+		return attributes.toArray(new FactionAttribute[attributes.size()]);
 	}
 
 	/**
-	 * Returns true if this Faction has the given FactionAttribute; false
+	 * Returns true if this Faction has all the given FactionAttributes; false
 	 * otherwise.
 	 */
-	public boolean is(FactionAttribute attribute) {
-		return attributes.contains(attribute);
+	public boolean is(FactionAttribute... attrs) {
+		for (FactionAttribute attr : attrs) {
+			if (!attributes.contains(attr)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**

@@ -8,7 +8,7 @@ public class ArtemisDrone extends BaseArtemisOrientable {
 	private float mSteering = -1;
 
 	public ArtemisDrone(int objId) {
-		super(objId, null);
+		super(objId);
 	}
 
 	@Override

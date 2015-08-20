@@ -19,16 +19,9 @@ public class CoreArtemisProtocol implements Protocol {
 	public void registerPacketFactories(PacketFactoryRegistry registry) {
 		// server
 		// --- prioritized
-		NpcUpdatePacket.register(registry);
-		MainPlayerUpdatePacket.register(registry);
-		DroneUpdatePacket.register(registry);
+		ObjectUpdatePacket.register(registry);
 		BeamFiredPacket.register(registry);
-		GenericUpdatePacket.register(registry);
-		BasePacket.register(registry);
 		EngGridUpdatePacket.register(registry);
-		EngPlayerUpdatePacket.register(registry);
-		WeapPlayerUpdatePacket.register(registry);
-		WhaleUpdatePacket.register(registry);
 		IntelPacket.register(registry);
 		SoundEffectPacket.register(registry);
 		// --- rest
@@ -43,11 +36,9 @@ public class CoreArtemisProtocol implements Protocol {
 		GameOverPacket.register(registry);
 		GameOverReasonPacket.register(registry);
 		GameOverStatsPacket.register(registry);
-		GenericMeshPacket.register(registry);
 		IncomingAudioPacket.register(registry);
 		JumpStatusPacket.register(registry);
 		KeyCaptureTogglePacket.register(registry);
-		NebulaUpdatePacket.register(registry);
 		PausePacket.register(registry);
 		PerspectivePacket.register(registry);
 		PlayerShipDamagePacket.register(registry);

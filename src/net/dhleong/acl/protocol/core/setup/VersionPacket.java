@@ -8,7 +8,7 @@ import net.dhleong.acl.iface.PacketWriter;
 import net.dhleong.acl.protocol.ArtemisPacket;
 import net.dhleong.acl.protocol.ArtemisPacketException;
 import net.dhleong.acl.protocol.BaseArtemisPacket;
-import net.dhleong.acl.protocol.Version;
+import net.dhleong.acl.util.Version;
 
 /**
  * Gives the Artemis server's version number. Send immediately after

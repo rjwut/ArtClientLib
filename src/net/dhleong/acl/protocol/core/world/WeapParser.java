@@ -1,50 +1,26 @@
 package net.dhleong.acl.protocol.core.world;
 
-import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.enums.OrdnanceType;
 import net.dhleong.acl.enums.TubeState;
-import net.dhleong.acl.iface.PacketFactory;
-import net.dhleong.acl.iface.PacketFactoryRegistry;
 import net.dhleong.acl.iface.PacketReader;
 import net.dhleong.acl.iface.PacketWriter;
-import net.dhleong.acl.protocol.ArtemisPacket;
-import net.dhleong.acl.protocol.ArtemisPacketException;
 import net.dhleong.acl.world.Artemis;
+import net.dhleong.acl.world.ArtemisObject;
 import net.dhleong.acl.world.ArtemisPlayer;
 
-/**
- * Player data related to the weapons console.
- * @author dhleong
- */
-public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
-	public static void register(PacketFactoryRegistry registry) {
-		registry.register(ConnectionType.SERVER,
-				ObjectUpdatingPacket.WORLD_TYPE,
-				ObjectType.WEAPONS_CONSOLE.getId(), new PacketFactory() {
-			@Override
-			public Class<? extends ArtemisPacket> getFactoryClass() {
-				return WeapPlayerUpdatePacket.class;
-			}
-
-			@Override
-			public ArtemisPacket build(PacketReader reader)
-					throws ArtemisPacketException {
-				return new WeapPlayerUpdatePacket(reader);
-			}
-		});
-	}
-
+public class WeapParser extends AbstractObjectParser {
 	private enum Bit {
 		TORP_HOMING,
-		TORP_NUKES,
-		TORP_MINES,
-		TORP_EMPS,
-		UNK_0,
+		TORP_NUKE,
+		TORP_MINE,
+		TORP_EMP,
+		TORP_PSHOCK,
+		UNK_1_6,
 		TUBE_TIME_1,
 		TUBE_TIME_2,
-		TUBE_TIME_3,
 
+		TUBE_TIME_3,
 		TUBE_TIME_4,
 		TUBE_TIME_5,
 		TUBE_TIME_6,
@@ -52,19 +28,30 @@ public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
 		TUBE_STATE_2,
 		TUBE_STATE_3,
 		TUBE_STATE_4,
-		TUBE_STATE_5,
 
+		TUBE_STATE_5,
 		TUBE_STATE_6,
 		TUBE_CONTENT_1,
 		TUBE_CONTENT_2,
 		TUBE_CONTENT_3,
 		TUBE_CONTENT_4,
 		TUBE_CONTENT_5,
-		TUBE_CONTENT_6
-	}
+		TUBE_CONTENT_6,
 
-    private static final Bit[] TORPEDOS = {
-        Bit.TORP_HOMING, Bit.TORP_NUKES, Bit.TORP_MINES, Bit.TORP_EMPS
+		UNK_4_1,
+		UNK_4_2,
+		UNK_4_3,
+		UNK_4_4,
+		UNK_4_5,
+		UNK_4_6,
+		UNK_4_7,
+		UNK_4_8
+	}
+	private static final Bit[] BITS = Bit.values();
+
+	private static final Bit[] TORPEDOS = {
+        Bit.TORP_HOMING, Bit.TORP_NUKE, Bit.TORP_MINE, Bit.TORP_EMP,
+        Bit.TORP_PSHOCK
     };
 
     private static final Bit[] TUBE_TIMES = {
@@ -82,19 +69,28 @@ public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
         Bit.TUBE_CONTENT_4, Bit.TUBE_CONTENT_5, Bit.TUBE_CONTENT_6
     };
 
-    private WeapPlayerUpdatePacket(PacketReader reader) {
-        int[] torps = new int[ TORPEDOS.length ];
+
+    protected WeapParser() {
+		super(ObjectType.WEAPONS_CONSOLE);
+	}
+
+	@Override
+	public Bit[] getBits() {
+		return BITS;
+	}
+
+	@Override
+	protected ArtemisPlayer parseImpl(PacketReader reader) {
+        int[] torps = new int[TORPEDOS.length];
         float[] tubeTimes = new float[Artemis.MAX_TUBES];
         TubeState[] tubeStates = new TubeState[Artemis.MAX_TUBES];
         byte[] tubeContents = new byte[Artemis.MAX_TUBES];
-
-        reader.startObject(Bit.values());
 
         for (int i = 0; i < torps.length; i++) {
             torps[i] = (reader.readByte(TORPEDOS[i], (byte) -1));
         }
 
-        reader.readObjectUnknown(Bit.UNK_0, 1);
+        reader.readObjectUnknown(Bit.UNK_1_6, 1);
            
         for (int i = 0; i < Artemis.MAX_TUBES; i++) {
             tubeTimes[i] = reader.readFloat(TUBE_TIMES[i], -1);
@@ -112,57 +108,59 @@ public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
         	tubeContents[i] = reader.readByte(TUBE_CONTENTS[i], (byte) -1);
         }
 
-        mPlayer = new ArtemisPlayer(reader.getObjectId());
+        ArtemisPlayer player = new ArtemisPlayer(reader.getObjectId());
 
         for (int i = 0; i < TORPEDOS.length; i++) {
-        	mPlayer.setTorpedoCount(i, torps[i]);
+        	player.setTorpedoCount(i, torps[i]);
         }
 
         for (int i = 0; i < Artemis.MAX_TUBES; i++) {
-        	mPlayer.setTubeCountdown(i, tubeTimes[i]);
-        	mPlayer.setTubeState(i, tubeStates[i]);
-        	mPlayer.setTubeContentsValue(i, tubeContents[i]);
+        	player.setTubeCountdown(i, tubeTimes[i]);
+        	player.setTubeState(i, tubeStates[i]);
+        	player.setTubeContentsValue(i, tubeContents[i]);
         }
 
-        mPlayer.setUnknownProps(reader.getUnknownObjectProps());
-        reader.skip(4);	// skip 0x00 terminator
-    }
+        // last byte in bit field appears to be unused
+        return player;
+	}
 
 	@Override
-	protected void writePayload(PacketWriter writer) {
-		writer.startObject(mPlayer, ObjectType.WEAPONS_CONSOLE, Bit.values());
+	public void write(ArtemisObject obj, PacketWriter writer) {
+		ArtemisPlayer player = (ArtemisPlayer) obj;
 		OrdnanceType[] ordTypes = OrdnanceType.values();
 
 		for (int i = 0; i < TORPEDOS.length; i++) {
 			OrdnanceType type = ordTypes[i];
-			writer.writeByte(TORPEDOS[i], (byte) mPlayer.getTorpedoCount(type), (byte) -1);
+			writer.writeByte(TORPEDOS[i], (byte) player.getTorpedoCount(type), (byte) -1);
 		}
 
-        writer.writeUnknown(Bit.UNK_0);
+        writer.writeUnknown(Bit.UNK_1_6);
 
         for (int i = 0; i < Artemis.MAX_TUBES; i++) {
-            writer.writeFloat(TUBE_TIMES[i], mPlayer.getTubeCountdown(i), -1);
+            writer.writeFloat(TUBE_TIMES[i], player.getTubeCountdown(i), -1);
         }
 
         for (int i = 0; i < Artemis.MAX_TUBES; i++) {
-        	TubeState state = mPlayer.getTubeState(i);
+        	TubeState state = player.getTubeState(i);
         	byte stateByte = (byte) (state != null ? state.ordinal() : -1);
         	writer.writeByte(TUBE_STATES[i], stateByte, (byte) -1);
         }
 
         for (int i = 0; i < Artemis.MAX_TUBES; i++) {
-        	byte type = mPlayer.getTubeContentsValue(i);
+        	byte type = player.getTubeContentsValue(i);
         	writer.writeByte(TUBE_CONTENTS[i], type, (byte) -1);
         }
 
-		writer.endObject();
-		writer.writeInt(0);
+        // last byte in bit field appears to be unused
 	}
 
 	@Override
-	protected void appendPacketDetail(StringBuilder b) {
+	public void appendDetail(ArtemisObject obj, StringBuilder b) {
+		ArtemisPlayer player = (ArtemisPlayer) obj;
+		b.append("\nWEAP for player ship #").append(obj.getId()).append(": ");
+
 		for (OrdnanceType type : OrdnanceType.values()) {
-			int count = mPlayer.getTorpedoCount(type);
+			int count = player.getTorpedoCount(type);
 
 			if (count != -1) {
 				b.append(type).append('=').append(count).append(' ');
@@ -170,9 +168,9 @@ public class WeapPlayerUpdatePacket extends PlayerUpdatePacket {
 		}
 
 		for (int i = 0; i < Artemis.MAX_TUBES; i++) {
-			TubeState state = mPlayer.getTubeState(i);
-			byte contents = mPlayer.getTubeContentsValue(i);
-			float time = mPlayer.getTubeCountdown(i);
+			TubeState state = player.getTubeState(i);
+			byte contents = player.getTubeContentsValue(i);
+			float time = player.getTubeCountdown(i);
 
 			if (state == null && contents == -1 && time < 0) {
 				continue;

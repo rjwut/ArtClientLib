@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import net.dhleong.acl.protocol.ArtemisPacket;
+import net.dhleong.acl.world.ArtemisObject;
 
 /**
  * Contains all the information needed to invoke a listener Method (annotated
@@ -59,13 +60,16 @@ public class ListenerMethod {
 
 		if (
 				ArtemisPacket.class.isAssignableFrom(paramType) ||
-				ConnectionEvent.class.isAssignableFrom(paramType)) {
+				ArtemisObject.class.isAssignableFrom(paramType) ||
+				ConnectionEvent.class.isAssignableFrom(paramType)
+		) {
 			return;
 		}
 
 		throw new IllegalArgumentException(
 				"Method " + method.getName() +
-				" argument must be assignable to ArtemisPacket or ConnectionEvent"
+				" argument must be assignable to ArtemisPacket," +
+				" or ConnectionEvent"
 		);
 	}
 

@@ -8,9 +8,10 @@ import java.util.SortedMap;
 import net.dhleong.acl.enums.ConnectionType;
 import net.dhleong.acl.enums.ObjectType;
 import net.dhleong.acl.protocol.ArtemisPacket;
-import net.dhleong.acl.protocol.Version;
 import net.dhleong.acl.util.BitField;
 import net.dhleong.acl.util.BoolState;
+import net.dhleong.acl.util.Util;
+import net.dhleong.acl.util.Version;
 import net.dhleong.acl.world.ArtemisObject;
 
 /**
@@ -149,13 +150,17 @@ public class PacketWriter {
 	public PacketWriter writeBool(Enum<?> bit, BoolState v, int byteCount) {
 		assertObjectStarted();
 
-		if (BoolState.isKnown(v)) {
-			bitField.set(bit, true);
-			byte[] bytes = new byte[byteCount];
-			bytes[0] = (byte) (v.getBooleanValue() ? 1 : 0);
-			writeBytes(baosObj, bytes);
+		if (!BoolState.isKnown(v)) {
+			return this;
 		}
 
+		buffer[0] = (byte) (v.getBooleanValue() ? 1 : 0);
+
+		for (int i = 1; i < byteCount; i++) {
+			buffer[i] = 0;
+		}
+
+		baosObj.write(buffer, 0, byteCount);
 		return this;
 	}
 
@@ -165,7 +170,7 @@ public class PacketWriter {
 	 */
 	public PacketWriter writeShort(int v) {
 		assertStarted();
-		writeShort(baos, v);
+		writeShort(v, baos);
 		return this;
 	}
 
@@ -180,7 +185,7 @@ public class PacketWriter {
 
 		if (v != defaultValue) {
 			bitField.set(bit, true);
-			writeShort(baosObj, v);
+			writeShort(v, baosObj);
 		}
 
 		return this;
@@ -192,7 +197,7 @@ public class PacketWriter {
 	 */
 	public PacketWriter writeInt(int v) {
 		assertStarted();
-		writeInt(baos, v);
+		writeInt(v, baos);
 		return this;
 	}
 
@@ -207,7 +212,7 @@ public class PacketWriter {
 
 		if (v != defaultValue) {
 			bitField.set(bit, true);
-			writeInt(baosObj, v);
+			writeInt(v, baosObj);
 		}
 
 		return this;
@@ -236,12 +241,22 @@ public class PacketWriter {
 	}
 
 	/**
-	 * Writes a String. This handles writing the string length and the
-	 * terminating null character automatically. You must invoke start() before
-	 * calling this method.
+	 * Writes a UTF-16LE encoded String. This handles writing the string length
+	 * and the terminating null character automatically. You must invoke start()
+	 * before calling this method.
 	 */
 	public PacketWriter writeString(String str) {
-		writeString(baos, str);
+		writeString(str, baos);
+		return this;
+	}
+
+	/**
+	 * Writes a US-ASCII encoded String. This handles writing the string length
+	 * and the terminating null character automatically. You must invoke start()
+	 * before calling this method.
+	 */
+	public PacketWriter writeUSASCIIString(String str) {
+		writeUSASCIIString(str, baos);
 		return this;
 	}
 
@@ -255,7 +270,7 @@ public class PacketWriter {
 
 		if (str != null) {
 			bitField.set(bit, true);
-			writeString(baosObj, str);
+			writeString(str, baosObj);
 		}
 
 		return this;
@@ -266,7 +281,7 @@ public class PacketWriter {
 	 */
 	public PacketWriter writeBytes(byte[] bytes) {
 		assertStarted();
-		writeBytes(baos, bytes);
+		baos.write(bytes, 0, bytes.length);
 		return this;
 	}
 
@@ -280,7 +295,7 @@ public class PacketWriter {
 
 		if (bytes != null) {
 			bitField.set(bit, true);
-			writeBytes(baosObj, bytes);
+			baosObj.write(bytes, 0, bytes.length);
 		}
 
 		return this;
@@ -295,8 +310,9 @@ public class PacketWriter {
 	public PacketWriter writeUnknown(String name, byte[] defaultValue) {
 		assertObjectStarted();
 		SortedMap<String, byte[]> unknownProps = obj.getUnknownProps();
-		byte[] v = unknownProps != null ? unknownProps.get(name) : null;
-		writeBytes(baosObj, v != null ? v : defaultValue);
+		byte[] bytes = unknownProps != null ? unknownProps.get(name) : null;
+		bytes = bytes != null ? bytes : defaultValue;
+		baosObj.write(bytes, 0, bytes.length);
 		return this;
 	}
 
@@ -312,11 +328,11 @@ public class PacketWriter {
 		SortedMap<String, byte[]> unknownProps = obj.getUnknownProps();
 
 		if (unknownProps != null) {
-			byte[] v = unknownProps.get(bit.name());
+			byte[] bytes = unknownProps.get(bit.name());
 	
-			if (v != null) {
+			if (bytes != null) {
 				bitField.set(bit, true);
-				writeBytes(baosObj, v);
+				baosObj.write(bytes, 0, bytes.length);
 			}
 		}
 
@@ -360,13 +376,13 @@ public class PacketWriter {
 		assertStarted();
 		byte[] payload = baos.toByteArray();
 		baos = null;
-		writeIntToStream(ArtemisPacket.HEADER);				// header
-		writeIntToStream(payload.length + 24);				// packet length
-		writeIntToStream(mConnType.toInt());				// connection type
-		writeIntToStream(0);								// padding
-		writeIntToStream(payload.length + 4);				// remaining bytes
-		writeIntToStream(mPacketType);						// packet type
-		out.write(payload);									// payload
+		writeInt(ArtemisPacket.HEADER, out); // header
+		writeInt(payload.length + 24, out);  // packet length
+		writeInt(mConnType.toInt(), out);    // connection type
+		writeInt(0, out);                    // padding
+		writeInt(payload.length + 4, out);   // remaining bytes
+		writeInt(mPacketType, out);          // packet type
+		out.write(payload); // payload
 		out.flush();
 		debugger.onSendPacketBytes(mConnType, mPacketType, payload);
 	}
@@ -393,67 +409,55 @@ public class PacketWriter {
 	}
 
 	/**
-	 * Writes an int directly to the wrapped OutputStream. This is used by
-	 * PacketWriter to write values in the preamble, which are all ints.
+	 * Writes an int (coerced into a short) into the given ByteArrayOutputStream.
 	 */
-	private void writeIntToStream(int value) throws IOException {
+	private void writeShort(int value, ByteArrayOutputStream outStream) {
 		buffer[0] = (byte) (0xff & value);
 		buffer[1] = (byte) (0xff & (value >> 8));
-		buffer[2] = (byte) (0xff & (value >> 16));
-		buffer[3] = (byte) (0xff & (value >> 24));
-		out.write(buffer);
+		outStream.write(buffer, 0, 2);
 	}
 
 	/**
-	 * Writes an int (coerced into a short) to the given ByteArrayOutputStream.
+	 * Writes an int into the given OutputStream.
 	 */
-	private void writeShort(ByteArrayOutputStream o, int v) {
-		buffer[0] = (byte) (v & 0xff);
-		buffer[1] = (byte) ((v >> 8) & 0xff);
-		o.write(buffer, 0, 2);
+	private void writeInt(int v, OutputStream outStream) throws IOException {
+		buffer[0] = (byte) (0xff & v);
+		buffer[1] = (byte) (0xff & (v >> 8));
+		buffer[2] = (byte) (0xff & (v >> 16));
+		buffer[3] = (byte) (0xff & (v >> 24));
+		outStream.write(buffer, 0, 4);
 	}
 
 	/**
-	 * Writes an int to the given ByteArrayOutputStream.
+	 * Writes an int into the given ByteArrayOutputStream. This is a useful override because it can
+	 * avoid throwing IOException.
 	 */
-	private void writeInt(ByteArrayOutputStream o, int v) {
-		buffer[0] = (byte) (v & 0xff);
-		buffer[1] = (byte) ((v >> 8) & 0xff);
-		buffer[2] = (byte) ((v >> 16) & 0xff);
-		buffer[3] = (byte) ((v >> 24) & 0xff);
-		o.write(buffer, 0, 4);
+	private void writeInt(int v, ByteArrayOutputStream outStream) {
+		buffer[0] = (byte) (0xff & v);
+		buffer[1] = (byte) (0xff & (v >> 8));
+		buffer[2] = (byte) (0xff & (v >> 16));
+		buffer[3] = (byte) (0xff & (v >> 24));
+		outStream.write(buffer, 0, 4);
 	}
 
 	/**
-	 * Writes a String to the given ByteArrayOutputStream.
+	 * Writes a UTF-16LE encoded String into the given ByteArrayOutputStream.
 	 */
-	private void writeString(ByteArrayOutputStream o, String str) {
-		int charCount = str.length() + 1;
-		writeInt(o, charCount);
-
-		try {
-			o.write(str.getBytes(ArtemisPacket.CHARSET));
-		} catch (IOException ex) {
-			// ByteArrayOutputStream doesn't actually throw IOException; it
-			// just inherits the declaration from the OutputStream class. Since
-			// it won't ever actually happen, we wrap it in a RuntimeException.
-			throw new RuntimeException(ex);
-		}
-
-		writeShort(o, 0);	// terminating null
+	private void writeString(String v, ByteArrayOutputStream outStream) {
+		int charCount = v.length() + 1;
+		writeInt(charCount, outStream);
+		byte[] charBytes = v.getBytes(Util.UTF16LE);
+		outStream.write(charBytes, 0, charBytes.length);
+		writeShort(0, outStream); // terminating null
 	}
 
 	/**
-	 * Writes a byte array to the given ByteArrayOutputStream.
+	 * Writes a US ASCII encoded String into the given ByteArrayOutputStream.
 	 */
-	private static void writeBytes(ByteArrayOutputStream o, byte[] bytes) {
-		try {
-			o.write(bytes);
-		} catch (IOException ex) {
-			// ByteArrayOutputStream doesn't actually throw IOException; it
-			// just inherits the declaration from the OutputStream class. Since
-			// it won't ever actually happen, we wrap it in a RuntimeException.
-			throw new RuntimeException(ex);
-		}
+	private void writeUSASCIIString(String v, ByteArrayOutputStream outStream) {
+		int charCount = v.length();
+		writeInt(charCount, outStream);
+		byte[] charBytes = v.getBytes(Util.US_ASCII);
+		outStream.write(charBytes, 0, charBytes.length);
 	}
 }

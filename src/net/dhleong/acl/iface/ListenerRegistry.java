@@ -9,11 +9,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author rjwut
  */
 public class ListenerRegistry {
-    private List<ListenerMethod> listeners = new CopyOnWriteArrayList<ListenerMethod>();
+	private List<ListenerMethod> listeners = new CopyOnWriteArrayList<ListenerMethod>();
 
     /**
      * Registers all methods on the given Object which have the @Listener
-     * annotation with the registry.
+     * annotation with the registry. A listener method must be public, return
+     * void, and have exactly one argument which is assignable to ArtemisPacket,
+     * ArtemisObject or ConnectionEvent.
      */
     public void register(Object object) {
     	synchronized (listeners) {
@@ -28,8 +30,8 @@ public class ListenerRegistry {
     }
 
     /**
-     * Returns true if any listeners are interested in events or packets of the
-     * given class; false otherwise.
+     * Returns true if any listeners are interested in objects of the given
+     * class; false otherwise.
      */
     public boolean listeningFor(Class<?> clazz) {
     	synchronized (listeners) {
@@ -44,7 +46,7 @@ public class ListenerRegistry {
     }
 
     /**
-     * Fires all listeners which are compatible with the given event or packet.
+     * Fires all listeners which are interested in the given object.
      */
     void fire(Object obj) {
     	synchronized (listeners) {

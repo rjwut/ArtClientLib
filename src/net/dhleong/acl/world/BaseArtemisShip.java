@@ -17,8 +17,8 @@ public abstract class BaseArtemisShip extends BaseArtemisShielded {
     private float mTurnRate = -1;
     private float mImpulse = -1;
 
-    public BaseArtemisShip(int objId, String name, int hullId) {
-        super(objId, name, hullId);
+    public BaseArtemisShip(int objId) {
+        super(objId);
 
         for (int i = 0; i < 5; i++) {
         	mShieldFreqs[i] = -1;

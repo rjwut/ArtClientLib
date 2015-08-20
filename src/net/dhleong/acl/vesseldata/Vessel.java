@@ -140,6 +140,11 @@ public class Vessel {
 		return specularFile;
 	}
 
+	/**
+	 * Returns the VesselInternals object describing the system node structure
+	 * for this Vessel, or null if there is none. (Only player ships will have
+	 * a VesselInternals object.)
+	 */
 	public VesselInternals getInternals() {
 		return internals;
 	}

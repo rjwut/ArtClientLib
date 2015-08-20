@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,5 +119,19 @@ public class VesselData {
 	 */
 	public Vessel getVessel(int id) {
 		return vessels.get(Integer.valueOf(id));
+	}
+
+	/**
+	 * Iterates all the Factions in this object.
+	 */
+	public Iterator<Faction> factionIterator() {
+		return factions.iterator();
+	}
+
+	/**
+	 * Iterates all the Vessels in this object.
+	 */
+	public Iterator<Vessel> vesselIterator() {
+		return vessels.values().iterator();
 	}
 }

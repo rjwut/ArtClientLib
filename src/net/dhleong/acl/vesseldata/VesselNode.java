@@ -5,21 +5,24 @@ import java.io.InputStream;
 
 import net.dhleong.acl.enums.ShipSystem;
 import net.dhleong.acl.util.ByteArrayReader;
+import net.dhleong.acl.util.GridCoord;
 
 public class VesselNode {
 	static final int BLOCK_SIZE = 32;
 	private static final int EMPTY_NODE_VALUE = -2;
 	private static final int HALLWAY_NODE_VALUE = -1;
 
+	private GridCoord coords;
 	private float x;
 	private float y;
 	private float z;
 	private boolean accessible;
 	private ShipSystem system;
 
-	VesselNode (InputStream in, byte[] buffer) throws InterruptedException, IOException {
+	VesselNode (InputStream in, GridCoord coords, byte[] buffer) throws InterruptedException, IOException {
 		ByteArrayReader.readBytes(in, BLOCK_SIZE, buffer);
 		ByteArrayReader reader = new ByteArrayReader(buffer);
+		this.coords = coords;
 		x = reader.readFloat();
 		y = reader.readFloat();
 		z = reader.readFloat();
@@ -32,9 +35,16 @@ public class VesselNode {
 	}
 
 	/**
+	 * Returns the GridCoord for this node's location in the system grid.
+	 */
+	public GridCoord getGridCoord() {
+		return coords;
+	}
+
+	/**
 	 * Returns the X-coordinate of this node relative to the origin of the ship's model coordinates.
 	 */
-	public float getRelativeX() {
+	public float getX() {
 		return x;
 	}
 
@@ -64,5 +74,29 @@ public class VesselNode {
 	 */
 	public ShipSystem getSystem() {
 		return system;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+
+		if (!(obj instanceof VesselNode)) {
+			return false;
+		}
+
+		VesselNode that = (VesselNode) obj;
+		return coords.equals(that.coords);
+	}
+
+	@Override
+	public int hashCode() {
+		return coords.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return coords.toString() + '=' + (accessible ? (system != null ? system : "hallway") : "empty");
 	}
 }

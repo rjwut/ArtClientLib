@@ -1,13 +1,12 @@
 <project name="artclientlib" basedir="." default="jar">
-	<property name="srcPath" value="src"/>
-	<property name="testPath" value="test"/>
-	<property name="buildPath" value="build"/>
-	<property name="buildPath.src" value="${buildPath}/src/classes"/>
-	<property name="buildPath.test" value="${buildPath}/test/classes"/>
-	<property name="buildPath.junit" value="junitlib"/>
-	<property name="buildPath.report" value="${buildPath}/test/report"/>
-	<property name="jvm.source" value="1.6"/>
-	<property name="jvm.target" value="1.6"/>
+  <property name="srcPath" value="src"/>
+  <property name="testPath" value="test"/>
+  <property name="buildPath" value="build"/>
+  <property name="buildPath.src" value="${buildPath}/src/classes"/>
+  <property name="buildPath.test" value="${buildPath}/test/classes"/>
+  <property name="buildPath.junit" value="junitlib"/>
+  <property name="jvm.source" value="1.6"/>
+  <property name="jvm.target" value="1.6"/>
   <property name="version" value="2.4.0"/>
 
   <path id="testBuildClasspath">
@@ -19,24 +18,24 @@
 
   <path id="testClasspath">
     <pathelement path="${buildPath.src}"/>
-		<pathelement path="${buildPath.test}"/>
+    <pathelement path="${buildPath.test}"/>
     <fileset dir="${buildPath.junit}">
       <include name="*.jar"/>
     </fileset>
   </path>
 
-	<target name="clean">
-		<delete dir="${buildPath}"/>
-	</target>
+  <target name="clean">
+    <delete dir="${buildPath}"/>
+  </target>
 
-	<target name="compile" depends="clean">
-		<mkdir dir="${buildPath.src}"/>
-		<javac srcdir="${srcPath}" destdir="${buildPath.src}" source="${jvm.source}" target="${jvm.target}" includeantruntime="no" debug="yes" debuglevel="lines,vars,source"/>
-	</target>
+  <target name="compile" depends="clean">
+    <mkdir dir="${buildPath.src}"/>
+    <javac srcdir="${srcPath}" destdir="${buildPath.src}" source="${jvm.source}" target="${jvm.target}" includeantruntime="no" debug="yes" debuglevel="lines,vars,source"/>
+  </target>
 
   <target name="compileTest" depends="compile">
-		<mkdir dir="${buildPath.test}"/>
-		<javac srcdir="${testPath}" destdir="${buildPath.test}" source="${jvm.source}" target="${jvm.target}" includeantruntime="yes" debug="yes" debuglevel="lines,vars,source">
+    <mkdir dir="${buildPath.test}"/>
+    <javac srcdir="${testPath}" destdir="${buildPath.test}" source="${jvm.source}" target="${jvm.target}" includeantruntime="yes" debug="yes" debuglevel="lines,vars,source">
       <classpath refid="testBuildClasspath"/>
     </javac>
     <copy todir="${buildPath.test}">
@@ -46,20 +45,19 @@
     </copy>
   </target>
 
-	<target name="test" depends="compileTest">
-		<mkdir dir="${buildPath.report}"/>
-		<junit printsummary="yes" haltonfailure="yes">
-			<formatter type="xml"/>
+  <target name="test" depends="compileTest">
+    <junit printsummary="yes" haltonfailure="yes">
+      <formatter type="plain" usefile="false"/>
       <classpath refid="testClasspath"/>
-			<batchtest todir="${buildPath.report}">
-				<fileset dir="${testPath}">
-					<include name="**/*Test.java"/>
-				</fileset>
-			</batchtest>
-		</junit>
-	</target>
+      <batchtest>
+        <fileset dir="${testPath}">
+          <include name="**/*Test.java"/>
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
 
-	<target name="jar" depends="test">
-		<jar destfile="${buildPath}/${ant.project.name}-${version}.jar" basedir="${buildPath.src}"/>
-	</target>
+  <target name="jar" depends="test">
+    <jar destfile="${buildPath}/${ant.project.name}-${version}.jar" basedir="${buildPath.src}"/>
+  </target>
 </project>

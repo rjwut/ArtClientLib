@@ -10,6 +10,6 @@ ArtClientLib does not maintain backwards compatibility when updating for new ver
 
 * Artemis v2.1: [ArtClientLib v2.4.0](https://github.com/rjwut/ArtClientLib/releases/tag/v2.4.0)
 * Artemis v2.0: [ArtClientLib v2.3.0](https://github.com/rjwut/ArtClientLib/releases/tag/v2.3.0)
-* Artemis 1.x: [ArtClientLib v1.x](https://github.com/dhleong/ArtClientLib) (by Daniel Leong)
+* Artemis v1.x: [ArtClientLib v1.x](https://github.com/dhleong/ArtClientLib) (by Daniel Leong)
 
 ArtClientLib was originally developed by Daniel Leong and released on GitHub with permission of the developer of Artemis, Thom Robertson.

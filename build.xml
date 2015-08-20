@@ -32,6 +32,11 @@
 	<target name="compile" depends="clean">
 		<mkdir dir="${buildPath.src}"/>
 		<javac srcdir="${srcPath}" destdir="${buildPath.src}" source="${jvm.source}" target="${jvm.target}" includeantruntime="no" debug="yes" debuglevel="lines,vars,source"/>
+    <copy todir="${buildPath.src}">
+      <fileset dir="${srcPath}">
+        <exclude name="**/*.java"/>
+      </fileset>
+    </copy>
 	</target>
 
   <target name="compileTest" depends="compile">
@@ -48,7 +53,7 @@
 
 	<target name="test" depends="compileTest">
 		<mkdir dir="${buildPath.report}"/>
-		<junit printsummary="yes" haltonfailure="yes">
+		<junit>
 			<formatter type="xml"/>
       <classpath refid="testClasspath"/>
 			<batchtest todir="${buildPath.report}">

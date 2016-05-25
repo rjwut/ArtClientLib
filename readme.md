@@ -1,5 +1,7 @@
 ArtClientLib
 ============
+**NOTE: This library is being superseded by [IAN](https://github.com/rjwut/ian).**
+
 [![Build Status](https://secure.travis-ci.org/rjwut/ArtClientLib.svg)](http://travis-ci.org/rjwut/ArtClientLib)
 
 **ArtClientLib** is an _unofficial_ Java library for communicating with [Artemis Spaceship Bridge Simulator](http://www.artemis.eochu.com/) servers and clients.
